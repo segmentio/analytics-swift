@@ -12,7 +12,7 @@ public class Analytics {
         configuration = Configuration(writeKey: writeKey)
     }
     
-    init(config: Configuration) {
+    internal init(config: Configuration) {
         configuration = config
     }
     
