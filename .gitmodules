@@ -1,0 +1,3 @@
+[submodule "Libraries/Sovran-Swift"]
+	path = Libraries/Sovran-Swift
+	url = git@github.com:segmentio/Sovran-Swift.git
