@@ -21,8 +21,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
+		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
-		A3471FC82564885600965480 /* Tracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FC72564885600965480 /* Tracking.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
 		OBJ_31 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
@@ -31,6 +33,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9620861C256DC21B00314F8D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Sovran::Sovran::Product";
+			remoteInfo = Sovran;
+		};
+		9620861E256DC21B00314F8D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = "Sovran::SovranTests::Product";
+			remoteInfo = SovranTests;
+		};
 		A3471FB7256487B500965480 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
@@ -47,16 +63,31 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		96208627256DC23F00314F8D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
+		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
-		A3471FC72564885600965480 /* Tracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracking.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 		"Segment::Segment-Tests::Product" /* Segment_Tests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; name = Segment_Tests.xctest; path = "Segment-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		"Segment::Segment::Product" /* Segment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Segment.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Segment::Segment::Product" /* Segment.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Segment.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				96208625256DC23F00314F8D /* Sovran.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +110,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		962085EA256DC21000314F8D /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				96208615256DC21B00314F8D /* Sovran.xcodeproj */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		96208616256DC21B00314F8D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9620861D256DC21B00314F8D /* Sovran.framework */,
+				9620861F256DC21B00314F8D /* SovranTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		96208624256DC23F00314F8D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,16 +161,17 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
-				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_10 /* Tests */,
-				OBJ_14 /* Products */,
+				962085EA256DC21000314F8D /* Libraries */,
+				OBJ_6 /* Package.swift */,
 				OBJ_17 /* README.md */,
+				OBJ_14 /* Products */,
+				96208624256DC23F00314F8D /* Frameworks */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -129,7 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_9 /* Analytics.swift */,
-				A3471FC72564885600965480 /* Tracking.swift */,
+				9620862B2575C0C800314F8D /* Events.swift */,
 				A3471FBD256487F000965480 /* Configuration.swift */,
 			);
 			name = Segment;
@@ -145,6 +202,7 @@
 			buildPhases = (
 				OBJ_22 /* Sources */,
 				OBJ_24 /* Frameworks */,
+				96208627256DC23F00314F8D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -202,9 +260,15 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_14 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 96208616256DC21B00314F8D /* Products */;
+					ProjectRef = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				"Segment::Segment" /* Segment */,
@@ -215,14 +279,31 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		9620861D256DC21B00314F8D /* Sovran.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Sovran.framework;
+			remoteRef = 9620861C256DC21B00314F8D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9620861F256DC21B00314F8D /* SovranTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = file;
+			path = SovranTests.xctest;
+			remoteRef = 9620861E256DC21B00314F8D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
 		OBJ_22 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				A3471FC82564885600965480 /* Tracking.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
+				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

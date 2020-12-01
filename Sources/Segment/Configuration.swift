@@ -13,6 +13,10 @@ internal struct Configuration {
     var writeKey: String
     var advertisingIdCallback: AdvertisingIdCallback? = nil
     var trackInAppPurchases: Bool = false
+    var trackApplicationLifecycleEvents: Bool = true
+    var trackDeeplinks: Bool = true
+    var flushAt: Int = 20
+    var flushInterval: Int = 30
 }
 
 public extension Analytics {
@@ -24,7 +28,19 @@ public extension Analytics {
     
     @discardableResult
     func trackInAppPurchases(enabled: Bool) -> Analytics {
-        configuration.trackInAppPurchases = true
+        configuration.trackInAppPurchases = enabled
+        return self
+    }
+    
+    @discardableResult
+    func trackApplicationLifecycleEvents(enabled: Bool) -> Analytics {
+        configuration.trackApplicationLifecycleEvents = enabled
+        return self
+    }
+    
+    @discardableResult
+    func trackDeeplinks(enabled: Bool) -> Analytics {
+        configuration.trackDeeplinks = enabled
         return self
     }
 }

@@ -1,18 +1,18 @@
 //
-//  Tracking.swift
+//  Events.swift
 //  Segment
 //
-//  Created by Brandon Sneed on 11/17/20.
+//  Created by Cody Garvin on 11/30/20.
 //
 
 import Foundation
-
-typealias Properties = [String: Codable]
-typealias Integrations = [String: Codable]
 
 extension Analytics {
     func track(name: String, properties: Properties? = nil, integrations: Integrations? = nil) {
         // ...
     }
     
+    func identify(userId: String) {
+        //...
+    }
 }
