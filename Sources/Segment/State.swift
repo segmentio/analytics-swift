@@ -8,11 +8,21 @@
 import Foundation
 import Sovran
 
-// MARK: - State Types
+// MARK: - System (Overall)
 
 struct System: Codable, State {
     let enabled: Bool
+    
+    struct EnabledAction: Action {
+        var enabled: Bool
+        func reduce(state: System) -> System {
+            let result = System(enabled: enabled)
+            return result
+        }
+    }
 }
+
+// MARK: - User information
 
 struct UserInfo: Codable, State {
     let anonymousId: String
