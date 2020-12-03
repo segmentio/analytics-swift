@@ -24,6 +24,13 @@
 		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
+		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
+		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
+		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
+		A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16502576C47400C9CDDF /* JSONTests.swift */; };
+		A31A16B225781CB400C9CDDF /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16A425780E8D00C9CDDF /* JSON.swift */; };
+		A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16C225794BEF00C9CDDF /* Extension.swift */; };
+		A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16BD25794BC300C9CDDF /* Mediator.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
@@ -80,6 +87,13 @@
 /* Begin PBXFileReference section */
 		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
+		A31A16252576B6F200C9CDDF /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
+		A31A162E2576B73F00C9CDDF /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		A31A16332576B7AF00C9CDDF /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		A31A16502576C47400C9CDDF /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
+		A31A16A425780E8D00C9CDDF /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
+		A31A16BD25794BC300C9CDDF /* Mediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mediator.swift; sourceTree = "<group>"; };
+		A31A16C225794BEF00C9CDDF /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
@@ -134,6 +148,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A31A16A325780A8D00C9CDDF /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A31A16A425780E8D00C9CDDF /* JSON.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_12 /* Segment_Tests.swift */,
+				A31A16502576C47400C9CDDF /* JSONTests.swift */,
 				OBJ_13 /* XCTestManifests.swift */,
 			);
 			name = "Segment-Tests";
@@ -185,9 +208,15 @@
 		OBJ_8 /* Segment */ = {
 			isa = PBXGroup;
 			children = (
+				A31A16A325780A8D00C9CDDF /* Utilities */,
 				OBJ_9 /* Analytics.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
+				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
+				A31A16C225794BEF00C9CDDF /* Extension.swift */,
 				A3471FBD256487F000965480 /* Configuration.swift */,
+				A31A16252576B6F200C9CDDF /* Timeline.swift */,
+				A31A16332576B7AF00C9CDDF /* Types.swift */,
+				A31A162E2576B73F00C9CDDF /* State.swift */,
 			);
 			name = Segment;
 			path = Sources/Segment;
@@ -301,9 +330,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */,
+				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
+				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
+				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
+				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
+				A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,6 +348,7 @@
 			files = (
 				OBJ_30 /* Segment_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
+				A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

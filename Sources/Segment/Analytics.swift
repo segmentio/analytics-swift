@@ -5,8 +5,8 @@
 //  Created by Brandon Sneed on 11/17/20.
 //
 
-typealias Properties = Codable
-typealias Integrations = [String: Codable]
+import Foundation
+import Sovran
 
 protocol EdgeFunctionMiddleware {
     // This is a stub
@@ -14,8 +14,11 @@ protocol EdgeFunctionMiddleware {
 
 public class Analytics {
     internal var configuration: Configuration
+    internal let timeline = Timeline()
     
-    var isEnabled = true
+    // this should be in State->System
+    //private var isEnabled = true
+
     
     init(writeKey: String) {
         configuration = Configuration(writeKey: writeKey)
