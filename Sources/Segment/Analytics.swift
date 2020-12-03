@@ -17,6 +17,7 @@ protocol EdgeFunctionMiddleware {
 public class Analytics {
     internal var configuration: Configuration
     internal let timeline = Timeline()
+    private var built = false
     
     init(writeKey: String) {
         configuration = Configuration(writeKey: writeKey)
@@ -27,7 +28,11 @@ public class Analytics {
     }
     
     func build() -> Analytics {
-        timeline.store.provide(state: System(enabled: !configuration.startDisabled))
+        if (built) {
+            assertionFailure("Analytics.build() can only be called once!")
+        }
+        built = true
+        timeline.store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration))
         return Analytics(config: configuration)
     }
 }
@@ -57,11 +62,6 @@ extension Analytics {
         timeline.store.dispatch(action: UserInfo.ResetAction())
     }
     
-    func version() -> Int {
-        // ...
-        return 0
-    }
-    
     func anonymousId() -> String {
         // ??? not getAnonymousId
         return ""
@@ -74,6 +74,14 @@ extension Analytics {
     
     func edgeFunction() -> EdgeFunctionMiddleware? {
         return nil
+    }
+    
+    func version() -> String {
+        return Analytics.version()
+    }
+    
+    static func version() -> String {
+        return __segment_version
     }
 }
 

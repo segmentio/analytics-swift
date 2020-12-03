@@ -17,7 +17,8 @@ internal struct Configuration {
     var trackApplicationLifecycleEvents: Bool = true
     var trackDeeplinks: Bool = true
     var flushAt: Int = 20
-    var flushInterval: Int = 30
+    var flushInterval: TimeInterval = 30
+    var maxQueueSize: Int = 1000
 }
 
 public extension Analytics {
@@ -34,20 +35,39 @@ public extension Analytics {
     }
     
     @discardableResult
-    func trackInAppPurchases(enabled: Bool) -> Analytics {
+    func trackInAppPurchases(_ enabled: Bool) -> Analytics {
         configuration.trackInAppPurchases = enabled
         return self
     }
     
     @discardableResult
-    func trackApplicationLifecycleEvents(enabled: Bool) -> Analytics {
+    func trackApplicationLifecycleEvents(_ enabled: Bool) -> Analytics {
         configuration.trackApplicationLifecycleEvents = enabled
         return self
     }
     
     @discardableResult
-    func trackDeeplinks(enabled: Bool) -> Analytics {
+    func trackDeeplinks(_ enabled: Bool) -> Analytics {
         configuration.trackDeeplinks = enabled
         return self
     }
+    
+    @discardableResult
+    func flushAt(_ count: Int) -> Analytics {
+        configuration.flushAt = count
+        return self
+    }
+    
+    @discardableResult
+    func flushInterval(_ interval: TimeInterval) -> Analytics {
+        configuration.flushInterval = interval
+        return self
+    }
+    
+    @discardableResult
+    func maxQueueSize(_ eventCount: Int) -> Analytics {
+        configuration.maxQueueSize = eventCount
+        return self
+    }
+
 }
