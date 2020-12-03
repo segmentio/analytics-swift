@@ -28,5 +28,11 @@ struct UserInfo: Codable, State {
     let anonymousId: String
     let userId: String?
     let traits: JSON?
+    
+    struct ResetAction: Action {
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil)
+        }
+    }
 }
 

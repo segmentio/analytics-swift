@@ -12,13 +12,11 @@ protocol EdgeFunctionMiddleware {
     // This is a stub
 }
 
+// MARK: - Base Setup
+
 public class Analytics {
     internal var configuration: Configuration
     internal let timeline = Timeline()
-    
-    // this should be in State->System
-    //private var isEnabled = true
-
     
     init(writeKey: String) {
         configuration = Configuration(writeKey: writeKey)
@@ -29,18 +27,34 @@ public class Analytics {
     }
     
     func build() -> Analytics {
+        timeline.store.provide(state: System(enabled: !configuration.startDisabled))
         return Analytics(config: configuration)
     }
 }
 
+// MARK: System Modifiers
+
 extension Analytics {
+    
+    var enabled: Bool {
+        get {
+            var result = !configuration.startDisabled
+            if let system: System = timeline.store.currentState() {
+                result = system.enabled
+            }
+            return result
+        }
+        set(value) {
+            timeline.store.dispatch(action: System.EnabledAction(enabled: value))
+        }
+    }
     
     func flush() {
         // ...
     }
     
     func reset() {
-        // ...
+        timeline.store.dispatch(action: UserInfo.ResetAction())
     }
     
     func version() -> Int {
@@ -63,7 +77,10 @@ extension Analytics {
     }
 }
 
+// MARK: - Deprecations from previous lib
+
 extension Analytics {
+    // NOTE: these have been replaced by a property
     @available(*, deprecated)
     func enable() {
         
