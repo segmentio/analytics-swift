@@ -24,6 +24,7 @@
 		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
+		96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
 		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
@@ -88,6 +89,8 @@
 /* Begin PBXFileReference section */
 		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
+		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		A31A16252576B6F200C9CDDF /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		A31A162E2576B73F00C9CDDF /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		A31A16332576B7AF00C9CDDF /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
@@ -146,8 +149,17 @@
 		96208624256DC23F00314F8D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				962086482579CCC200314F8D /* Cocoa.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9620864E257AA82900314F8D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		A31A16A325780A8D00C9CDDF /* Utilities */ = {
@@ -210,6 +222,7 @@
 		OBJ_8 /* Segment */ = {
 			isa = PBXGroup;
 			children = (
+				9620864E257AA82900314F8D /* Extensions */,
 				A31A16A325780A8D00C9CDDF /* Utilities */,
 				OBJ_9 /* Analytics.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
@@ -343,6 +356,7 @@
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */,
+				96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

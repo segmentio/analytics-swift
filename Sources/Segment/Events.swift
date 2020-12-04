@@ -44,5 +44,8 @@ extension Analytics {
     func group<T: Traits>(groupId: String, traits: T? = nil) {
         // ...
     }
-
+    
+    func alias(newId: String) {
+        // ...
+    }
 }
