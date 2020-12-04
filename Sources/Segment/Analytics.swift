@@ -12,17 +12,15 @@ protocol EdgeFunctionMiddleware {
     // This is a stub
 }
 
-// Initial creation
+// MARK: - Base Setup
+
 public class Analytics {
     internal var configuration: Configuration
     internal let timeline = Timeline()
-    
-    // this should be in State->System
-    //private var isEnabled = true
-    
-    /// Enabled/disables debug logging to trace your data going through the SDK.
-    public var debugLogsEnabled = false
+    private var built = false
 
+/// Enabled/disables debug logging to trace your data going through the SDK.
+public var debugLogsEnabled = false
     
     init(writeKey: String) {
         configuration = Configuration(writeKey: writeKey)
@@ -33,24 +31,38 @@ public class Analytics {
     }
     
     func build() -> Analytics {
+        if (built) {
+            assertionFailure("Analytics.build() can only be called once!")
+        }
+        built = true
+        timeline.store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration))
         return Analytics(config: configuration)
     }
 }
 
-// Utilities
+// MARK: System Modifiers
+
 extension Analytics {
+    
+    var enabled: Bool {
+        get {
+            var result = !configuration.startDisabled
+            if let system: System = timeline.store.currentState() {
+                result = system.enabled
+            }
+            return result
+        }
+        set(value) {
+            timeline.store.dispatch(action: System.EnabledAction(enabled: value))
+        }
+    }
     
     func flush() {
         // ...
     }
     
     func reset() {
-        // ...
-    }
-    
-    func version() -> Int {
-        // ...
-        return 0
+        timeline.store.dispatch(action: UserInfo.ResetAction())
     }
     
     func anonymousId() -> String {
@@ -65,6 +77,14 @@ extension Analytics {
     
     func edgeFunction() -> EdgeFunctionMiddleware? {
         return nil
+    }
+    
+    func version() -> String {
+        return Analytics.version()
+    }
+    
+    static func version() -> String {
+        return __segment_version
     }
 }
 
@@ -97,8 +117,10 @@ extension Analytics {
     }
 }
 
-// Deprecations
+// MARK: - Deprecations from previous lib
+
 extension Analytics {
+    // NOTE: these have been replaced by a property
     @available(*, deprecated)
     func enable() {
         

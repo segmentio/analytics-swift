@@ -10,13 +10,14 @@ import Sovran
 
 // MARK: - System (Overall)
 
-struct System: Codable, State {
+struct System: State {
     let enabled: Bool
+    let configuration: Configuration
     
     struct EnabledAction: Action {
         var enabled: Bool
         func reduce(state: System) -> System {
-            let result = System(enabled: enabled)
+            let result = System(enabled: enabled, configuration: state.configuration)
             return result
         }
     }
@@ -28,5 +29,11 @@ struct UserInfo: Codable, State {
     let anonymousId: String
     let userId: String?
     let traits: JSON?
+    
+    struct ResetAction: Action {
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil)
+        }
+    }
 }
 
