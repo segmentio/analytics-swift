@@ -11,14 +11,11 @@ import UIKit
 
 class iOSLifeCycleEvents: Extension {
     var type: ExtensionType
-    
+    private var application: UIApplication
+
     required init(type: ExtensionType) {
-        <#code#>
-    }
-        
-    private let application: UIApplication
-    init() {
-        application = UIApplication.application
+        self.type = .before
+        application = UIApplication.shared
     }
 }
 
