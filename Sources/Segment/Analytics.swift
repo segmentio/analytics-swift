@@ -18,6 +18,9 @@ public class Analytics {
     internal var configuration: Configuration
     internal let timeline = Timeline()
     private var built = false
+
+/// Enabled/disables debug logging to trace your data going through the SDK.
+public var debugLogsEnabled = false
     
     init(writeKey: String) {
         configuration = Configuration(writeKey: writeKey)
@@ -82,6 +85,35 @@ extension Analytics {
     
     static func version() -> String {
         return __segment_version
+    }
+}
+
+// Lifecycle passthru methods
+extension Analytics {
+    func receivedRemoteNotification(userInfo: Dictionary<String, Codable>) {
+        // ...
+    }
+    
+    func failedToRegisterForRemoteNotificationsWithError(error: Error) {
+        // ...
+    }
+    
+    func registeredForRemoteNotificationsWithDeviceToken(deviceToken: Data) {
+        // ...
+    }
+    
+    // Deprecated in iOS 10 -- look at UserNotifications Framework
+    func handleActionWithIdentifier(identifier: String, remoteNotification: Dictionary<String, Codable>) {
+        // ...
+        // Possibly pass as [UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]
+    }
+    
+    func continueUserActivity(activity: NSUserActivity) {
+        // ...
+    }
+    
+    func openURL(url: NSURL, options: Dictionary<String, Any>) {
+        // ...
     }
 }
 
