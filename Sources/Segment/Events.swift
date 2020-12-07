@@ -7,10 +7,6 @@
 
 import Foundation
 
-struct Event {
-    
-}
-
 extension Analytics {
     func track<P: Properties, I: Integrations>(name: String, properties: P? = nil, integrations: I? = nil) {
         // ...
@@ -20,7 +16,7 @@ extension Analytics {
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
     func identify<T: Traits>(userId: String, traits: T? = nil) {
-        
+        let event = IdentifyEvent(timeline: timeline, traits: traits)
     }
     
     func identify<T: Traits>(traits: T) {

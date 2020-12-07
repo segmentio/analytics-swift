@@ -33,6 +33,7 @@
 		A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16BD25794BC300C9CDDF /* Mediator.swift */; };
 		A31A16E12579779600C9CDDF /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16D9257976FB00C9CDDF /* Version.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
+		A3AEE136257EB010002386EB /* AssociatedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE135257EB010002386EB /* AssociatedObject.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
 		OBJ_31 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
@@ -97,6 +98,7 @@
 		A31A16C225794BEF00C9CDDF /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		A31A16D9257976FB00C9CDDF /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		A3AEE135257EB010002386EB /* AssociatedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssociatedObject.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				A31A16A425780E8D00C9CDDF /* JSON.swift */,
+				A3AEE135257EB010002386EB /* AssociatedObject.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
+				A3AEE136257EB010002386EB /* AssociatedObject.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,

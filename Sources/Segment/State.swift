@@ -13,15 +13,21 @@ import Sovran
 struct System: State {
     let enabled: Bool
     let configuration: Configuration
+    let context: JSON?
+    let integrations: JSON?
     
     struct EnabledAction: Action {
         var enabled: Bool
         func reduce(state: System) -> System {
-            let result = System(enabled: enabled, configuration: state.configuration)
+            let result = System(enabled: enabled,
+                                configuration: state.configuration,
+                                context: state.context,
+                                integrations: state.integrations)
             return result
         }
     }
 }
+
 
 // MARK: - User information
 
@@ -36,4 +42,5 @@ struct UserInfo: Codable, State {
         }
     }
 }
+
 
