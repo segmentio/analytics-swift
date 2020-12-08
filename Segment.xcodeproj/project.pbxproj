@@ -36,6 +36,7 @@
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
 		A3AEE136257EB010002386EB /* AssociatedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE135257EB010002386EB /* AssociatedObject.swift */; };
 		A3AEE14A2580208E002386EB /* iso8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1492580208E002386EB /* iso8601.swift */; };
+		A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE15525802FB8002386EB /* Lifecycle.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
 		OBJ_31 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
@@ -104,6 +105,7 @@
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		A3AEE135257EB010002386EB /* AssociatedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssociatedObject.swift; sourceTree = "<group>"; };
 		A3AEE1492580208E002386EB /* iso8601.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iso8601.swift; sourceTree = "<group>"; };
+		A3AEE15525802FB8002386EB /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				A31A16332576B7AF00C9CDDF /* Types.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
 				A31A16D9257976FB00C9CDDF /* Version.swift */,
+				A3AEE15525802FB8002386EB /* Lifecycle.swift */,
 			);
 			name = Segment;
 			path = Sources/Segment;
@@ -362,6 +365,7 @@
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
+				A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */,
 				96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */,

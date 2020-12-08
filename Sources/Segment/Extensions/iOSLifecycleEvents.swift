@@ -11,12 +11,32 @@ import UIKit
 
 class iOSLifeCycleEvents: Extension {
     var type: ExtensionType
+    var analytics: Analytics
+    
     private var application: UIApplication
 
     required init(type: ExtensionType) {
         self.type = .before
         application = UIApplication.shared
+        
+        setupListeners()
     }
+    
+    func setupListeners() {
+        // do all your subscription to lifecycle shit here
+        // .. listener ends up calling appicationDidFinishLaunching
+    }
+    
+    func applicationDidFinishLaunching(notification: Notification) {
+        // ... deconstruct it ...
+        
+        analytics.extensions.apply { (ext) in
+            if let validExt = ext as? iOSLifecycle {
+                validExt.applicationWillEnterForeground(application: application)
+            }
+        }
+    }
+    
 }
 
 #endif
