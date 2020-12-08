@@ -17,7 +17,10 @@ public enum JSON: Equatable {
     case array([JSON])
     case object([String: JSON])
     
-    private struct NonJSONType: Error {}
+    private enum JSONError: Error {
+        case unknown
+        case nonJSONType(type: String)
+    }
     
     public init(_ object: [String: Any]) throws {
         self = .object(try object.mapValues(JSON.init))
@@ -44,6 +47,8 @@ public enum JSON: Equatable {
             }
             
         // handle swift types
+        case nil:
+            self = .null
         case let string as String:
             self = .string(string)
         case let bool as Bool:
@@ -55,7 +60,7 @@ public enum JSON: Equatable {
         
         // we don't work with whatever is being supplied
         default:
-            throw NonJSONType()
+            throw JSONError.nonJSONType(type: "\(value.self)")
         }
     }
 }

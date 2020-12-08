@@ -1,15 +1,20 @@
 import XCTest
 @testable import Segment
 
-final class Segment_Tests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        //XCTAssertEqual(Segment().text, "Hello, World!")
-    }
+struct MyTraits: Codable {
+    let email: String?
+}
 
-    static var allTests = [
-        ("testExample", testExample),
-    ]
+final class Segment_Tests: XCTestCase {
+    
+    func testBaseEventCreation() {
+        let analytics = Analytics(writeKey: "test").build()
+        
+        //let traits = MyTraits(email: "brandon@redf.net")
+        analytics.identify<NoTraits>(userId: "brandon")
+        
+        //analytics.track("myevent")
+        
+        //print("\(event)")
+    }
 }

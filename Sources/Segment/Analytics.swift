@@ -26,17 +26,13 @@ public var debugLogsEnabled = false
         configuration = Configuration(writeKey: writeKey)
     }
     
-    internal init(config: Configuration) {
-        configuration = config
-    }
-    
     func build() -> Analytics {
         if (built) {
             assertionFailure("Analytics.build() can only be called once!")
         }
         built = true
-        timeline.store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration))
-        return Analytics(config: configuration)
+        timeline.store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
+        return self
     }
 }
 
