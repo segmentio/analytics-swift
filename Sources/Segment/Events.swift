@@ -18,12 +18,31 @@ extension Analytics {
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
-    func identify<T: Codable>(userId: String, traits: T? = nil) {
-        //let event = IdentifyEvent(timeline: timeline, traits: traits)
+    func identify<T: Codable>(userId: String, traits: T) {
+        do {
+            let jsonTraits = try JSON(traits)
+            store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: jsonTraits))
+            let event = IdentifyEvent(userId: userId, traits: jsonTraits).applyRawEventData(store: store)
+            timeline.process(event: event)
+        } catch {
+            assertionFailure("\(error)")
+        }
     }
     
     func identify<T: Codable>(traits: T) {
-        
+        do {
+            let jsonTraits = try JSON(traits)
+            timeline.store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
+            let event = IdentifyEvent(traits: jsonTraits).applyRawEventData(store: store)
+            timeline.process(event: event)
+        } catch {
+            assertionFailure("\(error)")
+        }
+    }
+    
+    func identify(userId: String) {
+        let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
+        timeline.process(event: event)
     }
     
     // MARK: - Screen

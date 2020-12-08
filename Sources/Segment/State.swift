@@ -41,6 +41,39 @@ struct UserInfo: Codable, State {
             return UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil)
         }
     }
+    
+    struct SetUserIdAction: Action {
+        let userId: String
+        
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: state.traits)
+        }
+    }
+    
+    struct SetTraitsAction: Action {
+        let traits: JSON?
+        
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: traits)
+        }
+    }
+    
+    struct SetUserIdAndTraitsAction: Action {
+        let userId: String
+        let traits: JSON?
+        
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits)
+        }
+    }
+    
+    struct SetAnonymousIdAction: Action {
+        let anonymousId: String
+        
+        func reduce(state: UserInfo) -> UserInfo {
+            return UserInfo(anonymousId: anonymousId, userId: state.userId, traits: state.traits)
+        }
+    }
 }
 
 

@@ -16,14 +16,18 @@ protocol EdgeFunctionMiddleware {
 
 public class Analytics {
     internal var configuration: Configuration
-    internal let timeline = Timeline()
+    internal var store: Store
+    internal var timeline: Timeline
+
     private var built = false
 
-/// Enabled/disables debug logging to trace your data going through the SDK.
-public var debugLogsEnabled = false
+    /// Enabled/disables debug logging to trace your data going through the SDK.
+    public var debugLogsEnabled = false
     
     init(writeKey: String) {
-        configuration = Configuration(writeKey: writeKey)
+        self.configuration = Configuration(writeKey: writeKey)
+        self.store = Store()
+        self.timeline = Timeline(store: store)
     }
     
     func build() -> Analytics {
@@ -31,7 +35,11 @@ public var debugLogsEnabled = false
             assertionFailure("Analytics.build() can only be called once!")
         }
         built = true
-        timeline.store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
+        
+        // provide our default state
+        store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
+        store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
+
         return self
     }
 }

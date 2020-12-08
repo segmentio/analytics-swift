@@ -8,19 +8,33 @@
 import Foundation
 import Sovran
 
-class Timeline {
-    internal let extensions: [ExtensionType: Mediator]
-    internal let store = Store()
+internal class Timeline {
+    let extensions: [ExtensionType: Mediator]
+    let store: Store
     
-    init() {
-        extensions = [
+    init(store: Store) {
+        self.store = store
+        self.extensions = [
             .before: Mediator(),
             .sourceEnrichment: Mediator(),
             .destinationEnrichment: Mediator(),
             .destination: Mediator(),
             .after: Mediator()
         ]
-        
-        store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
     }
+    
+    func process<E: Codable>(event: E) {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        
+        do {
+            let json = try encoder.encode(event)
+            if let printed = String(data: json, encoding: .utf8) {
+                print(printed)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
 }
