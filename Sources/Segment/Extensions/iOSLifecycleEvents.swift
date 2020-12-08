@@ -10,13 +10,16 @@ import Foundation
 import UIKit
 
 class iOSLifeCycleEvents: Extension {
-    var type: ExtensionType
+    let type: ExtensionType
+    let name: String
+    
     var analytics: Analytics? = nil
     
     private var application: UIApplication
 
-    required init(type: ExtensionType) {
+    required init(type: ExtensionType, name: String) {
         self.type = .before
+        self.name = name
         application = UIApplication.shared
         
         setupListeners()

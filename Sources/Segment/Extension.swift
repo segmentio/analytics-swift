@@ -17,9 +17,10 @@ enum ExtensionType: Int {
 
 protocol Extension {
     var type: ExtensionType { get }
+    var name: String { get }
     var analytics: Analytics? { get set }
     
-    init(type: ExtensionType)
+    init(type: ExtensionType, name: String)
     
     /*
     func track(event: Event) -> Event
