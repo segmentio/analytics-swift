@@ -11,7 +11,7 @@ import UIKit
 
 class iOSLifeCycleEvents: Extension {
     var type: ExtensionType
-    var analytics: Analytics
+    var analytics: Analytics? = nil
     
     private var application: UIApplication
 
@@ -30,7 +30,7 @@ class iOSLifeCycleEvents: Extension {
     func applicationDidFinishLaunching(notification: Notification) {
         // ... deconstruct it ...
         
-        analytics.extensions.apply { (ext) in
+        analytics?.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillEnterForeground(application: application)
             }

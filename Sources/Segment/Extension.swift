@@ -17,7 +17,7 @@ enum ExtensionType: Int {
 
 protocol Extension {
     var type: ExtensionType { get }
-    var analytics: Analytics { get set }
+    var analytics: Analytics? { get set }
     
     init(type: ExtensionType)
     

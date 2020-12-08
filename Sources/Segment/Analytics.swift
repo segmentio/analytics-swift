@@ -8,7 +8,7 @@
 import Foundation
 import Sovran
 
-protocol EdgeFunctionMiddleware {
+public protocol EdgeFunctionMiddleware {
     // This is a stub
 }
 
@@ -23,6 +23,8 @@ public class Analytics {
 
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
+    
+    public let extensions = Extensions()
     
     init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
@@ -47,8 +49,17 @@ public class Analytics {
 // MARK: System Modifiers
 
 extension Analytics {
+    public struct Extensions {
+        func apply(_ closure: (Extension) -> Void) {
+            // timeline.applyToExtensions(closure)
+        }
+        
+        func add(_ extension: Extension) {
+            // timeline.add(extension: extension)
+        }
+    }
     
-    var enabled: Bool {
+    public var enabled: Bool {
         get {
             var result = !configuration.startDisabled
             if let system: System = timeline.store.currentState() {
@@ -61,33 +72,33 @@ extension Analytics {
         }
     }
     
-    func flush() {
+    public func flush() {
         // ...
     }
     
-    func reset() {
+    public func reset() {
         timeline.store.dispatch(action: UserInfo.ResetAction())
     }
     
-    func anonymousId() -> String {
+    public func anonymousId() -> String {
         // ??? not getAnonymousId
         return ""
     }
     
-    func deviceToken() -> String {
+    public func deviceToken() -> String {
         // ??? not getDeviceToken
         return ""
     }
     
-    func edgeFunction() -> EdgeFunctionMiddleware? {
+    public func edgeFunction() -> EdgeFunctionMiddleware? {
         return nil
     }
     
-    func version() -> String {
+    public func version() -> String {
         return Analytics.version()
     }
     
-    static func version() -> String {
+    public static func version() -> String {
         return __segment_version
     }
 }
