@@ -46,19 +46,27 @@ public class Analytics {
     }
 }
 
-// MARK: System Modifiers
-
+// MARK: Extension Handling
 extension Analytics {
     public struct Extensions {
         func apply(_ closure: (Extension) -> Void) {
             // timeline.applyToExtensions(closure)
         }
         
-        func add(_ extension: Extension) {
+        func add(_ extension: Extension) -> String {
             // timeline.add(extension: extension)
+            return `extension`.name
+        }
+        
+        func remove(_ extensionName: String) {
+            // remove extension by name
         }
     }
-    
+}
+
+// MARK: System Modifiers
+
+extension Analytics {
     public var enabled: Bool {
         get {
             var result = !configuration.startDisabled

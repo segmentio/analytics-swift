@@ -9,17 +9,11 @@ import Foundation
 #if os(iOS) || os(watchOS) || os(tvOS)
 import UIKit
 
-//protocol iOSLifeCycleCoordinator: ExtensionCoordinator {
-//    func didEnterBackgroundNotification()
-//}
 
-//extension iOSLifeCycleCoordinator {
-//    func didEnterBackgroundNotification() { }
-//}
-
-class iOSLifeCycleEvents: Extension  {
+class iOSLifeCycleEvents: Extension {
+    let type: ExtensionType
+    let name: String
     
-    var type: ExtensionType
     var analytics: Analytics? = nil
     
     private var application: UIApplication
@@ -35,8 +29,9 @@ class iOSLifeCycleEvents: Extension  {
     
     
 
-    required init(type: ExtensionType) {
+    required init(type: ExtensionType, name: String) {
         self.type = type // needs to be before
+        self.name = name
         application = UIApplication.shared
         
         setupListeners()
