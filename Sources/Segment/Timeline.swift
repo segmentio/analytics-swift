@@ -38,3 +38,38 @@ internal class Timeline {
     }
     
 }
+
+// MARK: - Extension Support
+
+extension Timeline {
+    func applyToExtensions(_ closure: (Extension) -> Void) {
+        for type in ExtensionType.allCases {
+            if let mediator = extensions[type] {
+                mediator.extensions.forEach { (extension) in
+                    closure(`extension`)
+                }
+            }
+        }
+    }
+    
+    func add(extension: Extension) {
+        if let mediator = extensions[`extension`.type] {
+            mediator.add(extension: `extension`)
+        }
+    }
+    
+    func remove(extensionName: String) {
+        // remove all extensions with this name in every category
+        for type in ExtensionType.allCases {
+            if let mediator = extensions[type] {
+                let toRemove = mediator.extensions.filter { (extension) -> Bool in
+                    return `extension`.name == extensionName
+                }
+                toRemove.forEach { (extension) in
+                    mediator.remove(extensionName: extensionName)
+                }
+            }
+        }
+    }
+
+}

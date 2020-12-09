@@ -47,6 +47,7 @@ public class Analytics {
 }
 
 // MARK: Extension Handling
+
 extension Analytics {
     public struct Extensions {
         func apply(_ closure: (Extension) -> Void) {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ExtensionType: Int {
+enum ExtensionType: Int, CaseIterable {
     case before
     case sourceEnrichment
     case destinationEnrichment
@@ -15,7 +15,7 @@ enum ExtensionType: Int {
     case after
 }
 
-protocol Extension {
+protocol Extension: AnyObject {
     var type: ExtensionType { get }
     var name: String { get }
     var analytics: Analytics? { get set }

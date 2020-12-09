@@ -7,17 +7,19 @@
 
 import Foundation
 
-class Mediator {
-    internal var extensions = [Extension]()
+internal class Mediator {
+    var extensions = [Extension]()
     init() {
         
     }
     
     func add(extension: Extension) {
-        
+        extensions.append(`extension`)
     }
     
-    func remove(extension: Extension) {
-        
+    func remove(extensionName: String) {
+        extensions.removeAll { (extension) -> Bool in
+            return `extension`.name == extensionName
+        }
     }
 }
