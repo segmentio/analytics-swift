@@ -26,30 +26,30 @@ public protocol RawEvent: Codable {
     var integrations: JSON? { get set }
 }
 
-struct TrackEvent: RawEvent {
-    var anonymousId: String? = nil
-    var messageId: String? = nil
-    var timestamp: String? = nil
-    var context: JSON? = nil
-    var integrations: JSON? = nil
+public struct TrackEvent: RawEvent {
+    public var anonymousId: String? = nil
+    public var messageId: String? = nil
+    public var timestamp: String? = nil
+    public var context: JSON? = nil
+    public var integrations: JSON? = nil
     
-    let properties: JSON?
+    public let properties: JSON?
     
-    init(properties: JSON?) {
+    public init(properties: JSON?) {
         self.properties = properties
     }
     
 }
 
-struct IdentifyEvent: RawEvent {
-    var anonymousId: String? = nil
-    var messageId: String? = nil
-    var timestamp: String? = nil
-    var context: JSON? = nil
-    var integrations: JSON? = nil
+public struct IdentifyEvent: RawEvent {
+    public var anonymousId: String? = nil
+    public var messageId: String? = nil
+    public var timestamp: String? = nil
+    public var context: JSON? = nil
+    public var integrations: JSON? = nil
     
-    let userId: String?
-    let traits: JSON?
+    public let userId: String?
+    public let traits: JSON?
     
     init(userId: String? = nil, traits: JSON? = nil) {
         self.userId = userId
@@ -58,7 +58,17 @@ struct IdentifyEvent: RawEvent {
 }
 
 extension RawEvent {
-    func applyRawEventData(store: Store) -> Self {
+    internal mutating func applyRawEventData(event: RawEvent?) {
+        if let e = event {
+            anonymousId = e.anonymousId
+            messageId = e.messageId
+            timestamp = e.timestamp
+            context = e.context
+            integrations = e.integrations
+        }
+    }
+
+    internal func applyRawEventData(store: Store) -> Self {
         var result: Self = self
         
         guard let system: System = store.currentState() else { return self }

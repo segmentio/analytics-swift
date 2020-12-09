@@ -10,10 +10,9 @@ import Sovran
 
 internal class Timeline {
     let extensions: [ExtensionType: Mediator]
-    let store: Store
+    var analytics: Analytics? = nil
     
-    init(store: Store) {
-        self.store = store
+    init() {
         self.extensions = [
             .before: Mediator(),
             .sourceEnrichment: Mediator(),
@@ -23,12 +22,42 @@ internal class Timeline {
         ]
     }
     
-    func process<E: Codable>(event: E) {
+    func process<E: RawEvent>(event: E) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
+
+        // get mediators
+        let beforeMediator = extensions[.before]
+        let sourceEnrichmentMediator = extensions[.sourceEnrichment]
+        let destinationEnrichmentMediator = extensions[.destinationEnrichment]
+        let destinationMediator = extensions[.destination]
+        let afterMediator = extensions[.after]
         
+        var nextEvent: E? = event
+        
+        if let e = nextEvent {
+            nextEvent = beforeMediator?.execute(event: e)
+        }
+        
+        if let e = nextEvent {
+            nextEvent = sourceEnrichmentMediator?.execute(event: e)
+        }
+        
+        if let e = nextEvent {
+            nextEvent = destinationEnrichmentMediator?.execute(event: e)
+        }
+        
+        if let e = nextEvent {
+            nextEvent = destinationMediator?.execute(event: e)
+        }
+        
+        if let e = nextEvent {
+            nextEvent = afterMediator?.execute(event: e)
+        }
+
+        //
         do {
-            let json = try encoder.encode(event)
+            let json = try encoder.encode(nextEvent)
             if let printed = String(data: json, encoding: .utf8) {
                 print(printed)
             }

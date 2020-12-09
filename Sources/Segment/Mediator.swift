@@ -13,6 +13,31 @@ internal class Mediator {
         
     }
     
+    func execute<T: RawEvent>(event: T) -> T? {
+        var result: T? = event
+        
+        extensions.forEach { (extension) in
+            if let eventExt = `extension` as? EventExtension {
+                switch result {
+                case let r as IdentifyEvent:
+                    result = eventExt.identify(event: r) as? T
+                default:
+                    print("something is screwed up")
+                    break
+                }
+                /*
+                if let r = result as? IdentifyEvent {
+                    result = eventExt.identify(event: r) as? T
+                }*/
+            }
+        }
+        
+        // reapply any raw data that may have been lost.
+        result?.applyRawEventData(event: event)
+        
+        return result
+    }
+    
     func add(extension: Extension) {
         extensions.append(`extension`)
     }

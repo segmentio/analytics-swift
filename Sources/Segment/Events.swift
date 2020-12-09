@@ -32,7 +32,7 @@ extension Analytics {
     func identify<T: Codable>(traits: T) {
         do {
             let jsonTraits = try JSON(traits)
-            timeline.store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
+            store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
             let event = IdentifyEvent(traits: jsonTraits).applyRawEventData(store: store)
             timeline.process(event: event)
         } catch {

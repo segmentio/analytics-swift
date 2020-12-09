@@ -24,12 +24,13 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    public let extensions = Extensions()
+    public let extensions: Extensions
     
     init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
-        self.timeline = Timeline(store: store)
+        self.timeline = Timeline()
+        self.extensions = Extensions(timeline: timeline)
     }
     
     func build() -> Analytics {
@@ -37,6 +38,8 @@ public class Analytics {
             assertionFailure("Analytics.build() can only be called once!")
         }
         built = true
+        
+        timeline.analytics = self
         
         // provide our default state
         store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
@@ -50,17 +53,20 @@ public class Analytics {
 
 extension Analytics {
     public struct Extensions {
+        let timeline: Timeline
+        
         func apply(_ closure: (Extension) -> Void) {
-            // timeline.applyToExtensions(closure)
+            timeline.applyToExtensions(closure)
         }
         
+        @discardableResult
         func add(_ extension: Extension) -> String {
-            // timeline.add(extension: extension)
+            timeline.add(extension: `extension`)
             return `extension`.name
         }
         
         func remove(_ extensionName: String) {
-            // remove extension by name
+            timeline.remove(extensionName: extensionName)
         }
     }
 }
@@ -71,13 +77,13 @@ extension Analytics {
     public var enabled: Bool {
         get {
             var result = !configuration.startDisabled
-            if let system: System = timeline.store.currentState() {
+            if let system: System = store.currentState() {
                 result = system.enabled
             }
             return result
         }
         set(value) {
-            timeline.store.dispatch(action: System.EnabledAction(enabled: value))
+            store.dispatch(action: System.EnabledAction(enabled: value))
         }
     }
     
@@ -86,7 +92,7 @@ extension Analytics {
     }
     
     public func reset() {
-        timeline.store.dispatch(action: UserInfo.ResetAction())
+        store.dispatch(action: UserInfo.ResetAction())
     }
     
     public func anonymousId() -> String {
