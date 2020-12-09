@@ -23,7 +23,7 @@ extension Analytics {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: jsonTraits))
             let event = IdentifyEvent(userId: userId, traits: jsonTraits).applyRawEventData(store: store)
-            timeline.process(event: event)
+            timeline.process(incomingEvent: event)
         } catch {
             assertionFailure("\(error)")
         }
@@ -34,7 +34,7 @@ extension Analytics {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
             let event = IdentifyEvent(traits: jsonTraits).applyRawEventData(store: store)
-            timeline.process(event: event)
+            timeline.process(incomingEvent: event)
         } catch {
             assertionFailure("\(error)")
         }
@@ -42,7 +42,7 @@ extension Analytics {
     
     func identify(userId: String) {
         let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
-        timeline.process(event: event)
+        timeline.process(incomingEvent: event)
     }
     
     // MARK: - Screen

@@ -22,50 +22,41 @@ internal class Timeline {
         ]
     }
     
-    func process<E: RawEvent>(event: E) {
+    func process<E: RawEvent>(incomingEvent: E) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
 
-        // get mediators
-        let beforeMediator = extensions[.before]
-        let sourceEnrichmentMediator = extensions[.sourceEnrichment]
-        let destinationEnrichmentMediator = extensions[.destinationEnrichment]
-        let destinationMediator = extensions[.destination]
-        let afterMediator = extensions[.after]
-        
-        var nextEvent: E? = event
-        
-        if let e = nextEvent {
-            nextEvent = beforeMediator?.execute(event: e)
-        }
-        
-        if let e = nextEvent {
-            nextEvent = sourceEnrichmentMediator?.execute(event: e)
-        }
-        
-        if let e = nextEvent {
-            nextEvent = destinationEnrichmentMediator?.execute(event: e)
-        }
-        
-        if let e = nextEvent {
-            nextEvent = destinationMediator?.execute(event: e)
-        }
-        
-        if let e = nextEvent {
-            nextEvent = afterMediator?.execute(event: e)
-        }
+        var event: E? = incomingEvent
 
-        //
-        do {
-            let json = try encoder.encode(nextEvent)
-            if let printed = String(data: json, encoding: .utf8) {
-                print(printed)
+        event = applyExtensions(type: .before, event: event)
+        event = applyExtensions(type: .sourceEnrichment, event: event)
+        event = applyExtensions(type: .destinationEnrichment, event: event)
+        event = applyExtensions(type: .destination, event: event)
+        event = applyExtensions(type: .after, event: event)
+
+        if event == nil {
+            print("event dropped.")
+        } else {
+            //
+            do {
+                let json = try encoder.encode(event)
+                if let printed = String(data: json, encoding: .utf8) {
+                    print(printed)
+                }
+            } catch {
+                print(error)
             }
-        } catch {
-            print(error)
         }
     }
     
+    func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
+        var result: E? = event
+        let mediator = extensions[type]
+        if let e = event {
+            result = mediator?.execute(event: e)
+        }
+        return result
+    }
 }
 
 // MARK: - Extension Support

@@ -16,11 +16,11 @@ class MyExtension: EventExtension {
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        let newEvent = IdentifyEvent(userId: "goober", traits: event.traits)
-        return newEvent
+        //let newEvent = IdentifyEvent(userId: "goober", traits: event.traits)
+        //return newEvent
         
         // this is busted atm.
-        //return nil
+        return nil
     }
 }
 
