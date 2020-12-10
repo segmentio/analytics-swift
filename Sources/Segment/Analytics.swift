@@ -8,10 +8,6 @@
 import Foundation
 import Sovran
 
-public protocol EdgeFunctionMiddleware {
-    // This is a stub
-}
-
 // MARK: - Base Setup
 
 public class Analytics {
@@ -49,28 +45,6 @@ public class Analytics {
     }
 }
 
-// MARK: Extension Handling
-
-extension Analytics {
-    public struct Extensions {
-        let timeline: Timeline
-        
-        func apply(_ closure: (Extension) -> Void) {
-            timeline.applyToExtensions(closure)
-        }
-        
-        @discardableResult
-        func add(_ extension: Extension) -> String {
-            timeline.add(extension: `extension`)
-            return `extension`.name
-        }
-        
-        func remove(_ extensionName: String) {
-            timeline.remove(extensionName: extensionName)
-        }
-    }
-}
-
 // MARK: System Modifiers
 
 extension Analytics {
@@ -105,7 +79,7 @@ extension Analytics {
         return ""
     }
     
-    public func edgeFunction() -> EdgeFunctionMiddleware? {
+    public func edgeFunction() -> Any? {
         return nil
     }
     
@@ -115,49 +89,5 @@ extension Analytics {
     
     public static func version() -> String {
         return __segment_version
-    }
-}
-
-// Lifecycle passthru methods
-extension Analytics {
-    func receivedRemoteNotification(userInfo: Dictionary<String, Codable>) {
-        // ...
-    }
-    
-    func failedToRegisterForRemoteNotificationsWithError(error: Error) {
-        // ...
-    }
-    
-    func registeredForRemoteNotificationsWithDeviceToken(deviceToken: Data) {
-        // ...
-    }
-    
-    // Deprecated in iOS 10 -- look at UserNotifications Framework
-    func handleActionWithIdentifier(identifier: String, remoteNotification: Dictionary<String, Codable>) {
-        // ...
-        // Possibly pass as [UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]
-    }
-    
-    func continueUserActivity(activity: NSUserActivity) {
-        // ...
-    }
-    
-    func openURL(url: NSURL, options: Dictionary<String, Any>) {
-        // ...
-    }
-}
-
-// MARK: - Deprecations from previous lib
-
-extension Analytics {
-    // NOTE: these have been replaced by a property
-    @available(*, deprecated)
-    func enable() {
-        
-    }
-    
-    @available(*, deprecated)
-    func disable() {
-        
     }
 }

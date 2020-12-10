@@ -9,9 +9,8 @@ import Foundation
 
 public typealias AdvertisingIdCallback = () -> String?
 
-//protocol SegmentApplication: UIApplication {
-//    
-//}
+
+// MARK: - Internal Configuration
 
 internal struct Configuration {
     var writeKey: String
@@ -25,6 +24,9 @@ internal struct Configuration {
     var maxQueueSize: Int = 1000
     var application: Any? = nil
 }
+
+
+// MARK: - Analytics Configuration
 
 public extension Analytics {
     @discardableResult
@@ -77,17 +79,3 @@ public extension Analytics {
 
 }
 
-// Deprecated
-extension Configuration {
-    
-//    class UIBackgroundTaskIdentifier { }
-//    func seg_beginBackgroundTaskWithName(taskName: String?, expirationHandler: () -> (Void)) -> UIBackgroundTaskIdentifier {
-//        return UIBackgroundTaskIdentifier()
-//    }
-//
-//    func seg_endBackgroundTask(identifier: UIBackgroundTaskIdentifier) {
-//        // ...
-//    }
-    
-    
-}

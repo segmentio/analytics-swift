@@ -8,6 +8,7 @@
 import Foundation
 import Sovran
 
+
 // MARK: - Event Parameter Types
 
 typealias Integrations = Codable
@@ -57,6 +58,9 @@ public struct IdentifyEvent: RawEvent {
     }
 }
 
+
+// MARK: - RawEvent data helpers
+
 extension RawEvent {
     internal mutating func applyRawEventData(event: RawEvent?) {
         if let e = event {
@@ -83,37 +87,3 @@ extension RawEvent {
         return result
     }
 }
-
-// MARK: - Event Extensions
-/*
-internal protocol StoreAccess {
-    var store: Store { get set }
-}
-
-extension Event {
-    var anonymousId: String {
-        return "1234"
-    }
-    
-    var messageId: String {
-        return "1234"
-    }
-    var timestamp: String {
-        return "12/12/2020"
-    }
-    
-    var userId: String? {
-        return "brandon"
-    }
-    var context: JSON? {
-        return nil
-    }
-    var integrations: JSON? {
-        return nil
-    }
-}
-*/
-// MARK: - Unspecified Objects
-
-struct NoTraits: Codable {}
-struct NoProperties: Codable {}

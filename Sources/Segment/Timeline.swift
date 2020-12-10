@@ -8,6 +8,7 @@
 import Foundation
 import Sovran
 
+
 internal class Timeline {
     let extensions: [ExtensionType: Mediator]
     var analytics: Analytics? = nil
@@ -61,6 +62,7 @@ internal class Timeline {
         return result
     }
 }
+
 
 // MARK: - Extension Support
 

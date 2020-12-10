@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 // MARK: - JSON Definition
 
 public enum JSON: Equatable {
@@ -64,6 +65,7 @@ public enum JSON: Equatable {
         }
     }
 }
+
 
 // MARK: - Codable conformance
 

@@ -7,6 +7,9 @@
 
 import Foundation
 
+
+// MARK: - iOS Platform Lifecycle
+
 #if os(iOS)
 import UIKit
 
@@ -22,3 +25,34 @@ protocol iOSLifecycle {
     func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
 }
 #endif
+
+
+// MARK: - Analytics Lifecycle passthru methods
+
+extension Analytics {
+    func receivedRemoteNotification(userInfo: Dictionary<String, Codable>) {
+        // ...
+    }
+    
+    func failedToRegisterForRemoteNotificationsWithError(error: Error) {
+        // ...
+    }
+    
+    func registeredForRemoteNotificationsWithDeviceToken(deviceToken: Data) {
+        // ...
+    }
+    
+    // Deprecated in iOS 10 -- look at UserNotifications Framework
+    func handleActionWithIdentifier(identifier: String, remoteNotification: Dictionary<String, Codable>) {
+        // ...
+        // Possibly pass as [UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]
+    }
+    
+    func continueUserActivity(activity: NSUserActivity) {
+        // ...
+    }
+    
+    func openURL(url: NSURL, options: Dictionary<String, Any>) {
+        // ...
+    }
+}

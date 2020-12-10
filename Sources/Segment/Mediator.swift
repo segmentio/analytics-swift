@@ -25,10 +25,6 @@ internal class Mediator {
                     print("something is screwed up")
                     break
                 }
-                /*
-                if let r = result as? IdentifyEvent {
-                    result = eventExt.identify(event: r) as? T
-                }*/
             }
         }
         

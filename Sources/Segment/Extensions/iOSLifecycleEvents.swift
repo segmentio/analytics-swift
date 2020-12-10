@@ -5,10 +5,10 @@
 //  Created by Cody Garvin on 12/4/20.
 //
 
-import Foundation
 #if os(iOS) || os(watchOS) || os(tvOS)
-import UIKit
 
+import Foundation
+import UIKit
 
 class iOSLifeCycleEvents: Extension {
     let type: ExtensionType

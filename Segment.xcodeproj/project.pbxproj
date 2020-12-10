@@ -30,13 +30,13 @@
 		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
 		A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16502576C47400C9CDDF /* JSONTests.swift */; };
 		A31A16B225781CB400C9CDDF /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16A425780E8D00C9CDDF /* JSON.swift */; };
-		A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16C225794BEF00C9CDDF /* Extension.swift */; };
+		A31A16CA25794D9700C9CDDF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16C225794BEF00C9CDDF /* Extensions.swift */; };
 		A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16BD25794BC300C9CDDF /* Mediator.swift */; };
 		A31A16E12579779600C9CDDF /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16D9257976FB00C9CDDF /* Version.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
-		A3AEE136257EB010002386EB /* AssociatedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE135257EB010002386EB /* AssociatedObject.swift */; };
 		A3AEE14A2580208E002386EB /* iso8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1492580208E002386EB /* iso8601.swift */; };
 		A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE15525802FB8002386EB /* Lifecycle.swift */; };
+		A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1872581A8F1002386EB /* Deprecations.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
 		OBJ_31 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* XCTestManifests.swift */; };
@@ -100,12 +100,12 @@
 		A31A16502576C47400C9CDDF /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
 		A31A16A425780E8D00C9CDDF /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
 		A31A16BD25794BC300C9CDDF /* Mediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mediator.swift; sourceTree = "<group>"; };
-		A31A16C225794BEF00C9CDDF /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		A31A16C225794BEF00C9CDDF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A31A16D9257976FB00C9CDDF /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
-		A3AEE135257EB010002386EB /* AssociatedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssociatedObject.swift; sourceTree = "<group>"; };
 		A3AEE1492580208E002386EB /* iso8601.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iso8601.swift; sourceTree = "<group>"; };
 		A3AEE15525802FB8002386EB /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
+		A3AEE1872581A8F1002386EB /* Deprecations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecations.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -172,7 +172,6 @@
 			isa = PBXGroup;
 			children = (
 				A31A16A425780E8D00C9CDDF /* JSON.swift */,
-				A3AEE135257EB010002386EB /* AssociatedObject.swift */,
 				A3AEE1492580208E002386EB /* iso8601.swift */,
 			);
 			path = Utilities;
@@ -235,13 +234,14 @@
 				OBJ_9 /* Analytics.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
 				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
-				A31A16C225794BEF00C9CDDF /* Extension.swift */,
+				A31A16C225794BEF00C9CDDF /* Extensions.swift */,
 				A3471FBD256487F000965480 /* Configuration.swift */,
 				A31A16252576B6F200C9CDDF /* Timeline.swift */,
 				A31A16332576B7AF00C9CDDF /* Types.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
 				A31A16D9257976FB00C9CDDF /* Version.swift */,
 				A3AEE15525802FB8002386EB /* Lifecycle.swift */,
+				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
 			);
 			name = Segment;
 			path = Sources/Segment;
@@ -361,13 +361,13 @@
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
-				A3AEE136257EB010002386EB /* AssociatedObject.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
-				A31A16CA25794D9700C9CDDF /* Extension.swift in Sources */,
+				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
+				A31A16CA25794D9700C9CDDF /* Extensions.swift in Sources */,
 				96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,6 +1,6 @@
 //
-//  Extension.swift
-//  Segment-Tests
+//  Extensions.swift
+//  Segment
 //
 //  Created by Brandon Sneed on 12/3/20.
 //
@@ -48,5 +48,27 @@ extension Extension {
 extension EventExtension {
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         return event
+    }
+}
+
+// MARK: Analytics Extension Handling
+
+extension Analytics {
+    public struct Extensions {
+        let timeline: Timeline
+        
+        func apply(_ closure: (Extension) -> Void) {
+            timeline.applyToExtensions(closure)
+        }
+        
+        @discardableResult
+        func add(_ extension: Extension) -> String {
+            timeline.add(extension: `extension`)
+            return `extension`.name
+        }
+        
+        func remove(_ extensionName: String) {
+            timeline.remove(extensionName: extensionName)
+        }
     }
 }
