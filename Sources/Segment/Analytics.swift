@@ -41,7 +41,7 @@ public class Analytics {
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
-        extensions.timeline.process(incomingEvent: incomingEvent)
+        _ = extensions.timeline.process(incomingEvent: incomingEvent)
     }
 }
 

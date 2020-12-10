@@ -21,14 +21,15 @@ internal class Timeline {
         ]
     }
     
-    internal func process<E: RawEvent>(incomingEvent: E) {
+    internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         var event: E? = incomingEvent
 
         event = applyExtensions(type: .before, event: event)
         event = applyExtensions(type: .enrichment, event: event)
-        event = applyExtensions(type: .destination, event: event)
+        _ = applyExtensions(type: .destination, event: event)
         event = applyExtensions(type: .after, event: event)
 
+        print("System: ")
         if event == nil {
             print("event dropped.")
         } else {
@@ -45,11 +46,19 @@ internal class Timeline {
                 print(error)
             }
         }
+        
+        return event
     }
     
     internal func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
         var result: E? = event
         let mediator = extensions[type]
+        result = applyExtensions(mediator: mediator, event: event)
+        return result
+    }
+    
+    internal func applyExtensions<E: RawEvent>(mediator: Mediator?, event: E?) -> E? {
+        var result: E? = event
         if let e = event {
             result = mediator?.execute(event: e)
         }

@@ -37,7 +37,7 @@ public protocol Extension: AnyObject {
     var name: String { get }
     var analytics: Analytics? { get set }
     
-    init(type: ExtensionType, name: String)
+    init(name: String)
     func execute()
 }
 
@@ -73,15 +73,40 @@ extension EventExtension {
 }
 
 extension DestinationExtension {
-    internal func process<E: RawEvent>(incomingEvent: E) {
-        extensions.apply { (extension) in
-            if `extension`.type == .destination {
-                assertionFailure("Extensions of type .destination cannot be added to destinations!")
+    internal func process<E: RawEvent>(incomingEvent: E) -> E? {
+        var event: E? = incomingEvent
+
+        event = extensions.timeline.applyExtensions(type: .before, event: event)
+        event = extensions.timeline.applyExtensions(type: .enrichment, event: event)
+        
+        switch event {
+        case let r as IdentifyEvent:
+            event = identify(event: r) as? E
+        default:
+            print("something is screwed up")
+            break
+        }
+        
+        event = extensions.timeline.applyExtensions(type: .after, event: event)
+
+        print("Destination (\(name)):")
+        if event == nil {
+            print("event dropped.")
+        } else {
+            //
+            do {
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted
+
+                let json = try encoder.encode(event)
+                if let printed = String(data: json, encoding: .utf8) {
+                    print(printed)
+                }
+            } catch {
+                print(error)
             }
         }
-        // now we're gonna set ourselves as a destination extension and everything
-        // will work like it normally would at a higher level.
-        extensions.add(self)
-        extensions.timeline.process(incomingEvent: incomingEvent)
+        
+        return event
     }
 }

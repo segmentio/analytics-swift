@@ -29,8 +29,8 @@ class iOSLifeCycleEvents: Extension {
     
     
 
-    required init(type: ExtensionType, name: String) {
-        self.type = type // needs to be before
+    required init(name: String) {
+        self.type = .before
         self.name = name
         application = UIApplication.shared
         
