@@ -74,23 +74,22 @@ extension EventExtension {
 
 extension DestinationExtension {
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
-        var event: E? = incomingEvent
-
-        event = extensions.timeline.applyExtensions(type: .before, event: event)
-        event = extensions.timeline.applyExtensions(type: .enrichment, event: event)
+        let beforeResult = extensions.timeline.applyExtensions(type: .before, event: incomingEvent)
+        let enrichmentResult = extensions.timeline.applyExtensions(type: .enrichment, event: beforeResult)
         
-        switch event {
-        case let r as IdentifyEvent:
-            event = identify(event: r) as? E
+        var destinationResult: E? = nil
+        switch enrichmentResult {
+        case let e as IdentifyEvent:
+            destinationResult = identify(event: e) as? E
         default:
             print("something is screwed up")
             break
         }
         
-        event = extensions.timeline.applyExtensions(type: .after, event: event)
+        let afterResult = extensions.timeline.applyExtensions(type: .after, event: destinationResult)
 
         print("Destination (\(name)):")
-        if event == nil {
+        if afterResult == nil {
             print("event dropped.")
         } else {
             //
@@ -98,7 +97,7 @@ extension DestinationExtension {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
 
-                let json = try encoder.encode(event)
+                let json = try encoder.encode(afterResult)
                 if let printed = String(data: json, encoding: .utf8) {
                     print(printed)
                 }
@@ -107,6 +106,6 @@ extension DestinationExtension {
             }
         }
         
-        return event
+        return afterResult
     }
 }

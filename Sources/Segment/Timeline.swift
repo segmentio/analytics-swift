@@ -22,15 +22,18 @@ internal class Timeline {
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
-        var event: E? = incomingEvent
-
-        event = applyExtensions(type: .before, event: event)
-        event = applyExtensions(type: .enrichment, event: event)
-        _ = applyExtensions(type: .destination, event: event)
-        event = applyExtensions(type: .after, event: event)
+        let beforeResult = applyExtensions(type: .before, event: incomingEvent)
+        let enrichmentResult = applyExtensions(type: .enrichment, event: beforeResult)
+        
+        // once the event enters a destination, we don't want
+        // to know about changes that happen there
+        _ = applyExtensions(type: .destination, event: enrichmentResult)
+        
+        
+        let afterResult = applyExtensions(type: .after, event: enrichmentResult)
 
         print("System: ")
-        if event == nil {
+        if afterResult == nil {
             print("event dropped.")
         } else {
             //
@@ -38,7 +41,7 @@ internal class Timeline {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
 
-                let json = try encoder.encode(event)
+                let json = try encoder.encode(afterResult)
                 if let printed = String(data: json, encoding: .utf8) {
                     print(printed)
                 }
@@ -47,7 +50,7 @@ internal class Timeline {
             }
         }
         
-        return event
+        return afterResult
     }
     
     internal func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
