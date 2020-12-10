@@ -30,8 +30,11 @@ internal class Timeline {
 
         event = applyExtensions(type: .before, event: event)
         event = applyExtensions(type: .sourceEnrichment, event: event)
+        
+        // TODO: these two are executing incorrectly
         event = applyExtensions(type: .destinationEnrichment, event: event)
         event = applyExtensions(type: .destination, event: event)
+        
         event = applyExtensions(type: .after, event: event)
 
         if event == nil {
