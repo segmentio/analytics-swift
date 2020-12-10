@@ -34,12 +34,16 @@ public struct TrackEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     
-    public let properties: JSON?
+    public var properties: JSON?
     
     public init(properties: JSON?) {
         self.properties = properties
     }
     
+    public init(existing: TrackEvent) {
+        self.properties = existing.properties
+        applyRawEventData(event: existing)
+    }
 }
 
 public struct IdentifyEvent: RawEvent {
@@ -49,12 +53,17 @@ public struct IdentifyEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     
-    public let userId: String?
-    public let traits: JSON?
+    public var userId: String?
+    public var traits: JSON?
     
-    init(userId: String? = nil, traits: JSON? = nil) {
+    public init(userId: String? = nil, traits: JSON? = nil) {
         self.userId = userId
         self.traits = traits
+    }
+    
+    public init(existing: IdentifyEvent) {
+        self.init(userId: existing.userId, traits: existing.traits)
+        applyRawEventData(event: existing)
     }
 }
 
@@ -62,7 +71,7 @@ public struct IdentifyEvent: RawEvent {
 // MARK: - RawEvent data helpers
 
 extension RawEvent {
-    internal mutating func applyRawEventData(event: RawEvent?) {
+    public mutating func applyRawEventData(event: RawEvent?) {
         if let e = event {
             anonymousId = e.anonymousId
             messageId = e.messageId

@@ -10,32 +10,23 @@ import Sovran
 
 
 internal class Timeline {
-    let extensions: [ExtensionType: Mediator]
-    var analytics: Analytics? = nil
+    internal let extensions: [ExtensionType: Mediator]
     
-    init() {
+    internal init() {
         self.extensions = [
             .before: Mediator(),
-            .sourceEnrichment: Mediator(),
-            .destinationEnrichment: Mediator(),
+            .enrichment: Mediator(),
             .destination: Mediator(),
             .after: Mediator()
         ]
     }
     
-    func process<E: RawEvent>(incomingEvent: E) {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-
+    internal func process<E: RawEvent>(incomingEvent: E) {
         var event: E? = incomingEvent
 
         event = applyExtensions(type: .before, event: event)
-        event = applyExtensions(type: .sourceEnrichment, event: event)
-        
-        // TODO: these two are executing incorrectly
-        event = applyExtensions(type: .destinationEnrichment, event: event)
+        event = applyExtensions(type: .enrichment, event: event)
         event = applyExtensions(type: .destination, event: event)
-        
         event = applyExtensions(type: .after, event: event)
 
         if event == nil {
@@ -43,6 +34,9 @@ internal class Timeline {
         } else {
             //
             do {
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted
+
                 let json = try encoder.encode(event)
                 if let printed = String(data: json, encoding: .utf8) {
                     print(printed)
@@ -53,7 +47,7 @@ internal class Timeline {
         }
     }
     
-    func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
+    internal func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
         var result: E? = event
         let mediator = extensions[type]
         if let e = event {
@@ -67,7 +61,7 @@ internal class Timeline {
 // MARK: - Extension Support
 
 extension Timeline {
-    func applyToExtensions(_ closure: (Extension) -> Void) {
+    public func applyToExtensions(_ closure: (Extension) -> Void) {
         for type in ExtensionType.allCases {
             if let mediator = extensions[type] {
                 mediator.extensions.forEach { (extension) in
@@ -77,13 +71,13 @@ extension Timeline {
         }
     }
     
-    func add(extension: Extension) {
+    internal func add(extension: Extension) {
         if let mediator = extensions[`extension`.type] {
             mediator.add(extension: `extension`)
         }
     }
     
-    func remove(extensionName: String) {
+    internal func remove(extensionName: String) {
         // remove all extensions with this name in every category
         for type in ExtensionType.allCases {
             if let mediator = extensions[type] {

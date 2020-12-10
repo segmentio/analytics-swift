@@ -8,12 +8,18 @@
 import Foundation
 
 internal class Mediator {
-    var extensions = [Extension]()
-    init() {
-        
+    internal func add(extension: Extension) {
+        extensions.append(`extension`)
     }
     
-    func execute<T: RawEvent>(event: T) -> T? {
+    internal func remove(extensionName: String) {
+        extensions.removeAll { (extension) -> Bool in
+            return `extension`.name == extensionName
+        }
+    }
+
+    internal var extensions = [Extension]()
+    internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
         
         extensions.forEach { (extension) in
@@ -32,15 +38,5 @@ internal class Mediator {
         result?.applyRawEventData(event: event)
         
         return result
-    }
-    
-    func add(extension: Extension) {
-        extensions.append(`extension`)
-    }
-    
-    func remove(extensionName: String) {
-        extensions.removeAll { (extension) -> Bool in
-            return `extension`.name == extensionName
-        }
     }
 }

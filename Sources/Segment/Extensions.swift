@@ -7,10 +7,27 @@
 
 import Foundation
 
+public struct Extensions {
+    internal let timeline = Timeline()
+    
+    public func apply(_ closure: (Extension) -> Void) {
+        timeline.applyToExtensions(closure)
+    }
+    
+    @discardableResult
+    public func add(_ extension: Extension) -> String {
+        timeline.add(extension: `extension`)
+        return `extension`.name
+    }
+    
+    public func remove(_ extensionName: String) {
+        timeline.remove(extensionName: extensionName)
+    }
+}
+
 public enum ExtensionType: Int, CaseIterable {
     case before
-    case sourceEnrichment
-    case destinationEnrichment
+    case enrichment
     case destination
     case after
 }
@@ -36,6 +53,10 @@ public protocol EventExtension: Extension {
     func screen(event: Event) -> Event*/
 }
 
+public protocol DestinationExtension: EventExtension {
+    var extensions: Extensions { get set }
+}
+
 
 // MARK: - Extension Default Implementations
 
@@ -51,24 +72,16 @@ extension EventExtension {
     }
 }
 
-// MARK: Analytics Extension Handling
-
-extension Analytics {
-    public struct Extensions {
-        let timeline: Timeline
-        
-        func apply(_ closure: (Extension) -> Void) {
-            timeline.applyToExtensions(closure)
+extension DestinationExtension {
+    internal func process<E: RawEvent>(incomingEvent: E) {
+        extensions.apply { (extension) in
+            if `extension`.type == .destination {
+                assertionFailure("Extensions of type .destination cannot be added to destinations!")
+            }
         }
-        
-        @discardableResult
-        func add(_ extension: Extension) -> String {
-            timeline.add(extension: `extension`)
-            return `extension`.name
-        }
-        
-        func remove(_ extensionName: String) {
-            timeline.remove(extensionName: extensionName)
-        }
+        // now we're gonna set ourselves as a destination extension and everything
+        // will work like it normally would at a higher level.
+        extensions.add(self)
+        extensions.timeline.process(incomingEvent: incomingEvent)
     }
 }

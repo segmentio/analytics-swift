@@ -16,7 +16,8 @@ class MyExtension: EventExtension {
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        let newEvent = IdentifyEvent(userId: "goober", traits: event.traits)
+        var newEvent = IdentifyEvent(existing: event)
+        newEvent.userId = "goober"
         return newEvent
         //return nil
     }

@@ -13,7 +13,6 @@ import Sovran
 public class Analytics {
     internal var configuration: Configuration
     internal var store: Store
-    internal var timeline: Timeline
 
     private var built = false
 
@@ -25,8 +24,7 @@ public class Analytics {
     init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
-        self.timeline = Timeline()
-        self.extensions = Extensions(timeline: timeline)
+        self.extensions = Extensions()
     }
     
     func build() -> Analytics {
@@ -35,13 +33,15 @@ public class Analytics {
         }
         built = true
         
-        timeline.analytics = self
-        
         // provide our default state
         store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
         store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
 
         return self
+    }
+    
+    internal func process<E: RawEvent>(incomingEvent: E) {
+        extensions.timeline.process(incomingEvent: incomingEvent)
     }
 }
 
