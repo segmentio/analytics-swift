@@ -72,4 +72,30 @@ final class Segment_Tests: XCTestCase {
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
     }
+    
+    class LoggerMock: Logger {
+        var closure: ((LogType, String) -> Void)?
+        
+        override func log(type: LogType, message: String) {
+            closure?(type, message)
+        }
+    }
+    
+    func testLogging() {
+        
+        let analytics = Analytics(writeKey: "test").build()
+        
+        let expectation = XCTestExpectation(description: "Called")
+        
+        let mockLogger = LoggerMock(name: "Blah")
+        mockLogger.closure = { (type, message) in
+            expectation.fulfill()
+            
+            XCTAssertEqual(type, .info, "Type not correctly passed")
+            XCTAssertEqual(message, "Something Other Than Awesome", "Message not correctly passed")
+        }
+        analytics.extensions.add(mockLogger)
+        analytics.log(message: "Something Other Than Awesome")
+        wait(for: [expectation], timeout: 1.0)
+    }
 }

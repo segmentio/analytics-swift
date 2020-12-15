@@ -9,6 +9,7 @@ import Foundation
 
 public struct Extensions {
     internal let timeline = Timeline()
+    internal var analytics: Analytics? = nil
     
     public func apply(_ closure: (Extension) -> Void) {
         timeline.applyToExtensions(closure)
@@ -16,6 +17,7 @@ public struct Extensions {
     
     @discardableResult
     public func add(_ extension: Extension) -> String {
+        `extension`.analytics = analytics
         timeline.add(extension: `extension`)
         return `extension`.name
     }
@@ -30,6 +32,8 @@ public enum ExtensionType: Int, CaseIterable {
     case enrichment
     case destination
     case after
+    case sequential
+    case none
 }
 
 public protocol Extension: AnyObject {

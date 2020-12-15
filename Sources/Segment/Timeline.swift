@@ -17,7 +17,8 @@ internal class Timeline {
             .before: Mediator(),
             .enrichment: Mediator(),
             .destination: Mediator(),
-            .after: Mediator()
+            .after: Mediator(),
+            .none: Mediator()
         ]
     }
     

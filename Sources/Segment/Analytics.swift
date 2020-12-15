@@ -19,7 +19,7 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    public let extensions: Extensions
+    public var extensions: Extensions
     
     init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
@@ -31,6 +31,7 @@ public class Analytics {
         if (built) {
             assertionFailure("Analytics.build() can only be called once!")
         }
+        extensions.analytics = self
         built = true
         
         // provide our default state
