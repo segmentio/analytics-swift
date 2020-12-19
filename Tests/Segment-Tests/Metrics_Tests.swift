@@ -1,7 +1,16 @@
+//
+//  Metrics_Tests.swift
+//  Segment-Tests
+//
+//  Created by Cody Garvin on 12/18/20.
+//
+
+import Foundation
 import XCTest
 @testable import Segment
 
-final class Segment_Tests: XCTestCase {
+
+final class Metrics_Tests: XCTestCase {
     
     func testBaseEventCreation() {
         let analytics = Analytics(writeKey: "test").build()
@@ -15,7 +24,7 @@ final class Segment_Tests: XCTestCase {
         analytics.identify(userId: "brandon", traits: traits)
     }
     
-    // MARK: - Helpers
+    // MARK: - Helper Classes
     struct MyTraits: Codable {
         let email: String?
     }
@@ -31,8 +40,15 @@ final class Segment_Tests: XCTestCase {
         }
         
         func identify(event: IdentifyEvent) -> IdentifyEvent? {
+            let beginningTime = Date()
             var newEvent = IdentifyEvent(existing: event)
             newEvent.userId = "goober"
+            sleep(3)
+            let endingTime = Date()
+            let finalTime = endingTime.timeIntervalSince(beginningTime)
+            
+            newEvent.addMetric(.gauge, name: "Gauge Test", value: finalTime, tags: ["timing", "function_length"], timestamp: Date())
+            
             return newEvent
             //return nil
         }
@@ -74,3 +90,5 @@ final class Segment_Tests: XCTestCase {
         }
     }
 }
+
+

@@ -29,3 +29,9 @@ internal extension Date {
         return __segment_isoDateFormatter.string(from: self)
     }
 }
+
+internal extension String {
+    func iso8601() -> Date? {
+        return __segment_isoDateFormatter.date(from: self)
+    }
+}

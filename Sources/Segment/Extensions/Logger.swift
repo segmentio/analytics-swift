@@ -28,21 +28,17 @@ class Logger: Extension {
         self.type = .none
     }
     
-    func execute() {
-        // none
-    }
-    
-    func log(type: LogType, message: String) {
+    func log(type: LogType, message: String, event: RawEvent?) {
         print("\(type) -- Message: \(message)")
-        let message = LogMessage(type: type, message: message)
+        let message = LogMessage(type: type, message: message, event: event)
         messages.append(message)
     }
     
     func flush() {
-        print("Flushing")
+        print("Flushing All Logs")
         for message in messages {
             if message.type.rawValue <= filterType.rawValue {
-                print(message.message)
+                print("[\(message.type)] \(message.message)")
             }
         }
         messages.removeAll()
@@ -52,6 +48,7 @@ class Logger: Extension {
 fileprivate struct LogMessage {
     let type: LogType
     let message: String
+    let event: RawEvent?
 }
 
 extension Analytics {
@@ -60,16 +57,26 @@ extension Analytics {
     /// will use the current default setting (.info).
     /// - Parameters:
     ///   - message: The message to be stored in the logging system.
-    ///   - type: The filter type for the message
-    func log(message: String, type: LogType? = nil) {
-        self.extensions.timeline.applyToExtensions { (potentialLogger) in
+    ///   - event: The event associated with the log (optional).
+    ///   - type: The filter type for the message. If nil, defaults to logger setting.
+    func log(message: String, event: RawEvent? = nil, type: LogType? = nil) {
+        self.extensions.apply { (potentialLogger) in
+            
             if let logger = potentialLogger as? Logger {
                 
                 var loggingType = logger.filterType
                 if let type = type {
                     loggingType = type
                 }
-                logger.log(type: loggingType, message: message)
+                logger.log(type: loggingType, message: message, event: event)
+            }
+        }
+    }
+    
+    func logFlush() {
+        self.extensions.apply { (potentialLogger) in
+            if let logger = potentialLogger as? Logger {
+                logger.flush()
             }
         }
     }

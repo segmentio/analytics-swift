@@ -32,7 +32,6 @@ public enum ExtensionType: Int, CaseIterable {
     case enrichment
     case destination
     case after
-    case sequential
     case none
 }
 
@@ -42,7 +41,7 @@ public protocol Extension: AnyObject {
     var analytics: Analytics? { get set }
     
     init(name: String)
-    func execute()
+    func execute(event: RawEvent?, settings: Settings?)
 }
 
 public protocol EventExtension: Extension {
@@ -65,7 +64,7 @@ public protocol DestinationExtension: EventExtension {
 // MARK: - Extension Default Implementations
 
 extension Extension {
-    func execute() {
+    func execute(event: RawEvent? = nil, settings: Settings? = nil) {
         // do nothing by default, user must override.
     }
 }

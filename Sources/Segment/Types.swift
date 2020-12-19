@@ -25,6 +25,7 @@ public protocol RawEvent: Codable {
     
     var context: JSON? { get set }
     var integrations: JSON? { get set }
+    var metrics: [JSON]? { get set }
 }
 
 public struct TrackEvent: RawEvent {
@@ -33,6 +34,7 @@ public struct TrackEvent: RawEvent {
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
+    public var metrics: [JSON]? = nil
     
     public var properties: JSON?
     
@@ -52,6 +54,7 @@ public struct IdentifyEvent: RawEvent {
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
+    public var metrics: [JSON]? = nil
     
     public var userId: String?
     public var traits: JSON?
@@ -96,3 +99,4 @@ extension RawEvent {
         return result
     }
 }
+
