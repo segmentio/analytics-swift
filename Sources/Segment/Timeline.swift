@@ -98,6 +98,7 @@ extension Timeline {
                     return `extension`.name == extensionName
                 }
                 toRemove.forEach { (extension) in
+                    `extension`.shutdown()
                     mediator.remove(extensionName: extensionName)
                 }
             }

@@ -42,6 +42,7 @@ public protocol Extension: AnyObject {
     
     init(name: String)
     func execute(event: RawEvent?, settings: Settings?)
+    func shutdown()
 }
 
 public protocol EventExtension: Extension {
@@ -66,6 +67,10 @@ public protocol DestinationExtension: EventExtension {
 extension Extension {
     func execute(event: RawEvent? = nil, settings: Settings? = nil) {
         // do nothing by default, user must override.
+    }
+    
+    func shutdown() {
+        // do nothing by default, user can override.
     }
 }
 
