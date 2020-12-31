@@ -23,6 +23,7 @@ public struct Extensions {
     init(analytics: Analytics) {
         self.analytics = analytics
         self.httpClient = HTTPClient(analytics: analytics)
+        fetchSettings()
     }
     
     public func apply(_ closure: (Extension) -> Void) {
@@ -39,6 +40,14 @@ public struct Extensions {
     
     public func remove(_ extensionName: String) {
         timeline.remove(extensionName: extensionName)
+    }
+    
+    private func fetchSettings() {
+        guard let writeKey = analytics?.configuration.writeKey else { return }
+        
+        httpClient.settingsFor(write: writeKey) { (success, settings) in
+            print("Got to settings: \(settings)")
+        }
     }
 }
 
