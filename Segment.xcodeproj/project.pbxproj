@@ -25,6 +25,7 @@
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */; };
+		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
 		967C40DA258D472C008EB0B6 /* Logger_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40D9258D472C008EB0B6 /* Logger_Tests.swift */; };
 		967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */; };
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
@@ -101,6 +102,7 @@
 		9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		967C40D9258D472C008EB0B6 /* Logger_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger_Tests.swift; sourceTree = "<group>"; };
 		967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics_Tests.swift; sourceTree = "<group>"; };
+		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -246,17 +248,18 @@
 				9620864E257AA82900314F8D /* Extensions */,
 				A31A16A325780A8D00C9CDDF /* Utilities */,
 				OBJ_9 /* Analytics.swift */,
-				9620862B2575C0C800314F8D /* Events.swift */,
-				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
-				A31A16C225794BEF00C9CDDF /* Extensions.swift */,
 				A3471FBD256487F000965480 /* Configuration.swift */,
+				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
+				9620862B2575C0C800314F8D /* Events.swift */,
+				A31A16C225794BEF00C9CDDF /* Extensions.swift */,
+				967C40ED259A7311008EB0B6 /* HTTPClient.swift */,
+				A3AEE15525802FB8002386EB /* Lifecycle.swift */,
+				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
+				96C33AB0258961F500F3D538 /* Settings.swift */,
+				A31A162E2576B73F00C9CDDF /* State.swift */,
 				A31A16252576B6F200C9CDDF /* Timeline.swift */,
 				A31A16332576B7AF00C9CDDF /* Types.swift */,
-				A31A162E2576B73F00C9CDDF /* State.swift */,
 				A31A16D9257976FB00C9CDDF /* Version.swift */,
-				A3AEE15525802FB8002386EB /* Lifecycle.swift */,
-				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
-				96C33AB0258961F500F3D538 /* Settings.swift */,
 			);
 			name = Segment;
 			path = Sources/Segment;
@@ -384,6 +387,7 @@
 				96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
+				966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Extensions.swift in Sources */,
 				96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */,
 				96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */,
@@ -436,9 +440,10 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MARKETING_VERSION = 5.0.0;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -464,9 +469,10 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MARKETING_VERSION = 5.0.0;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";

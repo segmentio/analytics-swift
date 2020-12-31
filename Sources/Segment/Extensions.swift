@@ -9,7 +9,21 @@ import Foundation
 
 public struct Extensions {
     internal let timeline = Timeline()
-    internal var analytics: Analytics? = nil
+    internal let httpClient: HTTPClient
+    internal weak var analytics: Analytics? = nil {
+        // Make sure to update all the extensions if the analytics instance
+        // is set after an extension is added.
+        didSet {
+            timeline.applyToExtensions { (extensionToUpdate) in
+                extensionToUpdate.analytics = analytics
+            }
+        }
+    }
+    
+    init(analytics: Analytics) {
+        self.analytics = analytics
+        self.httpClient = HTTPClient(analytics: analytics)
+    }
     
     public func apply(_ closure: (Extension) -> Void) {
         timeline.applyToExtensions(closure)
@@ -18,6 +32,7 @@ public struct Extensions {
     @discardableResult
     public func add(_ extension: Extension) -> String {
         `extension`.analytics = analytics
+        `extension`.httpClient = httpClient
         timeline.add(extension: `extension`)
         return `extension`.name
     }
@@ -39,6 +54,7 @@ public protocol Extension: AnyObject {
     var type: ExtensionType { get }
     var name: String { get }
     var analytics: Analytics? { get set }
+    var httpClient: HTTPClient? { get set }
     
     init(name: String)
     func execute(event: RawEvent?, settings: Settings?)
@@ -65,6 +81,11 @@ public protocol DestinationExtension: EventExtension {
 // MARK: - Extension Default Implementations
 
 extension Extension {
+    var httpClient: HTTPClient? {
+        get { return nil }
+        set { }
+    }
+    
     func execute(event: RawEvent? = nil, settings: Settings? = nil) {
         // do nothing by default, user must override.
     }

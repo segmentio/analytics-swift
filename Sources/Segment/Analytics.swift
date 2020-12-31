@@ -19,19 +19,22 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    public var extensions: Extensions
+    private var _extensions: Extensions!
+    public var extensions: Extensions {
+        return _extensions
+    }
     
     init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
-        self.extensions = Extensions()
+        self._extensions = Extensions(analytics: self)
     }
     
     func build() -> Analytics {
         if (built) {
             assertionFailure("Analytics.build() can only be called once!")
         }
-        extensions.analytics = self
+//        extensions.analytics = self
         built = true
         
         // provide our default state
@@ -89,6 +92,11 @@ extension Analytics {
     }
     
     public static func version() -> String {
-        return __segment_version
+        let currentBundle = Bundle(for: Analytics.self)
+        if let appVersion = currentBundle.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return appVersion
+        } else {
+            return __segment_version
+        }
     }
 }
