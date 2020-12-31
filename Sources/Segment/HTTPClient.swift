@@ -117,7 +117,7 @@ public class HTTPClient {
             return
         }
         
-        settingsURL = settingsURL.appendingPathComponent("/projects/\(settingsKey)/settings")
+        settingsURL = settingsURL.appendingPathComponent("/projects/\(key)/settings")
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "GET"
 

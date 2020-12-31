@@ -24,13 +24,13 @@ public class Analytics {
         return _extensions
     }
     
-    init(writeKey: String) {
+    public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
         self._extensions = Extensions(analytics: self)
     }
     
-    func build() -> Analytics {
+    public func build() -> Analytics {
         if (built) {
             assertionFailure("Analytics.build() can only be called once!")
         }
