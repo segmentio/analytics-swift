@@ -76,6 +76,30 @@ public extension Analytics {
         configuration.maxQueueSize = eventCount
         return self
     }
+    
+    private func defaultSettings() -> RawSettings {
+        
+        let defaultSettingsString =
+"""
+{
+    "integrations": {
+        "Segment.io": {
+            "apiKey": "\(configuration.writeKey)",
+            "apiHost": "\(HTTPClient.getAPIHost())"
+        }
+    },
+    "plan": {
+        "track": {}
+    }
+}
+"""
+        if let settings = try? JSONEncoder().encode(defaultSettingsString) {
+            
+        }
+            
+        // TODO: Convert default settings to RawSettings
+        return RawSettings()
+    }
 
 }
 

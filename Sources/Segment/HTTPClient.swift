@@ -162,6 +162,11 @@ public class HTTPClient {
 }
 
 extension HTTPClient {
+
+    fileprivate static var hostKey: String {
+        "segment_apihost"
+    }
+
     static func authorizationHeaderForWriteKey(_ key: String) -> String {
         
         var returnHeader: String = ""
@@ -173,9 +178,38 @@ extension HTTPClient {
         
         return returnHeader
     }
+    
+    internal static func saveAPIHost(_ host: String) {
+        
+        var updatedHost = host
+        if host.isEmpty {
+            return
+        }
+        if !host.contains("https://") {
+            // strip out a potential http://
+            updatedHost = host.replacingOccurrences(of: "http://", with: "")
+            updatedHost.append("https://")
+        }
+        UserDefaults.standard.setValue(updatedHost, forKey: hostKey)
+    }
+    
+    internal static func getAPIHost() -> String {
+        
+        var returnResult: String
+        let defaults = UserDefaults.standard
+        let result = defaults.string(forKey: hostKey)
+        
+        if let result = result {
+            returnResult = result
+        } else {
+            returnResult = segmentAPIBaseHost
+        }
+        return returnResult
+    }
 }
 
 extension HTTPClient {
+    
     private func configuredSession(for writeKey: String) throws -> URLSession {
         
         if !writeKeySessions.keys.contains(writeKey) {

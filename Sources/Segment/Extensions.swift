@@ -43,10 +43,19 @@ public struct Extensions {
     }
     
     private func fetchSettings() {
+        
+        // TODO: Grab the previous cached settings
+        
         guard let writeKey = analytics?.configuration.writeKey else { return }
         
         httpClient.settingsFor(write: writeKey) { (success, settings) in
+            if success {
+                // TODO: Overwrite cached settings
+            } else {
+                // TODO: Get default settings to work from
+            }
             print("Got to settings: \(settings)")
+            // TODO: Cache the settings
         }
     }
 }
