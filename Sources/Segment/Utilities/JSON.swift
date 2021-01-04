@@ -109,6 +109,24 @@ extension JSON: Codable {
     }
 }
 
+extension Encodable {
+    internal func printPretty() -> String {
+        var returnString = ""
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+
+            let json = try encoder.encode(self)
+            if let printed = String(data: json, encoding: .utf8) {
+                returnString = printed
+            }
+        } catch {
+            returnString = error.localizedDescription
+        }
+        return returnString
+    }
+}
+
 fileprivate extension NSNumber {
     static let trueValue = NSNumber(value: true)
     static let trueObjCType = trueValue.objCType

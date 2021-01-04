@@ -14,7 +14,7 @@ class iOSLifeCycleEvents: Extension {
     let type: ExtensionType
     let name: String
     
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     private var application: UIApplication
     private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,
@@ -35,7 +35,6 @@ class iOSLifeCycleEvents: Extension {
         application = UIApplication.shared
         
         setupListeners()
-
     }
     
     @objc

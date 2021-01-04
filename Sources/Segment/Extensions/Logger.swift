@@ -19,7 +19,7 @@ class Logger: Extension {
     
     var type: ExtensionType
     var name: String
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     private var messages = [LogMessage]()
     
