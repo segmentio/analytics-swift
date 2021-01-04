@@ -10,11 +10,13 @@ import Foundation
 extension Analytics {
     
     // MARK: - Track
+    
     func track<P: Properties, I: Integrations>(name: String, properties: P? = nil, integrations: I? = nil) {
         // ...
     }
     
     // MARK: - Identify
+    
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
@@ -46,6 +48,7 @@ extension Analytics {
     }
     
     // MARK: - Screen
+    
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
@@ -53,12 +56,16 @@ extension Analytics {
         // ...
     }
 
+    // MARK: - Group
+    
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
     func group<T: Codable>(groupId: String, traits: T? = nil) {
         // ...
     }
+    
+    // MARK: - Alias
     
     func alias(newId: String) {
         // ...

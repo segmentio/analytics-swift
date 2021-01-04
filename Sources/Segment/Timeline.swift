@@ -23,16 +23,20 @@ internal class Timeline {
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
+        // apply .before and .enrichment types first ...
         let beforeResult = applyExtensions(type: .before, event: incomingEvent)
+        // .enrichment here is akin to source middleware in the old analytics-ios.
         let enrichmentResult = applyExtensions(type: .enrichment, event: beforeResult)
         
         // once the event enters a destination, we don't want
-        // to know about changes that happen there
+        // to know about changes that happen there. those changes
+        // are to only be received by the destination.
         _ = applyExtensions(type: .destination, event: enrichmentResult)
         
-        
+        // apply .after extensions ...
         let afterResult = applyExtensions(type: .after, event: enrichmentResult)
 
+        // DEBUG
         print("System: ")
         if afterResult == nil {
             print("event dropped.")
@@ -50,21 +54,16 @@ internal class Timeline {
                 print(error)
             }
         }
+        // DEBUG
         
         return afterResult
     }
     
+    // helper method used by DestinationExtensions and Timeline
     internal func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
         var result: E? = event
-        let mediator = extensions[type]
-        result = applyExtensions(mediator: mediator, event: event)
-        return result
-    }
-    
-    internal func applyExtensions<E: RawEvent>(mediator: Mediator?, event: E?) -> E? {
-        var result: E? = event
-        if let e = event {
-            result = mediator?.execute(event: e)
+        if let mediator = extensions[type], let e = event {
+            result = mediator.execute(event: e)
         }
         return result
     }
@@ -73,8 +72,12 @@ internal class Timeline {
 
 // MARK: - Extension Support
 
+/**
+ This suite of functions supplies core functionality back up to the public
+ `Extension` type.
+ */
 extension Timeline {
-    public func applyToExtensions(_ closure: (Extension) -> Void) {
+    internal func applyToExtensions(_ closure: (Extension) -> Void) {
         for type in ExtensionType.allCases {
             if let mediator = extensions[type] {
                 mediator.extensions.forEach { (extension) in

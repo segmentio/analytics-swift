@@ -23,6 +23,10 @@ internal class Mediator {
         var result: T? = event
         
         extensions.forEach { (extension) in
+            if let r = result {
+                result = execute(event: r)
+            }
+            /*
             if let destExt = `extension` as? DestinationExtension {
                 if let r = result {
                     result = destExt.process(incomingEvent: r)
@@ -35,11 +39,8 @@ internal class Mediator {
                     print("something is screwed up")
                     break
                 }
-            }
+            }*/
         }
-        
-        // reapply any raw data that may have been lost.
-        //result?.applyRawEventData(event: event)
         
         return result
     }

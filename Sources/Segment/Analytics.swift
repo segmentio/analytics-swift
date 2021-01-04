@@ -46,7 +46,7 @@ public class Analytics {
     }
 }
 
-// MARK: System Modifiers
+// MARK: - System Modifiers
 
 extension Analytics {
     public var enabled: Bool {
