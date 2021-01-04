@@ -20,6 +20,16 @@ struct RawSettings: Settings {
     
     var edgeFunctions: JSON?
     
+    init(writeKey: String, apiHost: String) {
+        // TODO: HACK MONSTER
+        integrations = try! JSON([
+            "Segment.io": [
+                "apiKey": writeKey,
+                "apiHost": apiHost
+            ]
+        ])
+    }
+    
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         integrations = try? values.decode(JSON.self, forKey: CodingKeys.integrations)
