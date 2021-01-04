@@ -20,7 +20,7 @@ extension Analytics {
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
-    func identify<T: Codable>(userId: String, traits: T) {
+    public func identify<T: Codable>(userId: String, traits: T) {
         do {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: jsonTraits))
@@ -31,7 +31,7 @@ extension Analytics {
         }
     }
     
-    func identify<T: Codable>(traits: T) {
+    public func identify<T: Codable>(traits: T) {
         do {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
@@ -42,7 +42,7 @@ extension Analytics {
         }
     }
     
-    func identify(userId: String) {
+    public func identify(userId: String) {
         let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
         process(incomingEvent: event)
     }

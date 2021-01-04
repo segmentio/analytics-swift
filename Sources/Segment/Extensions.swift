@@ -9,7 +9,22 @@ import Foundation
 
 public struct Extensions {
     internal let timeline = Timeline()
-    internal var analytics: Analytics? = nil
+    internal let httpClient: HTTPClient
+    internal weak var analytics: Analytics? = nil {
+        // Make sure to update all the extensions if the analytics instance
+        // is set after an extension is added.
+        didSet {
+            timeline.applyToExtensions { (extensionToUpdate) in
+                extensionToUpdate.analytics = analytics
+            }
+        }
+    }
+    
+    init(analytics: Analytics) {
+        self.analytics = analytics
+        self.httpClient = HTTPClient(analytics: analytics)
+        fetchSettings()
+    }
     
     /**
      Applies the supplied closure to the currently loaded set of extensions.
@@ -31,6 +46,7 @@ public struct Extensions {
     @discardableResult
     public func add(_ extension: Extension) -> String {
         `extension`.analytics = analytics
+        `extension`.httpClient = httpClient
         timeline.add(extension: `extension`)
         return `extension`.name
     }
@@ -42,6 +58,24 @@ public struct Extensions {
      */
     public func remove(_ extensionName: String) {
         timeline.remove(extensionName: extensionName)
+    }
+    
+    private func fetchSettings() {
+        
+        // TODO: Grab the previous cached settings
+        
+        guard let writeKey = analytics?.configuration.writeKey else { return }
+        
+        httpClient.settingsFor(write: writeKey) { (success, settings) in
+            if success {
+                // TODO: Overwrite cached settings
+            } else {
+                // TODO: Get default settings to work from
+            }
+            
+            print("Settings: \(settings.printPretty())")
+            // TODO: Cache the settings
+        }
     }
 }
 
@@ -65,9 +99,11 @@ public protocol Extension: AnyObject {
     var type: ExtensionType { get }
     var name: String { get }
     var analytics: Analytics? { get set }
+    var httpClient: HTTPClient? { get set }
     
     init(name: String)
     func execute(event: RawEvent?, settings: Settings?)
+    func shutdown()
 }
 
 public protocol EventExtension: Extension {
@@ -89,28 +125,20 @@ public protocol DestinationExtension: EventExtension {
 
 // MARK: - Extension Default Implementations
 
-/*extension Extension {
+extension Extension {
+    var httpClient: HTTPClient? {
+        get { return nil }
+        set { }
+    }
+    
     func execute(event: RawEvent? = nil, settings: Settings? = nil) {
         // do nothing by default, user must override.
     }
-}*/
-
-/*
- /*
- if let destExt = `extension` as? DestinationExtension {
-     if let r = result {
-         result = destExt.process(incomingEvent: r)
-     }
- } else if let eventExt = `extension` as? EventExtension {
-     switch result {
-     case let r as IdentifyEvent:
-         result = eventExt.identify(event: r) as? T
-     default:
-         print("something is screwed up")
-         break
-     }
- }*/
- */
+    
+    func shutdown() {
+        // do nothing by default, user can override.
+    }
+}
 
 extension EventExtension {
     /*func execute(event: RawEvent? = nil, settings: Settings? = nil) {

@@ -6,4 +6,4 @@
 //
 
 // Referred to by Analytics.swift
-internal let __segment_version = "1.0.0"
+internal let __segment_version = "5.0"

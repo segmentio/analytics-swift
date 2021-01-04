@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Settings: Decodable {
+public protocol Settings: Codable {
     var integrations: JSON? { get set }
     var plan: JSON? { get set }
     var edgeFunctions: JSON? { get set }
@@ -19,6 +19,16 @@ struct RawSettings: Settings {
     var plan: JSON?
     
     var edgeFunctions: JSON?
+    
+    init(writeKey: String, apiHost: String) {
+        // TODO: HACK MONSTER
+        integrations = try! JSON([
+            "Segment.io": [
+                "apiKey": writeKey,
+                "apiHost": apiHost
+            ]
+        ])
+    }
     
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
