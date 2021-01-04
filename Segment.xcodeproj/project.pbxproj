@@ -50,6 +50,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		46FE4C7025A39617003A7362 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = "Sovran::Sovran";
+			remoteInfo = Sovran;
+		};
 		9620861C256DC21B00314F8D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
@@ -276,6 +283,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				46FE4C7125A39617003A7362 /* PBXTargetDependency */,
 			);
 			name = Segment;
 			productName = Segment;
@@ -413,6 +421,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		46FE4C7125A39617003A7362 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Sovran;
+			targetProxy = 46FE4C7025A39617003A7362 /* PBXContainerItemProxy */;
+		};
 		OBJ_34 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Segment::Segment" /* Segment */;
