@@ -82,7 +82,7 @@ final class Metrics_Tests: XCTestCase {
         required init(name: String) {
             self.name = name
             self.type = .destination
-            self.extensions = Extensions()
+            self.extensions = Extensions(analytics: self.analytics)
         }
         
         func identify(event: IdentifyEvent) -> IdentifyEvent? {

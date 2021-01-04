@@ -18,7 +18,7 @@ internal class Timeline {
             .enrichment: Mediator(),
             .destination: Mediator(),
             .after: Mediator(),
-            .none: Mediator()
+            .utility: Mediator()
         ]
     }
     
@@ -37,23 +37,7 @@ internal class Timeline {
         let afterResult = applyExtensions(type: .after, event: enrichmentResult)
 
         // DEBUG
-        print("System: ")
-        if afterResult == nil {
-            print("event dropped.")
-        } else {
-            //
-            do {
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-
-                let json = try encoder.encode(afterResult)
-                if let printed = String(data: json, encoding: .utf8) {
-                    print(printed)
-                }
-            } catch {
-                print(error)
-            }
-        }
+        print("System: \(afterResult?.printPretty() ?? "")")
         // DEBUG
         
         return afterResult

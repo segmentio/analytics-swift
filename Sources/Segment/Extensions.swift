@@ -92,7 +92,7 @@ public enum ExtensionType: Int, CaseIterable {
     /// Executed after all event processing is completed.  This can be used to perform cleanup operations, etc.
     case after
     /// Executed only when called manually, such as Logging.
-    case none
+    case utility
 }
 
 public protocol Extension: AnyObject {
@@ -102,7 +102,8 @@ public protocol Extension: AnyObject {
     var httpClient: HTTPClient? { get set }
     
     init(name: String)
-    func execute(event: RawEvent?, settings: Settings?)
+    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T?
+    //func execute(event: RawEvent?, settings: Settings?) -> RawEvent?
     func shutdown()
 }
 
@@ -122,6 +123,8 @@ public protocol DestinationExtension: EventExtension {
     var extensions: Extensions { get set }
 }
 
+public protocol UtilityExtension: EventExtension { }
+
 
 // MARK: - Extension Default Implementations
 
@@ -131,9 +134,9 @@ extension Extension {
         set { }
     }
     
-    func execute(event: RawEvent? = nil, settings: Settings? = nil) {
+    /*func execute(event: RawEvent? = nil, settings: Settings? = nil) {
         // do nothing by default, user must override.
-    }
+    }*/
     
     func shutdown() {
         // do nothing by default, user can override.
@@ -141,9 +144,17 @@ extension Extension {
 }
 
 extension EventExtension {
-    /*func execute(event: RawEvent? = nil, settings: Settings? = nil) {
-        // do nothing by default, user must override.
-    }*/
+    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+        var result: T? = event
+        switch result {
+        case let r as IdentifyEvent:
+            result = self.identify(event: r) as? T
+        default:
+            print("something is screwed up")
+            break
+        }
+        return result
+    }
 
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         return event
@@ -151,6 +162,14 @@ extension EventExtension {
 }
 
 extension DestinationExtension {
+    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+        var result: T? = event
+        if let r = result {
+            result = self.process(incomingEvent: r)
+        }
+        return result
+    }
+
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // This will process extensions (think destination middleware) that are tied
         // to this destination.
@@ -174,24 +193,16 @@ extension DestinationExtension {
         let afterResult = extensions.timeline.applyExtensions(type: .after, event: destinationResult)
 
         // DEBUG
-        print("Destination (\(name)):")
-        if afterResult == nil {
-            print("event dropped.")
-        } else {
-            do {
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-
-                let json = try encoder.encode(afterResult)
-                if let printed = String(data: json, encoding: .utf8) {
-                    print(printed)
-                }
-            } catch {
-                print(error)
-            }
-        }
+        print("Destination (\(name)): \(afterResult?.printPretty() ?? "")")
         // DEBUG
         
         return afterResult
+    }
+}
+
+extension UtilityExtension {
+    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+        // do nothing.
+        return event
     }
 }

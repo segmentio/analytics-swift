@@ -26,20 +26,6 @@ internal class Mediator {
             if let r = result {
                 result = execute(event: r)
             }
-            /*
-            if let destExt = `extension` as? DestinationExtension {
-                if let r = result {
-                    result = destExt.process(incomingEvent: r)
-                }
-            } else if let eventExt = `extension` as? EventExtension {
-                switch result {
-                case let r as IdentifyEvent:
-                    result = eventExt.identify(event: r) as? T
-                default:
-                    print("something is screwed up")
-                    break
-                }
-            }*/
         }
         
         return result

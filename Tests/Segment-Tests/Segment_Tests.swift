@@ -91,7 +91,6 @@ final class Segment_Tests: XCTestCase {
         required init(name: String) {
             self.name = name
             self.type = .destination
-            self.extensions = Extensions()
         }
         
         func identify(event: IdentifyEvent) -> IdentifyEvent? {

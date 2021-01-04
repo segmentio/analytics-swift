@@ -13,7 +13,7 @@ public enum LogType: Int {
     case info       // Verbose
 }
 
-class Logger: Extension {
+class Logger: UtilityExtension {
     
     public var filterType: LogType = .info
     
@@ -25,7 +25,7 @@ class Logger: Extension {
     
     required init(name: String) {
         self.name = name
-        self.type = .none
+        self.type = .utility
     }
     
     func log(type: LogType, message: String, event: RawEvent?) {
