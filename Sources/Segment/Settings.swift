@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol Settings: Decodable {
+public protocol Settings: Codable {
     var integrations: JSON? { get set }
     var plan: JSON? { get set }
     var edgeFunctions: JSON? { get set }

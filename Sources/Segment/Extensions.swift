@@ -54,7 +54,8 @@ public struct Extensions {
             } else {
                 // TODO: Get default settings to work from
             }
-            print("Got to settings: \(settings)")
+            
+            print("Settings: \(settings.printPretty())")
             // TODO: Cache the settings
         }
     }
