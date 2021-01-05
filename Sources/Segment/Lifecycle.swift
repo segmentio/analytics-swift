@@ -23,6 +23,7 @@ extension Analytics {
     }
 }
 
+// Users can call these methods as needed/desired.
 extension Analytics {
     func receivedRemoteNotification(userInfo: Dictionary<String, Codable>) {
         // ...
