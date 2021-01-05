@@ -10,7 +10,19 @@
 import Foundation
 import UIKit
 
-class iOSLifeCycleEvents: Extension {
+protocol iOSLifecycle {
+    func applicationDidEnterBackground(application: UIApplication)
+    func applicationWillEnterForeground(application: UIApplication)
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
+    func applicationDidBecomeActive(application: UIApplication)
+    func applicationWillResignActive(application: UIApplication)
+    func applicationDidReceiveMemoryWarning(application: UIApplication)
+    func applicationWillTerminate(application: UIApplication)
+    func applicationSignificantTimeChange(application: UIApplication)
+    func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
+}
+
+class iOSLifecycleEvents: Extension {
     let type: ExtensionType
     let name: String
     
@@ -35,6 +47,11 @@ class iOSLifeCycleEvents: Extension {
         application = UIApplication.shared
         
         setupListeners()
+    }
+    
+    convenience init(name: String, analytics: Analytics) {
+        self.init(name: name)
+        self.analytics = analytics
     }
     
     @objc

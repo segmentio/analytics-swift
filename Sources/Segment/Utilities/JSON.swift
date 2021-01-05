@@ -110,7 +110,7 @@ extension JSON: Codable {
 }
 
 extension Encodable {
-    internal func printPretty() -> String {
+    public func prettyPrint() -> String {
         var returnString = ""
         do {
             let encoder = JSONEncoder()

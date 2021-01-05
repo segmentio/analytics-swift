@@ -19,28 +19,39 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    private var _extensions: Extensions!
-    public var extensions: Extensions {
-        return _extensions
-    }
+    public var extensions: Extensions
     
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
-        self._extensions = Extensions(analytics: self)
+        self.extensions = Extensions()
     }
     
     public func build() -> Analytics {
         if (built) {
             assertionFailure("Analytics.build() can only be called once!")
         }
-//        extensions.analytics = self
+        
         built = true
         
         // provide our default state
-        store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil))
+        store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil))
         store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
+        
+        // add segment destination extension
+        // ...
+        
+        // setup lifecycle if desired
+        if self.configuration.trackApplicationLifecycleEvents {
+            setupLifecycleChecking(analytics: self)
+        }
+        
+        // other setup/config stuff.
+        // ...
 
+        // finally, kick off settings fetch
+        setupSettingsCheck()
+        
         return self
     }
     

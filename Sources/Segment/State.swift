@@ -16,6 +16,7 @@ struct System: State {
     let configuration: Configuration
     let context: JSON?
     let integrations: JSON?
+    let settings: Settings?
     
     struct EnabledAction: Action {
         var enabled: Bool
@@ -23,8 +24,23 @@ struct System: State {
             let result = System(enabled: enabled,
                                 configuration: state.configuration,
                                 context: state.context,
-                                integrations: state.integrations)
+                                integrations: state.integrations,
+                                settings: state.settings)
             return result
+        }
+    }
+    
+    struct UpdateSettings: Action {
+        let settings: Settings
+        
+        func reduce(state: System) -> System {
+            let result = System(enabled: state.enabled,
+                                configuration: state.configuration,
+                                context: state.context,
+                                integrations: state.integrations,
+                                settings: settings)
+            return result
+
         }
     }
 }

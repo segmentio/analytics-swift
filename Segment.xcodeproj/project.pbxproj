@@ -21,6 +21,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle.swift */; };
+		46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */; };
+		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
+		46FE4CA725A3F836003A7362 /* TestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CA625A3F836003A7362 /* TestExtensions.swift */; };
 		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
@@ -49,7 +53,6 @@
 		A31A16E12579779600C9CDDF /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16D9257976FB00C9CDDF /* Version.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
 		A3AEE14A2580208E002386EB /* iso8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1492580208E002386EB /* iso8601.swift */; };
-		A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE15525802FB8002386EB /* Lifecycle.swift */; };
 		A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1872581A8F1002386EB /* Deprecations.swift */; };
 		OBJ_23 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Analytics.swift */; };
 		OBJ_30 /* Segment_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Segment_Tests.swift */; };
@@ -129,6 +132,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		46FE4C9125A3EE90003A7362 /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
+		46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
+		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
+		46FE4CA625A3F836003A7362 /* TestExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestExtensions.swift; sourceTree = "<group>"; };
 		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -157,7 +164,6 @@
 		A31A16D9257976FB00C9CDDF /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		A3AEE1492580208E002386EB /* iso8601.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iso8601.swift; sourceTree = "<group>"; };
-		A3AEE15525802FB8002386EB /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
 		A3AEE1872581A8F1002386EB /* Deprecations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecations.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Segment_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
@@ -225,6 +231,9 @@
 			isa = PBXGroup;
 			children = (
 				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
+				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
+				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
+				46FE4C9125A3EE90003A7362 /* Lifecycle.swift */,
 				96C33A9B25880A5E00F3D538 /* Logger.swift */,
 				96C33AAB25892D6D00F3D538 /* Metrics.swift */,
 			);
@@ -235,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				966945E4259D717E00271339 /* AppDelegate.swift */,
+				46FE4CA625A3F836003A7362 /* TestExtensions.swift */,
 				966945E6259D717E00271339 /* SceneDelegate.swift */,
 				966945E8259D717E00271339 /* ViewController.swift */,
 				966945EA259D717E00271339 /* Main.storyboard */,
@@ -318,7 +328,6 @@
 				9620862B2575C0C800314F8D /* Events.swift */,
 				A31A16C225794BEF00C9CDDF /* Extensions.swift */,
 				967C40ED259A7311008EB0B6 /* HTTPClient.swift */,
-				A3AEE15525802FB8002386EB /* Lifecycle.swift */,
 				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
 				96C33AB0258961F500F3D538 /* Settings.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
@@ -483,6 +492,7 @@
 				966945E9259D717E00271339 /* ViewController.swift in Sources */,
 				966945E5259D717E00271339 /* AppDelegate.swift in Sources */,
 				966945E7259D717E00271339 /* SceneDelegate.swift in Sources */,
+				46FE4CA725A3F836003A7362 /* TestExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -494,14 +504,16 @@
 				A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
+				46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
+				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
-				A3AEE15625802FB8002386EB /* Lifecycle.swift in Sources */,
 				96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */,
+				46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
 				966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */,

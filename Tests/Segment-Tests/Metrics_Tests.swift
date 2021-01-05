@@ -32,7 +32,6 @@ final class Metrics_Tests: XCTestCase {
     class GooberExtension: EventExtension {
         let type: ExtensionType
         let name: String
-        var analytics: Analytics? = nil
         
         required init(name: String) {
             self.name = name
@@ -57,7 +56,6 @@ final class Metrics_Tests: XCTestCase {
     class ZiggyExtension: EventExtension {
         let type: ExtensionType
         let name: String
-        var analytics: Analytics? = nil
         
         required init(name: String) {
             self.name = name
@@ -77,12 +75,11 @@ final class Metrics_Tests: XCTestCase {
         
         let type: ExtensionType
         let name: String
-        var analytics: Analytics? = nil
         
         required init(name: String) {
             self.name = name
             self.type = .destination
-            self.extensions = Extensions(analytics: self.analytics)
+            self.extensions = Extensions()
         }
         
         func identify(event: IdentifyEvent) -> IdentifyEvent? {

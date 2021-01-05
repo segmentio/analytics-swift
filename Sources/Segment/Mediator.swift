@@ -24,7 +24,7 @@ internal class Mediator {
         
         extensions.forEach { (extension) in
             if let r = result {
-                result = execute(event: r)
+                result = `extension`.execute(event: r, settings: nil)
             }
         }
         

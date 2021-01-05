@@ -37,7 +37,7 @@ internal class Timeline {
         let afterResult = applyExtensions(type: .after, event: enrichmentResult)
 
         // DEBUG
-        print("System: \(afterResult?.printPretty() ?? "")")
+        print("System Results: \(afterResult?.prettyPrint() ?? "")")
         // DEBUG
         
         return afterResult

@@ -43,3 +43,48 @@ struct RawSettings: Settings {
         case edgeFunctions
     }
 }
+
+extension Analytics {
+    func checkSettings() {
+        let writeKey = self.configuration.writeKey
+        let httpClient = HTTPClient(analytics: self)
+        httpClient.settingsFor(write: writeKey) { (success, settings) in
+            if success {
+                // TODO: Overwrite cached settings
+            } else {
+                // TODO: Get default settings to work from
+            }
+            
+            if let s = settings {
+                print("Settings: \(s.prettyPrint())")
+            }
+            // TODO: Cache the settings
+        }
+    }
+}
+
+#if os(iOS) || os(watchOS) || os(tvOS)
+import UIKit
+extension Analytics {
+    internal func setupSettingsCheck() {
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
+            self.checkSettings()
+        }
+    }
+}
+#elseif os(macOS)
+import Cocoa
+extension Analytics {
+    internal func setupSettingsCheck() {
+        NotificationCenter.default.addObserver(forName: NSApplication.willBecomeActiveNotification, object: nil, queue: OperationQueue.main) { (notification) in
+            self.checkSettings()
+        }
+    }
+}
+#elseif os(Linux)
+extension Analytics {
+    internal func setupSettingsCheck() {
+        // TBD: we don't know what to do here.
+    }
+}
+#endif
