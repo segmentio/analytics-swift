@@ -233,7 +233,6 @@
 				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
 				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
 				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
-				46FE4C9125A3EE90003A7362 /* Lifecycle.swift */,
 				96C33A9B25880A5E00F3D538 /* Logger.swift */,
 				96C33AAB25892D6D00F3D538 /* Metrics.swift */,
 			);
@@ -327,6 +326,7 @@
 				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
 				A31A16C225794BEF00C9CDDF /* Extensions.swift */,
+				46FE4C9125A3EE90003A7362 /* Lifecycle.swift */,
 				967C40ED259A7311008EB0B6 /* HTTPClient.swift */,
 				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
 				96C33AB0258961F500F3D538 /* Settings.swift */,
