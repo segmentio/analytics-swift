@@ -86,6 +86,7 @@ public enum ExtensionType: Int, CaseIterable {
 public protocol Extension: AnyObject {
     var type: ExtensionType { get }
     var name: String { get }
+    var analytics: Analytics? { get set }
     
     init(name: String)
     func execute<T: RawEvent>(event: T?, settings: Settings?) -> T?
@@ -114,6 +115,11 @@ public protocol UtilityExtension: EventExtension { }
 // MARK: - Extension Default Implementations
 
 extension Extension {
+    var analytics: Analytics? {
+        get { return nil }
+        set {}
+    }
+    
     public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
         // do nothing.
         return event

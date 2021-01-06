@@ -38,16 +38,8 @@ public class Analytics {
         store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil))
         store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
         
-        // add segment destination extension
-        // ...
-        
-        // setup lifecycle if desired
-        if self.configuration.trackApplicationLifecycleEvents {
-            setupLifecycleChecking(analytics: self)
-        }
-        
-        // other setup/config stuff.
-        // ...
+        // Get everything hot and sweaty here
+        platformStartup()
 
         // finally, kick off settings fetch
         setupSettingsCheck()

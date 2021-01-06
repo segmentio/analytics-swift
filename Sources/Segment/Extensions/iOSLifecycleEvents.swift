@@ -26,7 +26,15 @@ class iOSLifecycleEvents: Extension {
     let type: ExtensionType
     let name: String
     
-    weak var analytics: Analytics? = nil
+    weak var _analytics: Analytics? = nil
+    var analytics: Analytics? {
+        get {
+            return _analytics
+        }
+        set {
+            _analytics = newValue
+        }
+    }
     
     private var application: UIApplication
     private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,
@@ -42,7 +50,7 @@ class iOSLifecycleEvents: Extension {
     
 
     required init(name: String) {
-        self.type = .before
+        self.type = .utility
         self.name = name
         application = UIApplication.shared
         

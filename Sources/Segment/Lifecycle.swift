@@ -7,22 +7,6 @@
 
 import Foundation
 
-extension Analytics {
-    internal func setupLifecycleChecking(analytics: Analytics) {
-        #if os(iOS) || os(watchOS) || os(tvOS)
-        let lifecycle = iOSLifecycleEvents(name: "Segment_iOSLifecycleExtension", analytics: self)
-        #endif
-        #if os(macOS)
-        let lifecycle = macOSLifecycleEvents(name: "Segment_macOSLifecycleExtension", analytics: self)
-        #endif
-        #if os(Linux)
-        let lifecycle = LinuxLifecycleEvents(name: "Segment_LinuxLifecycleExtension", analytics: self)
-        #endif
-        lifecycle.analytics = analytics
-        analytics.extensions.add(lifecycle)
-    }
-}
-
 // Users can call these methods as needed/desired.
 extension Analytics {
     func receivedRemoteNotification(userInfo: Dictionary<String, Codable>) {

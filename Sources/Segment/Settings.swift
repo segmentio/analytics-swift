@@ -62,29 +62,3 @@ extension Analytics {
         }
     }
 }
-
-#if os(iOS) || os(watchOS) || os(tvOS)
-import UIKit
-extension Analytics {
-    internal func setupSettingsCheck() {
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
-            self.checkSettings()
-        }
-    }
-}
-#elseif os(macOS)
-import Cocoa
-extension Analytics {
-    internal func setupSettingsCheck() {
-        NotificationCenter.default.addObserver(forName: NSApplication.willBecomeActiveNotification, object: nil, queue: OperationQueue.main) { (notification) in
-            self.checkSettings()
-        }
-    }
-}
-#elseif os(Linux)
-extension Analytics {
-    internal func setupSettingsCheck() {
-        // TBD: we don't know what to do here.
-    }
-}
-#endif
