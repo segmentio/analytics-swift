@@ -9,6 +9,8 @@ import Foundation
 import Segment
 
 class GooberExtension: EventExtension {
+    var analytics: Analytics?
+    
     let type: ExtensionType
     let name: String
     
@@ -26,6 +28,8 @@ class GooberExtension: EventExtension {
 }
 
 class ZiggyExtension: EventExtension {
+    var analytics: Analytics?
+    
     let type: ExtensionType
     let name: String
     var completion: (() -> Void)?
@@ -48,6 +52,8 @@ class ZiggyExtension: EventExtension {
 }
 
 class MyDestination: DestinationExtension {
+    var analytics: Analytics?
+    
     var extensions: Extensions
     let type: ExtensionType
     let name: String
@@ -64,6 +70,8 @@ class MyDestination: DestinationExtension {
 }
 
 class AfterExtension: Extension {
+    var analytics: Analytics?
+    
     var extensions: Extensions
     let type: ExtensionType
     let name: String

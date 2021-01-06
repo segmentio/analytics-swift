@@ -30,7 +30,7 @@ struct System: State {
         }
     }
     
-    struct UpdateSettings: Action {
+    struct UpdateSettingsAction: Action {
         let settings: Settings
         
         func reduce(state: System) -> System {
@@ -93,4 +93,22 @@ struct UserInfo: Codable, State {
     }
 }
 
+// MARK: - Default State Setup
 
+extension System {
+    static func defaultState(configuration: Configuration, from storage: Storage) -> System {
+        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil)
+    }
+}
+
+extension UserInfo {
+    static func defaultState(from storage: Storage) -> UserInfo {
+        let userId: String? = storage.read(.username)
+        let traits: JSON? = storage.read(.traits)
+        var anonymousId: String = UUID().uuidString
+        if let existingId: String = storage.read(.anonymousId) {
+            anonymousId = existingId
+        }
+        return UserInfo(anonymousId: anonymousId, userId: userId, traits: traits)
+    }
+}

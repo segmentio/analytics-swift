@@ -44,6 +44,7 @@ extension Analytics {
     
     public func identify(userId: String) {
         let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
+        store.dispatch(action: UserInfo.SetUserIdAction(userId: userId))
         process(incomingEvent: event)
     }
     

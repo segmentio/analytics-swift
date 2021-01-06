@@ -13,6 +13,7 @@ import Sovran
 public class Analytics {
     internal var configuration: Configuration
     internal var store: Store
+    internal var storage: Storage
 
     private var built = false
 
@@ -24,6 +25,7 @@ public class Analytics {
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
+        self.storage = Storage(store: self.store)
         self.extensions = Extensions()
     }
     
@@ -35,8 +37,8 @@ public class Analytics {
         built = true
         
         // provide our default state
-        store.provide(state: System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil))
-        store.provide(state: UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil))
+        store.provide(state: System.defaultState(configuration: configuration, from: storage))
+        store.provide(state: UserInfo.defaultState(from: storage))
         
         // Get everything hot and sweaty here
         platformStartup()

@@ -25,6 +25,7 @@
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
 		46FE4CA725A3F836003A7362 /* TestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CA625A3F836003A7362 /* TestExtensions.swift */; };
+		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
 		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
@@ -137,6 +138,7 @@
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
 		46FE4CA625A3F836003A7362 /* TestExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestExtensions.swift; sourceTree = "<group>"; };
+		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -261,6 +263,7 @@
 			children = (
 				A31A16A425780E8D00C9CDDF /* JSON.swift */,
 				A3AEE1492580208E002386EB /* iso8601.swift */,
+				46FE4CDF25A53FAD003A7362 /* Storage.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -504,6 +507,7 @@
 			buildActionMask = 0;
 			files = (
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
+				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
 				A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
