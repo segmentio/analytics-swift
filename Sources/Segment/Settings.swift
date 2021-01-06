@@ -50,15 +50,18 @@ extension Analytics {
         let httpClient = HTTPClient(analytics: self)
         httpClient.settingsFor(write: writeKey) { (success, settings) in
             if success {
-                // TODO: Overwrite cached settings
-            } else {
-                // TODO: Get default settings to work from
+                if let s = settings {
+                    // put the new settings in the state store.
+                    // this will cause them to be cached.
+                    self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
+                }
             }
+            
+            // NOTE: cached and default settings are handled by the state object
             
             if let s = settings {
                 print("Settings: \(s.prettyPrint())")
             }
-            // TODO: Cache the settings
         }
     }
 }

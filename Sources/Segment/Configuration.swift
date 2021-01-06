@@ -76,11 +76,5 @@ public extension Analytics {
         configuration.maxQueueSize = eventCount
         return self
     }
-    
-    private func defaultSettings() -> RawSettings {
-        return RawSettings(writeKey: configuration.writeKey,
-                           apiHost: HTTPClient.getAPIHost())
-    }
-
 }
 

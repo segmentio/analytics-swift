@@ -19,7 +19,7 @@ struct System: State {
     let settings: Settings?
     
     struct EnabledAction: Action {
-        var enabled: Bool
+        let enabled: Bool
         func reduce(state: System) -> System {
             let result = System(enabled: enabled,
                                 configuration: state.configuration,
@@ -97,6 +97,10 @@ struct UserInfo: Codable, State {
 
 extension System {
     static func defaultState(configuration: Configuration, from storage: Storage) -> System {
+        var settings: RawSettings? = storage.read(.settings)
+        if settings == nil {
+            settings = RawSettings(writeKey: configuration.writeKey, apiHost: HTTPClient.getAPIHost())
+        }
         return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil)
     }
 }

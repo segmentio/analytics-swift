@@ -37,7 +37,16 @@ extension Storage {
         case .events:
             break
         default:
-            userDefaults?.setValue(value, forKey: key.rawValue)
+            if isBasicType(value: value) {
+                // we can write it like normal
+                userDefaults?.setValue(value, forKey: key.rawValue)
+            } else {
+                // encode it to a data object to store
+                let encoder = PropertyListEncoder()
+                if let plistValue = try? encoder.encode(value) {
+                    userDefaults?.setValue(plistValue, forKey: key.rawValue)
+                }
+            }
         }
     }
     
@@ -47,19 +56,48 @@ extension Storage {
         case .events:
             break
         default:
-            result = userDefaults?.object(forKey: key.rawValue) as? T
+            let decoder = PropertyListDecoder()
+            let raw = userDefaults?.object(forKey: key.rawValue)
+            if let r = raw as? Data {
+                // it's an encoded object, not a basic type
+                result = try? decoder.decode(T.self, from: r)
+            } else {
+                // it's a basic type
+                result = userDefaults?.object(forKey: key.rawValue) as? T
+            }
         }
         return result
     }
     
-    func clear() {
+    func reset() {
         for key in Contants.allCases {
             userDefaults?.setValue(nil, forKey: key.rawValue)
         }
     }
+    
+    func isBasicType<T: Codable>(value: T?) -> Bool {
+        var result = false
+        if value == nil {
+            result = true
+        } else {
+            switch value {
+            case is NSNull:
+                fallthrough
+            case is Decimal:
+                fallthrough
+            case is NSNumber:
+                fallthrough
+            case is Bool:
+                fallthrough
+            case is String:
+                result = true
+            default:
+                break
+            }
+        }
+        return result
+    }
 }
-
-// MARK: - Pull stored state
 
 // MARK: - State Subscriptions
 
@@ -73,5 +111,8 @@ extension Storage {
     
     func systemUpdate(state: System) {
         // write new stuff to disk
+        if let s = state.settings as? RawSettings {
+            write(.settings, value: s)
+        }
     }
 }
