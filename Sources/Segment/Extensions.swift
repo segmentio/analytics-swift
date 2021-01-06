@@ -111,6 +111,11 @@ public protocol DestinationExtension: EventExtension {
 
 public protocol UtilityExtension: EventExtension { }
 
+// For internal platform-specific bits
+internal protocol PlatformExtension: Extension {
+    static var specificName: String { get set }
+}
+
 
 // MARK: - Extension Default Implementations
 

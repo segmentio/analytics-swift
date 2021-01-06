@@ -17,7 +17,7 @@ extension Analytics {
         // Setup platform specific extensions
         if let platformExtensions = platformExtensions() {
             for extensionType in platformExtensions {
-               let prebuilt = initializeExtension(from: extensionType, name: "blah")
+                let prebuilt = initializeExtension(from: extensionType, name: extensionType.specificName)
                 prebuilt.analytics = self
                 extensions.add(prebuilt)
             }
@@ -29,8 +29,8 @@ extension Analytics {
         setupSettingsCheck()
     }
     
-    internal func platformExtensions() -> [Extension.Type]? {
-        var extensions = [Extension.Type]()
+    internal func platformExtensions() -> [PlatformExtension.Type]? {
+        var extensions = [PlatformExtension.Type]()
         
         // setup lifecycle if desired
         if configuration.trackApplicationLifecycleEvents {
@@ -53,7 +53,7 @@ extension Analytics {
     }
 
     @discardableResult
-    private func initializeExtension(from type: Extension.Type, name: String) -> Extension {
+    private func initializeExtension(from type: PlatformExtension.Type, name: String) -> PlatformExtension {
         return type.init(name: name)
     }
 }

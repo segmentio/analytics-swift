@@ -8,7 +8,8 @@
 import Foundation
 
 #if os(Linux)
-class LinuxLifecycleEvents: Extension {
+class LinuxLifecycleEvents: PlatformExtension {
+    static var specificName = "Segment_LinuxLifecycleEvents"
     let type: ExtensionType
     let name: String
     

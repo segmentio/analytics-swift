@@ -22,7 +22,9 @@ protocol iOSLifecycle {
     func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
 }
 
-class iOSLifecycleEvents: Extension {
+class iOSLifecycleEvents: PlatformExtension {
+    static var specificName = "Segment_iOSLifecycleEvents"
+    
     let type: ExtensionType
     let name: String
     
