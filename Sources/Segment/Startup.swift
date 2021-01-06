@@ -17,7 +17,7 @@ extension Analytics {
         // Setup platform specific extensions
         if let platformExtensions = platformExtensions() {
             for extensionType in platformExtensions {
-                let prebuilt = initializeExtension(from: extensionType, name: extensionType.specificName)
+                let prebuilt = extensionType.init(name: extensionType.specificName)
                 prebuilt.analytics = self
                 extensions.add(prebuilt)
             }
@@ -50,11 +50,6 @@ extension Analytics {
         } else {
             return extensions
         }
-    }
-
-    @discardableResult
-    private func initializeExtension(from type: PlatformExtension.Type, name: String) -> PlatformExtension {
-        return type.init(name: name)
     }
 }
 
