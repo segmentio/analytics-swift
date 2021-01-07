@@ -26,6 +26,7 @@
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
 		46FE4CA725A3F836003A7362 /* TestExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CA625A3F836003A7362 /* TestExtensions.swift */; };
 		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
+		46FE4CFB25A6C671003A7362 /* DummyExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CFA25A6C671003A7362 /* DummyExtensions.swift */; };
 		96208625256DC23F00314F8D /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		96208626256DC23F00314F8D /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
@@ -139,6 +140,7 @@
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
 		46FE4CA625A3F836003A7362 /* TestExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestExtensions.swift; sourceTree = "<group>"; };
 		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		46FE4CFA25A6C671003A7362 /* DummyExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyExtensions.swift; sourceTree = "<group>"; };
 		96208615256DC21B00314F8D /* Sovran.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sovran.xcodeproj; path = "Sovran-Swift/Sovran.xcodeproj"; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -279,6 +281,7 @@
 		OBJ_11 /* Segment-Tests */ = {
 			isa = PBXGroup;
 			children = (
+				46FE4CFA25A6C671003A7362 /* DummyExtensions.swift */,
 				A31A16502576C47400C9CDDF /* JSONTests.swift */,
 				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
 				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
@@ -539,6 +542,7 @@
 				OBJ_31 /* XCTestManifests.swift in Sources */,
 				967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */,
 				A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */,
+				46FE4CFB25A6C671003A7362 /* DummyExtensions.swift in Sources */,
 				967C40DA258D472C008EB0B6 /* Logger_Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

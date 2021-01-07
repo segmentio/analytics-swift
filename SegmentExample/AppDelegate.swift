@@ -16,13 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        analytics = Segment.Analytics(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
+        let analytics = Segment.Analytics(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
             .trackApplicationLifecycleEvents(true)
             .build()
         
-        analytics?.extensions.add(AfterExtension(name: "hello"))
+        analytics.extensions.add(AfterExtension(name: "hello", analytics: analytics))
 
-        analytics?.identify(userId: "BrandonCameBack")
+        analytics.identify(userId: "BrandonCameBack")
+        
+        self.analytics = analytics
         
         return true
     }

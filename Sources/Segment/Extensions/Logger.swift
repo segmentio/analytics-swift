@@ -17,14 +17,15 @@ class Logger: UtilityExtension {
     
     public var filterType: LogType = .info
     
-    var type: ExtensionType
-    var name: String
-    weak var analytics: Analytics?
+    let type: ExtensionType
+    let name: String
+    let analytics: Analytics
     
     private var messages = [LogMessage]()
     
-    required init(name: String) {
+    required init(name: String, analytics: Analytics) {
         self.name = name
+        self.analytics = analytics
         self.type = .utility
     }
     

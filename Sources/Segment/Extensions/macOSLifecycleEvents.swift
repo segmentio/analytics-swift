@@ -14,18 +14,12 @@ class macOSLifecycleEvents: PlatformExtension {
     static var specificName = "Segment_macOSLifecycleEvents"
     let type: ExtensionType
     let name: String
+    let analytics: Analytics
     
-    weak var analytics: Analytics? = nil
-    
-    required init(name: String) {
+    required init(name: String, analytics: Analytics) {
         self.type = .before
+        self.analytics = analytics
         self.name = name
     }
-    
-    convenience init(name: String, analytics: Analytics) {
-        self.init(name: name)
-        self.analytics = analytics
-    }
-
 }
 #endif

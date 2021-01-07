@@ -17,8 +17,7 @@ extension Analytics {
         // Setup platform specific extensions
         if let platformExtensions = platformExtensions() {
             for extensionType in platformExtensions {
-                let prebuilt = extensionType.init(name: extensionType.specificName)
-                prebuilt.analytics = self
+                let prebuilt = extensionType.init(name: extensionType.specificName, analytics: self)
                 extensions.add(prebuilt)
             }
         }

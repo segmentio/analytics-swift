@@ -27,16 +27,7 @@ class iOSLifecycleEvents: PlatformExtension {
     
     let type: ExtensionType
     let name: String
-    
-    weak var _analytics: Analytics? = nil
-    var analytics: Analytics? {
-        get {
-            return _analytics
-        }
-        set {
-            _analytics = newValue
-        }
-    }
+    let analytics: Analytics
     
     private var application: UIApplication
     private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,
@@ -51,17 +42,13 @@ class iOSLifecycleEvents: PlatformExtension {
     
     
 
-    required init(name: String) {
+    required init(name: String, analytics: Analytics) {
         self.type = .utility
         self.name = name
+        self.analytics = analytics
         application = UIApplication.shared
         
         setupListeners()
-    }
-    
-    convenience init(name: String, analytics: Analytics) {
-        self.init(name: name)
-        self.analytics = analytics
     }
     
     @objc
@@ -101,7 +88,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func applicationWillEnterForeground(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillEnterForeground(application: application)
             }
@@ -109,7 +96,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didEnterBackground(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidEnterBackground(application: application)
             }
@@ -117,7 +104,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didFinishLaunching(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 let options = notification.userInfo as? [UIApplication.LaunchOptionsKey: Any] ?? nil
                 validExt.application(application, didFinishLaunchingWithOptions: options)
@@ -126,7 +113,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
 
     func didBecomeActive(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidBecomeActive(application: application)
             }
@@ -134,7 +121,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func willResignActive(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillResignActive(application: application)
             }
@@ -142,7 +129,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didReceiveMemoryWarning(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidReceiveMemoryWarning(application: application)
             }
@@ -150,7 +137,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func willTerminate(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillTerminate(application: application)
             }
@@ -158,7 +145,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func significantTimeChange(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationSignificantTimeChange(application: application)
             }
@@ -166,7 +153,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func backgroundRefreshDidChange(notification: NSNotification) {
-        analytics?.extensions.apply { (ext) in
+        analytics.extensions.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationBackgroundRefreshDidChange(application: application,
                                                                refreshStatus: application.backgroundRefreshStatus)

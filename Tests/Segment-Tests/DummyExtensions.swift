@@ -1,17 +1,22 @@
 //
-//  TestExtensions.swift
-//  SegmentExample
+//  DummyExtensions.swift
+//  Segment-Tests
 //
-//  Created by Brandon Sneed on 1/4/21.
+//  Created by Brandon Sneed on 1/6/21.
 //
 
 import Foundation
 import Segment
 
+// MARK: - Helper Classes
+struct MyTraits: Codable {
+    let email: String?
+}
+
 class GooberExtension: EventExtension {
-    let analytics: Analytics
     let type: ExtensionType
     let name: String
+    let analytics: Analytics
     
     required init(name: String, analytics: Analytics) {
         self.name = name
@@ -20,24 +25,31 @@ class GooberExtension: EventExtension {
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
+        let beginningTime = Date()
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "goober"
+        sleep(3)
+        let endingTime = Date()
+        let finalTime = endingTime.timeIntervalSince(beginningTime)
+        
+        newEvent.addMetric(.gauge, name: "Gauge Test", value: finalTime, tags: ["timing", "function_length"], timestamp: Date())
+        
         return newEvent
         //return nil
     }
 }
 
 class ZiggyExtension: EventExtension {
-    let analytics: Analytics
     let type: ExtensionType
     let name: String
+    let analytics: Analytics
     
     var completion: (() -> Void)?
     
     required init(name: String, analytics: Analytics) {
         self.name = name
-        self.type = .enrichment
         self.analytics = analytics
+        self.type = .enrichment
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -53,40 +65,20 @@ class ZiggyExtension: EventExtension {
 }
 
 class MyDestination: DestinationExtension {
-    let analytics: Analytics
-    
     var extensions: Extensions
+    
     let type: ExtensionType
     let name: String
+    let analytics: Analytics
     
     required init(name: String, analytics: Analytics) {
         self.name = name
-        self.type = .destination
         self.analytics = analytics
+        self.type = .destination
         self.extensions = Extensions()
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        return event
-    }
-}
-
-class AfterExtension: Extension {
-    let analytics: Analytics
-    
-    var extensions: Extensions
-    let type: ExtensionType
-    let name: String
-    
-    required init(name: String, analytics: Analytics) {
-        self.name = name
-        self.analytics = analytics
-        self.type = .after
-        self.extensions = Extensions()
-    }
-    
-    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
-        print(event.prettyPrint())
         return event
     }
 }
