@@ -260,4 +260,10 @@ extension Storage {
             userDefaults?.setValue(currentFile, forKey: Constants.events.rawValue)
         }
     }
+    
+    func remove(file: URL) {
+        syncQueue.sync {
+            try? FileManager.default.removeItem(atPath: file.path)
+        }
+    }
 }
