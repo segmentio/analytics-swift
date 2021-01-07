@@ -111,10 +111,20 @@ extension JSON: Codable {
 
 extension Encodable {
     public func prettyPrint() -> String {
+        return toString(pretty: true)
+    }
+    
+    public func toString() -> String {
+        return toString(pretty: false)
+    }
+    
+    public func toString(pretty: Bool) -> String {
         var returnString = ""
         do {
             let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
+            if pretty {
+                encoder.outputFormatting = .prettyPrinted
+            }
 
             let json = try encoder.encode(self)
             if let printed = String(data: json, encoding: .utf8) {
@@ -124,6 +134,7 @@ extension Encodable {
             returnString = error.localizedDescription
         }
         return returnString
+
     }
 }
 
