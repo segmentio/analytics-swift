@@ -96,13 +96,11 @@ public protocol Extension: AnyObject {
 public protocol EventExtension: Extension {
     func identify(event: IdentifyEvent) -> IdentifyEvent?
     
-    /*
-    func track(event: Event) -> Event
-    func identify(event: Event) -> Event
-    func page(event: Event) -> Event
-    func group(event: Event) -> Event
-    func alias(event: Event) -> Event
-    func screen(event: Event) -> Event*/
+    func track(event: TrackEvent) -> TrackEvent?
+//    func page(event: Event) -> Event
+//    func group(event: Event) -> Event
+//    func alias(event: Event) -> Event
+//    func screen(event: Event) -> Event
 }
 
 public protocol DestinationExtension: EventExtension {
@@ -136,6 +134,8 @@ extension EventExtension {
         switch result {
         case let r as IdentifyEvent:
             result = self.identify(event: r) as? T
+        case let r as TrackEvent:
+            result = self.track(event: r) as? T
         default:
             print("something is screwed up")
             break
@@ -143,7 +143,11 @@ extension EventExtension {
         return result
     }
 
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
+    public func identify(event: IdentifyEvent) -> IdentifyEvent? {
+        return event
+    }
+    
+    public func track(event: TrackEvent) -> TrackEvent? {
         return event
     }
 }
@@ -171,6 +175,8 @@ extension DestinationExtension {
         switch enrichmentResult {
         case let e as IdentifyEvent:
             destinationResult = identify(event: e) as? E
+        case let e as TrackEvent:
+            destinationResult = track(event: e) as? E
         default:
             print("something is screwed up")
             break

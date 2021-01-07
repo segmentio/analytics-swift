@@ -42,30 +42,13 @@ public class HTTPClient {
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
-    func startBatchUpload<T: Codable>(writeKey: String, batch: [T], gzip: Bool = true, completion: @escaping (Bool) -> Void) -> URLSessionDataTask? {
+    func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ succeeded: Bool) -> Void) -> URLSessionDataTask? {
         
         guard var settingsURL = URL(string: HTTPClient.segmentAPIBaseHost) else {
             completion(false)
             return nil
         }
-        
-        // Encode the data before proceeding
-        guard var jsonData = try? JSONEncoder().encode(batch) else {
-            self.analytics.log(message: "Could not json encode batch payload.")
-            completion(false)
-            return nil
-        }
-        
-        // GZip it if needed
-        if gzip {
-            guard let gzippedJSONData = try? (jsonData as NSData).compressed(using: .zlib) as Data else {
-                self.analytics.log(message: "Could not gzip json payload.")
-                completion(false)
-                return nil
-            }
-            jsonData = gzippedJSONData
-        }
-        
+                
         settingsURL = settingsURL.appendingPathComponent("/batch")
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "POST"
@@ -75,7 +58,20 @@ public class HTTPClient {
             return nil
         }
         
-        let dataTask = session.uploadTask(with: urlRequest, from: jsonData) { [weak self] (data, response, error) in
+        // GZip it if needed
+//        if gzip {
+        guard var fileData = FileManager.default.contents(atPath: batch.path) else { return nil }
+        let fileString = String(data: fileData, encoding: .utf8)
+        print(fileString)
+        guard let gzippedJSONData = try? (fileData as NSData).compressed(using: .zlib) as Data else {
+            self.analytics.log(message: "Could not gzip json payload.")
+            completion(false)
+            return nil
+        }
+        fileData = gzippedJSONData
+
+        let dataTask = session.uploadTask(with: urlRequest, from: fileData) { [weak self] (data, response, error) in
+//        let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
                 completion(true)
@@ -85,20 +81,20 @@ public class HTTPClient {
             if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
                 case 1..<300:
-                    completion(false)
+                    completion(true)
                     return
                 case 300..<400:
                     self?.analytics.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
-                    completion(true)
+                    completion(false)
                 case 429:
                     self?.analytics.log(message: "Server limited client with response code \(httpResponse.statusCode).")
-                    completion(true)
+                    completion(false)
                 case 400..<500:
                     self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
                     completion(false)
                 default: // All 500 codes
                     self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
-                    completion(true)
+                    completion(false)
                 }
             }
         }

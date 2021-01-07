@@ -13,7 +13,7 @@ extension Analytics {
         
         // add segment destination extension
         // ...
-        let segmentDestination = SegmentDestination(name: "SegmentDestination")
+        let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
         segmentDestination.analytics = self
         extensions.add(segmentDestination)
         

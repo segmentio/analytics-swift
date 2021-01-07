@@ -8,68 +8,80 @@
 import Foundation
 
 class SegmentDestination: DestinationExtension {
-    var extensions: Extensions
     
+    var analytics: Analytics
+    var extensions: Extensions
     var type: ExtensionType
     var name: String
-    weak var _analytics: Analytics? = nil
-    private var httpClient: HTTPClient?
-    private var events = [RawEvent]()
+    private var httpClient: HTTPClient
+    private var pendingURLs = [URL]()
+    private var uploadInProgress = false
+    private var storage: Storage
     
-    required init(name: String) {
+    required init(name: String, analytics: Analytics) {
         type = .destination
         self.name = name
+        self.analytics = analytics
         extensions = Extensions()
-    }
-    
-    convenience init(name: String, analytics: Analytics) {
-        self.init(name: name)
-        _analytics = analytics
+        storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
     }
     
+    // MARK: - Event Handling Methods
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         queueEvent(event: event)
         return event
     }
     
+    func track(event: TrackEvent) -> TrackEvent? {
+        queueEvent(event: event)
+        return event
+    }
+    
     // MARK: - Event Parsing Methods
-    private func queueEvent(event: RawEvent) {
-        // TODO: trim by one of max payload to make room
-        events.append(event)
-        
-        // Save queue to disk
-        
+    private func queueEvent<T: RawEvent>(event: T) {
+        // Send Event to File System
+        storage.write(.events, value: event)
+                
         // flush the queue
         flush()
     }
     
     private func flush() {
-        // Build a set of JSON events to send off
-        var jsonQueue = [JSON]()
-        var eventsCopy: [RawEvent]? = events
-        for item in events {
-            if let jsonEncoded = try? JSON(item) {
-                jsonQueue.append(jsonEncoded)
+        // Read events from file system
+        guard let data = storage.read(Storage.Constants.events) else { return }
+        
+        if !uploadInProgress {
+            uploadInProgress = true
+            var processedCall = [Bool]()
+            for url in data {
+                
+                httpClient.startBatchUpload(writeKey: analytics.configuration.writeKey, batch: url, completion: { [weak self] (succeeded) in
+
+                    // Track that the call has finished
+                    processedCall.append(succeeded)
+                    
+                    if succeeded {
+                        // Remove events
+                        self?.storage.remove(file: url)
+                    } else {
+                        self?.analytics.logFlush()
+                    }
+
+                    if processedCall.count == data.count {
+                        self?.uploadInProgress = false
+                    }
+                    
+                    // TODO: Mark as completed via notification???????
+                    
+                })
             }
         }
-        
-        if !jsonQueue.isEmpty, let writeKey = analytics?.configuration.writeKey {
-            httpClient?.startBatchUpload(writeKey: writeKey, batch: jsonQueue, completion: { (shouldRetry) in
-                if shouldRetry {
-                    eventsCopy = nil
-                    return
-                }
-                
-                // Remove events
-                guard var eventsCopy = eventsCopy else { return }
-                eventsCopy.removeSubrange(0..<jsonQueue.count-1)
-                
-                // Store what's left
-                
-                // Mark as completed?
-            
-            })
-        }
+    }
+}
+
+extension Analytics {
+    func flushB() {
+        // TODO: Cycle extensions to respond
     }
 }

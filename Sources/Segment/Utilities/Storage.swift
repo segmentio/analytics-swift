@@ -249,7 +249,7 @@ extension Storage {
             context = String(format: contextFormat, context)
 
             // write it to the existing file
-            let contents = "],\n\(context)}"
+            let contents = "],\(context)}"
             let finalData = contents.data(using: .utf8)
             if let data = finalData, let handle = try? FileHandle(forWritingTo: file) {
                 handle.seekToEndOfFile()

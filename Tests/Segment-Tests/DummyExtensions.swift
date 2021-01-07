@@ -77,8 +77,4 @@ class MyDestination: DestinationExtension {
         self.type = .destination
         self.extensions = Extensions()
     }
-    
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        return event
-    }
 }
