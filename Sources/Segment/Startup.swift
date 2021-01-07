@@ -13,6 +13,9 @@ extension Analytics {
         
         // add segment destination extension
         // ...
+        let segmentDestination = SegmentDestination(name: "SegmentDestination")
+        segmentDestination.analytics = self
+        extensions.add(segmentDestination)
         
         // Setup platform specific extensions
         if let platformExtensions = platformExtensions() {

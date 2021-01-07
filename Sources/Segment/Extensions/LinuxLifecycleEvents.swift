@@ -16,7 +16,7 @@ class LinuxLifecycleEvents: PlatformExtension {
     weak var analytics: Analytics? = nil
     
     required init(name: String) {
-        self.type = .before
+        self.type = .utility
         self.name = name
     }
     

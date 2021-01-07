@@ -39,8 +39,6 @@ class iOSLifecycleEvents: PlatformExtension {
                                                            UIApplication.willTerminateNotification,
                                                            UIApplication.significantTimeChangeNotification,
                                                            UIApplication.backgroundRefreshStatusDidChangeNotification]
-    
-    
 
     required init(name: String, analytics: Analytics) {
         self.type = .utility

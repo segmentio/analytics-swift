@@ -99,4 +99,3 @@ extension RawEvent {
         return result
     }
 }
-

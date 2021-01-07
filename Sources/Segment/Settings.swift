@@ -48,7 +48,7 @@ extension Analytics {
     func checkSettings() {
         let writeKey = self.configuration.writeKey
         let httpClient = HTTPClient(analytics: self)
-        httpClient.settingsFor(write: writeKey) { (success, settings) in
+        httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success {
                 if let s = settings {
                     // put the new settings in the state store.

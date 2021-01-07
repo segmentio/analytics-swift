@@ -17,7 +17,7 @@ class macOSLifecycleEvents: PlatformExtension {
     let analytics: Analytics
     
     required init(name: String, analytics: Analytics) {
-        self.type = .before
+        self.type = .utility
         self.analytics = analytics
         self.name = name
     }

@@ -41,7 +41,8 @@ public class HTTPClient {
     ///   - key: The write key the events are assocaited with.
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
-    func startBatchUpload<T: Codable>(write key: String, batch: T, gzip: Bool = true, completion: @escaping (Bool) -> Void) -> URLSessionDataTask? {
+    @discardableResult
+    func startBatchUpload<T: Codable>(writeKey: String, batch: [T], gzip: Bool = true, completion: @escaping (Bool) -> Void) -> URLSessionDataTask? {
         
         guard var settingsURL = URL(string: HTTPClient.segmentAPIBaseHost) else {
             completion(false)
@@ -69,7 +70,7 @@ public class HTTPClient {
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "POST"
         
-        guard let session = try? configuredSession(for: key) else {
+        guard let session = try? configuredSession(for: writeKey) else {
             completion(false)
             return nil
         }
@@ -106,18 +107,18 @@ public class HTTPClient {
         return dataTask
     }
     
-    func settingsFor(write key: String, completion: @escaping (Bool, RawSettings?) -> Void) {
+    func settingsFor(writeKey: String, completion: @escaping (Bool, RawSettings?) -> Void) {
         
         // Change the key specific to settings so it can be fetched separately
         // from write key sessions for uploading.
-        let settingsKey = "\(key)_settings"
+        let settingsKey = "\(writeKey)_settings"
         
         guard var settingsURL = URL(string: HTTPClient.segmentCDNBaseHost) else {
             completion(false, nil)
             return
         }
         
-        settingsURL = settingsURL.appendingPathComponent("/projects/\(key)/settings")
+        settingsURL = settingsURL.appendingPathComponent("/projects/\(writeKey)/settings")
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "GET"
 
