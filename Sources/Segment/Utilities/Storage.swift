@@ -7,6 +7,7 @@
 
 import Foundation
 import Sovran
+import zlib
 
 internal class Storage: Subscriber {
     let store: Store
@@ -240,8 +241,8 @@ extension Storage {
             // construct context for batch structure
             var context: String = "\"context\":{}"
             let system: System? = store.currentState()
-            if let s = system {
-                context = s.context.toString()
+            if let c = system?.context {
+                context = c.toString()
             }
 
             // write it to the existing file
