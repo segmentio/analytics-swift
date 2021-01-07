@@ -239,11 +239,14 @@ extension Storage {
     func finish(file: URL) {
         syncQueue.sync {
             // construct context for batch structure
-            var context: String = "\"context\":{}"
+            let contextFormat: String = "\"context\":%@"
+            var context = "{}"
             let system: System? = store.currentState()
             if let c = system?.context {
                 context = c.toString()
             }
+            
+            context = String(format: contextFormat, context)
 
             // write it to the existing file
             let contents = "],\n\(context)}"
