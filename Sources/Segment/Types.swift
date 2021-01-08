@@ -19,6 +19,7 @@ typealias Traits = Codable
 // MARK: - Event Types
 
 public protocol RawEvent: Codable {
+    var type: String? { get set }
     var anonymousId: String? { get set }
     var messageId: String? { get set }
     var timestamp: String? { get set }
@@ -29,6 +30,7 @@ public protocol RawEvent: Codable {
 }
 
 public struct TrackEvent: RawEvent {
+    public var type: String? = "track"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
     public var timestamp: String? = nil
@@ -49,6 +51,7 @@ public struct TrackEvent: RawEvent {
 }
 
 public struct IdentifyEvent: RawEvent {
+    public var type: String? = "identify"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
     public var timestamp: String? = nil
