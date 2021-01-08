@@ -70,15 +70,19 @@ public class HTTPClient {
         }
         fileData = gzippedJSONData
 
-        let dataTask = session.uploadTask(with: urlRequest, from: fileData) { [weak self] (data, response, error) in
-//        let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
+        print("request:", urlRequest.debugDescription)
+        //let dataTask = session.uploadTask(with: urlRequest, from: fileData) { [weak self] (data, response, error) in
+        let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
                 completion(true)
                 return
             }
-
+            
             if let httpResponse = response as? HTTPURLResponse {
+                print(httpResponse.debugDescription)
+                print(String(data: data!, encoding: .utf8))
+
                 switch (httpResponse.statusCode) {
                 case 1..<300:
                     completion(true)
@@ -211,9 +215,9 @@ extension HTTPClient {
         
         if !writeKeySessions.keys.contains(writeKey) {
             let configuration = URLSessionConfiguration.default
-            configuration.httpAdditionalHeaders = ["Accept-Encoding": "gzip",
-                                                   "Content-Encoding": "gzip",
-                                                   "Content-Type": "application/json",
+            configuration.httpAdditionalHeaders = [/*"Accept-Encoding": "gzip",
+                                                   "Content-Encoding": "gzip",*/
+                                                   "Content-Type": "application/json; charset=utf-8",
                                                    "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
                                                    "User-Agent": "analytics-ios/\(Analytics.version())"]
             let session = URLSession.init(configuration: configuration, delegate: sessionDelegate, delegateQueue: nil)
