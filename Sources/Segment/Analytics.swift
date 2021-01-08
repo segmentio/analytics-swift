@@ -25,7 +25,7 @@ public class Analytics {
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
-        self.storage = Storage(store: self.store)
+        self.storage = Storage(store: self.store, writeKey: writeKey)
         self.extensions = Extensions()
     }
     

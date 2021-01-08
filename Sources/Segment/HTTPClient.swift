@@ -58,20 +58,6 @@ public class HTTPClient {
             return nil
         }
         
-        // GZip it if needed
-//        if gzip {
-        guard var fileData = FileManager.default.contents(atPath: batch.path) else { return nil }
-        let fileString = String(data: fileData, encoding: .utf8)
-        print(fileString)
-        guard let gzippedJSONData = try? (fileData as NSData).compressed(using: .zlib) as Data else {
-            self.analytics.log(message: "Could not gzip json payload.")
-            completion(false)
-            return nil
-        }
-        fileData = gzippedJSONData
-
-        print("request:", urlRequest.debugDescription)
-        //let dataTask = session.uploadTask(with: urlRequest, from: fileData) { [weak self] (data, response, error) in
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
