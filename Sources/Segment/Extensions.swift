@@ -95,12 +95,10 @@ public protocol Extension: AnyObject {
 
 public protocol EventExtension: Extension {
     func identify(event: IdentifyEvent) -> IdentifyEvent?
-    
     func track(event: TrackEvent) -> TrackEvent?
-//    func page(event: Event) -> Event
-//    func group(event: Event) -> Event
-//    func alias(event: Event) -> Event
-//    func screen(event: Event) -> Event
+    func group(event: GroupEvent) -> GroupEvent?
+    func alias(event: AliasEvent) -> AliasEvent?
+    func screen(event: ScreenEvent) -> ScreenEvent?
 }
 
 public protocol DestinationExtension: EventExtension {
@@ -132,22 +130,41 @@ extension EventExtension {
     func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
         var result: T? = event
         switch result {
-        case let r as IdentifyEvent:
-            result = self.identify(event: r) as? T
-        case let r as TrackEvent:
-            result = self.track(event: r) as? T
-        default:
-            print("something is screwed up")
-            break
+            case let r as IdentifyEvent:
+                result = self.identify(event: r) as? T
+            case let r as TrackEvent:
+                result = self.track(event: r) as? T
+            case let r as ScreenEvent:
+                result = self.screen(event: r) as? T
+            case let r as AliasEvent:
+                result = self.alias(event: r) as? T
+            case let r as GroupEvent:
+                result = self.group(event: r) as? T
+            default:
+                print("something is screwed up")
         }
         return result
     }
 
+    // Default implementations that forward the event. This gives extension
+    // implementors the chance to interject on an event.
     public func identify(event: IdentifyEvent) -> IdentifyEvent? {
         return event
     }
     
     public func track(event: TrackEvent) -> TrackEvent? {
+        return event
+    }
+    
+    public func screen(event: ScreenEvent) -> ScreenEvent? {
+        return event
+    }
+    
+    public func group(event: GroupEvent) -> GroupEvent? {
+        return event
+    }
+    
+    public func alias(event: AliasEvent) -> AliasEvent? {
         return event
     }
 }
@@ -173,13 +190,18 @@ extension DestinationExtension {
         // incoming event, like identify, and map it to whatever is appropriate for this destination.
         var destinationResult: E? = nil
         switch enrichmentResult {
-        case let e as IdentifyEvent:
-            destinationResult = identify(event: e) as? E
-        case let e as TrackEvent:
-            destinationResult = track(event: e) as? E
-        default:
-            print("something is screwed up")
-            break
+            case let e as IdentifyEvent:
+                destinationResult = identify(event: e) as? E
+            case let e as TrackEvent:
+                destinationResult = track(event: e) as? E
+            case let e as ScreenEvent:
+                destinationResult = screen(event: e) as? E
+            case let e as GroupEvent:
+                destinationResult = group(event: e) as? E
+            case let e as AliasEvent:
+                destinationResult = alias(event: e) as? E
+            default:
+                print("something is screwed up")
         }
         
         // apply .after extensions ...

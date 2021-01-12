@@ -31,7 +31,7 @@ public enum MetricType: Int {
 
 public extension RawEvent {
     mutating func addMetric(_ type: MetricType, name: String, value: Double, tags: [String]?, timestamp: Date) {
-        guard let metric = try? JSON(Metric(extensionName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else { return }
+        guard let metric = try? JSON(Metric(eventName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else { return }
         if self.metrics == nil {
             metrics = [JSON]()
         }
@@ -69,7 +69,7 @@ public extension RawEvent {
 //}
 
 fileprivate struct Metric: Codable {
-    var extensionName: String = ""
+    var eventName: String = ""
     var metricName: String = ""
     var value: Double = 0.0
     var tags: [String]? = nil
@@ -77,7 +77,7 @@ fileprivate struct Metric: Codable {
     var timestamp: Date = Date()
     
     enum CodingKeys: String, CodingKey {
-        case extensionName
+        case eventName
         case metricName
         case value
         case tags
@@ -85,8 +85,8 @@ fileprivate struct Metric: Codable {
         case timestamp
     }
     
-    init(extensionName: String, metricName: String, value: Double, tags: [String]?, type: MetricType, timestamp: Date) {
-        self.extensionName = extensionName
+    init(eventName: String, metricName: String, value: Double, tags: [String]?, type: MetricType, timestamp: Date) {
+        self.eventName = eventName
         self.metricName = metricName
         self.value = value
         self.tags = tags
@@ -96,7 +96,7 @@ fileprivate struct Metric: Codable {
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        extensionName = try values.decode(String.self, forKey: .extensionName)
+        eventName = try values.decode(String.self, forKey: .eventName)
         metricName = try values.decode(String.self, forKey: .metricName)
         value = try values.decode(Double.self, forKey: .value)
         tags = try values.decode([String]?.self, forKey: .tags)
@@ -112,7 +112,7 @@ fileprivate struct Metric: Codable {
     
     func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: CodingKeys.self)
-        try values.encode(extensionName, forKey: .extensionName)
+        try values.encode(eventName, forKey: .eventName)
         try values.encode(metricName, forKey: .metricName)
         try values.encode(value, forKey: .value)
         try values.encode(tags, forKey: .tags)

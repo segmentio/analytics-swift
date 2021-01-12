@@ -38,6 +38,21 @@ class SegmentDestination: DestinationExtension {
         return event
     }
     
+    func screen(event: ScreenEvent) -> ScreenEvent? {
+        queueEvent(event: event)
+        return event
+    }
+    
+    func alias(event: AliasEvent) -> AliasEvent? {
+        queueEvent(event: event)
+        return event
+    }
+    
+    func group(event: GroupEvent) -> GroupEvent? {
+        queueEvent(event: event)
+        return event
+    }
+    
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         // Send Event to File System

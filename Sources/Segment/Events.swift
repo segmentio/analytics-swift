@@ -11,8 +11,28 @@ extension Analytics {
     
     // MARK: - Track
     
-    func track<P: Properties, I: Integrations>(name: String, properties: P? = nil, integrations: I? = nil) {
-        // ...
+    // make a note in the docs on this that we removed the old "options" property
+    // and they need to write a middleware/enrichment now.
+    // the objc version should accomodate them if it's really needed.
+    
+    public func track<P: Codable>(name: String, properties: P?) {
+        do {
+            if let properties = properties {
+                let jsonProperties = try JSON(properties)
+                let event = TrackEvent(event: name, properties: jsonProperties).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            } else {
+                let event = TrackEvent(event: name, properties: nil).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            }
+            
+        } catch {
+            assertionFailure("\(error)")
+        }
+    }
+    
+    public func track(name: String) {
+        track(name: name, properties: nil as TrackEvent?)
     }
     
     // MARK: - Identify
@@ -20,6 +40,14 @@ extension Analytics {
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
+    
+    
+    /// Associate a user with their unique ID and record traits about them.
+    /// - Parameters:
+    ///   - userId: A database ID (or email address) for this user. If you don't have a userId
+    ///     but want to record traits, you should pass nil. For more information on how we
+    ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
+    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     public func identify<T: Codable>(userId: String, traits: T) {
         do {
             let jsonTraits = try JSON(traits)
@@ -31,6 +59,9 @@ extension Analytics {
         }
     }
     
+    /// Associate a user with their unique ID and record traits about them.
+    /// - Parameters:
+    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     public func identify<T: Codable>(traits: T) {
         do {
             let jsonTraits = try JSON(traits)
@@ -41,7 +72,12 @@ extension Analytics {
             assertionFailure("\(error)")
         }
     }
-    
+
+    /// Associate a user with their unique ID and record traits about them.
+    /// - Parameters:
+    ///   - userId: A database ID (or email address) for this user. If you don't have a userId
+    ///     but want to record traits, you should pass nil. For more information on how we
+    ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     public func identify(userId: String) {
         let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
         store.dispatch(action: UserInfo.SetUserIdAction(userId: userId))
@@ -53,8 +89,23 @@ extension Analytics {
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
-    func screen<P: Properties>(screenTitle: String, category: String? = nil, properties: P? = nil) {
-        // ...
+    public func screen<P: Codable>(screenTitle: String, category: String? = nil, properties: P?) {
+        do {
+            if let properties = properties {
+                let jsonProperties = try JSON(properties)
+                let event = ScreenEvent(screenTitle: screenTitle, category: category, properties: jsonProperties).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            } else {
+                let event = ScreenEvent(screenTitle: screenTitle, category: category).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            }
+        } catch {
+            assertionFailure("\(error)")
+        }
+    }
+    
+    public func screen(screenTitle: String, category: String? = nil) {
+        screen(screenTitle: screenTitle, category: category, properties: nil as ScreenEvent?)
     }
 
     // MARK: - Group
@@ -62,13 +113,29 @@ extension Analytics {
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
-    func group<T: Codable>(groupId: String, traits: T? = nil) {
-        // ...
+    public func group<T: Codable>(groupId: String, traits: T?) {
+        do {
+            if let traits = traits {
+                let jsonTraits = try JSON(traits)
+                let event = GroupEvent(groupId: groupId, traits: jsonTraits).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            } else {
+                let event = GroupEvent(groupId: groupId).applyRawEventData(store: store)
+                process(incomingEvent: event)
+            }
+        } catch {
+            assertionFailure("\(error)")
+        }
+    }
+    
+    public func group(groupId: String) {
+        group(groupId: groupId, traits: nil as GroupEvent?)
     }
     
     // MARK: - Alias
     
-    func alias(newId: String) {
-        // ...
+    public func alias(newId: String) {
+        let event = AliasEvent(newId: newId).applyRawEventData(store: store)
+        process(incomingEvent: event)
     }
 }

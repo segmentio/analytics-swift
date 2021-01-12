@@ -22,7 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         analytics.extensions.add(AfterExtension(name: "hello", analytics: analytics))
 
-        analytics.identify(userId: "BrandonCameBack")
+        analytics.identify(userId: "Live Demo -- never breaks")
+        analytics.track(name: "I once tracked a cougar")
+        analytics.screen(screenTitle: "Screened the AppDelegate")
+        analytics.group(groupId: "Grouped By ID")
+        analytics.alias(newId: "3333")
         
         self.analytics = analytics
         
