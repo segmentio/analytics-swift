@@ -11,11 +11,14 @@ import zlib
 
 internal class Storage: Subscriber {
     let store: Store
+    let writeKey: String
     let syncQueue = DispatchQueue(label: "storage.segment.com")
-    let userDefaults = UserDefaults(suiteName: "com.segment.storage")
+    let userDefaults: UserDefaults?
     
-    init(store: Store) {
+    init(store: Store, writeKey: String) {
         self.store = store
+        self.writeKey = writeKey
+        self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)")
         store.subscribe(self, handler: userInfoUpdate)
         store.subscribe(self, handler: systemUpdate)
     }
@@ -25,7 +28,7 @@ internal class Storage: Subscriber {
 
 extension Storage {
     enum Constants: String, CaseIterable {
-        case username = "segment.username"
+        case userId = "segment.userId"
         case traits = "segment.traits"
         case anonymousId = "segment.anonymousId"
         case settings = "segment.settings"
@@ -47,9 +50,7 @@ extension Storage {
                     userDefaults?.setValue(index, forKey: key.rawValue)
                     currentFile = index
                 }
-                //DispatchQueue.global(qos: .background).async {
-                    self.storeEvent(toFile: self.eventsFile(index: currentFile), event: event)
-                //}
+                self.storeEvent(toFile: self.eventsFile(index: currentFile), event: event)
             }
             break
         default:
@@ -64,6 +65,7 @@ extension Storage {
                 }
             }
         }
+        userDefaults?.synchronize()
     }
     
     func read(_ key: Storage.Constants) -> [URL]? {
@@ -136,7 +138,7 @@ extension Storage {
 extension Storage {
     func userInfoUpdate(state: UserInfo) {
         // write new stuff to disk
-        write(.username, value: state.userId)
+        write(.userId, value: state.userId)
         write(.traits, value: state.traits)
         write(.anonymousId, value: state.anonymousId)
     }
@@ -155,7 +157,7 @@ extension Storage {
     func eventStorageDirectory() -> URL {
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docURL = urls[0]
-        let segmentURL = docURL.appendingPathComponent("segment")
+        let segmentURL = docURL.appendingPathComponent("segment/\(writeKey)/")
         // try to create it, will fail if already exists, nbd.
         // tvOS, watchOS regularly clear out data.
         try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)

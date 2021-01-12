@@ -107,7 +107,7 @@ extension System {
 
 extension UserInfo {
     static func defaultState(from storage: Storage) -> UserInfo {
-        let userId: String? = storage.read(.username)
+        let userId: String? = storage.read(.userId)
         let traits: JSON? = storage.read(.traits)
         var anonymousId: String = UUID().uuidString
         if let existingId: String = storage.read(.anonymousId) {
