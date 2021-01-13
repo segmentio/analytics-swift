@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .trackApplicationLifecycleEvents(true)
             .build()
         
-        analytics.extensions.add(AfterExtension(name: "hello", analytics: analytics))
+        analytics.plugins.add(AfterPlugin(name: "hello", analytics: analytics))
 
         analytics.identify(userId: "Live Demo -- never breaks")
         analytics.track(name: "I once tracked a cougar")

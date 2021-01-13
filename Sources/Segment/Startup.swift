@@ -11,17 +11,17 @@ extension Analytics {
         
     internal func platformStartup() {
         
-        // add segment destination extension
+        // add segment destination plugin
         // ...
         let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
         segmentDestination.analytics = self
-        extensions.add(segmentDestination)
+        plugins.add(segmentDestination)
         
-        // Setup platform specific extensions
-        if let platformExtensions = platformExtensions() {
-            for extensionType in platformExtensions {
-                let prebuilt = extensionType.init(name: extensionType.specificName, analytics: self)
-                extensions.add(prebuilt)
+        // Setup platform specific plugins
+        if let platformPlugins = platformPlugins() {
+            for pluginType in platformPlugins {
+                let prebuilt = pluginType.init(name: pluginType.specificName, analytics: self)
+                plugins.add(prebuilt)
             }
         }
         
@@ -31,26 +31,26 @@ extension Analytics {
         setupSettingsCheck()
     }
     
-    internal func platformExtensions() -> [PlatformExtension.Type]? {
-        var extensions = [PlatformExtension.Type]()
+    internal func platformPlugins() -> [PlatformPlugin.Type]? {
+        var plugins = [PlatformPlugin.Type]()
         
         // setup lifecycle if desired
         if configuration.trackApplicationLifecycleEvents {
             #if os(iOS) || os(watchOS) || os(tvOS)
-            extensions.append(iOSLifecycleEvents.self)
+            plugins.append(iOSLifecycleEvents.self)
             #endif
             #if os(macOS)
-            extensions.append(macOSLifecycleEvents.self)
+            plugins.append(macOSLifecycleEvents.self)
             #endif
             #if os(Linux)
-            extensions.append(LinuxLifecycleEvents.self)
+            plugins.append(LinuxLifecycleEvents.self)
             #endif
         }
         
-        if extensions.isEmpty {
+        if plugins.isEmpty {
             return nil
         } else {
-            return extensions
+            return plugins
         }
     }
 }

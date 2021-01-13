@@ -13,11 +13,11 @@ public enum LogType: Int {
     case info       // Verbose
 }
 
-class Logger: UtilityExtension {
+class Logger: UtilityPlugin {
     
     public var filterType: LogType = .info
     
-    let type: ExtensionType
+    let type: PluginType
     let name: String
     let analytics: Analytics
     
@@ -61,7 +61,7 @@ extension Analytics {
     ///   - event: The event associated with the log (optional).
     ///   - type: The filter type for the message. If nil, defaults to logger setting.
     func log(message: String, event: RawEvent? = nil, type: LogType? = nil) {
-        self.extensions.apply { (potentialLogger) in
+        self.plugins.apply { (potentialLogger) in
             
             if let logger = potentialLogger as? Logger {
                 
@@ -75,7 +75,7 @@ extension Analytics {
     }
     
     func logFlush() {
-        self.extensions.apply { (potentialLogger) in
+        self.plugins.apply { (potentialLogger) in
             if let logger = potentialLogger as? Logger {
                 logger.flush()
             }

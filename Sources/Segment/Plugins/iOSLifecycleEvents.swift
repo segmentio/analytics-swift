@@ -22,10 +22,10 @@ protocol iOSLifecycle {
     func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
 }
 
-class iOSLifecycleEvents: PlatformExtension {
+class iOSLifecycleEvents: PlatformPlugin {
     static var specificName = "Segment_iOSLifecycleEvents"
     
-    let type: ExtensionType
+    let type: PluginType
     let name: String
     let analytics: Analytics
     
@@ -86,7 +86,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func applicationWillEnterForeground(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillEnterForeground(application: application)
             }
@@ -94,7 +94,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didEnterBackground(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidEnterBackground(application: application)
             }
@@ -102,7 +102,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didFinishLaunching(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 let options = notification.userInfo as? [UIApplication.LaunchOptionsKey: Any] ?? nil
                 validExt.application(application, didFinishLaunchingWithOptions: options)
@@ -111,7 +111,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
 
     func didBecomeActive(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidBecomeActive(application: application)
             }
@@ -119,7 +119,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func willResignActive(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillResignActive(application: application)
             }
@@ -127,7 +127,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func didReceiveMemoryWarning(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationDidReceiveMemoryWarning(application: application)
             }
@@ -135,7 +135,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func willTerminate(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationWillTerminate(application: application)
             }
@@ -143,7 +143,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func significantTimeChange(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationSignificantTimeChange(application: application)
             }
@@ -151,7 +151,7 @@ class iOSLifecycleEvents: PlatformExtension {
     }
     
     func backgroundRefreshDidChange(notification: NSNotification) {
-        analytics.extensions.apply { (ext) in
+        analytics.plugins.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
                 validExt.applicationBackgroundRefreshDidChange(application: application,
                                                                refreshStatus: application.backgroundRefreshStatus)

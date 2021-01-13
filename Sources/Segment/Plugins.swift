@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  Plugins.swift
 //  Segment
 //
 //  Created by Brandon Sneed on 12/3/20.
@@ -15,36 +15,36 @@ public struct Plugins {
     }
     
     /**
-     Applies the supplied closure to the currently loaded set of extensions.
-     NOTE: This does not apply to extensions contained within DestinationExtensions.
+     Applies the supplied closure to the currently loaded set of plugins.
+     NOTE: This does not apply to plugins contained within DestinationPlugins.
      
-     - Parameter closure: A closure that takes an extension to be operated on as a parameter.
+     - Parameter closure: A closure that takes an plugin to be operated on as a parameter.
      
      */
     public func apply(_ closure: (Plugin) -> Void) {
-        timeline.applyToExtensions(closure)
+        timeline.applyToPlugins(closure)
     }
     
     /**
-     Adds a new extension to the currently loaded set.
+     Adds a new plugin to the currently loaded set.
      
-     - Parameter extension: The extension to be added.
-     - Returns: Returns the name of the supplied extension.
+     - Parameter plugin: The plugin to be added.
+     - Returns: Returns the name of the supplied plugin.
      
      */
     @discardableResult
-    public func add(_ extension: Plugin) -> String {
-        timeline.add(extension: `extension`)
-        return `extension`.name
+    public func add(_ plugin: Plugin) -> String {
+        timeline.add(plugin: plugin)
+        return plugin.name
     }
     
     /**
-     Removes and unloads extensions with a matching name from the system.
+     Removes and unloads plugins with a matching name from the system.
      
-     - Parameter extensionName: An extension name.
+     - Parameter pluginName: An plugin name.
      */
-    public func remove(_ extensionName: String) {
-        timeline.remove(extensionName: extensionName)
+    public func remove(_ pluginName: String) {
+        timeline.remove(pluginName: pluginName)
     }
     
     /*
@@ -68,7 +68,7 @@ public struct Plugins {
 }
 
 /**
- ExtensionType specifies where in the chain a given extension is to be executed.
+ PluginType specifies where in the chain a given plugin is to be executed.
  */
 public enum PluginType: Int, CaseIterable {
     /// Executed before event processing begins.
@@ -102,7 +102,7 @@ public protocol EventPlugin: Plugin {
 }
 
 public protocol DestinationPlugin: EventPlugin {
-    var extensions: Plugins { get set }
+    var plugins: Plugins { get set }
 }
 
 public protocol UtilityPlugin: EventPlugin { }
@@ -113,7 +113,7 @@ internal protocol PlatformPlugin: Plugin {
 }
 
 
-// MARK: - Extension Default Implementations
+// MARK: - Plugin Default Implementations
 
 extension Plugin {
     public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
@@ -146,7 +146,7 @@ extension EventPlugin {
         return result
     }
 
-    // Default implementations that forward the event. This gives extension
+    // Default implementations that forward the event. This gives plugin
     // implementors the chance to interject on an event.
     public func identify(event: IdentifyEvent) -> IdentifyEvent? {
         return event
@@ -179,12 +179,12 @@ extension DestinationPlugin {
     }
 
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
-        // This will process extensions (think destination middleware) that are tied
+        // This will process plugins (think destination middleware) that are tied
         // to this destination.
         
         // apply .before and .enrichment types first ...
-        let beforeResult = extensions.timeline.applyExtensions(type: .before, event: incomingEvent)
-        let enrichmentResult = extensions.timeline.applyExtensions(type: .enrichment, event: beforeResult)
+        let beforeResult = plugins.timeline.applyPlugins(type: .before, event: incomingEvent)
+        let enrichmentResult = plugins.timeline.applyPlugins(type: .enrichment, event: beforeResult)
         
         // now we execute any overrides we may have made.  basically, the idea is to take an
         // incoming event, like identify, and map it to whatever is appropriate for this destination.
@@ -204,8 +204,8 @@ extension DestinationPlugin {
                 print("something is screwed up")
         }
         
-        // apply .after extensions ...
-        let afterResult = extensions.timeline.applyExtensions(type: .after, event: destinationResult)
+        // apply .after plugins ...
+        let afterResult = plugins.timeline.applyPlugins(type: .after, event: destinationResult)
 
         // DEBUG
         print("Destination (\(name)): \(afterResult?.prettyPrint() ?? "")")

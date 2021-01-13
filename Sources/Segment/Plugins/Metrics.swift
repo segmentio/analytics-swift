@@ -42,9 +42,9 @@ public extension RawEvent {
     }
 }
 
-//class MetricsInstrument: Extension {
+//class MetricsInstrument: Plugin {
 //
-//    var type: ExtensionType
+//    var type: PluginType
 //    var name: String
 //    var analytics: Analytics?
 //

@@ -10,10 +10,10 @@ import Sovran
 
 
 internal class Timeline {
-    internal let extensions: [ExtensionType: Mediator]
+    internal let plugins: [PluginType: Mediator]
     
     internal init() {
-        self.extensions = [
+        self.plugins = [
             .before: Mediator(),
             .enrichment: Mediator(),
             .destination: Mediator(),
@@ -24,17 +24,17 @@ internal class Timeline {
     
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // apply .before and .enrichment types first ...
-        let beforeResult = applyExtensions(type: .before, event: incomingEvent)
+        let beforeResult = applyPlugins(type: .before, event: incomingEvent)
         // .enrichment here is akin to source middleware in the old analytics-ios.
-        let enrichmentResult = applyExtensions(type: .enrichment, event: beforeResult)
+        let enrichmentResult = applyPlugins(type: .enrichment, event: beforeResult)
         
         // once the event enters a destination, we don't want
         // to know about changes that happen there. those changes
         // are to only be received by the destination.
-        _ = applyExtensions(type: .destination, event: enrichmentResult)
+        _ = applyPlugins(type: .destination, event: enrichmentResult)
         
-        // apply .after extensions ...
-        let afterResult = applyExtensions(type: .after, event: enrichmentResult)
+        // apply .after plugins ...
+        let afterResult = applyPlugins(type: .after, event: enrichmentResult)
 
         // DEBUG
         print("System Results: \(afterResult?.prettyPrint() ?? "")")
@@ -43,10 +43,10 @@ internal class Timeline {
         return afterResult
     }
     
-    // helper method used by DestinationExtensions and Timeline
-    internal func applyExtensions<E: RawEvent>(type: ExtensionType, event: E?) -> E? {
+    // helper method used by DestinationPlugins and Timeline
+    internal func applyPlugins<E: RawEvent>(type: PluginType, event: E?) -> E? {
         var result: E? = event
-        if let mediator = extensions[type], let e = event {
+        if let mediator = plugins[type], let e = event {
             result = mediator.execute(event: e)
         }
         return result
@@ -54,39 +54,39 @@ internal class Timeline {
 }
 
 
-// MARK: - Extension Support
+// MARK: - Plugin Support
 
 /**
  This suite of functions supplies core functionality back up to the public
- `Extension` type.
+ `Plugin` type.
  */
 extension Timeline {
-    internal func applyToExtensions(_ closure: (Extension) -> Void) {
-        for type in ExtensionType.allCases {
-            if let mediator = extensions[type] {
-                mediator.extensions.forEach { (extension) in
-                    closure(`extension`)
+    internal func applyToPlugins(_ closure: (Plugin) -> Void) {
+        for type in PluginType.allCases {
+            if let mediator = plugins[type] {
+                mediator.plugins.forEach { (plugin) in
+                    closure(plugin)
                 }
             }
         }
     }
     
-    internal func add(extension: Extension) {
-        if let mediator = extensions[`extension`.type] {
-            mediator.add(extension: `extension`)
+    internal func add(plugin: Plugin) {
+        if let mediator = plugins[plugin.type] {
+            mediator.add(plugin: plugin)
         }
     }
     
-    internal func remove(extensionName: String) {
-        // remove all extensions with this name in every category
-        for type in ExtensionType.allCases {
-            if let mediator = extensions[type] {
-                let toRemove = mediator.extensions.filter { (extension) -> Bool in
-                    return `extension`.name == extensionName
+    internal func remove(pluginName: String) {
+        // remove all plugins with this name in every category
+        for type in PluginType.allCases {
+            if let mediator = plugins[type] {
+                let toRemove = mediator.plugins.filter { (plugin) -> Bool in
+                    return plugin.name == pluginName
                 }
-                toRemove.forEach { (extension) in
-                    `extension`.shutdown()
-                    mediator.remove(extensionName: extensionName)
+                toRemove.forEach { (plugin) in
+                    plugin.shutdown()
+                    mediator.remove(pluginName: pluginName)
                 }
             }
         }

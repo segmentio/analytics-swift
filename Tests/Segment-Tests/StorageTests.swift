@@ -27,10 +27,14 @@ class StorageTests: XCTestCase {
         XCTAssertNotNil(userInfo)
         XCTAssertTrue(userInfo!.userId == "brandon")
         
-        //RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
+        // This is a hack that needs to be dealt with
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
         
-        let userId = analytics.storage.userDefaults?.value(forKey: Storage.Constants.userId.rawValue) as! String
-        XCTAssertTrue(userId == "brandon")
+        if let userId = analytics.storage.userDefaults?.value(forKey: Storage.Constants.userId.rawValue) as? String {
+            XCTAssertTrue(userId == "brandon")
+        } else {
+            XCTFail("Could not read from storage the userId")
+        }
     }
     
     func testEventWriting() throws {

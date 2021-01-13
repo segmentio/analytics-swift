@@ -10,9 +10,9 @@ import Foundation
 // TODO: fill this out later.
 
 #if os(macOS)
-class macOSLifecycleEvents: PlatformExtension {
+class macOSLifecycleEvents: PlatformPlugin {
     static var specificName = "Segment_macOSLifecycleEvents"
-    let type: ExtensionType
+    let type: PluginType
     let name: String
     let analytics: Analytics
     

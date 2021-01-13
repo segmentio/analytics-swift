@@ -8,23 +8,23 @@
 import Foundation
 
 internal class Mediator {
-    internal func add(extension: Extension) {
-        extensions.append(`extension`)
+    internal func add(plugin: Plugin) {
+        plugins.append(plugin)
     }
     
-    internal func remove(extensionName: String) {
-        extensions.removeAll { (extension) -> Bool in
-            return `extension`.name == extensionName
+    internal func remove(pluginName: String) {
+        plugins.removeAll { (plugin) -> Bool in
+            return plugin.name == pluginName
         }
     }
 
-    internal var extensions = [Extension]()
+    internal var plugins = [Plugin]()
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
         
-        extensions.forEach { (extension) in
+        plugins.forEach { (plugin) in
             if let r = result {
-                result = `extension`.execute(event: r, settings: nil)
+                result = plugin.execute(event: r, settings: nil)
             }
         }
         

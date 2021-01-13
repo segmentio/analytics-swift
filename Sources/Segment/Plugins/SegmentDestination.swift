@@ -7,11 +7,11 @@
 
 import Foundation
 
-class SegmentDestination: DestinationExtension {
+class SegmentDestination: DestinationPlugin {
     
     var analytics: Analytics
-    var extensions: Extensions
-    var type: ExtensionType
+    var plugins: Plugins
+    var type: PluginType
     var name: String
     private var httpClient: HTTPClient
     private var pendingURLs = [URL]()
@@ -22,7 +22,7 @@ class SegmentDestination: DestinationExtension {
         type = .destination
         self.name = name
         self.analytics = analytics
-        extensions = Extensions()
+        plugins = Plugins()
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
     }
@@ -97,6 +97,6 @@ class SegmentDestination: DestinationExtension {
 
 extension Analytics {
     func flushB() {
-        // TODO: Cycle extensions to respond
+        // TODO: Cycle plugins to respond
     }
 }

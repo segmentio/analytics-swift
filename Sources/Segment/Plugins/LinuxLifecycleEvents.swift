@@ -8,9 +8,9 @@
 import Foundation
 
 #if os(Linux)
-class LinuxLifecycleEvents: PlatformExtension {
+class LinuxLifecycleEvents: PlatformPlugin {
     static var specificName = "Segment_LinuxLifecycleEvents"
-    let type: ExtensionType
+    let type: PluginType
     let name: String
     
     weak var analytics: Analytics? = nil

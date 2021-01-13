@@ -20,13 +20,13 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    public var extensions: Extensions
+    public var plugins: Plugins
     
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
         self.storage = Storage(store: self.store, writeKey: writeKey)
-        self.extensions = Extensions()
+        self.plugins = Plugins()
     }
     
     public func build() -> Analytics {
@@ -50,7 +50,7 @@ public class Analytics {
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
-        _ = extensions.timeline.process(incomingEvent: incomingEvent)
+        _ = plugins.timeline.process(incomingEvent: incomingEvent)
     }
 }
 

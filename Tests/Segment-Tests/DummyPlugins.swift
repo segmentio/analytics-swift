@@ -1,5 +1,5 @@
 //
-//  DummyExtensions.swift
+//  DummyPlugins.swift
 //  Segment-Tests
 //
 //  Created by Brandon Sneed on 1/6/21.
@@ -13,8 +13,8 @@ struct MyTraits: Codable {
     let email: String?
 }
 
-class GooberExtension: EventExtension {
-    let type: ExtensionType
+class GooberPlugin: EventPlugin {
+    let type: PluginType
     let name: String
     let analytics: Analytics
     
@@ -39,8 +39,8 @@ class GooberExtension: EventExtension {
     }
 }
 
-class ZiggyExtension: EventExtension {
-    let type: ExtensionType
+class ZiggyPlugin: EventPlugin {
+    let type: PluginType
     let name: String
     let analytics: Analytics
     
@@ -64,10 +64,10 @@ class ZiggyExtension: EventExtension {
     }
 }
 
-class MyDestination: DestinationExtension {
-    var extensions: Extensions
+class MyDestination: DestinationPlugin {
+    var plugins: Plugins
     
-    let type: ExtensionType
+    let type: PluginType
     let name: String
     let analytics: Analytics
     
@@ -75,6 +75,6 @@ class MyDestination: DestinationExtension {
         self.name = name
         self.analytics = analytics
         self.type = .destination
-        self.extensions = Extensions()
+        self.plugins = Plugins()
     }
 }

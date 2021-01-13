@@ -67,7 +67,7 @@ public class HTTPClient {
             
             if let httpResponse = response as? HTTPURLResponse {
                 print(httpResponse.debugDescription)
-                print(String(data: data!, encoding: .utf8))
+                print(String(data: data!, encoding: .utf8) ?? "")
 
                 switch (httpResponse.statusCode) {
                 case 1..<300:

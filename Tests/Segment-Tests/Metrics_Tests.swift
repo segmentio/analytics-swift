@@ -15,10 +15,10 @@ final class Metrics_Tests: XCTestCase {
     func testBaseEventCreation() {
         let analytics = Analytics(writeKey: "test").build()
         let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
-        myDestination.extensions.add(GooberExtension(name: "booya", analytics: analytics))
+        myDestination.plugins.add(GooberPlugin(name: "booya", analytics: analytics))
         
-        analytics.extensions.add(ZiggyExtension(name: "crikey", analytics: analytics))
-        analytics.extensions.add(myDestination)
+        analytics.plugins.add(ZiggyPlugin(name: "crikey", analytics: analytics))
+        analytics.plugins.add(myDestination)
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
