@@ -37,7 +37,7 @@ extension Analytics {
         // setup lifecycle if desired
         if configuration.trackApplicationLifecycleEvents {
             #if os(iOS) || os(watchOS) || os(tvOS)
-            plugins.append(iOSLifecycleEvents.self)
+            plugins += [iOSLifecycleEvents.self, iOSAppBackground.self]
             #endif
             #if os(macOS)
             plugins.append(macOSLifecycleEvents.self)

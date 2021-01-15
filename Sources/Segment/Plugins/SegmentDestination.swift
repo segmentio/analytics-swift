@@ -17,6 +17,7 @@ class SegmentDestination: DestinationPlugin {
     private var pendingURLs = [URL]()
     private var uploadInProgress = false
     private var storage: Storage
+    private var maxPayloadSize = 500000 // Max 500kb
     
     required init(name: String, analytics: Analytics) {
         type = .destination
@@ -62,14 +63,34 @@ class SegmentDestination: DestinationPlugin {
         flush()
     }
     
-    private func flush() {
+    internal func flush() {
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
         if !uploadInProgress {
             uploadInProgress = true
             var processedCall = [Bool]()
+            
+            var fileSizeTotal: Int64 = 0
             for url in data {
+                
+                // Get the file size
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: url.absoluteString)
+                    guard let fileSize = attributes[FileAttributeKey.size] as? Int64 else {
+                        analytics.log(message: "File size could not be read")
+                        return
+                    }
+                    fileSizeTotal += fileSize
+                } catch {
+                    analytics.log(message: "Could not read file attributes")
+                }
+                
+                // Don't continue sending if the file size total has become too large
+                // send it off in the next flush.
+                if fileSizeTotal > maxPayloadSize {
+                    break
+                }
                 
                 httpClient.startBatchUpload(writeKey: analytics.configuration.writeKey, batch: url, completion: { [weak self] (succeeded) in
 
@@ -96,7 +117,12 @@ class SegmentDestination: DestinationPlugin {
 }
 
 extension Analytics {
-    func flushB() {
-        // TODO: Cycle plugins to respond
+    
+    func flushCurrentPayload() {
+        plugins.apply { (plugin) in
+            if let destinationPlugin = plugin as? SegmentDestination {
+                destinationPlugin.flush()
+            }
+        }
     }
 }

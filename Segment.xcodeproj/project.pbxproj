@@ -47,6 +47,7 @@
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
 		969A531925AD14B7009227D9 /* Sovran.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; };
 		969A531A25AD14B7009227D9 /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A534225B10324009227D9 /* iOSAppBackground.swift */; };
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
@@ -164,6 +165,7 @@
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9692724D25A4E5B7009B5298 /* Startup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Startup.swift; sourceTree = "<group>"; };
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
+		969A534225B10324009227D9 /* iOSAppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAppBackground.swift; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -244,9 +246,7 @@
 		9620864E257AA82900314F8D /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
-				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
-				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
+				969A533D25B0D510009227D9 /* Platforms */,
 				96C33A9B25880A5E00F3D538 /* Logger.swift */,
 				96C33AAB25892D6D00F3D538 /* Metrics.swift */,
 				9692726725A583A6009B5298 /* SegmentDestination.swift */,
@@ -267,6 +267,41 @@
 				966945F2259D718000271339 /* Info.plist */,
 			);
 			path = SegmentExample;
+			sourceTree = "<group>";
+		};
+		969A533D25B0D510009227D9 /* Platforms */ = {
+			isa = PBXGroup;
+			children = (
+				969A533E25B0D51A009227D9 /* iOS */,
+				969A534125B0D52D009227D9 /* Linux */,
+				969A534025B0D527009227D9 /* Mac */,
+			);
+			path = Platforms;
+			sourceTree = "<group>";
+		};
+		969A533E25B0D51A009227D9 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
+				969A534225B10324009227D9 /* iOSAppBackground.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		969A534025B0D527009227D9 /* Mac */ = {
+			isa = PBXGroup;
+			children = (
+				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
+			);
+			path = Mac;
+			sourceTree = "<group>";
+		};
+		969A534125B0D52D009227D9 /* Linux */ = {
+			isa = PBXGroup;
+			children = (
+				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
+			);
+			path = Linux;
 			sourceTree = "<group>";
 		};
 		A31A16A325780A8D00C9CDDF /* Utilities */ = {
@@ -525,6 +560,7 @@
 				A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
+				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
 				46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
