@@ -103,6 +103,7 @@ public protocol EventPlugin: Plugin {
 
 public protocol DestinationPlugin: EventPlugin {
     var plugins: Plugins { get set }
+//    func reloadWithSettings(_ settings: Settings)
 }
 
 public protocol UtilityPlugin: EventPlugin { }

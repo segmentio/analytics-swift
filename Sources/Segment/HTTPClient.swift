@@ -44,13 +44,13 @@ public class HTTPClient {
     @discardableResult
     func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ succeeded: Bool) -> Void) -> URLSessionDataTask? {
         
-        guard var settingsURL = URL(string: HTTPClient.segmentAPIBaseHost) else {
+        guard var uploadURL = URL(string: HTTPClient.segmentAPIBaseHost) else {
             completion(false)
             return nil
         }
                 
-        settingsURL = settingsURL.appendingPathComponent("/batch")
-        var urlRequest = URLRequest(url: settingsURL)
+        uploadURL = uploadURL.appendingPathComponent("/batch")
+        var urlRequest = URLRequest(url: uploadURL)
         urlRequest.httpMethod = "POST"
         
         guard let session = try? configuredSession(for: writeKey) else {

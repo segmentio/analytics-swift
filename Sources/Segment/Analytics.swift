@@ -42,9 +42,6 @@ public class Analytics {
         
         // Get everything hot and sweaty here
         platformStartup()
-
-        // finally, kick off settings fetch
-        setupSettingsCheck()
         
         return self
     }
@@ -90,6 +87,14 @@ extension Analytics {
     
     public func edgeFunction() -> Any? {
         return nil
+    }
+    
+    public func settings() -> Settings? {
+        var settings: Settings?
+        if let system: System = store.currentState() {
+            settings = system.settings
+        }
+        return settings
     }
     
     public func version() -> String {
