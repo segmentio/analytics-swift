@@ -138,6 +138,96 @@ extension Encodable {
     }
 }
 
+
+// MARK: - Value Extraction & Conformance
+
+extension JSON {
+    var boolValue: Bool? {
+        switch self {
+        case .bool(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    var decimalValue: Decimal? {
+        switch self {
+        case .number(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    var intValue: Int? {
+        switch self {
+        case .number(let value):
+            return (value as NSDecimalNumber).intValue
+        default:
+            return nil
+        }
+    }
+    
+    var uintValue: UInt? {
+        switch self {
+        case .number(let value):
+            return (value as NSDecimalNumber).uintValue
+        default:
+            return nil
+        }
+    }
+    
+    var floatValue: Float? {
+        switch self {
+        case .number(let value):
+            return (value as NSDecimalNumber).floatValue
+        default:
+            return nil
+        }
+    }
+    
+    var doubleValue: Double? {
+        switch self {
+        case .number(let value):
+            return (value as NSDecimalNumber).doubleValue
+        default:
+            return nil
+        }
+    }
+    
+    var stringValue: String? {
+        switch self {
+        case .string(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    var dictionaryValue: [String: JSON]? {
+        switch self {
+        case .object(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+    var arrayValue: [JSON]? {
+        switch self {
+        case .array(let value):
+            return value
+        default:
+            return nil
+        }
+    }
+    
+}
+
+
+// MARK: - Helpers
+
 fileprivate extension NSNumber {
     static let trueValue = NSNumber(value: true)
     static let trueObjCType = trueValue.objCType
@@ -153,3 +243,4 @@ fileprivate extension NSNumber {
         return false
     }
 }
+
