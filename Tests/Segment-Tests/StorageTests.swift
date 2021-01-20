@@ -73,7 +73,11 @@ class StorageTests: XCTestCase {
 
         analytics.storage.remove(file: fileURL)
         
+        // make sure our temp file is gone too.
+        let tempFile = fileURL.deletingPathExtension()
+        
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: tempFile.path))
     }
     
     func testFilePrepAndFinish() {
@@ -105,13 +109,6 @@ class StorageTests: XCTestCase {
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "1-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
 
 }
