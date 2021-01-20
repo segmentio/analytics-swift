@@ -65,6 +65,10 @@ class ZiggyPlugin: EventPlugin {
 }
 
 class MyDestination: DestinationPlugin {
+    func reloadWithSettings(_ settings: Settings) {
+        //
+    }
+    
     var plugins: Plugins
     
     let type: PluginType

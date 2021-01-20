@@ -57,7 +57,7 @@ class StorageTests: XCTestCase {
         let fileURL = results![0]
         
         XCTAssertTrue(fileURL.isFileURL)
-        XCTAssertTrue(fileURL.lastPathComponent == "0.segment.events")
+        XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         
         let json = try! JSONSerialization.jsonObject(with: Data(contentsOf: fileURL), options: []) as! [String: Any]
@@ -90,7 +90,7 @@ class StorageTests: XCTestCase {
         var fileURL = results![0]
         
         XCTAssertTrue(fileURL.isFileURL)
-        XCTAssertTrue(fileURL.lastPathComponent == "0.segment.events")
+        XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         
         event = IdentifyEvent(userId: "brandon2", traits: try! JSON(MyTraits(email: "blah@blah.com")))
@@ -103,7 +103,7 @@ class StorageTests: XCTestCase {
         fileURL = results![0]
         
         XCTAssertTrue(fileURL.isFileURL)
-        XCTAssertTrue(fileURL.lastPathComponent == "1.segment.events")
+        XCTAssertTrue(fileURL.lastPathComponent == "1-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
 

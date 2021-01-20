@@ -27,6 +27,8 @@ internal class Storage: Subscriber {
 // MARK: - String Contants
 
 extension Storage {
+    static let tempExtension = "temp"
+    
     enum Constants: String, CaseIterable {
         case userId = "segment.userId"
         case traits = "segment.traits"
@@ -71,7 +73,7 @@ extension Storage {
     func read(_ key: Storage.Constants) -> [URL]? {
         switch key {
         case .events:
-            return eventFiles()
+            return eventFiles(includeUnfinished: false)
         default:
             break
         }
@@ -100,7 +102,7 @@ extension Storage {
     
     func hardReset(doYouKnowHowToUseThis: Bool) {
         if doYouKnowHowToUseThis != true { return }
-        let urls = eventFiles()
+        let urls = eventFiles(includeUnfinished: true)
         for key in Constants.allCases {
             userDefaults?.setValue(nil, forKey: key.rawValue)
         }
@@ -166,23 +168,14 @@ extension Storage {
     
     func eventsFile(index: Int) -> URL {
         let docs = eventStorageDirectory()
-        let fileURL = docs.appendingPathComponent("\(index).segment.events")
+        let fileURL = docs.appendingPathComponent("\(index)-segment-events")
         return fileURL
     }
     
-    func eventFiles() -> [URL] {
+    func eventFiles(includeUnfinished: Bool) -> [URL] {
         // synchronized against finishing/creating files while we're getting
         // a list of files to send.
-        var result = [URL]()
-        syncQueue.sync {
-            let files = try? FileManager.default.contentsOfDirectory(at: eventStorageDirectory(), includingPropertiesForKeys: [], options: .skipsHiddenFiles)
-            let sorted = files?.sorted { (left, right) -> Bool in
-                return left.lastPathComponent > right.lastPathComponent
-            }
-            if let s = sorted {
-                result = s
-            }
-        }
+        
         // finish out any file in progress
         var index: Int = 0
         syncQueue.sync {
@@ -190,6 +183,24 @@ extension Storage {
         }
         finish(file: eventsFile(index: index))
         
+        var result = [URL]()
+        syncQueue.sync {
+            let allFiles = try? FileManager.default.contentsOfDirectory(at: eventStorageDirectory(), includingPropertiesForKeys: [], options: .skipsHiddenFiles)
+            var files = allFiles
+            
+            if includeUnfinished == false {
+                files = allFiles?.filter({ (file) -> Bool in
+                    return file.pathExtension == Storage.tempExtension
+                })
+            }
+            
+            let sorted = files?.sorted { (left, right) -> Bool in
+                return left.lastPathComponent > right.lastPathComponent
+            }
+            if let s = sorted {
+                result = s
+            }
+        }
         return result
     }
 }
@@ -248,14 +259,19 @@ extension Storage {
                 context = c.toString()
             }
             
+            let tempFile = file.appendingPathExtension(Storage.tempExtension)
+            try? FileManager.default.copyItem(at: file, to: tempFile)
+            
             context = String(format: contextFormat, context)
+            
+            let sentAt = Date().iso8601()
 
             // write it to the existing file
-            let contents = "],\(context)}"
-            let finalData = contents.data(using: .utf8)
-            if let data = finalData, let handle = try? FileHandle(forWritingTo: file) {
+            let fileEnding = "],\"sentAt\":\"\(sentAt)\",\(context)}"
+            let endData = fileEnding.data(using: .utf8)
+            if let endData = endData, let handle = try? FileHandle(forWritingTo: tempFile) {
                 handle.seekToEndOfFile()
-                handle.write(data)
+                handle.write(endData)
                 handle.closeFile()
             } else {
                 // something is wrong with this file, maybe delete it?
@@ -269,7 +285,11 @@ extension Storage {
     
     func remove(file: URL) {
         syncQueue.sync {
+            // remove the temp file.
             try? FileManager.default.removeItem(atPath: file.path)
+            // remove the unfinished event storage file.
+            let actualFile = file.deletingPathExtension()
+            try? FileManager.default.removeItem(atPath: actualFile.path)
         }
     }
 }
