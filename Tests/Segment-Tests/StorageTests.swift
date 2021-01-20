@@ -73,10 +73,10 @@ class StorageTests: XCTestCase {
 
         analytics.storage.remove(file: fileURL)
         
-        // make sure our temp file is gone too.
-        let tempFile = fileURL.deletingPathExtension()
-        
-        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+        // make sure our original and temp files are named correctly, and gone.
+        let originalFile = fileURL.deletingPathExtension()
+        let tempFile = fileURL
+        XCTAssertFalse(FileManager.default.fileExists(atPath: originalFile.path))
         XCTAssertFalse(FileManager.default.fileExists(atPath: tempFile.path))
     }
     
