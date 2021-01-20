@@ -13,7 +13,7 @@ class SegmentMixPanel: DestinationPlugin {
     var plugins: Plugins
     var name: String
     var analytics: Analytics
-    private let mixPanel: Mixpanel?
+    private var mixPanel: Mixpanel? = nil
     
     required init(name: String, analytics: Analytics) {
         self.analytics = analytics
@@ -21,11 +21,25 @@ class SegmentMixPanel: DestinationPlugin {
         plugins = Plugins()
         type = .destination
         if let settings = analytics.settings(), let integrations = settings.integrations {
+            // TODO: Look at possibility of default names after PoC
 //            integrations["Mixpanel"]
+            if let integrationsDict = integrations.dictionaryValue {
+                print("Funky funky \(integrationsDict["Mixpanel"])")
+            } else {
+                print("we died")
+            }
             mixPanel = Mixpanel.sharedInstance(withToken: "")//mixpanelToken)
-        } else {
-            fatalError("Could not instantiate Mix Panel")
         }
+    }
+    
+    func reloadWithSettings(_ settings: Settings) {
+        // TODO: Update the proper types
+        if let integrationsDict = settings.integrations?.dictionaryValue {
+            print("Funky funky \(integrationsDict["Mixpanel"])")
+        } else {
+            print("we died")
+        }
+//        mixPanel?.
     }
     
     func execute<T>(event: T?, settings: Settings?) -> T? where T : RawEvent {

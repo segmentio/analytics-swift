@@ -66,6 +66,10 @@ class MyDestination: DestinationPlugin {
         self.plugins = Plugins()
     }
     
+    func reloadWithSettings(_ settings: Settings) {
+        // TODO: Update the proper types
+    }
+    
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         return event
     }

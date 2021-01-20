@@ -9,7 +9,7 @@ import Foundation
 import Sovran
 
 
-internal class Timeline {
+internal class Timeline: Subscriber {
     internal let plugins: [PluginType: Mediator]
     
     internal init() {
@@ -20,6 +20,8 @@ internal class Timeline {
             .after: Mediator(),
             .utility: Mediator()
         ]
+                
+//        store.subscribe(self, handler: systemUpdate)
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {

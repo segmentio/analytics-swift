@@ -8,7 +8,7 @@
 import Foundation
 
 class SegmentDestination: DestinationPlugin {
-    
+
     var analytics: Analytics
     var plugins: Plugins
     var type: PluginType
@@ -26,6 +26,10 @@ class SegmentDestination: DestinationPlugin {
         plugins = Plugins()
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
+    }
+    
+    func reloadWithSettings(_ settings: Settings) {
+        // TODO: Update the proper types
     }
     
     // MARK: - Event Handling Methods

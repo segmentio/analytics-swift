@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Sovran
 
-extension Analytics {
+extension Analytics: Subscriber {
         
     internal func platformStartup() {
         
@@ -28,7 +29,28 @@ extension Analytics {
         // other setup/config stuff.
         // ...
         
+        // Do initial settings if we do not have any. Ask Brandon if this is needed with a subscription
+        
+        if let settings = settings() {
+            updateDestinations(with: settings)
+        }
+        
+        store.subscribe(self, initialState: true) { (state: System) in
+            print(state)
+            if let settings = state.settings {
+                self.updateDestinations(with: settings)
+            }
+        }
+        
         setupSettingsCheck()
+    }
+    
+    internal func updateDestinations(with settings: Settings) {
+        plugins.apply { (plugin) in
+            if let destPlugin = plugin as? DestinationPlugin {
+                destPlugin.reloadWithSettings(settings)
+            }
+        }
     }
     
     internal func platformPlugins() -> [PlatformPlugin.Type]? {

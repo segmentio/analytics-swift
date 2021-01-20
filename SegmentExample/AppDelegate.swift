@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .build()
         
         analytics.plugins.add(AfterPlugin(name: "hello", analytics: analytics))
+        analytics.plugins.add(SegmentMixPanel(name: "Mixpanel", analytics: analytics))
 
         analytics.identify(userId: "Live Demo -- never breaks")
         analytics.track(name: "I once tracked a cougar")

@@ -142,7 +142,7 @@ extension Encodable {
 // MARK: - Value Extraction & Conformance
 
 extension JSON {
-    var boolValue: Bool? {
+    public var boolValue: Bool? {
         switch self {
         case .bool(let value):
             return value
@@ -151,7 +151,7 @@ extension JSON {
         }
     }
     
-    var decimalValue: Decimal? {
+    public var decimalValue: Decimal? {
         switch self {
         case .number(let value):
             return value
@@ -160,7 +160,7 @@ extension JSON {
         }
     }
     
-    var intValue: Int? {
+    public var intValue: Int? {
         switch self {
         case .number(let value):
             return (value as NSDecimalNumber).intValue
@@ -169,7 +169,7 @@ extension JSON {
         }
     }
     
-    var uintValue: UInt? {
+    public var uintValue: UInt? {
         switch self {
         case .number(let value):
             return (value as NSDecimalNumber).uintValue
@@ -178,7 +178,7 @@ extension JSON {
         }
     }
     
-    var floatValue: Float? {
+    public var floatValue: Float? {
         switch self {
         case .number(let value):
             return (value as NSDecimalNumber).floatValue
@@ -187,7 +187,7 @@ extension JSON {
         }
     }
     
-    var doubleValue: Double? {
+    public var doubleValue: Double? {
         switch self {
         case .number(let value):
             return (value as NSDecimalNumber).doubleValue
@@ -196,7 +196,7 @@ extension JSON {
         }
     }
     
-    var stringValue: String? {
+    public var stringValue: String? {
         switch self {
         case .string(let value):
             return value
@@ -205,7 +205,7 @@ extension JSON {
         }
     }
     
-    var dictionaryValue: [String: JSON]? {
+    public var dictionaryValue: [String: JSON]? {
         switch self {
         case .object(let value):
             return value
@@ -214,7 +214,7 @@ extension JSON {
         }
     }
     
-    var arrayValue: [JSON]? {
+    public var arrayValue: [JSON]? {
         switch self {
         case .array(let value):
             return value
