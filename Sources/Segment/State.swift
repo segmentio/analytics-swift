@@ -47,9 +47,12 @@ struct System: State {
         let pluginName: String
         
         func reduce(state: System) -> System {
-            guard let enable = try? JSON(true) else { return state }
+            // we need to set any destination plugins to false in the
+            // integrations payload.  this prevents them from being sent
+            // by segment.com once an event reaches segment.
+            guard let disable = try? JSON(false) else { return state }
             if var integrations = state.integrations?.dictionaryValue {
-                integrations[pluginName] = enable
+                integrations[pluginName] = disable
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(enabled: state.enabled,
                                         configuration: state.configuration,
