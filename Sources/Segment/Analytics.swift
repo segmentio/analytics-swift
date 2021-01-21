@@ -47,7 +47,8 @@ public class Analytics {
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
-        _ = plugins.timeline.process(incomingEvent: incomingEvent)
+        let event = incomingEvent.applyRawEventData(store: store)
+        _ = plugins.timeline.process(incomingEvent: event)
     }
 }
 

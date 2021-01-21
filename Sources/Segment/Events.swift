@@ -19,10 +19,10 @@ extension Analytics {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(properties)
-                let event = TrackEvent(event: name, properties: jsonProperties).applyRawEventData(store: store)
+                let event = TrackEvent(event: name, properties: jsonProperties)
                 process(incomingEvent: event)
             } else {
-                let event = TrackEvent(event: name, properties: nil).applyRawEventData(store: store)
+                let event = TrackEvent(event: name, properties: nil)
                 process(incomingEvent: event)
             }
             
@@ -52,7 +52,7 @@ extension Analytics {
         do {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: jsonTraits))
-            let event = IdentifyEvent(userId: userId, traits: jsonTraits).applyRawEventData(store: store)
+            let event = IdentifyEvent(userId: userId, traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
             assertionFailure("\(error)")
@@ -66,7 +66,7 @@ extension Analytics {
         do {
             let jsonTraits = try JSON(traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
-            let event = IdentifyEvent(traits: jsonTraits).applyRawEventData(store: store)
+            let event = IdentifyEvent(traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
             assertionFailure("\(error)")
@@ -79,7 +79,7 @@ extension Analytics {
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     public func identify(userId: String) {
-        let event = IdentifyEvent(userId: userId, traits: nil).applyRawEventData(store: store)
+        let event = IdentifyEvent(userId: userId, traits: nil)
         store.dispatch(action: UserInfo.SetUserIdAction(userId: userId))
         process(incomingEvent: event)
     }
@@ -93,10 +93,10 @@ extension Analytics {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(properties)
-                let event = ScreenEvent(screenTitle: screenTitle, category: category, properties: jsonProperties).applyRawEventData(store: store)
+                let event = ScreenEvent(screenTitle: screenTitle, category: category, properties: jsonProperties)
                 process(incomingEvent: event)
             } else {
-                let event = ScreenEvent(screenTitle: screenTitle, category: category).applyRawEventData(store: store)
+                let event = ScreenEvent(screenTitle: screenTitle, category: category)
                 process(incomingEvent: event)
             }
         } catch {
@@ -117,10 +117,10 @@ extension Analytics {
         do {
             if let traits = traits {
                 let jsonTraits = try JSON(traits)
-                let event = GroupEvent(groupId: groupId, traits: jsonTraits).applyRawEventData(store: store)
+                let event = GroupEvent(groupId: groupId, traits: jsonTraits)
                 process(incomingEvent: event)
             } else {
-                let event = GroupEvent(groupId: groupId).applyRawEventData(store: store)
+                let event = GroupEvent(groupId: groupId)
                 process(incomingEvent: event)
             }
         } catch {
@@ -135,7 +135,7 @@ extension Analytics {
     // MARK: - Alias
     
     public func alias(newId: String) {
-        let event = AliasEvent(newId: newId).applyRawEventData(store: store)
+        let event = AliasEvent(newId: newId)
         process(incomingEvent: event)
     }
 }
