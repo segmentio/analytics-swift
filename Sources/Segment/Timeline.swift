@@ -83,10 +83,6 @@ internal class Mediator {
 
 // MARK: - Plugin Support
 
-/**
- This suite of functions supplies core functionality back up to the public
- `Plugin` type.
- */
 extension Timeline {
     internal func applyToPlugins(_ closure: (Plugin) -> Void) {
         for type in PluginType.allCases {
