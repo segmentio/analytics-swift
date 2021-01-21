@@ -7,66 +7,6 @@
 
 import Foundation
 
-public struct Plugins {
-    internal let timeline = Timeline()
-    
-    public init() {
-        
-    }
-    
-    /**
-     Applies the supplied closure to the currently loaded set of plugins.
-     NOTE: This does not apply to plugins contained within DestinationPlugins.
-     
-     - Parameter closure: A closure that takes an plugin to be operated on as a parameter.
-     
-     */
-    public func apply(_ closure: (Plugin) -> Void) {
-        timeline.applyToPlugins(closure)
-    }
-    
-    /**
-     Adds a new plugin to the currently loaded set.
-     
-     - Parameter plugin: The plugin to be added.
-     - Returns: Returns the name of the supplied plugin.
-     
-     */
-    @discardableResult
-    public func add(_ plugin: Plugin) -> String {
-        timeline.add(plugin: plugin)
-        return plugin.name
-    }
-    
-    /**
-     Removes and unloads plugins with a matching name from the system.
-     
-     - Parameter pluginName: An plugin name.
-     */
-    public func remove(_ pluginName: String) {
-        timeline.remove(pluginName: pluginName)
-    }
-    
-    /*
-    private func fetchSettings() {
-        
-        // TODO: Grab the previous cached settings
-        
-        guard let writeKey = analytics?.configuration.writeKey else { return }
-        
-        httpClient.settingsFor(write: writeKey) { (success, settings) in
-            if success {
-                // TODO: Overwrite cached settings
-            } else {
-                // TODO: Get default settings to work from
-            }
-            
-            print("Settings: \(settings.printPretty())")
-            // TODO: Cache the settings
-        }
-    }*/
-}
-
 /**
  PluginType specifies where in the chain a given plugin is to be executed.
  */
@@ -102,8 +42,11 @@ public protocol EventPlugin: Plugin {
 }
 
 public protocol DestinationPlugin: EventPlugin {
-    var plugins: Plugins { get set }
+    var timeline: Timeline { get set }
     func reloadWithSettings(_ settings: Settings)
+    func add(plugin: Plugin) -> String
+    func apply(closure: (Plugin) -> Void)
+    func remove(pluginName: String)
 }
 
 public protocol UtilityPlugin: EventPlugin { }
@@ -184,8 +127,8 @@ extension DestinationPlugin {
         // to this destination.
         
         // apply .before and .enrichment types first ...
-        let beforeResult = plugins.timeline.applyPlugins(type: .before, event: incomingEvent)
-        let enrichmentResult = plugins.timeline.applyPlugins(type: .enrichment, event: beforeResult)
+        let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)
+        let enrichmentResult = timeline.applyPlugins(type: .enrichment, event: beforeResult)
         
         // now we execute any overrides we may have made.  basically, the idea is to take an
         // incoming event, like identify, and map it to whatever is appropriate for this destination.
@@ -206,13 +149,87 @@ extension DestinationPlugin {
         }
         
         // apply .after plugins ...
-        let afterResult = plugins.timeline.applyPlugins(type: .after, event: destinationResult)
+        let afterResult = timeline.applyPlugins(type: .after, event: destinationResult)
 
         // DEBUG
         print("Destination (\(name)): \(afterResult?.prettyPrint() ?? "")")
         // DEBUG
         
         return afterResult
+    }
+}
+
+// MARK: - Adding/Removing Plugins
+
+extension DestinationPlugin {
+    /**
+     Applies the supplied closure to the currently loaded set of plugins.
+     
+     - Parameter closure: A closure that takes an plugin to be operated on as a parameter.
+     
+     */
+    public func apply(closure: (Plugin) -> Void) {
+        timeline.applyToPlugins(closure)
+    }
+    
+    /**
+     Adds a new plugin to the currently loaded set.
+     
+     - Parameter plugin: The plugin to be added.
+     - Returns: Returns the name of the supplied plugin.
+     
+     */
+    @discardableResult
+    public func add(plugin: Plugin) -> String {
+        timeline.add(plugin: plugin)
+        return plugin.name
+    }
+    
+    /**
+     Removes and unloads plugins with a matching name from the system.
+     
+     - Parameter pluginName: An plugin name.
+     */
+    public func remove(pluginName: String) {
+        timeline.remove(pluginName: pluginName)
+    }
+
+}
+
+extension Analytics {
+    /**
+     Applies the supplied closure to the currently loaded set of plugins.
+     NOTE: This does not apply to plugins contained within DestinationPlugins.
+     
+     - Parameter closure: A closure that takes an plugin to be operated on as a parameter.
+     
+     */
+    public func apply(closure: (Plugin) -> Void) {
+        timeline.applyToPlugins(closure)
+    }
+    
+    /**
+     Adds a new plugin to the currently loaded set.
+     
+     - Parameter plugin: The plugin to be added.
+     - Returns: Returns the name of the supplied plugin.
+     
+     */
+    @discardableResult
+    public func add(plugin: Plugin) -> String {
+        timeline.add(plugin: plugin)
+        store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
+        return plugin.name
+    }
+    
+    /**
+     Removes and unloads plugins with a matching name from the system.
+     
+     - Parameter pluginName: An plugin name.
+     */
+    public func remove(pluginName: String) {
+        timeline.remove(pluginName: pluginName)
+        store.dispatch(action: System.RemoveIntegrationAction(pluginName: pluginName))
     }
 }
 

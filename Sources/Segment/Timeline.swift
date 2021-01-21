@@ -9,10 +9,10 @@ import Foundation
 import Sovran
 
 
-internal class Timeline: Subscriber {
+public class Timeline: Subscriber {
     internal let plugins: [PluginType: Mediator]
     
-    internal init() {
+    public init() {
         self.plugins = [
             .before: Mediator(),
             .enrichment: Mediator(),

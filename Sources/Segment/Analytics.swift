@@ -20,13 +20,13 @@ public class Analytics {
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
-    public var plugins: Plugins
+    public var timeline: Timeline
     
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
         self.store = Store()
         self.storage = Storage(store: self.store, writeKey: writeKey)
-        self.plugins = Plugins()
+        self.timeline = Timeline()
     }
     
     public func build() -> Analytics {
@@ -48,7 +48,7 @@ public class Analytics {
     
     internal func process<E: RawEvent>(incomingEvent: E) {
         let event = incomingEvent.applyRawEventData(store: store)
-        _ = plugins.timeline.process(incomingEvent: event)
+        _ = timeline.process(incomingEvent: event)
     }
 }
 
@@ -103,11 +103,6 @@ extension Analytics {
     }
     
     public static func version() -> String {
-        let currentBundle = Bundle(for: Analytics.self)
-        if let appVersion = currentBundle.infoDictionary?["CFBundleShortVersionString"] as? String {
-            return appVersion
-        } else {
-            return __segment_version
-        }
+        return __segment_version
     }
 }

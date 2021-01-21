@@ -69,8 +69,7 @@ class MyDestination: DestinationPlugin {
         //
     }
     
-    var plugins: Plugins
-    
+    var timeline: Timeline
     let type: PluginType
     let name: String
     let analytics: Analytics
@@ -79,6 +78,6 @@ class MyDestination: DestinationPlugin {
         self.name = name
         self.analytics = analytics
         self.type = .destination
-        self.plugins = Plugins()
+        self.timeline = Timeline()
     }
 }

@@ -62,7 +62,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     }
     
     func applicationWillEnterForeground(notification: NSNotification) {
-        analytics.plugins.apply { (ext) in
+        analytics.apply { (ext) in
             if let validExt = ext as? MacLifecycle {
                 validExt.applicationWillEnterForeground()
             }
@@ -70,7 +70,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     }
     
     func applicationDidFinishLaunching(notification: NSNotification) {
-        analytics.plugins.apply { (ext) in
+        analytics.apply { (ext) in
             if let validExt = ext as? MacLifecycle {
                 let options = notification.userInfo as? [String: Any] ?? nil
                 validExt.application(didFinishLaunchingWithOptions: options)
@@ -79,7 +79,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     }
     
     func didEnterBackground(notification: NSNotification) {
-        analytics.plugins.apply { (ext) in
+        analytics.apply { (ext) in
             if let validExt = ext as? MacLifecycle {
                 validExt.applicationDidEnterBackground()
             }

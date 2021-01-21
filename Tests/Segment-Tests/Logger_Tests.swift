@@ -39,7 +39,7 @@ final class Logger_Tests: XCTestCase {
             XCTAssertEqual(type, .info, "Type not correctly passed")
             XCTAssertEqual(message, "Something Other Than Awesome", "Message not correctly passed")
         }
-        analytics.plugins.add(mockLogger)
+        analytics.add(plugin: mockLogger)
         analytics.log(message: "Something Other Than Awesome")
         wait(for: [expectation], timeout: 1.0)
     }

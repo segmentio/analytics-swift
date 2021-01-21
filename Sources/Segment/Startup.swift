@@ -16,13 +16,13 @@ extension Analytics: Subscriber {
         // ...
         let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
         segmentDestination.analytics = self
-        plugins.add(segmentDestination)
+        add(plugin: segmentDestination)
         
         // Setup platform specific plugins
         if let platformPlugins = platformPlugins() {
             for pluginType in platformPlugins {
                 let prebuilt = pluginType.init(name: pluginType.specificName, analytics: self)
-                plugins.add(prebuilt)
+                add(plugin: prebuilt)
             }
         }
         
@@ -46,7 +46,7 @@ extension Analytics: Subscriber {
     }
     
     internal func updateDestinations(with settings: Settings) {
-        plugins.apply { (plugin) in
+        apply { (plugin) in
             if let destPlugin = plugin as? DestinationPlugin {
                 destPlugin.reloadWithSettings(settings)
             }

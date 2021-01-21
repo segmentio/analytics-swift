@@ -10,7 +10,7 @@ import Foundation
 class SegmentDestination: DestinationPlugin {
 
     var analytics: Analytics
-    var plugins: Plugins
+    var timeline: Timeline
     var type: PluginType
     var name: String
     private var httpClient: HTTPClient
@@ -23,7 +23,7 @@ class SegmentDestination: DestinationPlugin {
         type = .destination
         self.name = name
         self.analytics = analytics
-        plugins = Plugins()
+        timeline = Timeline()
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
     }
@@ -123,7 +123,7 @@ class SegmentDestination: DestinationPlugin {
 extension Analytics {
     
     func flushCurrentPayload() {
-        plugins.apply { (plugin) in
+        apply { (plugin) in
             if let destinationPlugin = plugin as? SegmentDestination {
                 destinationPlugin.flush()
             }

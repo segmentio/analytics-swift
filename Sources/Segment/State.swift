@@ -40,7 +40,45 @@ struct System: State {
                                 integrations: state.integrations,
                                 settings: settings)
             return result
-
+        }
+    }
+    
+    struct AddIntegrationAction: Action {
+        let pluginName: String
+        
+        func reduce(state: System) -> System {
+            guard let enable = try? JSON(true) else { return state }
+            if var integrations = state.integrations?.dictionaryValue {
+                integrations[pluginName] = enable
+                if let jsonIntegrations = try? JSON(integrations) {
+                    let result = System(enabled: state.enabled,
+                                        configuration: state.configuration,
+                                        context: state.context,
+                                        integrations: jsonIntegrations,
+                                        settings: state.settings)
+                    return result
+                }
+            }
+            return state
+        }
+    }
+    
+    struct RemoveIntegrationAction: Action {
+        let pluginName: String
+        
+        func reduce(state: System) -> System {
+            if var integrations = state.integrations?.dictionaryValue {
+                integrations.removeValue(forKey: pluginName)
+                if let jsonIntegrations = try? JSON(integrations) {
+                    let result = System(enabled: state.enabled,
+                                        configuration: state.configuration,
+                                        context: state.context,
+                                        integrations: jsonIntegrations,
+                                        settings: state.settings)
+                    return result
+                }
+            }
+            return state
         }
     }
 }
