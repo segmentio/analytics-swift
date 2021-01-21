@@ -60,7 +60,6 @@
 		A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16502576C47400C9CDDF /* JSONTests.swift */; };
 		A31A16B225781CB400C9CDDF /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16A425780E8D00C9CDDF /* JSON.swift */; };
 		A31A16CA25794D9700C9CDDF /* Plugins.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16C225794BEF00C9CDDF /* Plugins.swift */; };
-		A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16BD25794BC300C9CDDF /* Mediator.swift */; };
 		A31A16E12579779600C9CDDF /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16D9257976FB00C9CDDF /* Version.swift */; };
 		A3471FBE256487F000965480 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3471FBD256487F000965480 /* Configuration.swift */; };
 		A3AEE14A2580208E002386EB /* iso8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AEE1492580208E002386EB /* iso8601.swift */; };
@@ -208,7 +207,6 @@
 		A31A16332576B7AF00C9CDDF /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		A31A16502576C47400C9CDDF /* JSONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
 		A31A16A425780E8D00C9CDDF /* JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
-		A31A16BD25794BC300C9CDDF /* Mediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mediator.swift; sourceTree = "<group>"; };
 		A31A16C225794BEF00C9CDDF /* Plugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plugins.swift; sourceTree = "<group>"; };
 		A31A16D9257976FB00C9CDDF /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -437,7 +435,6 @@
 				A31A16C225794BEF00C9CDDF /* Plugins.swift */,
 				46FE4C9125A3EE90003A7362 /* Lifecycle.swift */,
 				967C40ED259A7311008EB0B6 /* HTTPClient.swift */,
-				A31A16BD25794BC300C9CDDF /* Mediator.swift */,
 				96C33AB0258961F500F3D538 /* Settings.swift */,
 				9692724D25A4E5B7009B5298 /* Startup.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
@@ -646,7 +643,6 @@
 			files = (
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
-				A31A16D125794DA300C9CDDF /* Mediator.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
