@@ -7,21 +7,18 @@
 
 import Foundation
 
-public protocol Settings: Codable {
+/*public protocol Settings: Codable {
     var integrations: JSON? { get set }
     var plan: JSON? { get set }
     var edgeFunctions: JSON? { get set }
-}
+}*/
 
-struct RawSettings: Settings {
-    var integrations: JSON?
+public struct Settings: Codable {
+    public var integrations: JSON? = nil
+    public var plan: JSON? = nil
+    public var edgeFunctions: JSON? = nil
     
-    var plan: JSON?
-    
-    var edgeFunctions: JSON?
-    
-    init(writeKey: String, apiHost: String) {
-        // TODO: HACK MONSTER
+    public init(writeKey: String, apiHost: String) {
         integrations = try! JSON([
             "Segment.io": [
                 "apiKey": writeKey,
@@ -30,7 +27,7 @@ struct RawSettings: Settings {
         ])
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         integrations = try? values.decode(JSON.self, forKey: CodingKeys.integrations)
         self.plan = try? values.decode(JSON.self, forKey: CodingKeys.plan)

@@ -93,7 +93,7 @@ public class HTTPClient {
         return dataTask
     }
     
-    func settingsFor(writeKey: String, completion: @escaping (Bool, RawSettings?) -> Void) {
+    func settingsFor(writeKey: String, completion: @escaping (Bool, Settings?) -> Void) {
         
         // Change the key specific to settings so it can be fetched separately
         // from write key sessions for uploading.
@@ -128,7 +128,7 @@ public class HTTPClient {
                 }
             }
 
-            guard let data = data, let responseJSON = try? JSONDecoder().decode(RawSettings.self, from: data) else {
+            guard let data = data, let responseJSON = try? JSONDecoder().decode(Settings.self, from: data) else {
                 self?.analytics.log(message: "Error deserializing settings.")
                 completion(false, nil)
                 return

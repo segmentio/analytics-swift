@@ -23,6 +23,7 @@ internal struct Configuration {
     var flushInterval: TimeInterval = 30
     var maxQueueSize: Int = 1000
     var application: Any? = nil
+    var defaultSettings: Settings? = nil
 }
 
 

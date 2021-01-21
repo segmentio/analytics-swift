@@ -147,7 +147,7 @@ extension Storage {
     
     func systemUpdate(state: System) {
         // write new stuff to disk
-        if let s = state.settings as? RawSettings {
+        if let s = state.settings {
             write(.settings, value: s)
         }
     }

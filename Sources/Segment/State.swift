@@ -97,11 +97,15 @@ struct UserInfo: Codable, State {
 
 extension System {
     static func defaultState(configuration: Configuration, from storage: Storage) -> System {
-        var settings: RawSettings? = storage.read(.settings)
+        var settings: Settings? = storage.read(.settings)
         if settings == nil {
-            settings = RawSettings(writeKey: configuration.writeKey, apiHost: HTTPClient.getAPIHost())
+            if let defaults = configuration.defaultSettings {
+                settings = defaults
+            } else {
+                settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getAPIHost())
+            }
         }
-        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: nil)
+        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: settings)
     }
 }
 
