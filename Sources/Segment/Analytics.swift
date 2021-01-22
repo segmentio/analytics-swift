@@ -69,7 +69,7 @@ extension Analytics {
     }
     
     public func flush() {
-        // ...
+        flushCurrentPayload()
     }
     
     public func reset() {

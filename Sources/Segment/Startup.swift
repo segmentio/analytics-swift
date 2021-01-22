@@ -11,12 +11,13 @@ import Sovran
 extension Analytics: Subscriber {
         
     internal func platformStartup() {
-        
-        // add segment destination plugin
-        // ...
-        let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
-        segmentDestination.analytics = self
-        add(plugin: segmentDestination)
+        // add segment destination plugin unless
+        // asked not to via configuration.
+        if configuration.autoAddSegmentDestination {
+            let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
+            segmentDestination.analytics = self
+            add(plugin: segmentDestination)
+        }
         
         // Setup platform specific plugins
         if let platformPlugins = platformPlugins() {
@@ -26,15 +27,7 @@ extension Analytics: Subscriber {
             }
         }
         
-        // other setup/config stuff.
-        // ...
-        
-        // Do initial settings if we do not have any. Ask Brandon if this is needed with a subscription
-        
-        if let settings = settings() {
-            update(settings: settings)
-        }
-        
+        // prepare our subscription for settings updates from segment.com
         store.subscribe(self, initialState: true) { (state: System) in
             print(state)
             if let settings = state.settings {
@@ -42,13 +35,25 @@ extension Analytics: Subscriber {
             }
         }
         
+        // plugins will receive any settings we currently have as they are added.
+        // ... but lets go check if we have new stuff ....
+        // start checking periodically for settings changes from segment.com
         setupSettingsCheck()
     }
     
     internal func update(settings: Settings) {
         apply { (plugin) in
-            if let destPlugin = plugin as? DestinationPlugin {
-                destPlugin.update(settings: settings)
+            // tell all top level plugins to update.
+            update(plugin: plugin, settings: settings)
+        }
+    }
+    
+    internal func update(plugin: Plugin, settings: Settings) {
+        plugin.update(settings: settings)
+        // if it's a destination, tell it's plugins to update as well.
+        if let dest = plugin as? DestinationPlugin {
+            dest.apply { (subPlugin) in
+                subPlugin.update(settings: settings)
             }
         }
     }

@@ -24,6 +24,7 @@ internal struct Configuration {
     var maxQueueSize: Int = 1000
     var application: Any? = nil
     var defaultSettings: Settings? = nil
+    var autoAddSegmentDestination: Bool = true
 }
 
 
@@ -75,6 +76,12 @@ public extension Analytics {
     @discardableResult
     func maxQueueSize(_ eventCount: Int) -> Analytics {
         configuration.maxQueueSize = eventCount
+        return self
+    }
+    
+    @discardableResult
+    func autoAddSegmentDestination(_ value: Bool) -> Analytics {
+        configuration.autoAddSegmentDestination = value
         return self
     }
 }

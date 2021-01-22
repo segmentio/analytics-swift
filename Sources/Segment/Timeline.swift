@@ -58,6 +58,9 @@ public class Timeline: Subscriber {
 internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
+        if let settings = plugin.analytics.settings() {
+            plugin.update(settings: settings)
+        }
     }
     
     internal func remove(pluginName: String) {
@@ -72,7 +75,7 @@ internal class Mediator {
         
         plugins.forEach { (plugin) in
             if let r = result {
-                result = plugin.execute(event: r, settings: nil)
+                result = plugin.execute(event: r)
             }
         }
         
@@ -84,7 +87,7 @@ internal class Mediator {
 // MARK: - Plugin Support
 
 extension Timeline {
-    internal func applyToPlugins(_ closure: (Plugin) -> Void) {
+    internal func apply(_ closure: (Plugin) -> Void) {
         for type in PluginType.allCases {
             if let mediator = plugins[type] {
                 mediator.plugins.forEach { (plugin) in
@@ -119,7 +122,7 @@ extension Timeline {
 // MARK: - Plugin Timeline Execution
 
 extension Plugin {
-    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+    public func execute<T: RawEvent>(event: T?) -> T? {
         // do nothing.
         return event
     }
@@ -134,7 +137,7 @@ extension Plugin {
 }
 
 extension EventPlugin {
-    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+    public func execute<T: RawEvent>(event: T?) -> T? {
         var result: T? = event
         switch result {
             case let r as IdentifyEvent:
@@ -179,7 +182,7 @@ extension EventPlugin {
 // MARK: - Destination Timeline
 
 extension DestinationPlugin {
-    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+    public func execute<T: RawEvent>(event: T?) -> T? {
         var result: T? = event
         if let r = result {
             result = self.process(incomingEvent: r)

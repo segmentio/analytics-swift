@@ -7,11 +7,11 @@
 
 import Foundation
 
-class SegmentDestination: DestinationPlugin {
-    var analytics: Analytics
-    var timeline: Timeline
-    var type: PluginType
-    var name: String
+public class SegmentDestination: DestinationPlugin {
+    public var analytics: Analytics
+    public var timeline: Timeline
+    public var type: PluginType
+    public var name: String
     
     private var httpClient: HTTPClient
     private var pendingURLs = [URL]()
@@ -25,7 +25,7 @@ class SegmentDestination: DestinationPlugin {
         case apiKey = "apiKey"
     }
     
-    required init(name: String, analytics: Analytics) {
+    required public init(name: String, analytics: Analytics) {
         type = .destination
         self.name = name
         self.analytics = analytics
@@ -34,7 +34,7 @@ class SegmentDestination: DestinationPlugin {
         httpClient = HTTPClient(analytics: analytics)
     }
     
-    func update(settings: Settings) {
+    public func update(settings: Settings) {
         let segmentInfo = settings.integrationSettings(for: "Segment.io")
         let apiKey = segmentInfo?[Self.Constants.apiKey.rawValue]?.stringValue
         let apiHost = segmentInfo?[Self.Constants.apiHost.rawValue]?.stringValue
@@ -44,27 +44,27 @@ class SegmentDestination: DestinationPlugin {
     }
     
     // MARK: - Event Handling Methods
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
+    public func identify(event: IdentifyEvent) -> IdentifyEvent? {
         queueEvent(event: event)
         return event
     }
     
-    func track(event: TrackEvent) -> TrackEvent? {
+    public func track(event: TrackEvent) -> TrackEvent? {
         queueEvent(event: event)
         return event
     }
     
-    func screen(event: ScreenEvent) -> ScreenEvent? {
+    public func screen(event: ScreenEvent) -> ScreenEvent? {
         queueEvent(event: event)
         return event
     }
     
-    func alias(event: AliasEvent) -> AliasEvent? {
+    public func alias(event: AliasEvent) -> AliasEvent? {
         queueEvent(event: event)
         return event
     }
     
-    func group(event: GroupEvent) -> GroupEvent? {
+    public func group(event: GroupEvent) -> GroupEvent? {
         queueEvent(event: event)
         return event
     }
@@ -132,8 +132,7 @@ class SegmentDestination: DestinationPlugin {
 }
 
 extension Analytics {
-    
-    func flushCurrentPayload() {
+    internal func flushCurrentPayload() {
         apply { (plugin) in
             if let destinationPlugin = plugin as? SegmentDestination {
                 destinationPlugin.flush()

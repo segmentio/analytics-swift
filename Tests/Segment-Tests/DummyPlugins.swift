@@ -81,3 +81,22 @@ class MyDestination: DestinationPlugin {
         self.timeline = Timeline()
     }
 }
+
+class OutputReaderPlugin: Plugin {
+    var type: PluginType
+    var name: String
+    var analytics: Analytics
+    
+    var lastEvent: RawEvent? = nil
+    
+    required init(name: String, analytics: Analytics) {
+        self.type = .after
+        self.name = name
+        self.analytics = analytics
+    }
+    
+    func execute<T>(event: T?) -> T? where T : RawEvent {
+        lastEvent = event
+        return event
+    }
+}

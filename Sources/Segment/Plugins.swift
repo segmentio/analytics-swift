@@ -30,7 +30,7 @@ public protocol Plugin: AnyObject {
     
     init(name: String, analytics: Analytics)
     func update(settings: Settings)
-    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T?
+    func execute<T: RawEvent>(event: T?) -> T?
     func shutdown()
 }
 
@@ -68,7 +68,7 @@ extension DestinationPlugin {
      
      */
     public func apply(closure: (Plugin) -> Void) {
-        timeline.applyToPlugins(closure)
+        timeline.apply(closure)
     }
     
     /**
@@ -104,7 +104,7 @@ extension Analytics {
      
      */
     public func apply(closure: (Plugin) -> Void) {
-        timeline.applyToPlugins(closure)
+        timeline.apply(closure)
     }
     
     /**

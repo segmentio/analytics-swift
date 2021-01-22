@@ -15,7 +15,7 @@ final class Segment_Tests: XCTestCase {
         analytics.identify(userId: "brandon", traits: traits)
     }
     
-    func testPluginShutdown() {
+    func testPluginRemove() {
         let analytics = Analytics(writeKey: "test").build()
         let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
         myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
