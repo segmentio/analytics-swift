@@ -31,42 +31,16 @@ public enum MetricType: Int {
 
 public extension RawEvent {
     mutating func addMetric(_ type: MetricType, name: String, value: Double, tags: [String]?, timestamp: Date) {
-        guard let metric = try? JSON(Metric(eventName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else { return }
+        guard let metric = try? JSON(with: Metric(eventName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else { return }
         if self.metrics == nil {
             metrics = [JSON]()
         }
         
-        if let jsonEncoded = try? JSON(metric) {
+        if let jsonEncoded = try? JSON(with: metric) {
             metrics?.append(jsonEncoded)
         }
     }
 }
-
-//class MetricsInstrument: Plugin {
-//
-//    var type: PluginType
-//    var name: String
-//    var analytics: Analytics?
-//
-//    private var messages = [Codable]()
-//
-//    required init(name: String) {
-//        self.name = name
-//        self.type = .none
-//    }
-//
-//    func execute(event: inout RawEvent?, settings: Settings?) {
-//        // Add the raw event?
-////        if let metric = try? JSON(Metric(name: "Blah", value: 1.647, tags: nil, type: .gauge, timestamp: Date())),
-////           let encodedMetric = try? JSON(metric) {
-////            event?.metrics = [encodedMetric]
-////        }
-//    }
-//
-//    func reset() {
-//        messages = [Codable]()
-//    }
-//}
 
 fileprivate struct Metric: Codable {
     var eventName: String = ""

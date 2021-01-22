@@ -18,7 +18,7 @@ extension Analytics {
     public func track<P: Codable>(name: String, properties: P?) {
         do {
             if let properties = properties {
-                let jsonProperties = try JSON(properties)
+                let jsonProperties = try JSON(with: properties)
                 let event = TrackEvent(event: name, properties: jsonProperties)
                 process(incomingEvent: event)
             } else {
@@ -50,7 +50,7 @@ extension Analytics {
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     public func identify<T: Codable>(userId: String, traits: T) {
         do {
-            let jsonTraits = try JSON(traits)
+            let jsonTraits = try JSON(with: traits)
             store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: jsonTraits))
             let event = IdentifyEvent(userId: userId, traits: jsonTraits)
             process(incomingEvent: event)
@@ -64,7 +64,7 @@ extension Analytics {
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     public func identify<T: Codable>(traits: T) {
         do {
-            let jsonTraits = try JSON(traits)
+            let jsonTraits = try JSON(with: traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
             let event = IdentifyEvent(traits: jsonTraits)
             process(incomingEvent: event)
@@ -92,7 +92,7 @@ extension Analytics {
     public func screen<P: Codable>(screenTitle: String, category: String? = nil, properties: P?) {
         do {
             if let properties = properties {
-                let jsonProperties = try JSON(properties)
+                let jsonProperties = try JSON(with: properties)
                 let event = ScreenEvent(screenTitle: screenTitle, category: category, properties: jsonProperties)
                 process(incomingEvent: event)
             } else {
@@ -116,7 +116,7 @@ extension Analytics {
     public func group<T: Codable>(groupId: String, traits: T?) {
         do {
             if let traits = traits {
-                let jsonTraits = try JSON(traits)
+                let jsonTraits = try JSON(with: traits)
                 let event = GroupEvent(groupId: groupId, traits: jsonTraits)
                 process(incomingEvent: event)
             } else {

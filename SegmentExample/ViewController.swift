@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Segment
 
 class ViewController: UIViewController {
+    
+    var analytics: Analytics? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,7 +18,6 @@ class ViewController: UIViewController {
         
         
     }
-
 
 }
 

@@ -27,13 +27,15 @@ public enum JSON: Equatable {
         self = .object(try object.mapValues(JSON.init))
     }
     
-    public init<T: Codable>(_ value: T) throws {
+    // For Value types
+    public init<T: Codable>(with value: T) throws {
         let encoder = JSONEncoder()
         let json = try encoder.encode(value)
         let output = try JSONSerialization.jsonObject(with: json)
         try self.init(output)
     }
     
+    // For primitives??
     public init(_ value: Any) throws {
         switch value {
         // handle NS values
@@ -245,13 +247,11 @@ extension JSON {
             let result = value.mapValues { item in
                 return item.rawValue()
             }
-            
             return result
         default:
             return nil
         }
     }
-    
 }
 
 

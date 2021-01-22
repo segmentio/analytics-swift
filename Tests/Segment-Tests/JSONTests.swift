@@ -45,7 +45,7 @@ class JSONTests: XCTestCase {
         }
         
         let test = TestStruct(blah: "hello")
-        let object = try JSON(test)
+        let object = try JSON(with: test)
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
@@ -81,7 +81,7 @@ class JSONTests: XCTestCase {
             dict: try JSON(["1": 1, "2": 2])
         )
         
-        let jsonObject = try JSON(test)
+        let jsonObject = try JSON(with: test)
         XCTAssertNotNil(jsonObject)
         
         let typedDict = jsonObject.dictionaryValue

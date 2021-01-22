@@ -41,13 +41,13 @@ class StorageTests: XCTestCase {
         let analytics = Analytics(writeKey: "1234").build()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
-        var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(MyTraits(email: "blah@blah.com")))
+        var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
-        event = IdentifyEvent(userId: "brandon2", traits: try! JSON(MyTraits(email: "blah@blah.com")))
+        event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
-        event = IdentifyEvent(userId: "brandon3", traits: try! JSON(MyTraits(email: "blah@blah.com")))
+        event = IdentifyEvent(userId: "brandon3", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
         let results: [URL]? = analytics.storage.read(.events)
@@ -84,7 +84,7 @@ class StorageTests: XCTestCase {
         let analytics = Analytics(writeKey: "1234").build()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
-        var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(MyTraits(email: "blah@blah.com")))
+        var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
         var results: [URL]? = analytics.storage.read(.events)
@@ -97,7 +97,7 @@ class StorageTests: XCTestCase {
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         
-        event = IdentifyEvent(userId: "brandon2", traits: try! JSON(MyTraits(email: "blah@blah.com")))
+        event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
         results = analytics.storage.read(.events)

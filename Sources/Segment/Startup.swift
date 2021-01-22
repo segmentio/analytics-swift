@@ -14,7 +14,7 @@ extension Analytics: Subscriber {
         // add segment destination plugin unless
         // asked not to via configuration.
         if configuration.autoAddSegmentDestination {
-            let segmentDestination = SegmentDestination(name: "SegmentDestination", analytics: self)
+            let segmentDestination = SegmentDestination(name: "Segment.io", analytics: self)
             segmentDestination.analytics = self
             add(plugin: segmentDestination)
         }
