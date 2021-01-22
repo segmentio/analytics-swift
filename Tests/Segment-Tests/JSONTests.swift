@@ -108,6 +108,9 @@ class JSONTests: XCTestCase {
         
         XCTAssertEqual(dict?["1"]?.intValue, 1)
         XCTAssertEqual(dict?["2"]?.intValue, 2)
+        
+        let b = typedDict?["dict"]?.dictionaryValue2
+        print(b)
     }
     
 }

@@ -134,7 +134,6 @@ extension Encodable {
             returnString = error.localizedDescription
         }
         return returnString
-
     }
 }
 
@@ -142,6 +141,23 @@ extension Encodable {
 // MARK: - Value Extraction & Conformance
 
 extension JSON {
+    private func rawValue() -> Any {
+        switch self {
+        case .object(let value):
+            return value
+        case .null:
+            return NSNull()
+        case .bool(let value):
+            return value
+        case .number(let value):
+            return value
+        case .string(let value):
+            return value
+        case .array(let value):
+            return value
+        }
+    }
+
     public var boolValue: Bool? {
         switch self {
         case .bool(let value):
@@ -218,6 +234,19 @@ extension JSON {
         switch self {
         case .array(let value):
             return value
+        default:
+            return nil
+        }
+    }
+    
+    public var dictionaryValue2: [String: Any]? {
+        switch self {
+        case .object(let value):
+            let result = value.mapValues { item in
+                return item.rawValue()
+            }
+            
+            return result
         default:
             return nil
         }

@@ -8,16 +8,22 @@
 import Foundation
 
 class SegmentDestination: DestinationPlugin {
-
     var analytics: Analytics
     var timeline: Timeline
     var type: PluginType
     var name: String
+    
     private var httpClient: HTTPClient
     private var pendingURLs = [URL]()
     private var uploadInProgress = false
     private var storage: Storage
     private var maxPayloadSize = 500000 // Max 500kb
+    
+    internal enum Constants: String {
+        case integrationName = "Segment.io"
+        case apiHost = "apiHost"
+        case apiKey = "apiKey"
+    }
     
     required init(name: String, analytics: Analytics) {
         type = .destination
@@ -28,8 +34,13 @@ class SegmentDestination: DestinationPlugin {
         httpClient = HTTPClient(analytics: analytics)
     }
     
-    func reloadWithSettings(_ settings: Settings) {
-        // TODO: Update the proper types
+    func update(settings: Settings) {
+        let segmentInfo = settings.integrationSettings(for: "Segment.io")
+        let apiKey = segmentInfo?[Self.Constants.apiKey.rawValue]?.stringValue
+        let apiHost = segmentInfo?[Self.Constants.apiHost.rawValue]?.stringValue
+        if (apiHost != nil && apiKey != nil) {
+            httpClient = HTTPClient(analytics: self.analytics, apiKey: apiKey, apiHost: apiHost)
+        }
     }
     
     // MARK: - Event Handling Methods

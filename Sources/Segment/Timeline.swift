@@ -123,6 +123,10 @@ extension Plugin {
         // do nothing.
         return event
     }
+    
+    public func update(settings: Settings) {
+        // do nothing by default, user can override.
+    }
 
     public func shutdown() {
         // do nothing by default, user can override.
@@ -130,7 +134,7 @@ extension Plugin {
 }
 
 extension EventPlugin {
-    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
         var result: T? = event
         switch result {
             case let r as IdentifyEvent:
@@ -175,7 +179,7 @@ extension EventPlugin {
 // MARK: - Destination Timeline
 
 extension DestinationPlugin {
-    func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
+    public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
         var result: T? = event
         if let r = result {
             result = self.process(incomingEvent: r)

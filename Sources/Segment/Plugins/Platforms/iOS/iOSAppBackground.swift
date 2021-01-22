@@ -48,7 +48,7 @@ class iOSAppBackground: PlatformPlugin {
 
 extension Analytics {
     func beginBackgroundTask() {
-        plugins.apply { (plugin) in
+        apply { (plugin) in
             if let plugin = plugin as? iOSAppBackground {
                 plugin.beginBackgroundTask()
             }
@@ -56,7 +56,7 @@ extension Analytics {
     }
     
     func endBackgroundTask() {
-        plugins.apply { (plugin) in
+        apply { (plugin) in
             if let plugin = plugin as? iOSAppBackground {
                 plugin.endBackgroundTask()
             }

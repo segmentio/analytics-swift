@@ -143,7 +143,7 @@ extension System {
             if let defaults = configuration.defaultSettings {
                 settings = defaults
             } else {
-                settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getAPIHost())
+                settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
         return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: settings)

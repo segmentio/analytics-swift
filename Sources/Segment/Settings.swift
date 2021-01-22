@@ -39,6 +39,18 @@ public struct Settings: Codable {
         case plan
         case edgeFunctions
     }
+    
+    /**
+     * Easily retrieve settings for a specific integration name.
+     *
+     * - Parameter for: The string name of the integration
+     * - Returns: The dictionary representing the settings for this integration as supplied by Segment.com
+     */
+    public func integrationSettings(for name: String) -> [String: JSON]? {
+        guard let settings = integrations?.dictionaryValue else { return nil }
+        let result = settings[name]?.dictionaryValue
+        return result
+    }
 }
 
 extension Analytics {

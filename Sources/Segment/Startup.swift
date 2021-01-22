@@ -32,23 +32,23 @@ extension Analytics: Subscriber {
         // Do initial settings if we do not have any. Ask Brandon if this is needed with a subscription
         
         if let settings = settings() {
-            updateDestinations(with: settings)
+            update(settings: settings)
         }
         
         store.subscribe(self, initialState: true) { (state: System) in
             print(state)
             if let settings = state.settings {
-                self.updateDestinations(with: settings)
+                self.update(settings: settings)
             }
         }
         
         setupSettingsCheck()
     }
     
-    internal func updateDestinations(with settings: Settings) {
+    internal func update(settings: Settings) {
         apply { (plugin) in
             if let destPlugin = plugin as? DestinationPlugin {
-                destPlugin.reloadWithSettings(settings)
+                destPlugin.update(settings: settings)
             }
         }
     }

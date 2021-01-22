@@ -29,6 +29,7 @@ public protocol Plugin: AnyObject {
     var analytics: Analytics { get }
     
     init(name: String, analytics: Analytics)
+    func update(settings: Settings)
     func execute<T: RawEvent>(event: T?, settings: Settings?) -> T?
     func shutdown()
 }
@@ -43,7 +44,6 @@ public protocol EventPlugin: Plugin {
 
 public protocol DestinationPlugin: EventPlugin {
     var timeline: Timeline { get set }
-    func reloadWithSettings(_ settings: Settings)
     func add(plugin: Plugin) -> String
     func apply(closure: (Plugin) -> Void)
     func remove(pluginName: String)

@@ -12,26 +12,36 @@ enum HTTPClientErrors: Error {
 }
 
 public class HTTPClient {
-    
-    static let segmentAPIBaseHost = "https://api.segment.io/v1"
-    static let segmentCDNBaseHost = "https://cdn-settings.segment.com/v1"
+    private static let defaultAPIHost = "api.segment.io/v1"
+    private static let defaultCDNHost = "cdn-settings.segment.com/v1"
     
     public var sessionDelegate: URLSessionDelegate?
     
     private var writeKeySessions = [String: URLSession]()
-    private var baseURL: URL?
+    private var apiHost: String
+    private var apiKey: String
     private let analytics: Analytics
     
-    init(analytics: Analytics, url: URL? = nil) {
-        
+    init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil) {
         self.analytics = analytics
         
-        // Set with the proper URL
-        if let baseURL = url {
-            self.baseURL = baseURL
+        if let apiKey = apiKey {
+            self.apiKey = apiKey
         } else {
-            self.baseURL = URL(string: Self.segmentAPIBaseHost)
+            self.apiKey = analytics.configuration.writeKey
         }
+        
+        if let apiHost = apiHost {
+            self.apiHost = apiHost
+        } else {
+            self.apiHost = Self.defaultAPIHost
+        }
+    }
+    
+    func segmentURL(for host: String, path: String) -> URL? {
+        let s = "https://\(host)\(path)"
+        let result = URL(string: s)
+        return result
     }
     
     
@@ -43,13 +53,11 @@ public class HTTPClient {
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
     func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ succeeded: Bool) -> Void) -> URLSessionDataTask? {
-        
-        guard var uploadURL = URL(string: HTTPClient.segmentAPIBaseHost) else {
+        guard let uploadURL = segmentURL(for: apiHost, path: "/batch") else {
             completion(false)
             return nil
         }
                 
-        uploadURL = uploadURL.appendingPathComponent("/batch")
         var urlRequest = URLRequest(url: uploadURL)
         urlRequest.httpMethod = "POST"
         
@@ -99,12 +107,11 @@ public class HTTPClient {
         // from write key sessions for uploading.
         let settingsKey = "\(writeKey)_settings"
         
-        guard var settingsURL = URL(string: HTTPClient.segmentCDNBaseHost) else {
+        guard let settingsURL = segmentURL(for: Self.defaultCDNHost, path: "/projects/\(writeKey)/settings") else {
             completion(false, nil)
             return
         }
         
-        settingsURL = settingsURL.appendingPathComponent("/projects/\(writeKey)/settings")
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "GET"
 
@@ -149,11 +156,6 @@ public class HTTPClient {
 }
 
 extension HTTPClient {
-
-    fileprivate static var hostKey: String {
-        "segment_apihost"
-    }
-
     static func authorizationHeaderForWriteKey(_ key: String) -> String {
         
         var returnHeader: String = ""
@@ -166,32 +168,8 @@ extension HTTPClient {
         return returnHeader
     }
     
-    internal static func saveAPIHost(_ host: String) {
-        
-        var updatedHost = host
-        if host.isEmpty {
-            return
-        }
-        if !host.contains("https://") {
-            // strip out a potential http://
-            updatedHost = host.replacingOccurrences(of: "http://", with: "")
-            updatedHost.append("https://")
-        }
-        UserDefaults.standard.setValue(updatedHost, forKey: hostKey)
-    }
-    
-    internal static func getAPIHost() -> String {
-        
-        var returnResult: String
-        let defaults = UserDefaults.standard
-        let result = defaults.string(forKey: hostKey)
-        
-        if let result = result {
-            returnResult = result
-        } else {
-            returnResult = segmentAPIBaseHost
-        }
-        return returnResult
+    internal static func getDefaultAPIHost() -> String {
+        return Self.defaultAPIHost
     }
 }
 

@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4658175425BA4C20006B2809 /* HTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4658175325BA4C20006B2809 /* HTTPClientTests.swift */; };
 		46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
@@ -49,8 +50,6 @@
 		969A531A25AD14B7009227D9 /* Sovran.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9620861D256DC21B00314F8D /* Sovran.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A534225B10324009227D9 /* iOSAppBackground.swift */; };
 		969A534B25B22CAE009227D9 /* SegmentSwiftMixPanelPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A534A25B22CAE009227D9 /* SegmentSwiftMixPanelPlugin.swift */; };
-		969A55F225B24E54009227D9 /* Mixpanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 969A55E825B24E3C009227D9 /* Mixpanel.framework */; };
-		969A55F325B24E54009227D9 /* Mixpanel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 969A55E825B24E3C009227D9 /* Mixpanel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
@@ -163,7 +162,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				966945FB259D71F800271339 /* Segment.framework in Embed Frameworks */,
-				969A55F325B24E54009227D9 /* Mixpanel.framework in Embed Frameworks */,
 				969A531A25AD14B7009227D9 /* Sovran.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -172,6 +170,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4658175325BA4C20006B2809 /* HTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientTests.swift; sourceTree = "<group>"; };
 		46FE4C9125A3EE90003A7362 /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
@@ -227,7 +226,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				966945FA259D71F800271339 /* Segment.framework in Frameworks */,
-				969A55F225B24E54009227D9 /* Mixpanel.framework in Frameworks */,
 				969A531925AD14B7009227D9 /* Sovran.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -385,6 +383,7 @@
 				46FE4D1C25A7A850003A7362 /* StorageTests.swift */,
 				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				OBJ_12 /* Segment_Tests.swift */,
+				4658175325BA4C20006B2809 /* HTTPClientTests.swift */,
 				OBJ_13 /* XCTestManifests.swift */,
 			);
 			name = "Segment-Tests";
@@ -673,6 +672,7 @@
 			files = (
 				OBJ_30 /* Segment_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
+				4658175425BA4C20006B2809 /* HTTPClientTests.swift in Sources */,
 				967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */,
 				A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */,
 				46FE4D1D25A7A850003A7362 /* StorageTests.swift in Sources */,
