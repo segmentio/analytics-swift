@@ -53,6 +53,8 @@
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
+		96F52F5025BB9E07005F29BC /* Mixpanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */; };
+		96F52F5125BB9E07005F29BC /* Mixpanel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
 		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
@@ -99,34 +101,6 @@
 			remoteGlobalIDString = "Segment::Segment";
 			remoteInfo = Segment;
 		};
-		969A55E725B24E3C009227D9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7C170C2A1A4A02F500D9E0F2;
-			remoteInfo = Mixpanel;
-		};
-		969A55E925B24E3C009227D9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 511FC39D1C2B74BD00DC4796;
-			remoteInfo = Mixpanel_watchOS;
-		};
-		969A55EB25B24E3C009227D9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E1C2BEB61CFD6A010052172F;
-			remoteInfo = Mixpanel_tvOS;
-		};
-		969A55ED25B24E3C009227D9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E1F160B01E677D2200391AE3;
-			remoteInfo = Mixpanel_macOS;
-		};
 		A3471FB7256487B500965480 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
@@ -162,6 +136,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				966945FB259D71F800271339 /* Segment.framework in Embed Frameworks */,
+				96F52F5125BB9E07005F29BC /* Mixpanel.framework in Embed Frameworks */,
 				969A531A25AD14B7009227D9 /* Sovran.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -197,10 +172,10 @@
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
 		969A534225B10324009227D9 /* iOSAppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAppBackground.swift; sourceTree = "<group>"; };
 		969A534A25B22CAE009227D9 /* SegmentSwiftMixPanelPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentSwiftMixPanelPlugin.swift; sourceTree = "<group>"; };
-		969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mixpanel.xcodeproj; path = "mixpanel-iphone/Mixpanel.xcodeproj"; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Mixpanel.framework; sourceTree = "<group>"; };
 		A31A16252576B6F200C9CDDF /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		A31A162E2576B73F00C9CDDF /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		A31A16332576B7AF00C9CDDF /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
@@ -226,6 +201,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				966945FA259D71F800271339 /* Segment.framework in Frameworks */,
+				96F52F5025BB9E07005F29BC /* Mixpanel.framework in Frameworks */,
 				969A531925AD14B7009227D9 /* Sovran.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -340,20 +316,9 @@
 		969A535C25B24E26009227D9 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */,
+				96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */,
 			);
 			path = Libraries;
-			sourceTree = "<group>";
-		};
-		969A55E125B24E3C009227D9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				969A55E825B24E3C009227D9 /* Mixpanel.framework */,
-				969A55EA25B24E3C009227D9 /* Mixpanel.framework */,
-				969A55EC25B24E3C009227D9 /* Mixpanel.framework */,
-				969A55EE25B24E3C009227D9 /* Mixpanel.framework */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		A31A16A325780A8D00C9CDDF /* Utilities */ = {
@@ -546,10 +511,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 969A55E125B24E3C009227D9 /* Products */;
-					ProjectRef = 969A55E025B24E3C009227D9 /* Mixpanel.xcodeproj */;
-				},
-				{
 					ProductGroup = 96208616256DC21B00314F8D /* Products */;
 					ProjectRef = 96208615256DC21B00314F8D /* Sovran.xcodeproj */;
 				},
@@ -578,34 +539,6 @@
 			fileType = file;
 			path = SovranTests.xctest;
 			remoteRef = 9620861E256DC21B00314F8D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		969A55E825B24E3C009227D9 /* Mixpanel.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Mixpanel.framework;
-			remoteRef = 969A55E725B24E3C009227D9 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		969A55EA25B24E3C009227D9 /* Mixpanel.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Mixpanel.framework;
-			remoteRef = 969A55E925B24E3C009227D9 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		969A55EC25B24E3C009227D9 /* Mixpanel.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Mixpanel.framework;
-			remoteRef = 969A55EB25B24E3C009227D9 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		969A55EE25B24E3C009227D9 /* Mixpanel.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Mixpanel.framework;
-			remoteRef = 969A55ED25B24E3C009227D9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -775,6 +708,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SegmentExample/Libraries/mixpanel-iphone/HelloMixpanel/HelloMixpanelTests",
+					"$(PROJECT_DIR)/SegmentExample/Libraries",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -845,6 +779,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SegmentExample/Libraries/mixpanel-iphone/HelloMixpanel/HelloMixpanelTests",
+					"$(PROJECT_DIR)/SegmentExample/Libraries",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
