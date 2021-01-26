@@ -60,7 +60,7 @@ extension Analytics {
     ///   - message: The message to be stored in the logging system.
     ///   - event: The event associated with the log (optional).
     ///   - type: The filter type for the message. If nil, defaults to logger setting.
-    func log(message: String, event: RawEvent? = nil, type: LogType? = nil) {
+    public func log(message: String, event: RawEvent? = nil, type: LogType? = nil) {
         apply { (potentialLogger) in
             
             if let logger = potentialLogger as? Logger {
@@ -74,7 +74,7 @@ extension Analytics {
         }
     }
     
-    func logFlush() {
+    public func logFlush() {
         apply { (potentialLogger) in
             if let logger = potentialLogger as? Logger {
                 logger.flush()

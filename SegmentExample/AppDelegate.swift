@@ -19,17 +19,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let analytics = Segment.Analytics(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
             .trackApplicationLifecycleEvents(true)
             .build()
-        
-        analytics.plugins.add(AfterPlugin(name: "hello", analytics: analytics))
-        analytics.plugins.add(SegmentMixPanel(name: "Mixpanel", analytics: analytics))
-
-        analytics.identify(userId: "Live Demo -- never breaks")
-        analytics.track(name: "I once tracked a cougar")
-        analytics.screen(screenTitle: "Screened the AppDelegate")
-        analytics.group(groupId: "Grouped By ID")
-        analytics.alias(newId: "3333")
-        
         self.analytics = analytics
+        
+        analytics.add(plugin: AfterPlugin(name: "hello", analytics: analytics))
+        analytics.add(plugin: SegmentMixPanel(name: "Mixpanel", analytics: analytics))
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
+            analytics.identify(userId: "Live Demo -- never breaks")
+            analytics.track(name: "I once tracked a cougar", properties: MyTraits(email: "Brandon@stinks.com"))
+            analytics.screen(screenTitle: "Screened the AppDelegate")
+            analytics.group(groupId: "Grouped By ID")
+            analytics.alias(newId: "3333")
+        }
         
         return true
     }
@@ -51,3 +52,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+struct MyTraits: Codable {
+    let email: String?
+}

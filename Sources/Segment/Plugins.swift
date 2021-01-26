@@ -57,7 +57,6 @@ internal protocol PlatformPlugin: Plugin {
 }
 
 
-
 // MARK: - Adding/Removing Plugins
 
 extension DestinationPlugin {
@@ -117,7 +116,9 @@ extension Analytics {
     @discardableResult
     public func add(plugin: Plugin) -> String {
         timeline.add(plugin: plugin)
-        store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
+        if plugin is DestinationPlugin && !(plugin is SegmentDestination) {
+            store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
+        }
         return plugin.name
     }
     

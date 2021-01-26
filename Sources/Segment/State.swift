@@ -50,9 +50,8 @@ struct System: State {
             // we need to set any destination plugins to false in the
             // integrations payload.  this prevents them from being sent
             // by segment.com once an event reaches segment.
-            guard let disable = try? JSON(false) else { return state }
-            if var integrations = state.integrations?.dictionaryValue {
-                integrations[pluginName] = disable
+            if var integrations = state.integrations?.dictionaryValue2 {
+                integrations[pluginName] = false
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(enabled: state.enabled,
                                         configuration: state.configuration,
@@ -146,7 +145,8 @@ extension System {
                 settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
-        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: nil, settings: settings)
+        let integrationDictionary = try! JSON([String: Any]())
+        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: integrationDictionary, settings: settings)
     }
 }
 

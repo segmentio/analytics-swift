@@ -55,7 +55,7 @@ class ZiggyPlugin: EventPlugin {
 class MyDestination: DestinationPlugin {
     let analytics: Analytics
     
-    var plugins: Plugins
+    var timeline: Timeline
     let type: PluginType
     let name: String
     
@@ -63,7 +63,7 @@ class MyDestination: DestinationPlugin {
         self.name = name
         self.type = .destination
         self.analytics = analytics
-        self.plugins = Plugins()
+        self.timeline = Timeline()
     }
     
     func reloadWithSettings(_ settings: Settings) {
@@ -78,7 +78,7 @@ class MyDestination: DestinationPlugin {
 class AfterPlugin: Plugin {
     let analytics: Analytics
     
-    var plugins: Plugins
+    var timeline: Timeline
     let type: PluginType
     let name: String
     
@@ -86,7 +86,7 @@ class AfterPlugin: Plugin {
         self.name = name
         self.analytics = analytics
         self.type = .after
-        self.plugins = Plugins()
+        self.timeline = Timeline()
     }
     
     public func execute<T: RawEvent>(event: T?, settings: Settings?) -> T? {
