@@ -36,8 +36,8 @@ public class SegmentDestination: DestinationPlugin {
     
     public func update(settings: Settings) {
         let segmentInfo = settings.integrationSettings(for: "Segment.io")
-        let apiKey = segmentInfo?[Self.Constants.apiKey.rawValue]?.stringValue
-        let apiHost = segmentInfo?[Self.Constants.apiHost.rawValue]?.stringValue
+        let apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
+        let apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String
         if (apiHost != nil && apiKey != nil) {
             httpClient = HTTPClient(analytics: self.analytics, apiKey: apiKey, apiHost: apiHost)
         }

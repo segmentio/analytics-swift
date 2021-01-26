@@ -46,9 +46,9 @@ public struct Settings: Codable {
      * - Parameter for: The string name of the integration
      * - Returns: The dictionary representing the settings for this integration as supplied by Segment.com
      */
-    public func integrationSettings(for name: String) -> [String: JSON]? {
+    public func integrationSettings(for name: String) -> [String: Any]? {
         guard let settings = integrations?.dictionaryValue else { return nil }
-        let result = settings[name]?.dictionaryValue
+        let result = settings[name] as? [String: Any]
         return result
     }
 }

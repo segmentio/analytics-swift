@@ -61,6 +61,7 @@ class JSONTests: XCTestCase {
     func testTypesFromJSON() throws {
         struct TestStruct: Codable {
             let str: String
+            let bool: Bool
             let float: Float
             let int: Int
             let uint: UInt
@@ -72,6 +73,7 @@ class JSONTests: XCTestCase {
         
         let test = TestStruct(
             str: "hello",
+            bool: true,
             float: 3.14,
             int: -42,
             uint: 42,
@@ -87,30 +89,29 @@ class JSONTests: XCTestCase {
         let typedDict = jsonObject.dictionaryValue
         XCTAssertNotNil(typedDict)
         
-        let str = typedDict?["str"]?.stringValue
-        let float = typedDict?["float"]?.floatValue
-        let int = typedDict?["int"]?.intValue
-        let uint = typedDict?["uint"]?.uintValue
-        let double = typedDict?["double"]?.doubleValue
-        let decimal = typedDict?["decimal"]?.decimalValue
-        let array = typedDict?["array"]?.arrayValue
-        let dict = typedDict?["dict"]?.dictionaryValue
+        let str = typedDict?["str"] as? String
+        let bool = typedDict?["bool"] as? Bool
+        let float = typedDict?["float"] as? Float
+        let int = typedDict?["int"] as? Int
+        let uint = typedDict?["uint"] as? UInt
+        let double = typedDict?["double"] as? Double
+        let decimal = typedDict?["decimal"] as? Decimal
+        let array = typedDict?["array"] as? [String]
+        let dict = typedDict?["dict"] as? [String: Int]
         
         XCTAssertEqual(str, "hello")
+        XCTAssertEqual(bool, true)
         XCTAssertEqual(float, 3.14)
         XCTAssertEqual(int, -42)
         XCTAssertEqual(uint, 42)
         XCTAssertEqual(double, 1.234)
         XCTAssertEqual(decimal, 333.9999)
         
-        XCTAssertEqual(array?[0].stringValue, "1")
-        XCTAssertEqual(array?[1].stringValue, "2")
+        XCTAssertEqual(array?[0], "1")
+        XCTAssertEqual(array?[1], "2")
         
-        XCTAssertEqual(dict?["1"]?.intValue, 1)
-        XCTAssertEqual(dict?["2"]?.intValue, 2)
-        
-        let b = typedDict?["dict"]?.dictionaryValue2
-        print(b)
+        XCTAssertEqual(dict?["1"], 1)
+        XCTAssertEqual(dict?["2"], 2)
     }
     
 }

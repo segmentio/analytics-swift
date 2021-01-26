@@ -142,20 +142,28 @@ extension Encodable {
 
 extension JSON {
     private func rawValue() -> Any {
+        var result: Any? = nil
         switch self {
-        case .object(let value):
-            return value
         case .null:
-            return NSNull()
+            result = NSNull()
         case .bool(let value):
-            return value
+            result = value
         case .number(let value):
-            return value
+            // automatic type conversion between number types
+            // fails if this isn't typecast to NSDecimalNumber first.
+            result = value as NSDecimalNumber
         case .string(let value):
-            return value
+            result = value
         case .array(let value):
-            return value
+            result = value.map { item in
+                return item.rawValue()
+            }
+        case .object(let value):
+            result = value.mapValues { item in
+                return item.rawValue()
+            }
         }
+        return result as Any
     }
 
     public var boolValue: Bool? {
@@ -221,31 +229,25 @@ extension JSON {
         }
     }
     
-    public var dictionaryValue: [String: JSON]? {
-        switch self {
-        case .object(let value):
-            return value
-        default:
-            return nil
-        }
-    }
-    
-    public var arrayValue: [JSON]? {
+    public var arrayValue: [Any]? {
         switch self {
         case .array(let value):
-            return value
+            let result = value.map { item in
+                return item.rawValue()
+            }
+            return result
         default:
             return nil
         }
     }
     
-    public var dictionaryValue2: [String: Any]? {
+
+    public var dictionaryValue: [String: Any]? {
         switch self {
         case .object(let value):
             let result = value.mapValues { item in
                 return item.rawValue()
             }
-            
             return result
         default:
             return nil
