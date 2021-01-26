@@ -50,7 +50,7 @@ struct System: State {
             // we need to set any destination plugins to false in the
             // integrations payload.  this prevents them from being sent
             // by segment.com once an event reaches segment.
-            if var integrations = state.integrations?.dictionaryValue2 {
+            if var integrations = state.integrations?.dictionaryValue {
                 integrations[pluginName] = false
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(enabled: state.enabled,
