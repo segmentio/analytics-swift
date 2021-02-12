@@ -65,10 +65,6 @@ class ZiggyPlugin: EventPlugin {
 }
 
 class MyDestination: DestinationPlugin {
-    func reloadWithSettings(_ settings: Settings) {
-        //
-    }
-    
     var timeline: Timeline
     let type: PluginType
     let name: String
@@ -80,6 +76,11 @@ class MyDestination: DestinationPlugin {
         self.type = .destination
         self.timeline = Timeline()
     }
+    
+    func update(settings: Settings) {
+        //
+    }
+    
 }
 
 class OutputReaderPlugin: Plugin {
@@ -99,4 +100,10 @@ class OutputReaderPlugin: Plugin {
         lastEvent = event
         return event
     }
+}
+
+
+var productId: String? = nil
+if let productIdString = properties?["productId"] as? String {
+    productId = productIdString
 }
