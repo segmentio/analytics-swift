@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.analytics = analytics
         
         analytics.add(plugin: AfterPlugin(name: "hello", analytics: analytics))
-        analytics.add(plugin: SegmentMixPanel(name: "Mixpanel", analytics: analytics))
+        analytics.add(plugin: SegmentMixpanel(name: "Mixpanel", analytics: analytics))
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
             analytics.identify(userId: "Live Demo -- never breaks")

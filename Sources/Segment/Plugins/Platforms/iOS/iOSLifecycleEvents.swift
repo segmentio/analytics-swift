@@ -10,7 +10,7 @@
 import Foundation
 import UIKit
 
-protocol iOSLifecycle {
+public protocol iOSLifecycle {
     func applicationDidEnterBackground()
     func applicationWillEnterForeground(application: UIApplication)
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
@@ -22,7 +22,7 @@ protocol iOSLifecycle {
     func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
 }
 
-extension iOSLifecycle {
+public extension iOSLifecycle {
     func applicationDidEnterBackground() { }
     func applicationWillEnterForeground(application: UIApplication) { }
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) { }
@@ -174,7 +174,7 @@ class iOSLifecycleEvents: PlatformPlugin {
 
 extension SegmentDestination: iOSLifecycle {
     
-    func applicationDidEnterBackground() {
+    public func applicationDidEnterBackground() {
         analytics.beginBackgroundTask()
         flush()
     }

@@ -8,13 +8,13 @@
 #if os(macOS)
 import Cocoa
 
-protocol MacLifecycle {
+public protocol MacLifecycle {
     func applicationDidEnterBackground()
     func application(didFinishLaunchingWithOptions launchOptions: [String: Any]?)
     func applicationWillEnterForeground()
 }
 
-extension MacLifecycle {
+public extension MacLifecycle {
     func applicationDidEnterBackground() { }
     func application(didFinishLaunchingWithOptions launchOptions: [String: Any]?) { }
     func applicationWillEnterForeground() { }

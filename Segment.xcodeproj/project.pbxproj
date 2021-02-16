@@ -264,6 +264,7 @@
 		966945E3259D717E00271339 /* SegmentExample */ = {
 			isa = PBXGroup;
 			children = (
+				969A534A25B22CAE009227D9 /* SegmentSwiftMixPanelPlugin.swift */,
 				969A535C25B24E26009227D9 /* Libraries */,
 				966945E4259D717E00271339 /* AppDelegate.swift */,
 				46FE4CA625A3F836003A7362 /* TestPlugins.swift */,
@@ -273,7 +274,6 @@
 				966945ED259D717F00271339 /* Assets.xcassets */,
 				966945EF259D717F00271339 /* LaunchScreen.storyboard */,
 				966945F2259D718000271339 /* Info.plist */,
-				969A534A25B22CAE009227D9 /* SegmentSwiftMixPanelPlugin.swift */,
 			);
 			path = SegmentExample;
 			sourceTree = "<group>";
