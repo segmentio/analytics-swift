@@ -20,6 +20,12 @@ public extension MacLifecycle {
     func applicationWillEnterForeground() { }
 }
 
+class SegmentAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        print("Active")
+    }
+}
+
 class macOSLifecycleEvents: PlatformPlugin {
     static var specificName = "Segment_macOSLifecycleEvents"
     let type: PluginType
@@ -34,6 +40,8 @@ class macOSLifecycleEvents: PlatformPlugin {
         self.analytics = analytics
         self.name = name
         self.application = NSApplication.shared
+        
+        setupListeners()
     }
     
     
