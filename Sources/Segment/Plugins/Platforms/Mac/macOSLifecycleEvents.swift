@@ -90,7 +90,7 @@ class macOSLifecycleEvents: PlatformPlugin {
 
 extension SegmentDestination: MacLifecycle {
     
-    func applicationDidEnterBackground() {
+    public func applicationDidEnterBackground() {
         // TODO: Look into mac background tasks
         //analytics.beginBackgroundTask()
         flush()
