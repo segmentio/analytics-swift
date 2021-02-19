@@ -76,9 +76,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     
     @objc
-    func notificationResponse(notification: NSNotification) {
-        print("Notification Happened: \(notification)")
-        
+    func notificationResponse(notification: NSNotification) {        
         switch (notification.name) {
             case NSApplication.didResignActiveNotification:
                 self.didResignActive(notification: notification)

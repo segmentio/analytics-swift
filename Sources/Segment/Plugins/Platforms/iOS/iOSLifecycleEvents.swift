@@ -62,9 +62,7 @@ class iOSLifecycleEvents: PlatformPlugin {
     }
     
     @objc
-    func notificationResponse(notification: NSNotification) {
-        print("Notification Happened: \(notification)")
-        
+    func notificationResponse(notification: NSNotification) {        
         switch (notification.name) {
         case UIApplication.didEnterBackgroundNotification:
             self.didEnterBackground(notification: notification)
