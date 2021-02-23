@@ -101,9 +101,3 @@ class OutputReaderPlugin: Plugin {
         return event
     }
 }
-
-
-var productId: String? = nil
-if let productIdString = properties?["productId"] as? String {
-    productId = productIdString
-}

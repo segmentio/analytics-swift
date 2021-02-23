@@ -15,10 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-        let analytics = Segment.Analytics(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
+        var config = Configuration(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
             .trackApplicationLifecycleEvents(true)
-            .build()
+            .flushInterval(10)
+        
+        let analytics = Analytics(configuration: config)
         self.analytics = analytics
         
         analytics.add(plugin: AfterPlugin(name: "hello", analytics: analytics))

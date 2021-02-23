@@ -12,76 +12,83 @@ public typealias AdvertisingIdCallback = () -> String?
 
 // MARK: - Internal Configuration
 
-internal struct Configuration {
-    var writeKey: String
-    var startDisabled: Bool = false
-    var advertisingIdCallback: AdvertisingIdCallback? = nil
-    var trackInAppPurchases: Bool = false
-    var trackApplicationLifecycleEvents: Bool = true
-    var trackDeeplinks: Bool = true
-    var flushAt: Int = 20
-    var flushInterval: TimeInterval = 30
-    var maxQueueSize: Int = 1000
-    var application: Any? = nil
-    var defaultSettings: Settings? = nil
-    var autoAddSegmentDestination: Bool = true
+public struct Configuration {
+    internal struct Values {
+        var writeKey: String
+        var startDisabled: Bool = false
+        var advertisingIdCallback: AdvertisingIdCallback? = nil
+        var trackInAppPurchases: Bool = false
+        var trackApplicationLifecycleEvents: Bool = true
+        var trackDeeplinks: Bool = true
+        var flushAt: Int = 20
+        var flushInterval: TimeInterval = 30
+        var maxQueueSize: Int = 1000
+        var application: Any? = nil
+        var defaultSettings: Settings? = nil
+        var autoAddSegmentDestination: Bool = true
+    }
+    internal var values: Values
+
+    public init(writeKey: String) {
+        self.values = Values(writeKey: writeKey)
+    }
 }
 
 
 // MARK: - Analytics Configuration
 
-public extension Analytics {
+public extension Configuration {
     @discardableResult
-    func startDisabled() -> Analytics {
-        configuration.startDisabled = true
+    mutating func startDisabled() -> Configuration {
+        values.startDisabled = true
         return self
     }
     
     @discardableResult
-    func trackAdvertisingId(callback: @escaping AdvertisingIdCallback) -> Analytics {
-        configuration.advertisingIdCallback = callback
+    mutating func trackAdvertisingId(callback: @escaping AdvertisingIdCallback) -> Configuration {
+        values.advertisingIdCallback = callback
         return self
     }
     
     @discardableResult
-    func trackInAppPurchases(_ enabled: Bool) -> Analytics {
-        configuration.trackInAppPurchases = enabled
+    mutating func trackInAppPurchases(_ enabled: Bool) -> Configuration {
+        values.trackInAppPurchases = enabled
         return self
     }
     
     @discardableResult
-    func trackApplicationLifecycleEvents(_ enabled: Bool) -> Analytics {
-        configuration.trackApplicationLifecycleEvents = enabled
+    mutating func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
+        values.trackApplicationLifecycleEvents = enabled
         return self
     }
     
     @discardableResult
-    func trackDeeplinks(_ enabled: Bool) -> Analytics {
-        configuration.trackDeeplinks = enabled
+    mutating func trackDeeplinks(_ enabled: Bool) -> Configuration {
+        values.trackDeeplinks = enabled
         return self
     }
     
     @discardableResult
-    func flushAt(_ count: Int) -> Analytics {
-        configuration.flushAt = count
+    mutating func flushAt(_ count: Int) -> Configuration {
+        values.flushAt = count
         return self
     }
     
     @discardableResult
-    func flushInterval(_ interval: TimeInterval) -> Analytics {
-        configuration.flushInterval = interval
+    mutating func flushInterval(_ interval: TimeInterval) -> Configuration {
+        values.flushInterval = interval
         return self
     }
     
     @discardableResult
-    func maxQueueSize(_ eventCount: Int) -> Analytics {
-        configuration.maxQueueSize = eventCount
+    mutating func maxQueueSize(_ eventCount: Int) -> Configuration {
+        values.maxQueueSize = eventCount
         return self
     }
     
     @discardableResult
-    func autoAddSegmentDestination(_ value: Bool) -> Analytics {
-        configuration.autoAddSegmentDestination = value
+    mutating func autoAddSegmentDestination(_ value: Bool) -> Configuration {
+        values.autoAddSegmentDestination = value
         return self
     }
 }

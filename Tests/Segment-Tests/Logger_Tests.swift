@@ -28,7 +28,7 @@ final class Logger_Tests: XCTestCase {
 
     func testLogging() {
         
-        let analytics = Analytics(writeKey: "test").build()
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         
         let expectation = XCTestExpectation(description: "Called")
         

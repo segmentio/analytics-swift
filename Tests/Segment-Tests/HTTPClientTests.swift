@@ -19,7 +19,7 @@ class HTTPClientTests: XCTestCase {
     }
 
     func testExample() throws {
-        let analytics = Analytics(writeKey: "test").build()
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let client = HTTPClient(analytics: analytics)
         
         let url = client.segmentURL(for: "blah.segment.com", path:"/booya")

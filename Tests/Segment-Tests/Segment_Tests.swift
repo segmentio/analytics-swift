@@ -4,7 +4,7 @@ import XCTest
 final class Segment_Tests: XCTestCase {
     
     func testBaseEventCreation() {
-        let analytics = Analytics(writeKey: "test").build()
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
         myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
         
@@ -16,7 +16,7 @@ final class Segment_Tests: XCTestCase {
     }
     
     func testPluginRemove() {
-        let analytics = Analytics(writeKey: "test").build()
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
         myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
         

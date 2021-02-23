@@ -53,8 +53,6 @@
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
-		96F52F5025BB9E07005F29BC /* Mixpanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */; };
-		96F52F5125BB9E07005F29BC /* Mixpanel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 96F52F4B25BB9DFC005F29BC /* Mixpanel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
 		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
@@ -136,7 +134,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				966945FB259D71F800271339 /* Segment.framework in Embed Frameworks */,
-				96F52F5125BB9E07005F29BC /* Mixpanel.framework in Embed Frameworks */,
 				969A531A25AD14B7009227D9 /* Sovran.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -201,7 +198,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				966945FA259D71F800271339 /* Segment.framework in Frameworks */,
-				96F52F5025BB9E07005F29BC /* Mixpanel.framework in Frameworks */,
 				969A531925AD14B7009227D9 /* Sovran.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

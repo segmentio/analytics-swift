@@ -13,7 +13,7 @@ import XCTest
 final class Metrics_Tests: XCTestCase {
     
     func testBaseEventCreation() {
-        let analytics = Analytics(writeKey: "test").build()
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
         myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
         

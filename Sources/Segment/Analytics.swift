@@ -22,19 +22,12 @@ public class Analytics {
     
     public var timeline: Timeline
     
-    public init(writeKey: String) {
-        self.configuration = Configuration(writeKey: writeKey)
-        self.store = Store()
-        self.storage = Storage(store: self.store, writeKey: writeKey)
-        self.timeline = Timeline()
-    }
-    
-    public func build() -> Analytics {
-        if (built) {
-            assertionFailure("Analytics.build() can only be called once!")
-        }
+    public init(configuration: Configuration) {
+        self.configuration = configuration
         
-        built = true
+        store = Store()
+        storage = Storage(store: self.store, writeKey: configuration.writeKey)
+        timeline = Timeline()
         
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
@@ -42,8 +35,6 @@ public class Analytics {
         
         // Get everything hot and sweaty here
         platformStartup()
-        
-        return self
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
@@ -57,7 +48,7 @@ public class Analytics {
 extension Analytics {
     public var enabled: Bool {
         get {
-            var result = !configuration.startDisabled
+            var result = !configuration.values.startDisabled
             if let system: System = store.currentState() {
                 result = system.enabled
             }

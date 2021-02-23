@@ -139,14 +139,14 @@ extension System {
     static func defaultState(configuration: Configuration, from storage: Storage) -> System {
         var settings: Settings? = storage.read(.settings)
         if settings == nil {
-            if let defaults = configuration.defaultSettings {
+            if let defaults = configuration.values.defaultSettings {
                 settings = defaults
             } else {
                 settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
         let integrationDictionary = try! JSON([String: Any]())
-        return System(enabled: !configuration.startDisabled, configuration: configuration, context: nil, integrations: integrationDictionary, settings: settings)
+        return System(enabled: !configuration.values.startDisabled, configuration: configuration, context: nil, integrations: integrationDictionary, settings: settings)
     }
 }
 
