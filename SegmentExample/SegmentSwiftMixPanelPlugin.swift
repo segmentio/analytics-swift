@@ -1,5 +1,5 @@
 //
-//  SegmentSwiftMixPanelPlugin.swift
+//  SegmentMixpanel.swift
 //  SegmentExample
 //
 //  Created by Cody Garvin on 1/15/21.
@@ -8,14 +8,14 @@
 import Segment
 import Mixpanel
 
-class SegmentMixPanel: DestinationPlugin {
+class SegmentMixpanel: DestinationPlugin {
     
     var type: PluginType
     var name: String
     var analytics: Analytics
     var timeline: Timeline
     private var mixpanel: Mixpanel? = nil
-    private var settings: [String: JSON]? = nil
+    private var settings: [String: Any]? = nil
     
     required init(name: String, analytics: Analytics) {
         self.analytics = analytics
@@ -31,12 +31,12 @@ class SegmentMixPanel: DestinationPlugin {
         
         // TODO: Update the proper types
         if let mixPanelSettings = settings.integrationSettings(for: "Mixpanel"),
-           let token = mixPanelSettings["token"]?.stringValue {
+           let token = mixPanelSettings["token"] as? String {
             self.settings = mixPanelSettings
             mixpanel = Mixpanel.sharedInstance(withToken: token)
             
             // Check for EU endpoint
-            if let euEndPointEnabled = self.settings?["enableEuropeanUnionEndpoint"]?.boolValue {
+            if let euEndPointEnabled = self.settings?["enableEuropeanUnionEndpoint"] as? Bool {
                 if euEndPointEnabled {
                     mixpanel?.serverURL = "api-eu.mixpanel.com"
                 }
@@ -64,7 +64,7 @@ class SegmentMixPanel: DestinationPlugin {
                       "$username": "username",
                       "$phone": "phone"]
         
-        guard let traits = event.traits?.dictionaryValue2 else {
+        guard let traits = event.traits?.dictionaryValue else {
             return event
         }
         
@@ -82,23 +82,19 @@ class SegmentMixPanel: DestinationPlugin {
             }
         }
         
-        if let superProperties = settings?["superProperties"]?.arrayValue {
+        if let superProperties = settings?["superProperties"] as? [String] {
             var superPropertyTraits = [AnyHashable: Any]()
-            for superPropertyJSON in superProperties {
-                if let superProperty = superPropertyJSON.stringValue {
-                    superPropertyTraits[superProperty] = traits[superProperty]
-                }
+            for superProperty in superProperties {
+                superPropertyTraits[superProperty] = traits[superProperty]
             }
             let mappedSuperProperties = mapTraits(superPropertyTraits, keyMap: keyMap)
             mixpanel?.registerSuperProperties(mappedSuperProperties)
             analytics.log(message: "Mixpanel registerSuperProperties \(mappedSuperProperties)")
             
-            if peopleEnabled(), let peopleProperties = settings?["peopleProperties"]?.arrayValue {
+            if peopleEnabled(), let peopleProperties = settings?["peopleProperties"] as? [String] {
                 var peoplePropertyTraits = [AnyHashable: Any]()
-                for peoplePropertyJSON in peopleProperties {
-                    if let peopleProperty = peoplePropertyJSON.stringValue {
-                        peoplePropertyTraits[peopleProperty] = traits[peopleProperty]
-                    }
+                for peopleProperty in peopleProperties {
+                    peoplePropertyTraits[peopleProperty] = traits[peopleProperty]
                 }
                 let mappedPeopleProperties = mapTraits(peoplePropertyTraits, keyMap: keyMap)
                 mixpanel?.people.set(mappedPeopleProperties)
@@ -111,14 +107,14 @@ class SegmentMixPanel: DestinationPlugin {
     
     func track(event: TrackEvent) -> TrackEvent? {
         if let eventName = event.event {
-            mixpanelTrack(eventName, properties: event.properties?.dictionaryValue2)
+            mixpanelTrack(eventName, properties: event.properties?.dictionaryValue)
         }
         return event
     }
     
     func screen(event: ScreenEvent) -> ScreenEvent? {
-        if settings?["consolidatedPageCalls"]?.boolValue ?? false,
-           var payloadProps = event.properties?.dictionaryValue2 {
+        if settings?["consolidatedPageCalls"] as? Bool ?? false,
+           var payloadProps = event.properties?.dictionaryValue {
             
             let eventName = "Loaded a Screen"
             if let name = event.name {
@@ -126,23 +122,23 @@ class SegmentMixPanel: DestinationPlugin {
             }
             mixpanelTrack(eventName, properties: payloadProps)
             analytics.log(message: "Mixpanel track \(eventName) properties \(payloadProps)")
-        } else if settings?["trackAllPages"]?.boolValue ?? false {
+        } else if settings?["trackAllPages"] as? Bool ?? false {
             
             var finalEventName = "Viewed Screen"
             if let eventName = event.name {
                 finalEventName = "Viewed \(eventName) Screen"
             }
             
-            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue2)
-            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue2))")
-        } else if settings?["trackNamedPages"]?.boolValue ?? false, let eventName = event.name {
+            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
+            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
+        } else if settings?["trackNamedPages"] as? Bool ?? false, let eventName = event.name {
             let finalEventName = "Viewed \(eventName) Screen"
-            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue2)
-            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue2))")
-        } else if settings?["trackCategorizedPages"]?.boolValue ?? false, let category = event.category {
+            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
+            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
+        } else if settings?["trackCategorizedPages"] as? Bool ?? false, let category = event.category {
             let finalEventName = "Viewed \(category) Screen"
-            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue2)
-            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue2))")
+            mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
+            analytics.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
         }
         
         return event
@@ -151,7 +147,7 @@ class SegmentMixPanel: DestinationPlugin {
     func group(event: GroupEvent) -> GroupEvent? {
         
         guard let groupID = event.groupId, !groupID.isEmpty,
-              let groupIdentifierProperties = settings?["groupIdentifierTraits"]?.arrayValue else {
+              let groupIdentifierProperties = settings?["groupIdentifierTraits"] as? [String] else {
             return event
         }
         
@@ -162,10 +158,8 @@ class SegmentMixPanel: DestinationPlugin {
         
         for key in groupIdentifierProperties {
             let nsGroupID = NSString(string: groupID)
-
-            guard let key = key.stringValue else { continue }
             
-            if let traits = event.traits?.dictionaryValue2 {
+            if let traits = event.traits?.dictionaryValue {
                 if let group = traits[key] as? String {
                     mixpanel?.getGroup(group, groupID: nsGroupID).setOnce(traits)
                 }
@@ -252,9 +246,9 @@ class SegmentMixPanel: DestinationPlugin {
     
     private func eventShouldIncrement(event: String) -> Bool {
         var shouldIncrement = false
-        if let propertyIncrements = settings?["eventIncrements"]?.arrayValue {
+        if let propertyIncrements = settings?["eventIncrements"] as? [String] {
             for increment in propertyIncrements {
-                if let increment = increment.stringValue, event.lowercased() == increment.lowercased() {
+                if event.lowercased() == increment.lowercased() {
                     shouldIncrement = true
                     break
                 }
@@ -265,15 +259,13 @@ class SegmentMixPanel: DestinationPlugin {
     }
     
     private func incrementProperties(_ properties: [String: Any]) {
-        if let propertyIncrements = settings?["propIncrements"]?.arrayValue {
-            for propIncrement in propertyIncrements {
-                if let propString = propIncrement.stringValue {
-                    for property in properties.keys {
-                        if propString.lowercased() == property.lowercased(),
-                           let incrementValue = properties[property] as? Int {
-                            mixpanel?.people.increment(property, by: NSNumber(value: incrementValue))
-                            analytics.log(message: "Mixpanel people increment \(property) by \(incrementValue)")
-                        }
+        if let propertyIncrements = settings?["propIncrements"] as? [String] {
+            for propString in propertyIncrements {
+                for property in properties.keys {
+                    if propString.lowercased() == property.lowercased(),
+                       let incrementValue = properties[property] as? Int {
+                        mixpanel?.people.increment(property, by: NSNumber(value: incrementValue))
+                        analytics.log(message: "Mixpanel people increment \(property) by \(incrementValue)")
                     }
                 }
             }
@@ -282,7 +274,7 @@ class SegmentMixPanel: DestinationPlugin {
     
     private func peopleEnabled() -> Bool {
         var enabled = false
-        if let peopleEnabled = settings?["people"]?.boolValue {
+        if let peopleEnabled = settings?["people"] as? Bool {
             enabled = peopleEnabled
         }
         
@@ -291,7 +283,7 @@ class SegmentMixPanel: DestinationPlugin {
     
     private func setAllTraitsByDefault() -> Bool {
         var traitsByDefault = false
-        if let setAllTraitsByDefault = settings?["setAllTraitsByDefault"]?.boolValue {
+        if let setAllTraitsByDefault = settings?["setAllTraitsByDefault"] as? Bool {
             traitsByDefault = setAllTraitsByDefault
         }
         
