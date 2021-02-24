@@ -55,7 +55,7 @@ public struct Settings: Codable {
 
 extension Analytics {
     func checkSettings() {
-        let writeKey = self.configuration.writeKey
+        let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self)
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success {

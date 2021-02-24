@@ -28,7 +28,7 @@ public class HTTPClient {
         if let apiKey = apiKey {
             self.apiKey = apiKey
         } else {
-            self.apiKey = analytics.configuration.writeKey
+            self.apiKey = analytics.configuration.values.writeKey
         }
         
         if let apiHost = apiHost {

@@ -107,7 +107,7 @@ public class SegmentDestination: DestinationPlugin {
                     break
                 }
                 
-                httpClient.startBatchUpload(writeKey: analytics.configuration.writeKey, batch: url, completion: { [weak self] (succeeded) in
+                httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url, completion: { [weak self] (succeeded) in
 
                     // Track that the call has finished
                     processedCall.append(succeeded)

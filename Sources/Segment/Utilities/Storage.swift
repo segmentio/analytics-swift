@@ -251,23 +251,13 @@ extension Storage {
     
     func finish(file: URL) {
         syncQueue.sync {
-            // construct context for batch structure
-            let contextFormat: String = "\"context\":%@"
-            var context = "{}"
-            let system: System? = store.currentState()
-            if let c = system?.context {
-                context = c.toString()
-            }
-            
             let tempFile = file.appendingPathExtension(Storage.tempExtension)
             try? FileManager.default.copyItem(at: file, to: tempFile)
-            
-            context = String(format: contextFormat, context)
             
             let sentAt = Date().iso8601()
 
             // write it to the existing file
-            let fileEnding = "],\"sentAt\":\"\(sentAt)\",\(context)}"
+            let fileEnding = "],\"sentAt\":\"\(sentAt)\"}"
             let endData = fileEnding.data(using: .utf8)
             if let endData = endData, let handle = try? FileHandle(forWritingTo: tempFile) {
                 handle.seekToEndOfFile()

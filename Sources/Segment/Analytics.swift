@@ -26,7 +26,7 @@ public class Analytics {
         self.configuration = configuration
         
         store = Store()
-        storage = Storage(store: self.store, writeKey: configuration.writeKey)
+        storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
         timeline = Timeline()
         
         // provide our default state

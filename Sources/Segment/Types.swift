@@ -167,7 +167,6 @@ extension RawEvent {
         result.anonymousId = userInfo.anonymousId
         result.messageId = UUID().uuidString
         result.timestamp = Date().iso8601()
-        result.context = system.context
         result.integrations = system.integrations
         
         return result

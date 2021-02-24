@@ -14,7 +14,6 @@ import Sovran
 struct System: State {
     let enabled: Bool
     let configuration: Configuration
-    let context: JSON?
     let integrations: JSON?
     let settings: Settings?
     
@@ -23,7 +22,6 @@ struct System: State {
         func reduce(state: System) -> System {
             let result = System(enabled: enabled,
                                 configuration: state.configuration,
-                                context: state.context,
                                 integrations: state.integrations,
                                 settings: state.settings)
             return result
@@ -36,7 +34,6 @@ struct System: State {
         func reduce(state: System) -> System {
             let result = System(enabled: state.enabled,
                                 configuration: state.configuration,
-                                context: state.context,
                                 integrations: state.integrations,
                                 settings: settings)
             return result
@@ -55,7 +52,6 @@ struct System: State {
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(enabled: state.enabled,
                                         configuration: state.configuration,
-                                        context: state.context,
                                         integrations: jsonIntegrations,
                                         settings: state.settings)
                     return result
@@ -74,7 +70,6 @@ struct System: State {
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(enabled: state.enabled,
                                         configuration: state.configuration,
-                                        context: state.context,
                                         integrations: jsonIntegrations,
                                         settings: state.settings)
                     return result
@@ -142,11 +137,11 @@ extension System {
             if let defaults = configuration.values.defaultSettings {
                 settings = defaults
             } else {
-                settings = Settings(writeKey: configuration.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
+                settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
         let integrationDictionary = try! JSON([String: Any]())
-        return System(enabled: !configuration.values.startDisabled, configuration: configuration, context: nil, integrations: integrationDictionary, settings: settings)
+        return System(enabled: !configuration.values.startDisabled, configuration: configuration, integrations: integrationDictionary, settings: settings)
     }
 }
 
