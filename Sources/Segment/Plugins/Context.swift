@@ -7,7 +7,9 @@
 
 import Foundation
 
-public class Context: Plugin {
+public class Context: PlatformPlugin {
+    static var specificName: String = "Segment_Context"
+    
     public var type: PluginType
     public var name: String
     public var analytics: Analytics
@@ -24,6 +26,8 @@ public class Context: Plugin {
         guard var workingEvent = event else { return event }
         
         var context = staticContext
+        
+        insertDynamicPlatformContextData(context: &context)
         
         // if this event came in with context data already
         // let it take precedence over our values.
@@ -65,7 +69,7 @@ public class Context: Plugin {
         }
         
         // platform info, see <Platform>Utils.swift
-        insertPlatformContextData(context: &staticContext)
+        insertStaticPlatformContextData(context: &staticContext)
         
         return staticContext
     }

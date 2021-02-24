@@ -9,8 +9,11 @@ import Foundation
 
 #if os(macOS)
 
-func insertPlatformContextData(context: inout [String: Any]) {
+func insertStaticPlatformContextData(context: inout [String: Any]) {
     
+}
+
+func insertDynamicPlatformContextData(context: inout [String: Any]) {
 }
 
 #endif

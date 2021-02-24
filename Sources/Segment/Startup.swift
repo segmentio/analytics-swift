@@ -72,6 +72,8 @@ extension Analytics: Subscriber {
             #if os(Linux)
             plugins.append(LinuxLifecycleEvents.self)
             #endif
+            // add context plugin as well as it's platform specific internally.
+            plugins.append(Context.self)
         }
         
         if plugins.isEmpty {
