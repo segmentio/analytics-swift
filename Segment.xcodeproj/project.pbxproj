@@ -23,9 +23,9 @@
 /* Begin PBXBuildFile section */
 		4658175425BA4C20006B2809 /* HTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4658175325BA4C20006B2809 /* HTTPClientTests.swift */; };
 		46A018C225E5857D00F9CCD8 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C125E5857D00F9CCD8 /* Context.swift */; };
-		46A018CA25E6C93800F9CCD8 /* iOSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C925E6C93800F9CCD8 /* iOSUtils.swift */; };
-		46A018CF25E6C9A800F9CCD8 /* macOSUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018CE25E6C9A800F9CCD8 /* macOSUtils.swift */; };
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
+		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
+		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
 		46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
@@ -151,9 +151,9 @@
 /* Begin PBXFileReference section */
 		4658175325BA4C20006B2809 /* HTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientTests.swift; sourceTree = "<group>"; };
 		46A018C125E5857D00F9CCD8 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
-		46A018C925E6C93800F9CCD8 /* iOSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSUtils.swift; sourceTree = "<group>"; };
-		46A018CE25E6C9A800F9CCD8 /* macOSUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSUtils.swift; sourceTree = "<group>"; };
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
+		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
+		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
 		46FE4C9125A3EE90003A7362 /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
@@ -233,6 +233,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46A018D825E97FCB00F9CCD8 /* Vendors */ = {
+			isa = PBXGroup;
+			children = (
+				46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */,
+				46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */,
+				46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */,
+			);
+			path = Vendors;
+			sourceTree = "<group>";
+		};
 		962085EA256DC21000314F8D /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -290,6 +300,7 @@
 		969A533D25B0D510009227D9 /* Platforms */ = {
 			isa = PBXGroup;
 			children = (
+				46A018D825E97FCB00F9CCD8 /* Vendors */,
 				969A533E25B0D51A009227D9 /* iOS */,
 				969A534125B0D52D009227D9 /* Linux */,
 				969A534025B0D527009227D9 /* Mac */,
@@ -302,7 +313,6 @@
 			children = (
 				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
 				969A534225B10324009227D9 /* iOSAppBackground.swift */,
-				46A018C925E6C93800F9CCD8 /* iOSUtils.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -311,7 +321,6 @@
 			isa = PBXGroup;
 			children = (
 				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
-				46A018CE25E6C9A800F9CCD8 /* macOSUtils.swift */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -320,7 +329,6 @@
 			isa = PBXGroup;
 			children = (
 				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
-				46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */,
 			);
 			path = Linux;
 			sourceTree = "<group>";
@@ -586,6 +594,7 @@
 			buildActionMask = 0;
 			files = (
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
+				46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */,
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
@@ -595,18 +604,17 @@
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
+				46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
-				46A018CF25E6C9A800F9CCD8 /* macOSUtils.swift in Sources */,
 				46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */,
 				96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */,
 				46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
-				46A018CA25E6C93800F9CCD8 /* iOSUtils.swift in Sources */,
 				966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Plugins.swift in Sources */,
 				46A018C225E5857D00F9CCD8 /* Context.swift in Sources */,
@@ -844,7 +852,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Debug;
 		};
@@ -873,7 +881,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Release;
 		};

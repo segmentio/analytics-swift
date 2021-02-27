@@ -7,14 +7,23 @@
 
 import Foundation
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(watchOS) || os(tvOS) || targetEnvironment(macCatalyst)
 
 import UIKit
-import WebKit
-import SystemConfiguration
 
-func insertStaticPlatformContextData(context: inout [String: Any]) {
+// webkit not available on iOS
+#if !os(watchOS)
+import WebKit
+#else
+import WatchKit
+#endif
+
+internal func insertStaticPlatformContextData(context: inout [String: Any]) {
+    #if os(watchOS)
+    let device = WKInterfaceDevice.current()
+    #else
     let device = UIDevice.current
+    #endif
     
     // device
     // TODO: handle "token"
@@ -36,8 +45,10 @@ func insertStaticPlatformContextData(context: inout [String: Any]) {
         "height": screen.height
     ]
     // user-agent
+    #if !os(watchOS)
     let userAgent = WKWebView().value(forKey: "userAgent")
     context["userAgent"] = userAgent
+    #endif
     // locale
     if Locale.preferredLanguages.count > 0 {
         context["locale"] = Locale.preferredLanguages[0]
@@ -46,7 +57,7 @@ func insertStaticPlatformContextData(context: inout [String: Any]) {
     context["timezone"] = TimeZone.current.identifier
 }
 
-func insertDynamicPlatformContextData(context: inout [String: Any]) {
+internal func insertDynamicPlatformContextData(context: inout [String: Any]) {
     // network
     let status = connectionStatus()
     
@@ -69,54 +80,6 @@ func insertDynamicPlatformContextData(context: inout [String: Any]) {
     ]
     
     // other stuff?? ...
-}
-
-private enum ReachabilityType {
-    case cellular
-    case wifi
-}
-
-private enum ReachabilityStatus {
-    case offline
-    case online(ReachabilityType)
-    case unknown
-    
-    init(reachabilityFlags flags: SCNetworkReachabilityFlags) {
-        let connectionRequired = flags.contains(.connectionRequired)
-        let isReachable = flags.contains(.reachable)
-        let isWWAN = flags.contains(.isWWAN)
-
-        if !connectionRequired && isReachable {
-            if isWWAN {
-                self = .online(.cellular)
-            } else {
-                self = .online(.wifi)
-            }
-        } else {
-            self =  .offline
-        }
-    }
-}
-
-private func connectionStatus() -> ReachabilityStatus {
-    var zeroAddress = sockaddr_in()
-    zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
-    zeroAddress.sin_family = sa_family_t(AF_INET)
-
-    guard let defaultRouteReachability = (withUnsafePointer(to: &zeroAddress) {
-        $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { zeroSockAddress in
-            SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
-        }
-    }) else {
-       return .unknown
-    }
-
-    var flags : SCNetworkReachabilityFlags = []
-    if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
-        return .unknown
-    }
-
-    return ReachabilityStatus(reachabilityFlags: flags)
 }
 
 #endif

@@ -15,6 +15,7 @@ public class Context: PlatformPlugin {
     public var analytics: Analytics
     
     internal var staticContext = staticContextData()
+    internal static var device = VendorSystem.current
     
     public required init(name: String, analytics: Analytics) {
         self.analytics = analytics
@@ -68,10 +69,73 @@ public class Context: PlatformPlugin {
             ]
         }
         
-        // platform info, see <Platform>Utils.swift
         insertStaticPlatformContextData(context: &staticContext)
         
         return staticContext
     }
     
+    internal static func insertStaticPlatformContextData(context: inout [String: Any]) {
+        // device
+        let device = Self.device
+        
+        // TODO: handle "token"
+        context["device"] = [
+            "manufacturer": device.manufacturer,
+            "type": device.type,
+            "model": device.model,
+            "name": device.name,
+            "id": device.identifierForVendor ?? ""
+        ]
+        // os
+        context["os"] = [
+            "name": device.systemName,
+            "version": device.systemVersion
+        ]
+        // screen
+        let screen = device.screenSize
+        context["screen"] = [
+            "width": screen.width,
+            "height": screen.height
+        ]
+        // user-agent
+        let userAgent = device.userAgent
+        context["userAgent"] = userAgent
+        // locale
+        if Locale.preferredLanguages.count > 0 {
+            context["locale"] = Locale.preferredLanguages[0]
+        }
+        // timezone
+        context["timezone"] = TimeZone.current.identifier
+    }
+
+    internal func insertDynamicPlatformContextData(context: inout [String: Any]) {
+        let device = Self.device
+        
+        // network
+        let status = device.connection
+        
+        var cellular = false
+        var wifi = false
+        var bluetooth = false
+        
+        switch status {
+        case .online(.cellular):
+            cellular = true
+        case .online(.wifi):
+            wifi = true
+        case .online(.bluetooth):
+            bluetooth = true
+        default:
+            break
+        }
+        
+        context["network"] = [
+            "bluetooth": bluetooth, // not sure any swift platforms support this currently
+            "cellular": cellular,
+            "wifi": wifi
+        ]
+        
+        // other stuff?? ...
+    }
+
 }
