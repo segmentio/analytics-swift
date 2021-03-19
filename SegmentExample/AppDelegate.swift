@@ -16,14 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         var config = Configuration(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
-            .trackApplicationLifecycleEvents(true)
-            .flushInterval(10)
+        config.trackApplicationLifecycleEvents(true)
+        config.flushInterval(10)
         
         let analytics = Analytics(configuration: config)
         self.analytics = analytics
         
         analytics.add(plugin: AfterPlugin(name: "hello", analytics: analytics))
-        analytics.add(plugin: SegmentMixpanel(name: "Mixpanel", analytics: analytics))
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
             analytics.identify(userId: "Live Demo -- never breaks")
