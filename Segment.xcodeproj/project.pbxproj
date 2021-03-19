@@ -22,6 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		462107F22603DA4D00EBC4A8 /* Sovran in Frameworks */ = {isa = PBXBuildFile; productRef = 462107F12603DA4D00EBC4A8 /* Sovran */; };
+		4621080C2605332D00EBC4A8 /* ObjectPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4621080B2605332D00EBC4A8 /* ObjectPath.swift */; };
+		46210811260538BE00EBC4A8 /* ObjectPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* ObjectPath_Tests.swift */; };
 		4658175425BA4C20006B2809 /* HTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4658175325BA4C20006B2809 /* HTTPClientTests.swift */; };
 		46A018C225E5857D00F9CCD8 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C125E5857D00F9CCD8 /* Context.swift */; };
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
@@ -119,6 +121,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4621080B2605332D00EBC4A8 /* ObjectPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectPath.swift; sourceTree = "<group>"; };
+		46210810260538BE00EBC4A8 /* ObjectPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectPath_Tests.swift; sourceTree = "<group>"; };
 		4658175325BA4C20006B2809 /* HTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClientTests.swift; sourceTree = "<group>"; };
 		46A018C125E5857D00F9CCD8 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
@@ -293,6 +297,7 @@
 				A31A16A425780E8D00C9CDDF /* JSON.swift */,
 				A3AEE1492580208E002386EB /* iso8601.swift */,
 				46FE4CDF25A53FAD003A7362 /* Storage.swift */,
+				4621080B2605332D00EBC4A8 /* ObjectPath.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -316,6 +321,7 @@
 				OBJ_12 /* Segment_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClientTests.swift */,
 				OBJ_13 /* XCTestManifests.swift */,
+				46210810260538BE00EBC4A8 /* ObjectPath_Tests.swift */,
 			);
 			name = "Segment-Tests";
 			path = "Tests/Segment-Tests";
@@ -521,6 +527,7 @@
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
 				46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */,
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
+				4621080C2605332D00EBC4A8 /* ObjectPath.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
@@ -555,6 +562,7 @@
 				OBJ_30 /* Segment_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
 				4658175425BA4C20006B2809 /* HTTPClientTests.swift in Sources */,
+				46210811260538BE00EBC4A8 /* ObjectPath_Tests.swift in Sources */,
 				967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */,
 				A31A16512576C47400C9CDDF /* JSONTests.swift in Sources */,
 				46FE4D1D25A7A850003A7362 /* StorageTests.swift in Sources */,
