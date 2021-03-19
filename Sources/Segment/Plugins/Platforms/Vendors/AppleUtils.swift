@@ -175,6 +175,10 @@ internal class watchOSVendorSystem: VendorSystem {
 
 #if os(iOS) || os(tvOS) || os(macOS) || targetEnvironment(macCatalyst)
 
+#if os(macOS)
+import SystemConfiguration
+#endif
+
 extension ConnectionStatus {
     init(reachabilityFlags flags: SCNetworkReachabilityFlags) {
         let connectionRequired = flags.contains(.connectionRequired)
