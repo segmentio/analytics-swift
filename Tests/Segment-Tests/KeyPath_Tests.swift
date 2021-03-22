@@ -1,5 +1,5 @@
 //
-//  ObjectPath_Tests.swift
+//  KeyPath_Tests.swift
 //  Segment-Tests
 //
 //  Created by Brandon Sneed on 3/19/21.
@@ -8,7 +8,23 @@
 import XCTest
 import Segment
 
-class ObjectPath_Tests: XCTestCase {
+class KeyPath_Tests: XCTestCase {
+    let baseDictionary: [String: Any] = [
+        "basedOn": "Donald Duck",
+        "data": [
+            "characters": [
+                "Scrooge McDuck": "Moneybags",
+                "Huey": "Red",
+                "Dewey": "Green",
+                "Louie": "Blue",
+                "Gyro": "Leather",
+            ],
+            "places": [
+                "Duckburg": "City",
+                "Money Bin": "Full",
+            ]
+        ]
+    ]
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -18,23 +34,8 @@ class ObjectPath_Tests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testPathGet() throws {
-        var dict: [String: Any] = [
-            "basedOn": "Donald Duck",
-            "data": [
-                "characters": [
-                    "Scrooge McDuck": "Moneybags",
-                    "Huey": "Red",
-                    "Dewey": "Green",
-                    "Louie": "Blue",
-                    "Gyro Gearloose": "Leather",
-                ],
-                "places": [
-                    "Duckburg": "City",
-                    "Money Bin": "Full",
-                ]
-            ]
-        ]
+    func testKeyPathBasics() throws {
+        var dict = baseDictionary
         
         // check a bottom level value
         let value = dict[keyPath: "data.characters.Huey"] as? String
@@ -57,8 +58,29 @@ class ObjectPath_Tests: XCTestCase {
         XCTAssertTrue(booya == "scrumdiddly")
         
         // create a new nested path that doesn't exist
-        dict[keyPath: "booya.shazam"] = "bad-movie"
-        let shazam = dict[keyPath: "booya.shazam"] as? String
+        dict[keyPath: "booya.skibbidy.shazam"] = "bad-movie"
+        let shazam = dict[keyPath: "booya.skibbidy.shazam"] as? String
         XCTAssertTrue(shazam == "bad-movie")
+        
+    }
+    
+    func testKeyPathSpeed() {
+        let dict = baseDictionary
+        measure {
+            for _ in 0..<100 {
+                let gyro = dict[keyPath: "data.characters.Gyro"] as? String
+                XCTAssertTrue(gyro == "Leather")
+            }
+        }
+    }
+    
+    func testValueForKeyPathSpeed() {
+        let dict = baseDictionary
+        measure {
+            for _ in 0..<100 {
+                let gyro = (dict as NSDictionary).value(forKeyPath: "data.characters.Gyro") as? String
+                XCTAssertTrue(gyro == "Leather")
+            }
+        }
     }
 }
