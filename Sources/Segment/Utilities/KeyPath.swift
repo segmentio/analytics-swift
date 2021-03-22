@@ -7,6 +7,32 @@
 
 import Foundation
 
+protocol KeyPathHandler {
+    func isHandled(_ keyPath: KeyPath) -> Bool
+    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any?
+}
+
+public struct BasicHandler: KeyPathHandler {
+    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+        guard let input = input as? [String: Any] else { return nil }
+        var result: Any? = nil
+        if keyPath.remaining.isEmpty {
+            result = input[keyPath.current]
+        } else {
+            if let nestedDict = input[keyPath.current] as? [String: Any] {
+                result = nestedDict[keyPath: KeyPath(keyPath.remainingPath)]
+            } else {
+                result = nil
+            }
+        }
+        return result
+    }
+    
+    func isHandled(_ keyPath: KeyPath) -> Bool {
+        return true
+    }
+}
+
 public struct KeyPath {
     var current: String
     var remaining: [String]
@@ -18,7 +44,19 @@ public struct KeyPath {
         current = components.removeFirst()
         remaining = components
     }
+    
+    internal static var handlers: [KeyPathHandler] = [BasicHandler()]
+    static func register(_ handler: KeyPathHandler) { handlers.insert(handler, at: 0) }
+    static func handlerFor(keyPath: KeyPath) -> KeyPathHandler? {
+        for item in handlers {
+            if item.isHandled(keyPath) {
+                return item
+            }
+        }
+        return nil
+    }
 }
+
 
 extension KeyPath: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
@@ -33,19 +71,9 @@ extension KeyPath: ExpressibleByStringLiteral {
 }
 
 extension Dictionary where Key: StringProtocol, Value: Any {
-    internal func value(keyPath: KeyPath) -> Any? {
-        var result: Any? = nil
-        guard let key = keyPath.current as? Key else { return nil }
-        
-        if keyPath.remaining.isEmpty {
-            result = self[key]
-        } else {
-            if let nestedDict = self[key] as? [String: Any] {
-                result = nestedDict[keyPath: KeyPath(keyPath.remainingPath)]
-            } else {
-                result = nil
-            }
-        }
+    internal func value(keyPath: KeyPath, reference: Any?) -> Any? {
+        let handler = KeyPath.handlerFor(keyPath: keyPath)
+        let result = handler?.value(keyPath: keyPath, input: self, reference: reference)
         return result
     }
     
@@ -68,14 +96,27 @@ extension Dictionary where Key: StringProtocol, Value: Any {
     }
     
     public subscript(keyPath keyPath: KeyPath) -> Any? {
-        get {
-            return value(keyPath: keyPath)
-        }
-        
-        set {
-            setValue(newValue as Any, keyPath: keyPath)
-        }
+        get { return value(keyPath: keyPath, reference: nil) }
+        set { setValue(newValue as Any, keyPath: keyPath) }
+    }
+
+    public subscript(keyPath keyPath: KeyPath, reference: Any?) -> Any? {
+        get { return value(keyPath: keyPath, reference: reference) }
+        set { setValue(newValue as Any, keyPath: keyPath) }
     }
 }
 
 // @if, @path, @template
+
+
+struct IfHandler: KeyPathHandler {
+    func isHandled(_ keyPath: KeyPath) -> Bool {
+        if keyPath.current == "@if" { return true }
+        return false
+    }
+    
+    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+        return nil
+    }
+    
+}

@@ -64,6 +64,34 @@ class KeyPath_Tests: XCTestCase {
         
     }
     
+    func testHandlers() {
+        let mapping = [
+            "mapping":[
+                "user_id":[
+                   "@path":"$.userId"
+                ],
+                "device_id":[
+                   "@if":[
+                      "exists":[
+                         "@path":"$.context.device.id"
+                      ],
+                      "then":[
+                         "@path":"$.context.device.id"
+                      ],
+                      "else":[
+                         "@path":"$.anonymousId"
+                      ]
+                   ]
+                ],
+                "user_properties":[
+                   "@path":"$.traits"
+                ]
+            ]
+        ]
+        
+        
+    }
+    
     func testKeyPathSpeed() {
         let dict = baseDictionary
         measure {
