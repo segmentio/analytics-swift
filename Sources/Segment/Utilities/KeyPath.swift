@@ -8,7 +8,7 @@
 import Foundation
 
 protocol KeyPathHandler {
-    func isHandled(_ keyPath: KeyPath) -> Bool
+    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool
     func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any?
 }
 
@@ -28,7 +28,7 @@ public struct BasicHandler: KeyPathHandler {
         return result
     }
     
-    func isHandled(_ keyPath: KeyPath) -> Bool {
+    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
         return true
     }
 }
@@ -45,11 +45,12 @@ public struct KeyPath {
         remaining = components
     }
     
-    internal static var handlers: [KeyPathHandler] = [BasicHandler()]
+    internal static var handlers: [KeyPathHandler] = [PathHandler(), IfHandler(), BasicHandler()]
     static func register(_ handler: KeyPathHandler) { handlers.insert(handler, at: 0) }
-    static func handlerFor(keyPath: KeyPath) -> KeyPathHandler? {
+    static func handlerFor(keyPath: KeyPath, input: Any?) -> KeyPathHandler? {
+        guard let input = input as? [String: Any] else { return nil }
         for item in handlers {
-            if item.isHandled(keyPath) {
+            if item.isHandled(keyPath, forInput: input[keyPath.current]) {
                 return item
             }
         }
@@ -72,7 +73,7 @@ extension KeyPath: ExpressibleByStringLiteral {
 
 extension Dictionary where Key: StringProtocol, Value: Any {
     internal func value(keyPath: KeyPath, reference: Any?) -> Any? {
-        let handler = KeyPath.handlerFor(keyPath: keyPath)
+        let handler = KeyPath.handlerFor(keyPath: keyPath, input: self)
         let result = handler?.value(keyPath: keyPath, input: self, reference: reference)
         return result
     }
@@ -100,9 +101,15 @@ extension Dictionary where Key: StringProtocol, Value: Any {
         set { setValue(newValue as Any, keyPath: keyPath) }
     }
 
-    public subscript(keyPath keyPath: KeyPath, reference: Any?) -> Any? {
+    public subscript(keyPath keyPath: KeyPath, reference reference: Any?) -> Any? {
         get { return value(keyPath: keyPath, reference: reference) }
         set { setValue(newValue as Any, keyPath: keyPath) }
+    }
+}
+
+extension String {
+    var stripReference: String {
+        return self.replacingOccurrences(of: "$.", with: "")
     }
 }
 
@@ -110,13 +117,57 @@ extension Dictionary where Key: StringProtocol, Value: Any {
 
 
 struct IfHandler: KeyPathHandler {
-    func isHandled(_ keyPath: KeyPath) -> Bool {
-        if keyPath.current == "@if" { return true }
+    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
+        guard let input = forInput as? [String: Any] else { return false }
+        if input["@if"] != nil { return true }
         return false
     }
     
     func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
-        return nil
+        guard let input = input as? [String: Any] else { return nil }
+        let current = input[keyPath.current] as? [String: Any]
+        let conditional = current?["@if"] as? [String: Any]
+        let blank = conditional?[keyPath: "blank", reference: reference]
+        let exists = conditional?[keyPath: "exists", reference: reference]
+        let then = conditional?[keyPath: "then", reference: reference]
+        let elseCase = conditional?[keyPath: "else", reference: reference]
+        
+        var result: Any? = nil
+        if blank != nil {
+            // TODO ... finish the "blank" case
+            result = blank
+        } else if exists != nil {
+            if then != nil {
+                result = then
+            } else if elseCase != nil {
+                result = elseCase
+            }
+        }
+        
+        return result
+    }
+    
+}
+
+struct PathHandler: KeyPathHandler {
+    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
+        guard let input = forInput as? [String: Any] else { return false }
+        if input["@path"] != nil {
+            return true
+        }
+        return false
+    }
+    
+    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+        guard let input = input as? [String: Any] else { return nil }
+        let current = input[keyPath.current] as? [String: Any]
+        let path = (current?["@path"] as? String)?.stripReference
+        
+        var result: Any? = nil
+        if let path = path, let reference = reference as? [String: Any] {
+            result = reference[keyPath: KeyPath(path)]
+        }
+        return result
     }
     
 }

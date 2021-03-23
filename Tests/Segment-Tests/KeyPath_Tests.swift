@@ -64,32 +64,53 @@ class KeyPath_Tests: XCTestCase {
         
     }
     
-    func testHandlers() {
+    func testIfExistsThenElse() {
         let mapping = [
-            "mapping":[
-                "user_id":[
-                   "@path":"$.userId"
-                ],
-                "device_id":[
-                   "@if":[
-                      "exists":[
-                         "@path":"$.context.device.id"
-                      ],
-                      "then":[
-                         "@path":"$.context.device.id"
-                      ],
-                      "else":[
-                         "@path":"$.anonymousId"
-                      ]
-                   ]
-                ],
-                "user_properties":[
-                   "@path":"$.traits"
-                ]
+            "user_id":[
+               "@path":"$.userId"
+            ],
+            "device_id":[
+               "@if":[
+                  "exists":[
+                     "@path":"$.context.device.id"
+                  ],
+                  "then":[
+                     "@path":"$.context.device.id"
+                  ],
+                  "else":[
+                     "@path":"$.anonymousId"
+                  ]
+               ]
+            ],
+            "user_properties":[
+               "@path":"$.traits"
             ]
         ]
         
+        let event1: [String: Any] = [
+            "userId": "brandon",
+            "context": [
+                "device": [
+                    "id": "ABCDEF"
+                ]
+            ],
+            "traits": [
+                "hoot": "nanny",
+                "scribble": "licious"
+            ],
+            "anonymousId": "123456"
+        ]
         
+        var dict = [String: Any]()
+        let keys = mapping.keys
+        for key in keys {
+            dict[key] = mapping[keyPath: KeyPath(key), reference: event1]
+        }
+        let json = try? JSON(dict)
+        print(json.prettyPrint())
+        
+        XCTAssertTrue(dict["device_id"] as? String == "ABCDEF")
+        XCTAssertTrue(dict["user_id"] as? String == "brandon")
     }
     
     func testKeyPathSpeed() {
