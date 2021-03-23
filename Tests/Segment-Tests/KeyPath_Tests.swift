@@ -87,6 +87,10 @@ class KeyPath_Tests: XCTestCase {
             ]
         ]
         
+        var dict = [String: Any]()
+        let keys = mapping.keys
+
+        // test results when context.device.id exists
         let event1: [String: Any] = [
             "userId": "brandon",
             "context": [
@@ -100,17 +104,26 @@ class KeyPath_Tests: XCTestCase {
             ],
             "anonymousId": "123456"
         ]
-        
-        var dict = [String: Any]()
-        let keys = mapping.keys
         for key in keys {
             dict[key] = mapping[keyPath: KeyPath(key), reference: event1]
         }
-        let json = try? JSON(dict)
-        print(json.prettyPrint())
-        
         XCTAssertTrue(dict["device_id"] as? String == "ABCDEF")
         XCTAssertTrue(dict["user_id"] as? String == "brandon")
+        
+        // test results when context.device.id does not exist
+        let event2: [String: Any] = [
+            "userId": "brandon",
+            "traits": [
+                "hoot": "nanny",
+                "scribble": "licious"
+            ],
+            "anonymousId": "123456"
+        ]
+        dict = [String: Any]()
+        for key in keys {
+            dict[key] = mapping[keyPath: KeyPath(key), reference: event2]
+        }
+        XCTAssertTrue(dict["device_id"] as? String == "123456")
     }
     
     func testKeyPathSpeed() {

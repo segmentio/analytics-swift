@@ -142,6 +142,10 @@ struct IfHandler: KeyPathHandler {
             } else if elseCase != nil {
                 result = elseCase
             }
+        } else if exists == nil {
+            if elseCase != nil {
+                result = elseCase
+            }
         }
         
         return result
