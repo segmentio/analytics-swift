@@ -127,23 +127,27 @@ struct IfHandler: KeyPathHandler {
         guard let input = input as? [String: Any] else { return nil }
         let current = input[keyPath.current] as? [String: Any]
         let conditional = current?["@if"] as? [String: Any]
+        
+        let isBlank = conditional?["blank"] != nil
+        let isExists = conditional?["exists"] != nil
+        
         let blank = conditional?[keyPath: "blank", reference: reference]
         let exists = conditional?[keyPath: "exists", reference: reference]
         let then = conditional?[keyPath: "then", reference: reference]
         let elseCase = conditional?[keyPath: "else", reference: reference]
         
         var result: Any? = nil
-        if blank != nil {
-            // TODO ... finish the "blank" case
-            result = blank
-        } else if exists != nil {
-            if then != nil {
+        
+        if isBlank {
+            if blank == nil || blank as? String == "" {
                 result = then
-            } else if elseCase != nil {
+            } else {
                 result = elseCase
             }
-        } else if exists == nil {
-            if elseCase != nil {
+        } else if isExists {
+            if exists != nil {
+                result = then
+            } else {
                 result = elseCase
             }
         }
