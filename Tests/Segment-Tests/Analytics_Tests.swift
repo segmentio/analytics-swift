@@ -1,7 +1,7 @@
 import XCTest
 @testable import Segment
 
-final class Segment_Tests: XCTestCase {
+final class Analytics_Tests: XCTestCase {
     
     func testBaseEventCreation() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
@@ -33,5 +33,14 @@ final class Segment_Tests: XCTestCase {
         analytics.remove(pluginName: "crikey")
         
         wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testAnonymousId() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let anonId = analytics.anonymousId()
+        
+        XCTAssertTrue(anonId != nil)
+        XCTAssertTrue(anonId != "")
+        XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
     }
 }

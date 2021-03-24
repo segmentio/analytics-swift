@@ -59,22 +59,23 @@ extension Analytics {
         }
     }
     
+    public var anonymousId: String {
+        if let userInfo: UserInfo = store.currentState() {
+            return userInfo.anonymousId
+        }
+        return ""
+    }
+    
+    public var deviceToken: String {
+        return ""
+    }
+    
     public func flush() {
         flushCurrentPayload()
     }
     
     public func reset() {
         store.dispatch(action: UserInfo.ResetAction())
-    }
-    
-    public func anonymousId() -> String {
-        // ??? not getAnonymousId
-        return ""
-    }
-    
-    public func deviceToken() -> String {
-        // ??? not getDeviceToken
-        return ""
     }
     
     public func edgeFunction() -> Any? {

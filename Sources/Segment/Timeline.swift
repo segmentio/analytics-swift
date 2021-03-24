@@ -117,6 +117,18 @@ extension Timeline {
             }
         }
     }
+    
+    internal func find(pluginName: String) -> Plugin? {
+        var found = [Plugin]()
+        for type in PluginType.allCases {
+            if let mediator = plugins[type] {
+                found.append(contentsOf: mediator.plugins.filter { (plugin) -> Bool in
+                    return plugin.name == pluginName
+                })
+            }
+        }
+        return found.first
+    }
 }
 
 // MARK: - Plugin Timeline Execution

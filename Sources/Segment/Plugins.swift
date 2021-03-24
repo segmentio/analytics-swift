@@ -131,5 +131,9 @@ extension Analytics {
         timeline.remove(pluginName: pluginName)
         store.dispatch(action: System.RemoveIntegrationAction(pluginName: pluginName))
     }
+    
+    public func find(pluginName: String) -> Plugin? {
+        return timeline.find(pluginName: pluginName)
+    }
 }
 

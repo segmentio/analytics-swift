@@ -112,7 +112,7 @@ extension Dictionary where Key: StringProtocol, Value: Any {
 }
 
 extension String {
-    var stripReference: String {
+    internal var strippedReference: String {
         return self.replacingOccurrences(of: "$.", with: "")
     }
 }
@@ -173,7 +173,7 @@ struct PathHandler: KeyPathHandler {
     func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
         guard let input = input as? [String: Any] else { return nil }
         let current = input[keyPath.current] as? [String: Any]
-        let path = (current?["@path"] as? String)?.stripReference
+        let path = (current?["@path"] as? String)?.strippedReference
         
         var result: Any? = nil
         if let path = path, let reference = reference as? [String: Any] {
