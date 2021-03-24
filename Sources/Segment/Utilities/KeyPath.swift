@@ -105,6 +105,10 @@ extension Dictionary where Key: StringProtocol, Value: Any {
         get { return value(keyPath: keyPath, reference: reference) }
         set { setValue(newValue as Any, keyPath: keyPath) }
     }
+    
+    public func exists(keyPath: KeyPath, reference: Any? = nil) -> Bool {
+        return (value(keyPath: keyPath, reference: refrence) != nil)
+    }
 }
 
 extension String {
