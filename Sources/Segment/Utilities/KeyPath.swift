@@ -107,7 +107,7 @@ extension Dictionary where Key: StringProtocol, Value: Any {
     }
     
     public func exists(keyPath: KeyPath, reference: Any? = nil) -> Bool {
-        return (value(keyPath: keyPath, reference: refrence) != nil)
+        return (value(keyPath: keyPath, reference: reference) != nil)
     }
 }
 
