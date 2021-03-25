@@ -15,7 +15,6 @@ public typealias AdvertisingIdCallback = () -> String?
 public struct Configuration {
     internal struct Values {
         var writeKey: String
-        var startDisabled: Bool = false
         var advertisingIdCallback: AdvertisingIdCallback? = nil
         var trackInAppPurchases: Bool = false
         var trackApplicationLifecycleEvents: Bool = true
@@ -38,12 +37,6 @@ public struct Configuration {
 // MARK: - Analytics Configuration
 
 public extension Configuration {
-    @discardableResult
-    mutating func startDisabled() -> Configuration {
-        values.startDisabled = true
-        return self
-    }
-    
     @discardableResult
     mutating func trackAdvertisingId(callback: @escaping AdvertisingIdCallback) -> Configuration {
         values.advertisingIdCallback = callback

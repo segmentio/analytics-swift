@@ -12,28 +12,15 @@ import Sovran
 // MARK: - System (Overall)
 
 struct System: State {
-    let enabled: Bool
     let configuration: Configuration
     let integrations: JSON?
     let settings: Settings?
-    
-    struct EnabledAction: Action {
-        let enabled: Bool
-        func reduce(state: System) -> System {
-            let result = System(enabled: enabled,
-                                configuration: state.configuration,
-                                integrations: state.integrations,
-                                settings: state.settings)
-            return result
-        }
-    }
     
     struct UpdateSettingsAction: Action {
         let settings: Settings
         
         func reduce(state: System) -> System {
-            let result = System(enabled: state.enabled,
-                                configuration: state.configuration,
+            let result = System(configuration: state.configuration,
                                 integrations: state.integrations,
                                 settings: settings)
             return result
@@ -50,8 +37,7 @@ struct System: State {
             if var integrations = state.integrations?.dictionaryValue {
                 integrations[pluginName] = false
                 if let jsonIntegrations = try? JSON(integrations) {
-                    let result = System(enabled: state.enabled,
-                                        configuration: state.configuration,
+                    let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,
                                         settings: state.settings)
                     return result
@@ -68,8 +54,7 @@ struct System: State {
             if var integrations = state.integrations?.dictionaryValue {
                 integrations.removeValue(forKey: pluginName)
                 if let jsonIntegrations = try? JSON(integrations) {
-                    let result = System(enabled: state.enabled,
-                                        configuration: state.configuration,
+                    let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,
                                         settings: state.settings)
                     return result
@@ -141,7 +126,7 @@ extension System {
             }
         }
         let integrationDictionary = try! JSON([String: Any]())
-        return System(enabled: !configuration.values.startDisabled, configuration: configuration, integrations: integrationDictionary, settings: settings)
+        return System(configuration: configuration, integrations: integrationDictionary, settings: settings)
     }
 }
 

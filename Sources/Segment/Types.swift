@@ -133,6 +133,7 @@ public struct AliasEvent: RawEvent {
     public var metrics: [JSON]? = nil
     
     public var userId: String?
+    public var previousId: String?
     
     public init(newId: String? = nil) {
         self.userId = newId

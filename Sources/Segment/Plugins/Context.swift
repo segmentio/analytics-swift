@@ -78,7 +78,7 @@ public class Context: PlatformPlugin {
         // device
         let device = Self.device
         
-        // TODO: handle "token"
+        // "token" handled in DeviceToken.swift
         context["device"] = [
             "manufacturer": device.manufacturer,
             "type": device.type,

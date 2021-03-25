@@ -133,9 +133,14 @@ extension Analytics {
     }
     
     // MARK: - Alias
-    
+    /* will possibly deprecate this ... TBD */
+    /*
     public func alias(newId: String) {
+        let userInfo: UserInfo? = store.currentState()
+        
         let event = AliasEvent(newId: newId)
+        store.dispatch(action: UserInfo.SetUserIdAction(userId: newId))
         process(incomingEvent: event)
     }
+    */
 }

@@ -46,27 +46,10 @@ public class Analytics {
 // MARK: - System Modifiers
 
 extension Analytics {
-    public var enabled: Bool {
-        get {
-            var result = !configuration.values.startDisabled
-            if let system: System = store.currentState() {
-                result = system.enabled
-            }
-            return result
-        }
-        set(value) {
-            store.dispatch(action: System.EnabledAction(enabled: value))
-        }
-    }
-    
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
             return userInfo.anonymousId
         }
-        return ""
-    }
-    
-    public var deviceToken: String {
         return ""
     }
     
@@ -76,10 +59,6 @@ extension Analytics {
     
     public func reset() {
         store.dispatch(action: UserInfo.ResetAction())
-    }
-    
-    public func edgeFunction() -> Any? {
-        return nil
     }
     
     public func settings() -> Settings? {

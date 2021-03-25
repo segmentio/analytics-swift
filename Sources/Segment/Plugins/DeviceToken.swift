@@ -24,7 +24,7 @@ public class DeviceToken: Plugin {
     public func execute<T: RawEvent>(event: T?) -> T? {
         guard var workingEvent = event else { return event }
         if var context = workingEvent.context?.dictionaryValue, let token = token {
-            context[keyPath: "context.device.token"] = token
+            context[keyPath: "device.token"] = token
             workingEvent.context = try? JSON(context)
         }
         return workingEvent

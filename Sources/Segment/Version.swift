@@ -6,4 +6,6 @@
 //
 
 // Referred to by Analytics.swift
-internal let __segment_version = "5.0"
+
+// BREAKING.FEATURE.FIX
+internal let __segment_version = "5.0.0"
