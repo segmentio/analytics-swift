@@ -22,6 +22,7 @@ public protocol RawEvent: Codable {
     var type: String? { get set }
     var anonymousId: String? { get set }
     var messageId: String? { get set }
+    var userId: String? { get set }
     var timestamp: String? { get set }
     
     var context: JSON? { get set }
@@ -33,6 +34,7 @@ public struct TrackEvent: RawEvent {
     public var type: String? = "track"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
+    public var userId: String? = nil
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
@@ -56,12 +58,12 @@ public struct IdentifyEvent: RawEvent {
     public var type: String? = "identify"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
+    public var userId: String?
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
     
-    public var userId: String?
     public var traits: JSON?
     
     public init(userId: String? = nil, traits: JSON? = nil) {
@@ -79,6 +81,7 @@ public struct ScreenEvent: RawEvent {
     public var type: String? = "screen"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
+    public var userId: String? = nil
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
@@ -104,6 +107,7 @@ public struct GroupEvent: RawEvent {
     public var type: String? = "group"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
+    public var userId: String? = nil
     public var timestamp: String? = nil
     public var context: JSON? = nil
     public var integrations: JSON? = nil
@@ -153,6 +157,7 @@ extension RawEvent {
         if let e = event {
             anonymousId = e.anonymousId
             messageId = e.messageId
+            userId = e.userId
             timestamp = e.timestamp
             context = e.context
             integrations = e.integrations
@@ -166,6 +171,7 @@ extension RawEvent {
         guard let userInfo: UserInfo = store.currentState() else { return self }
         
         result.anonymousId = userInfo.anonymousId
+        result.userId = userInfo.userId
         result.messageId = UUID().uuidString
         result.timestamp = Date().iso8601()
         result.integrations = system.integrations

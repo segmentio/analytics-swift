@@ -96,7 +96,28 @@ final class Analytics_Tests: XCTestCase {
         let traits = identifyEvent?.traits?.dictionaryValue
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
     }
+
+    func testUserIdAndTraitsPersist() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        analytics.add(plugin: outputReader)
+        
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+        
+        let identifyEvent: IdentifyEvent? = outputReader.lastEvent as? IdentifyEvent
+        XCTAssertTrue(identifyEvent?.userId == "brandon")
+        let traits = identifyEvent?.traits?.dictionaryValue
+        XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
+        
+        analytics.track(name: "test")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent?.userId == "brandon")
+        let trackTraits = trackEvent?.context?.dictionaryValue?["traits"] as? [String: Any]
+        XCTAssertTrue(trackTraits?["email"] as? String == "blah@blah.com")
+    }
     
+
     func testScreen() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)

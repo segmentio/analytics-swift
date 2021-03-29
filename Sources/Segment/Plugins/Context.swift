@@ -129,11 +129,18 @@ public class Context: PlatformPlugin {
             break
         }
         
+        // network connectivity
         context["network"] = [
             "bluetooth": bluetooth, // not sure any swift platforms support this currently
             "cellular": cellular,
             "wifi": wifi
         ]
+        
+        // traits
+        let userInfo: UserInfo? = analytics.store.currentState()
+        if let traits = userInfo?.traits?.dictionaryValue {
+            context["traits"] = traits
+        }
         
         // other stuff?? ...
     }
