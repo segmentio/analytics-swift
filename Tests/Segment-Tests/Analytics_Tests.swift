@@ -162,20 +162,30 @@ final class Analytics_Tests: XCTestCase {
 
     func testFlush() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
-        analytics.add(plugin: outputReader)
-        
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
-
+    
         let currentBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
-        
+    
         analytics.flush()
-        
         analytics.track(name: "test")
         
         let newBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
-        
         // 1 new temp file, and 1 new finished file.
         XCTAssertTrue(newBatchCount == currentBatchCount + 2)
+    }
+    
+    func testVersion() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        analytics.add(plugin: outputReader)
+        
+        analytics.track(name: "whataversion")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let context = trackEvent?.context?.dictionaryValue
+        let eventVersion = context?[keyPath: "library.version"] as? String
+        let analyticsVersion = analytics.version()
+        
+        XCTAssertEqual(eventVersion, analyticsVersion)
     }
 }
