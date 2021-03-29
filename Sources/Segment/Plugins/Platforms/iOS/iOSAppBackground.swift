@@ -5,7 +5,7 @@
 //  Created by Cody Garvin on 1/14/21.
 //
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(tvOS)
 import UIKit
 
 class iOSAppBackground: PlatformPlugin {

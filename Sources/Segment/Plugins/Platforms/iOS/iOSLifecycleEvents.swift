@@ -5,7 +5,7 @@
 //  Created by Cody Garvin on 12/4/20.
 //
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(tvOS)
 
 import Foundation
 import UIKit
@@ -54,7 +54,7 @@ class iOSLifecycleEvents: PlatformPlugin {
 
     required init(name: String, analytics: Analytics) {
         self.type = .utility
-        self.name = name
+        self.name = iOSLifecycle.specificName
         self.analytics = analytics
         application = UIApplication.shared
         

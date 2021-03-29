@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460227412612987300A9E913 /* watchOSLifecycleEvents.swift */; };
 		462107F22603DA4D00EBC4A8 /* Sovran in Frameworks */ = {isa = PBXBuildFile; productRef = 462107F12603DA4D00EBC4A8 /* Sovran */; };
 		4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4621080B2605332D00EBC4A8 /* KeyPath.swift */; };
 		46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */; };
@@ -122,6 +123,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		460227412612987300A9E913 /* watchOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		4621080B2605332D00EBC4A8 /* KeyPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath.swift; sourceTree = "<group>"; };
 		46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath_Tests.swift; sourceTree = "<group>"; };
 		4621082E2609209200EBC4A8 /* TwoActions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TwoActions.json; sourceTree = "<group>"; };
@@ -205,6 +207,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		460227402612984100A9E913 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				460227412612987300A9E913 /* watchOSLifecycleEvents.swift */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
 		4621082D2609206D00EBC4A8 /* Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -264,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				46A018D825E97FCB00F9CCD8 /* Vendors */,
+				460227402612984100A9E913 /* watchOS */,
 				969A533E25B0D51A009227D9 /* iOS */,
 				969A534125B0D52D009227D9 /* Linux */,
 				969A534025B0D527009227D9 /* Mac */,
@@ -546,6 +557,7 @@
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */,
+				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */,
@@ -794,7 +806,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Debug;
@@ -826,7 +838,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Release;

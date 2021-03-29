@@ -68,7 +68,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     required init(name: String, analytics: Analytics) {
         self.type = .utility
         self.analytics = analytics
-        self.name = name
+        self.name = macOSLifecycle.specificName
         self.application = NSApplication.shared
         
         setupListeners()

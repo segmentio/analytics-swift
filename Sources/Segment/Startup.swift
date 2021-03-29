@@ -63,8 +63,11 @@ extension Analytics: Subscriber {
         
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents {
-            #if os(iOS) || os(watchOS) || os(tvOS)
+            #if os(iOS) || os(tvOS)
             plugins += [iOSLifecycleEvents.self, iOSAppBackground.self]
+            #endif
+            #if os(watchOS)
+            plugins.append(watchOSLifecycleEvents.self)
             #endif
             #if os(macOS)
             plugins.append(macOSLifecycleEvents.self)
@@ -84,13 +87,19 @@ extension Analytics: Subscriber {
     }
 }
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(tvOS)
 import UIKit
 extension Analytics {
     internal func setupSettingsCheck() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
             self.checkSettings()
         }
+    }
+}
+#elseif os(watchOS)
+extension Analytics {
+    internal func setupSettingsCheck() {
+        // TBD: we don't know what to do here yet.
     }
 }
 #elseif os(macOS)
