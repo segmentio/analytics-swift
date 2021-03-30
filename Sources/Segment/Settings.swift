@@ -7,12 +7,6 @@
 
 import Foundation
 
-/*public protocol Settings: Codable {
-    var integrations: JSON? { get set }
-    var plan: JSON? { get set }
-    var edgeFunctions: JSON? { get set }
-}*/
-
 public struct Settings: Codable {
     public var integrations: JSON? = nil
     public var plan: JSON? = nil

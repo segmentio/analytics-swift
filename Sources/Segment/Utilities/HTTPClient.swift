@@ -102,7 +102,6 @@ public class HTTPClient {
     }
     
     func settingsFor(writeKey: String, completion: @escaping (Bool, Settings?) -> Void) {
-        
         // Change the key specific to settings so it can be fetched separately
         // from write key sessions for uploading.
         let settingsKey = "\(writeKey)_settings"
@@ -155,16 +154,14 @@ public class HTTPClient {
     }
 }
 
+
 extension HTTPClient {
     static func authorizationHeaderForWriteKey(_ key: String) -> String {
-        
         var returnHeader: String = ""
-        
         let rawHeader = "\(key):"
         if let encodedRawHeader = rawHeader.data(using: .utf8) {
             returnHeader = encodedRawHeader.base64EncodedString(options: NSData.Base64EncodingOptions.init(rawValue: 0))
         }
-        
         return returnHeader
     }
     
@@ -173,15 +170,13 @@ extension HTTPClient {
     }
 }
 
+
 extension HTTPClient {
     
     private func configuredSession(for writeKey: String) throws -> URLSession {
-        
         if !writeKeySessions.keys.contains(writeKey) {
             let configuration = URLSessionConfiguration.default
-            configuration.httpAdditionalHeaders = [/*"Accept-Encoding": "gzip",
-                                                   "Content-Encoding": "gzip",*/
-                                                   "Content-Type": "application/json; charset=utf-8",
+            configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                    "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
                                                    "User-Agent": "analytics-ios/\(Analytics.version())"]
             let session = URLSession.init(configuration: configuration, delegate: sessionDelegate, delegateQueue: nil)
