@@ -20,7 +20,7 @@ class watchOSLifecycleEvents: PlatformPlugin {
     
     required init(name: String, analytics: Analytics) {
         self.type = .utility
-        self.name = watchOSLifecycleEvents.specificName
+        self.name = name
         self.analytics = analytics
     }
     

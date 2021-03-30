@@ -73,7 +73,6 @@ public class SegmentDestination: DestinationPlugin {
     private func queueEvent<T: RawEvent>(event: T) {
         // Send Event to File System
         storage.write(.events, value: event)
-                
         // flush the queue
         flush()
     }
@@ -88,7 +87,6 @@ public class SegmentDestination: DestinationPlugin {
             
             var fileSizeTotal: Int64 = 0
             for url in data {
-                
                 // Get the file size
                 do {
                     let attributes = try FileManager.default.attributesOfItem(atPath: url.absoluteString)
@@ -104,11 +102,11 @@ public class SegmentDestination: DestinationPlugin {
                 // Don't continue sending if the file size total has become too large
                 // send it off in the next flush.
                 if fileSizeTotal > maxPayloadSize {
+                    analytics.log(message: "Batch file is too large to be sent")
                     break
                 }
                 
                 httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url, completion: { [weak self] (succeeded) in
-
                     // Track that the call has finished
                     processedCall.append(succeeded)
                     
@@ -122,9 +120,6 @@ public class SegmentDestination: DestinationPlugin {
                     if processedCall.count == data.count {
                         self?.uploadInProgress = false
                     }
-                    
-                    // TODO: Mark as completed via notification???????
-                    
                 })
             }
         }

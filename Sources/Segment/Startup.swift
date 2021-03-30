@@ -13,16 +13,14 @@ extension Analytics: Subscriber {
     internal func platformStartup() {
         // add segment destination plugin unless
         // asked not to via configuration.
-        if configuration.values.autoAddSegmentDestination {
-            let segmentDestination = SegmentDestination(name: "Segment.io", analytics: self)
-            segmentDestination.analytics = self
-            add(plugin: segmentDestination)
-        }
+        let segmentDestination = SegmentDestination(name: "Segment.io", analytics: self)
+        segmentDestination.analytics = self
+        add(plugin: segmentDestination)
         
         // Setup platform specific plugins
         if let platformPlugins = platformPlugins() {
             for pluginType in platformPlugins {
-                let prebuilt = pluginType.init(name: pluginType.specificName, analytics: self)
+                let prebuilt = pluginType.init(analytics: self)
                 add(plugin: prebuilt)
             }
         }

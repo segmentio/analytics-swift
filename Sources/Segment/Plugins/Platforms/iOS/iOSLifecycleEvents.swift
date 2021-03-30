@@ -54,7 +54,7 @@ class iOSLifecycleEvents: PlatformPlugin {
 
     required init(name: String, analytics: Analytics) {
         self.type = .utility
-        self.name = iOSLifecycle.specificName
+        self.name = name
         self.analytics = analytics
         application = UIApplication.shared
         

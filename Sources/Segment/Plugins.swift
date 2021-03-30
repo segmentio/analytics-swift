@@ -56,6 +56,12 @@ internal protocol PlatformPlugin: Plugin {
     static var specificName: String { get set }
 }
 
+extension PlatformPlugin {
+    internal init(analytics: Analytics) {
+        self.init(name: Self.specificName, analytics: analytics)
+    }
+}
+
 
 // MARK: - Adding/Removing Plugins
 

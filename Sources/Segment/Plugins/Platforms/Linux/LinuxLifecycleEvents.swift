@@ -15,13 +15,9 @@ class LinuxLifecycleEvents: PlatformPlugin {
     
     weak var analytics: Analytics? = nil
     
-    required init(name: String) {
+    required init(name: String, analytics: Analytics) {
         self.type = .utility
         self.name = name
-    }
-    
-    convenience init(name: String, analytics: Analytics) {
-        self.init(name: name)
         self.analytics = analytics
     }
 
