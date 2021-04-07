@@ -56,7 +56,7 @@ extension Analytics {
         }
     }
     
-    func registeredForRemoteNotifications(deviceToken: Data) {
+    public func registeredForRemoteNotifications(deviceToken: Data) {
         setDeviceToken(deviceToken.hexString)
         
         apply { plugin in
@@ -66,7 +66,7 @@ extension Analytics {
         }
     }
     
-    func failedToRegisterForRemoteNotification(error: Error?) {
+    public func failedToRegisterForRemoteNotification(error: Error?) {
         apply { plugin in
             if let p = plugin as? RemoteNotifications {
                 p.failedToRegisterForRemoteNotification(error: error)
@@ -74,7 +74,7 @@ extension Analytics {
         }
     }
     
-    func receivedRemoteNotification(userInfo: [String: Any]) {
+    public func receivedRemoteNotification(userInfo: [String: Any]) {
         apply { plugin in
             if let p = plugin as? RemoteNotifications {
                 p.receivedRemoteNotification(userInfo: userInfo)
@@ -82,7 +82,7 @@ extension Analytics {
         }
     }
     
-    func handleAction(identifier: String, userInfo: [String: Any]) {
+    public func handleAction(identifier: String, userInfo: [String: Any]) {
         apply { plugin in
             if let p = plugin as? RemoteNotifications {
                 p.handleAction(identifier: identifier, userInfo: userInfo)
