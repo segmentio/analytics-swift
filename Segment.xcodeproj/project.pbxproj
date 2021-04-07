@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460227412612987300A9E913 /* watchOSLifecycleEvents.swift */; };
+		46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */; };
 		462107F22603DA4D00EBC4A8 /* Sovran in Frameworks */ = {isa = PBXBuildFile; productRef = 462107F12603DA4D00EBC4A8 /* Sovran */; };
 		4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4621080B2605332D00EBC4A8 /* KeyPath.swift */; };
 		46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */; };
@@ -31,15 +32,15 @@
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
 		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
-		46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle.swift */; };
-		46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */; };
-		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */; };
+		46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */; };
+		46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */; };
+		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */; };
 		46FE4CA725A3F836003A7362 /* TestPlugins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CA625A3F836003A7362 /* TestPlugins.swift */; };
 		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
 		46FE4CFB25A6C671003A7362 /* TestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CFA25A6C671003A7362 /* TestUtilities.swift */; };
 		46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
-		96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */; };
+		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
 		966945E5259D717E00271339 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966945E4259D717E00271339 /* AppDelegate.swift */; };
 		966945E7259D717E00271339 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966945E6259D717E00271339 /* SceneDelegate.swift */; };
@@ -124,6 +125,7 @@
 
 /* Begin PBXFileReference section */
 		460227412612987300A9E913 /* watchOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleEvents.swift; sourceTree = "<group>"; };
+		46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		4621080B2605332D00EBC4A8 /* KeyPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath.swift; sourceTree = "<group>"; };
 		46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath_Tests.swift; sourceTree = "<group>"; };
 		46210835260BBEE400EBC4A8 /* DeviceToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceToken.swift; sourceTree = "<group>"; };
@@ -132,16 +134,16 @@
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
-		46FE4C9125A3EE90003A7362 /* Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle.swift; sourceTree = "<group>"; };
-		46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
-		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleEvents.swift; sourceTree = "<group>"; };
+		46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle_.swift; sourceTree = "<group>"; };
+		46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleMonitor.swift; sourceTree = "<group>"; };
+		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4CA625A3F836003A7362 /* TestPlugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPlugins.swift; sourceTree = "<group>"; };
 		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		46FE4CFA25A6C671003A7362 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
 		46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage_Tests.swift; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleEvents.swift; sourceTree = "<group>"; };
+		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		966945E2259D717E00271339 /* SegmentExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SegmentExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		966945E4259D717E00271339 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		966945E6259D717E00271339 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -283,8 +285,9 @@
 		969A533E25B0D51A009227D9 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				9620864F257AA83E00314F8D /* iOSLifecycleEvents.swift */,
+				9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */,
 				969A534225B10324009227D9 /* iOSAppBackground.swift */,
+				46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -292,7 +295,7 @@
 		969A534025B0D527009227D9 /* Mac */ = {
 			isa = PBXGroup;
 			children = (
-				46FE4C9625A3F35E003A7362 /* macOSLifecycleEvents.swift */,
+				46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -300,7 +303,7 @@
 		969A534125B0D52D009227D9 /* Linux */ = {
 			isa = PBXGroup;
 			children = (
-				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleEvents.swift */,
+				46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */,
 			);
 			path = Linux;
 			sourceTree = "<group>";
@@ -383,7 +386,7 @@
 				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
 				A31A16C225794BEF00C9CDDF /* Plugins.swift */,
-				46FE4C9125A3EE90003A7362 /* Lifecycle.swift */,
+				46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */,
 				96C33AB0258961F500F3D538 /* Settings.swift */,
 				9692724D25A4E5B7009B5298 /* Startup.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
@@ -541,11 +544,12 @@
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
 				46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */,
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
+				46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */,
 				4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
-				46FE4C9225A3EE90003A7362 /* Lifecycle.swift in Sources */,
+				46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
@@ -554,19 +558,19 @@
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
-				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleEvents.swift in Sources */,
+				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */,
 				96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */,
-				46FE4C9725A3F35E003A7362 /* macOSLifecycleEvents.swift in Sources */,
+				46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
 				966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Plugins.swift in Sources */,
 				46A018C225E5857D00F9CCD8 /* Context.swift in Sources */,
-				96208650257AA83E00314F8D /* iOSLifecycleEvents.swift in Sources */,
+				96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */,
 				96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

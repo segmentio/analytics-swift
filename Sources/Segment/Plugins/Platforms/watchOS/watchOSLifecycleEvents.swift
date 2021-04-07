@@ -11,8 +11,8 @@ import Foundation
 
 // Work in progress ... TBD
 
-class watchOSLifecycleEvents: PlatformPlugin {
-    static var specificName: String = "Segment_watchOSLifecycleEvents"
+class watchOSLifecycleMonitor: PlatformPlugin {
+    static var specificName: String = "Segment_watchOSLifecycleMonitor"
     
     var type: PluginType
     var name: String

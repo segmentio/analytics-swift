@@ -64,16 +64,16 @@ extension Analytics: Subscriber {
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents {
             #if os(iOS) || os(tvOS)
-            plugins += [iOSLifecycleEvents.self, iOSAppBackground.self]
+            plugins += [iOSLifecycleMonitor.self, iOSAppBackground.self, iOSLifecycleEvents.self, DeviceToken.self]
             #endif
             #if os(watchOS)
-            plugins.append(watchOSLifecycleEvents.self)
+            plugins.append(watchOSLifecycleMonitor.self)
             #endif
             #if os(macOS)
-            plugins.append(macOSLifecycleEvents.self)
+            plugins += [macOSLifecycleMonitor.self, DeviceToken.self]
             #endif
             #if os(Linux)
-            plugins.append(LinuxLifecycleEvents.self)
+            plugins.append(LinuxLifecycleMonitor.self)
             #endif
             // add context plugin as well as it's platform specific internally.
             plugins.append(Context.self)

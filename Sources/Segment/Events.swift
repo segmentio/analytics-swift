@@ -31,6 +31,15 @@ extension Analytics {
         }
     }
     
+    public func track(name: String, properties: [String: Any]?) {
+        var props: JSON? = nil
+        if let properties = properties {
+            props = try? JSON(properties)
+        }
+        let event = TrackEvent(event: name, properties: props)
+        process(incomingEvent: event)
+    }
+    
     public func track(name: String) {
         track(name: name, properties: nil as TrackEvent?)
     }

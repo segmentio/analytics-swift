@@ -8,7 +8,7 @@
 #if os(macOS)
 import Cocoa
 
-public protocol MacLifecycle {
+public protocol macOSLifecycle {
     func applicationDidResignActive()
     func application(didFinishLaunchingWithOptions launchOptions: [String: Any]?)
     func applicationWillBecomeActive()
@@ -25,7 +25,7 @@ public protocol MacLifecycle {
     func applicationDidChangeScreenParameters()
 }
 
-public extension MacLifecycle {
+public extension macOSLifecycle {
     func applicationDidResignActive() { }
     func application(didFinishLaunchingWithOptions launchOptions: [String: Any]?) { }
     func applicationWillBecomeActive() { }
@@ -42,8 +42,8 @@ public extension MacLifecycle {
     func applicationDidChangeScreenParameters() { }
 }
 
-class macOSLifecycleEvents: PlatformPlugin {
-    static var specificName = "Segment_macOSLifecycleEvents"
+class macOSLifecycleMonitor: PlatformPlugin {
+    static var specificName = "Segment_macOSLifecycleMonitor"
     let type: PluginType
     let name: String
     let analytics: Analytics
@@ -121,7 +121,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillBecomeActive(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillBecomeActive()
             }
         }
@@ -129,7 +129,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationDidFinishLaunching(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 let options = notification.userInfo as? [String: Any] ?? nil
                 validExt.application(didFinishLaunchingWithOptions: options)
             }
@@ -138,7 +138,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func didResignActive(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidResignActive()
             }
         }
@@ -146,7 +146,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationDidBecomeActive(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidBecomeActive()
             }
         }
@@ -154,7 +154,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationDidHide(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidHide()
             }
         }
@@ -162,7 +162,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationDidUnhide(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidUnhide()
             }
         }
@@ -170,7 +170,7 @@ class macOSLifecycleEvents: PlatformPlugin {
 
     func applicationDidUpdate(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidUpdate()
             }
         }
@@ -178,7 +178,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillHide(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillHide()
             }
         }
@@ -186,7 +186,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillFinishLaunching(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillFinishLaunching()
             }
         }
@@ -202,7 +202,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillUnhide(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillUnhide()
             }
         }
@@ -210,7 +210,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillUpdate(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillUpdate()
             }
         }
@@ -218,7 +218,7 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationWillTerminate(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillTerminate()
             }
         }
@@ -226,14 +226,14 @@ class macOSLifecycleEvents: PlatformPlugin {
     
     func applicationDidChangeScreenParameters(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationDidChangeScreenParameters()
             }
         }
     }
 }
 
-extension SegmentDestination: MacLifecycle {
+extension SegmentDestination: macOSLifecycle {
     
     public func applicationDidEnterBackground() {
         // TODO: Look into mac background tasks

@@ -1,180 +1,90 @@
 //
-//  LifecycleEvents.swift
+//  iOSLifecycleEvents.swift
 //  Segment
 //
-//  Created by Cody Garvin on 12/4/20.
+//  Created by Brandon Sneed on 4/7/21.
 //
+
+import Foundation
 
 #if os(iOS) || os(tvOS)
 
-import Foundation
 import UIKit
 
-public protocol iOSLifecycle {
-    func applicationDidEnterBackground()
-    func applicationWillEnterForeground(application: UIApplication)
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
-    func applicationDidBecomeActive(application: UIApplication)
-    func applicationWillResignActive(application: UIApplication)
-    func applicationDidReceiveMemoryWarning(application: UIApplication)
-    func applicationWillTerminate(application: UIApplication)
-    func applicationSignificantTimeChange(application: UIApplication)
-    func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
-}
-
-public extension iOSLifecycle {
-    func applicationDidEnterBackground() { }
-    func applicationWillEnterForeground(application: UIApplication) { }
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) { }
-    func applicationDidBecomeActive(application: UIApplication) { }
-    func applicationWillResignActive(application: UIApplication) { }
-    func applicationDidReceiveMemoryWarning(application: UIApplication) { }
-    func applicationWillTerminate(application: UIApplication) { }
-    func applicationSignificantTimeChange(application: UIApplication) { }
-    func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus) { }
-}
-
-class iOSLifecycleEvents: PlatformPlugin {
-    static var specificName = "Segment_iOSLifecycleEvents"
+class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
+    static var versionKey = "SEGVersionKey"
+    static var buildKey = "SEGBuildKeyV2"
     
-    let type: PluginType
-    let name: String
-    let analytics: Analytics
+    static var specificName: String = "Segment_iOSLifecycleEvents"
     
-    private var application: UIApplication
-    private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,
-                                                           UIApplication.willEnterForegroundNotification,
-                                                           UIApplication.didFinishLaunchingNotification,
-                                                           UIApplication.didBecomeActiveNotification,
-                                                           UIApplication.willResignActiveNotification,
-                                                           UIApplication.didReceiveMemoryWarningNotification,
-                                                           UIApplication.willTerminateNotification,
-                                                           UIApplication.significantTimeChangeNotification,
-                                                           UIApplication.backgroundRefreshStatusDidChangeNotification]
-
-    required init(name: String, analytics: Analytics) {
-        self.type = .utility
-        self.name = name
+    var type: PluginType
+    var name: String
+    var analytics: Analytics
+    
+    public required init(name: String, analytics: Analytics) {
         self.analytics = analytics
-        application = UIApplication.shared
+        self.name = name
+        self.type = .before
+    }
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+            return
+        }
         
-        setupListeners()
+        let previousVersion = UserDefaults.standard.string(forKey: Self.versionKey)
+        let previousBuild = UserDefaults.standard.string(forKey: Self.buildKey)
+        
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        
+        if previousBuild != nil {
+            analytics.track(name: "Application Installed", properties: [
+                "version": currentVersion ?? "",
+                "build": currentBuild ?? ""
+            ])
+        } else if currentBuild != previousBuild {
+            analytics.track(name: "Application Updated", properties: [
+                "previous_version": previousVersion ?? "",
+                "previous_build": previousBuild ?? "",
+                "version": currentVersion ?? "",
+                "build": currentBuild ?? ""
+            ])
+        }
+        
+        analytics.track(name: "Application Opened", properties: [
+            "from_background": false,
+            "version": currentVersion ?? "",
+            "build": currentBuild ?? "",
+            "referring_application": launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] ?? "",
+            "url": launchOptions?[UIApplication.LaunchOptionsKey.url] ?? ""
+        ])
+        
+        UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)
+        UserDefaults.standard.setValue(currentBuild, forKey: Self.buildKey)
     }
     
-    @objc
-    func notificationResponse(notification: NSNotification) {        
-        switch (notification.name) {
-        case UIApplication.didEnterBackgroundNotification:
-            self.didEnterBackground(notification: notification)
-        case UIApplication.willEnterForegroundNotification:
-            self.applicationWillEnterForeground(notification: notification)
-        case UIApplication.didFinishLaunchingNotification:
-            self.didFinishLaunching(notification: notification)
-        case UIApplication.didBecomeActiveNotification:
-            self.didBecomeActive(notification: notification)
-        case UIApplication.willResignActiveNotification:
-            self.willResignActive(notification: notification)
-        case UIApplication.didReceiveMemoryWarningNotification:
-            self.didReceiveMemoryWarning(notification: notification)
-        case UIApplication.significantTimeChangeNotification:
-            self.significantTimeChange(notification: notification)
-        case UIApplication.backgroundRefreshStatusDidChangeNotification:
-            self.backgroundRefreshDidChange(notification: notification)
-        default:
-            
-            break
+    func applicationWillEnterForeground(application: UIApplication) {
+        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+            return
         }
+        
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        
+        analytics.track(name: "Application Opened", properties: [
+            "from_background": true,
+            "version": currentVersion ?? "",
+            "build": currentBuild ?? ""
+        ])
     }
     
-    func setupListeners() {
-        // Configure the current life cycle events
-        let notificationCenter = NotificationCenter.default
-        for notification in appNotifications {
-            notificationCenter.addObserver(self, selector: #selector(notificationResponse(notification:)), name: notification, object: application)
+    func applicationDidEnterBackground() {
+        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+            return
         }
-
-    }
-    
-    func applicationWillEnterForeground(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationWillEnterForeground(application: application)
-            }
-        }
-    }
-    
-    func didEnterBackground(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationDidEnterBackground()
-            }
-        }
-    }
-    
-    func didFinishLaunching(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                let options = notification.userInfo as? [UIApplication.LaunchOptionsKey: Any] ?? nil
-                validExt.application(application, didFinishLaunchingWithOptions: options)
-            }
-        }
-    }
-
-    func didBecomeActive(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationDidBecomeActive(application: application)
-            }
-        }
-    }
-    
-    func willResignActive(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationWillResignActive(application: application)
-            }
-        }
-    }
-    
-    func didReceiveMemoryWarning(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationDidReceiveMemoryWarning(application: application)
-            }
-        }
-    }
-    
-    func willTerminate(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationWillTerminate(application: application)
-            }
-        }
-    }
-    
-    func significantTimeChange(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationSignificantTimeChange(application: application)
-            }
-        }
-    }
-    
-    func backgroundRefreshDidChange(notification: NSNotification) {
-        analytics.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationBackgroundRefreshDidChange(application: application,
-                                                               refreshStatus: application.backgroundRefreshStatus)
-            }
-        }
-    }
-}
-
-extension SegmentDestination: iOSLifecycle {
-    
-    public func applicationDidEnterBackground() {
-        analytics.beginBackgroundTask()
-        flush()
+        
+        analytics.track(name: "Application Backgrounded")
     }
 }
 

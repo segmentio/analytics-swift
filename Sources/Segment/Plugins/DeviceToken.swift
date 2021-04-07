@@ -7,11 +7,25 @@
 
 import Foundation
 
-public class DeviceToken: Plugin {
-    static let SegmentTokenPluginName = "Segment_Token"
+public protocol RemoteNotifications {
+    func registeredForRemoteNotifications(deviceToken: Data)
+    func failedToRegisterForRemoteNotification(error: Error?)
+    func receivedRemoteNotification(userInfo: [String: Any])
+    func handleAction(identifier: String, userInfo: [String: Any])
+}
+
+extension RemoteNotifications {
+    public func registeredForRemoteNotifications(deviceToken: Data) {}
+    public func failedToRegisterForRemoteNotification(error: Error?) {}
+    public func receivedRemoteNotification(userInfo: [String: Any]) {}
+    public func handleAction(identifier: String, userInfo: [String: Any]) {}
+}
+
+public class DeviceToken: PlatformPlugin {
+    static var specificName = "Segment_DeviceToken"
     
     public let type: PluginType = .before
-    public let name: String = SegmentTokenPluginName
+    public let name: String = specificName
     public let analytics: Analytics
     
     public var token: String? = nil
@@ -33,18 +47,49 @@ public class DeviceToken: Plugin {
 
 extension Analytics {
     public func setDeviceToken(_ token: String) {
-        if let tokenPlugin = self.find(pluginName: DeviceToken.SegmentTokenPluginName) as? DeviceToken {
+        if let tokenPlugin = self.find(pluginName: DeviceToken.specificName) as? DeviceToken {
             tokenPlugin.token = token
         } else {
-            let tokenPlugin = DeviceToken(name: DeviceToken.SegmentTokenPluginName, analytics: self)
+            let tokenPlugin = DeviceToken(name: DeviceToken.specificName, analytics: self)
             tokenPlugin.token = token
             add(plugin: tokenPlugin)
         }
     }
     
-    public func setDeviceToken(_ token: Data) {
-        setDeviceToken(token.hexString)
+    func registeredForRemoteNotifications(deviceToken: Data) {
+        setDeviceToken(deviceToken.hexString)
+        
+        apply { plugin in
+            if let p = plugin as? RemoteNotifications {
+                p.registeredForRemoteNotifications(deviceToken: deviceToken)
+            }
+        }
     }
+    
+    func failedToRegisterForRemoteNotification(error: Error?) {
+        apply { plugin in
+            if let p = plugin as? RemoteNotifications {
+                p.failedToRegisterForRemoteNotification(error: error)
+            }
+        }
+    }
+    
+    func receivedRemoteNotification(userInfo: [String: Any]) {
+        apply { plugin in
+            if let p = plugin as? RemoteNotifications {
+                p.receivedRemoteNotification(userInfo: userInfo)
+            }
+        }
+    }
+    
+    func handleAction(identifier: String, userInfo: [String: Any]) {
+        apply { plugin in
+            if let p = plugin as? RemoteNotifications {
+                p.handleAction(identifier: identifier, userInfo: userInfo)
+            }
+        }
+    }
+
 }
 
 extension Data {

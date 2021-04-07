@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             analytics.track(name: "I once tracked a cougar", properties: MyTraits(email: "Brandon@stinks.com"))
             analytics.screen(screenTitle: "Screened the AppDelegate")
             analytics.group(groupId: "Grouped By ID")
-            analytics.alias(newId: "3333")
+            //analytics.alias(newId: "3333")
         }
         
         return true

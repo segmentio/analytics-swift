@@ -8,8 +8,8 @@
 import Foundation
 
 #if os(Linux)
-class LinuxLifecycleEvents: PlatformPlugin {
-    static var specificName = "Segment_LinuxLifecycleEvents"
+class LinuxLifecycleMonitor: PlatformPlugin {
+    static var specificName = "Segment_LinuxLifecycleMonitor"
     let type: PluginType
     let name: String
     
