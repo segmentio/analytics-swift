@@ -97,7 +97,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
     }
 
-    func testUserIdAndTraitsPersist() {
+    func testUserIdAndTraitsPersistCorrectly() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
         analytics.add(plugin: outputReader)
@@ -114,7 +114,10 @@ final class Analytics_Tests: XCTestCase {
         let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
         XCTAssertTrue(trackEvent?.userId == "brandon")
         let trackTraits = trackEvent?.context?.dictionaryValue?["traits"] as? [String: Any]
-        XCTAssertTrue(trackTraits?["email"] as? String == "blah@blah.com")
+        XCTAssertNil(trackTraits)
+        
+        let analyticsTraits: MyTraits? = analytics.traits()
+        XCTAssertEqual("blah@blah.com", analyticsTraits?.email)
     }
     
 

@@ -167,6 +167,14 @@ extension JSON {
         }
         return result as Any
     }
+    
+    public func codableValue<T: Codable>() -> T? {
+        var result: T? = nil
+        if let dict = dictionaryValue, let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
+            result = try? JSONDecoder().decode(T.self, from: jsonData)
+        }
+        return result
+    }
 
     public var boolValue: Bool? {
         switch self {

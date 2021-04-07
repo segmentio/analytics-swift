@@ -114,4 +114,14 @@ class JSONTests: XCTestCase {
         XCTAssertEqual(dict?["2"], 2)
     }
     
+    func testCodableFetch() {
+        let traits = MyTraits(email: "test@test.com")
+        let json = try? JSON(with: traits)
+        
+        XCTAssertNotNil(json)
+        
+        let fetchedTraits: MyTraits? = json?.codableValue()
+        
+        XCTAssertTrue(fetchedTraits?.email == "test@test.com")
+    }
 }

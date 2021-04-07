@@ -53,6 +53,20 @@ extension Analytics {
         return ""
     }
     
+    public var userId: String? {
+        if let userInfo: UserInfo = store.currentState() {
+            return userInfo.userId
+        }
+        return nil
+    }
+    
+    public func traits<T: Codable>() -> T? {
+        if let userInfo: UserInfo = store.currentState() {
+            return userInfo.traits?.codableValue()
+        }
+        return nil
+    }
+    
     public func flush() {
         flushCurrentPayload()
     }

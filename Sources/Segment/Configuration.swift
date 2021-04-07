@@ -25,6 +25,7 @@ public struct Configuration {
         var application: Any? = nil
         var defaultSettings: Settings? = nil
         var autoAddSegmentDestination: Bool = true
+        var apiHost: String = HTTPClient.getDefaultAPIHost()
     }
     internal var values: Values
 
@@ -82,6 +83,12 @@ public extension Configuration {
     @discardableResult
     mutating func autoAddSegmentDestination(_ value: Bool) -> Configuration {
         values.autoAddSegmentDestination = value
+        return self
+    }
+    
+    @discardableResult
+    mutating func apiHost(_ value: String) -> Configuration {
+        values.apiHost = value
         return self
     }
 }

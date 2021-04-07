@@ -136,12 +136,6 @@ public class Context: PlatformPlugin {
             "wifi": wifi
         ]
         
-        // traits
-        let userInfo: UserInfo? = analytics.store.currentState()
-        if let traits = userInfo?.traits?.dictionaryValue {
-            context["traits"] = traits
-        }
-        
         // other stuff?? ...
     }
 
