@@ -19,6 +19,9 @@ public class SegmentDestination: DestinationPlugin {
     private var storage: Storage
     private var maxPayloadSize = 500000 // Max 500kb
     
+    private var eventCount: Int = 0
+    private var flushTimer: Timer? = nil
+    
     internal enum Constants: String {
         case integrationName = "Segment.io"
         case apiHost = "apiHost"
@@ -32,6 +35,9 @@ public class SegmentDestination: DestinationPlugin {
         timeline = Timeline()
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
+        flushTimer = Timer.scheduledTimer(withTimeInterval: analytics.configuration.values.flushInterval, repeats: true, block: { _ in
+            self.flush()
+        })
     }
     
     public func update(settings: Settings) {
@@ -73,11 +79,19 @@ public class SegmentDestination: DestinationPlugin {
     private func queueEvent<T: RawEvent>(event: T) {
         // Send Event to File System
         storage.write(.events, value: event)
-        // flush the queue
-        flush()
+        if eventCount >= analytics.configuration.values.flushAt {
+            flush()
+        }
     }
     
     internal func flush() {
+        if Thread.isMainThread == false {
+            DispatchQueue.main.async {
+                self.flush()
+            }
+            return
+        }
+        
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
