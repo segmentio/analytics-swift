@@ -68,7 +68,7 @@ extension Analytics {
     }
     
     public func flush() {
-        flushCurrentPayload()
+        flushCurrentQueue()
     }
     
     public func reset() {

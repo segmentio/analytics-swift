@@ -24,6 +24,7 @@
 		460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460227412612987300A9E913 /* watchOSLifecycleEvents.swift */; };
 		46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */; };
 		4602276C261E7BF900A9E913 /* iOSDelegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4602276B261E7BF900A9E913 /* iOSDelegation.swift */; };
+		46022771261F7A4800A9E913 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022770261F7A4800A9E913 /* Atomic.swift */; };
 		462107F22603DA4D00EBC4A8 /* Sovran in Frameworks */ = {isa = PBXBuildFile; productRef = 462107F12603DA4D00EBC4A8 /* Sovran */; };
 		4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4621080B2605332D00EBC4A8 /* KeyPath.swift */; };
 		46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */; };
@@ -128,6 +129,7 @@
 		460227412612987300A9E913 /* watchOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		4602276B261E7BF900A9E913 /* iOSDelegation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSDelegation.swift; sourceTree = "<group>"; };
+		46022770261F7A4800A9E913 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		4621080B2605332D00EBC4A8 /* KeyPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath.swift; sourceTree = "<group>"; };
 		46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath_Tests.swift; sourceTree = "<group>"; };
 		46210835260BBEE400EBC4A8 /* DeviceToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceToken.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 				A3AEE1492580208E002386EB /* iso8601.swift */,
 				46FE4CDF25A53FAD003A7362 /* Storage.swift */,
 				4621080B2605332D00EBC4A8 /* KeyPath.swift */,
+				46022770261F7A4800A9E913 /* Atomic.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -554,6 +557,7 @@
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
 				46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
+				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
@@ -681,11 +685,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/SegmentExample/Libraries/mixpanel-iphone/HelloMixpanel/HelloMixpanelTests",
-					"$(PROJECT_DIR)/SegmentExample/Libraries",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -755,11 +755,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/SegmentExample/Libraries/mixpanel-iphone/HelloMixpanel/HelloMixpanelTests",
-					"$(PROJECT_DIR)/SegmentExample/Libraries",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

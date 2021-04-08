@@ -19,7 +19,7 @@ public class SegmentDestination: DestinationPlugin {
     private var storage: Storage
     private var maxPayloadSize = 500000 // Max 500kb
     
-    private var eventCount: Int = 0
+    @Atomic private var eventCount: Int = 0
     private var flushTimer: Timer? = nil
     
     internal enum Constants: String {
@@ -77,13 +77,6 @@ public class SegmentDestination: DestinationPlugin {
     
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
-        if Thread.isMainThread == false {
-            DispatchQueue.main.async {
-                self.queueEvent(event: event)
-            }
-            return
-        }
-        
         // Send Event to File System
         storage.write(.events, value: event)
         eventCount += 1
@@ -143,7 +136,7 @@ public class SegmentDestination: DestinationPlugin {
 }
 
 extension Analytics {
-    internal func flushCurrentPayload() {
+    internal func flushCurrentQueue() {
         apply { (plugin) in
             if let destinationPlugin = plugin as? SegmentDestination {
                 destinationPlugin.flush()

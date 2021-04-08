@@ -18,7 +18,7 @@ public typealias AdvertisingIdCallback = () -> String?
 // - trackDeepLinks ??
 // - flushAt / flushInterval to be done by segment destination plugin
 
-public struct Configuration {
+public class Configuration {
     internal struct Values {
         var writeKey: String
         var application: Any? = nil
@@ -43,43 +43,43 @@ public struct Configuration {
 
 public extension Configuration {
     @discardableResult
-    mutating func trackInAppPurchases(_ enabled: Bool) -> Configuration {
+    func trackInAppPurchases(_ enabled: Bool) -> Configuration {
         values.trackInAppPurchases = enabled
         return self
     }
     
     @discardableResult
-    mutating func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
+    func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
         values.trackApplicationLifecycleEvents = enabled
         return self
     }
     
     @discardableResult
-    mutating func trackDeeplinks(_ enabled: Bool) -> Configuration {
+    func trackDeeplinks(_ enabled: Bool) -> Configuration {
         values.trackDeeplinks = enabled
         return self
     }
     
     @discardableResult
-    mutating func flushAt(_ count: Int) -> Configuration {
+    func flushAt(_ count: Int) -> Configuration {
         values.flushAt = count
         return self
     }
     
     @discardableResult
-    mutating func flushInterval(_ interval: TimeInterval) -> Configuration {
+    func flushInterval(_ interval: TimeInterval) -> Configuration {
         values.flushInterval = interval
         return self
     }
     
     @discardableResult
-    mutating func autoAddSegmentDestination(_ value: Bool) -> Configuration {
+    func autoAddSegmentDestination(_ value: Bool) -> Configuration {
         values.autoAddSegmentDestination = value
         return self
     }
     
     @discardableResult
-    mutating func apiHost(_ value: String) -> Configuration {
+    func apiHost(_ value: String) -> Configuration {
         values.apiHost = value
         return self
     }
