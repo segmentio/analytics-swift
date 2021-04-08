@@ -77,21 +77,23 @@ public class SegmentDestination: DestinationPlugin {
     
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
+        if Thread.isMainThread == false {
+            DispatchQueue.main.async {
+                self.queueEvent(event: event)
+            }
+            return
+        }
+        
         // Send Event to File System
         storage.write(.events, value: event)
+        eventCount += 1
         if eventCount >= analytics.configuration.values.flushAt {
+            eventCount = 0
             flush()
         }
     }
     
     internal func flush() {
-        if Thread.isMainThread == false {
-            DispatchQueue.main.async {
-                self.flush()
-            }
-            return
-        }
-        
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
