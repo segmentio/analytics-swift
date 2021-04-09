@@ -37,9 +37,26 @@ public class Analytics {
         platformStartup()
     }
     
-    public func process<E: RawEvent>(incomingEvent: E) {
+    internal func process<E: RawEvent>(incomingEvent: E) {
         let event = incomingEvent.applyRawEventData(store: store)
         _ = timeline.process(incomingEvent: event)
+    }
+    
+    public func process(event: RawEvent) {
+        switch event {
+        case let e as TrackEvent:
+            timeline.process(incomingEvent: e)
+        case let e as IdentifyEvent:
+            timeline.process(incomingEvent: e)
+        case let e as ScreenEvent:
+            timeline.process(incomingEvent: e)
+        case let e as GroupEvent:
+            timeline.process(incomingEvent: e)
+        case let e as AliasEvent:
+            timeline.process(incomingEvent: e)
+        default:
+            break
+        }
     }
 }
 

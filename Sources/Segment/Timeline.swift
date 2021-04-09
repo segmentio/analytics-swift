@@ -24,6 +24,7 @@ public class Timeline: Subscriber {
         ]
     }
     
+    @discardableResult
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // apply .before and .enrichment types first ...
         let beforeResult = applyPlugins(type: .before, event: incomingEvent)
