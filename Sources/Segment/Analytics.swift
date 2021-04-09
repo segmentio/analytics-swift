@@ -37,7 +37,7 @@ public class Analytics {
         platformStartup()
     }
     
-    internal func process<E: RawEvent>(incomingEvent: E) {
+    public func process<E: RawEvent>(incomingEvent: E) {
         let event = incomingEvent.applyRawEventData(store: store)
         _ = timeline.process(incomingEvent: event)
     }
