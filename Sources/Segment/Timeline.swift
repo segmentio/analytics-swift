@@ -38,10 +38,6 @@ public class Timeline: Subscriber {
         // apply .after plugins ...
         let afterResult = applyPlugins(type: .after, event: enrichmentResult)
 
-        // DEBUG
-        print("System Results: \(afterResult?.prettyPrint() ?? "")")
-        // DEBUG
-        
         return afterResult
     }
     
@@ -166,7 +162,7 @@ extension EventPlugin {
             case let r as GroupEvent:
                 result = self.group(event: r) as? T
             default:
-                print("something is screwed up")
+                break
         }
         return result
     }
@@ -228,16 +224,12 @@ extension DestinationPlugin {
             case let e as AliasEvent:
                 destinationResult = alias(event: e) as? E
             default:
-                print("something is screwed up")
+                break
         }
         
         // apply .after plugins ...
         let afterResult = timeline.applyPlugins(type: .after, event: destinationResult)
 
-        // DEBUG
-        print("Destination (\(name)): \(afterResult?.prettyPrint() ?? "")")
-        // DEBUG
-        
         return afterResult
     }
 }

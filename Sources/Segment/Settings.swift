@@ -59,12 +59,6 @@ extension Analytics {
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
                 }
             }
-            
-            // NOTE: cached and default settings are handled by the state object
-            
-            if let s = settings {
-                print("Settings: \(s.prettyPrint())")
-            }
         }
     }
 }

@@ -29,7 +29,6 @@ extension Analytics: Subscriber {
         
         // prepare our subscription for settings updates from segment.com
         store.subscribe(self, initialState: true) { (state: System) in
-            print(state)
             if let settings = state.settings {
                 self.update(settings: settings)
             }
