@@ -62,6 +62,10 @@ extension Analytics: Subscriber {
         
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents {
+            // add context plugin as well as it's platform specific internally.
+            // this must come first.
+            plugins.append(Context.self)
+            
             #if os(iOS) || os(tvOS)
             plugins += [iOSLifecycleMonitor.self, iOSAppBackground.self, iOSLifecycleEvents.self, DeviceToken.self]
             #endif
@@ -74,8 +78,6 @@ extension Analytics: Subscriber {
             #if os(Linux)
             plugins.append(LinuxLifecycleMonitor.self)
             #endif
-            // add context plugin as well as it's platform specific internally.
-            plugins.append(Context.self)
         }
         
         if plugins.isEmpty {

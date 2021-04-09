@@ -40,10 +40,10 @@ public struct TrackEvent: RawEvent {
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
     
-    public var event: String?
+    public var event: String
     public var properties: JSON?
     
-    public init(event: String?, properties: JSON?) {
+    public init(event: String, properties: JSON?) {
         self.event = event
         self.properties = properties
     }

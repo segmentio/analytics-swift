@@ -63,7 +63,7 @@ final class Analytics_Tests: XCTestCase {
         analytics.add(plugin: outputReader)
         
         let dataToken = UUID().asData()
-        analytics.setDeviceToken(dataToken)
+        analytics.registeredForRemoteNotifications(deviceToken: dataToken)
         analytics.track(name: "token check")
         
         let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
