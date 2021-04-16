@@ -194,7 +194,7 @@ class macOSLifecycleMonitor: PlatformPlugin {
     
     func applicationWillResignActive(notification: NSNotification) {
         analytics.apply { (ext) in
-            if let validExt = ext as? MacLifecycle {
+            if let validExt = ext as? macOSLifecycle {
                 validExt.applicationWillResignActive()
             }
         }
