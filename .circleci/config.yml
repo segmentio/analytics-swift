@@ -1,0 +1,29 @@
+version: 2.1
+jobs:
+  build_and_test:
+    macos:
+      xcode: "12.4.0"
+    steps:
+      - checkout
+      - run: swift build
+      #- run:
+      #    name: Snyk
+      #    command: curl -sL https://raw.githubusercontent.com/segmentio/snyk_helpers/master/initialization/snyk.sh | sh
+      #    environment:
+      #      SNYK_FAIL_ON: upgradable
+      #      SNYK_SEVERITY_THRESHOLD: high
+
+      # Collect XML test results data to show in the UI, and save the same XML
+      # files under test-results folder in the Artifacts tab
+      - store_test_results:
+          path: test_output
+      - store_artifacts:
+          path: test_output
+          destination: scan-output
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test:
+          context: snyk
+          

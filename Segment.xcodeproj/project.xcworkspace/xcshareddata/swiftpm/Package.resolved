@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Sovran",
+        "repositoryURL": "git@github.com:segmentio/Sovran-Swift.git",
+        "state": {
+          "branch": "main",
+          "revision": "d88caa26ca1c4460441376c9045d515b0bac015e",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
