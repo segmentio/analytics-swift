@@ -12,11 +12,12 @@ public struct Settings: Codable {
     public var plan: JSON? = nil
     public var edgeFunctions: JSON? = nil
     
-    public init(writeKey: String, apiHost: String) {
-        integrations = try! JSON([
-            "Segment.io": [
-                "apiKey": writeKey,
-                "apiHost": apiHost
+    public init(writeKey: String, apiHost: String, cdnHost: String? = nil) {
+        // Build settings directly for Segment Destination
+        integrations = try? JSON([
+            SegmentDestination.Constants.integrationName.rawValue: [
+                SegmentDestination.Constants.apiKey.rawValue: writeKey,
+                SegmentDestination.Constants.apiHost.rawValue: apiHost
             ]
         ])
     }
@@ -50,7 +51,7 @@ public struct Settings: Codable {
 extension Analytics {
     func checkSettings() {
         let writeKey = self.configuration.values.writeKey
-        let httpClient = HTTPClient(analytics: self)
+        let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success {
                 if let s = settings {

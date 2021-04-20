@@ -122,7 +122,7 @@ extension System {
             if let defaults = configuration.values.defaultSettings {
                 settings = defaults
             } else {
-                settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
+                settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost(), cdnHost: configuration.values.cdnHost)
             }
         }
         let integrationDictionary = try! JSON([String: Any]())
