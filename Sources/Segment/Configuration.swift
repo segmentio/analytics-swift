@@ -30,6 +30,7 @@ public class Configuration {
         var defaultSettings: Settings? = nil
         var autoAddSegmentDestination: Bool = true
         var apiHost: String = HTTPClient.getDefaultAPIHost()
+        var cdnHost: String = HTTPClient.getDefaultCDNHost()
     }
     internal var values: Values
 
@@ -81,6 +82,12 @@ public extension Configuration {
     @discardableResult
     func apiHost(_ value: String) -> Configuration {
         values.apiHost = value
+        return self
+    }
+    
+    @discardableResult
+    func cdnHost(_ value: String) -> Configuration {
+        values.cdnHost = value
         return self
     }
 }
