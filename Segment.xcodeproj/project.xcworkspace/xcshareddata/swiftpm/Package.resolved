@@ -5,9 +5,9 @@
         "package": "Sovran",
         "repositoryURL": "git@github.com:segmentio/Sovran-Swift.git",
         "state": {
-          "branch": "main",
-          "revision": "d88caa26ca1c4460441376c9045d515b0bac015e",
-          "version": null
+          "branch": null,
+          "revision": "17520108937c30d4bf4a29668ec9b47bd21748a3",
+          "version": "1.0.0"
         }
       }
     ]
