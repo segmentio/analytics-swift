@@ -23,14 +23,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let analytics = Analytics(configuration: config)
         self.analytics = analytics
         
-        analytics.add(plugin: AfterPlugin(name: "hello", analytics: analytics))
+        analytics.add(plugin: AfterPlugin(name: "AfterPlugin_EndOfTimeline", analytics: analytics))
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
-            analytics.identify(userId: "Live Demo -- never breaks")
-            analytics.track(name: "I once tracked a cougar", properties: MyTraits(email: "Brandon@stinks.com"))
-            analytics.screen(screenTitle: "Screened the AppDelegate")
-            analytics.group(groupId: "Grouped By ID")
-            //analytics.alias(newId: "3333")
+            analytics.identify(userId: "Segment Spec: Identify")
+            analytics.track(name: "Segment Spec: Track", properties: MyTraits(email: "info@segment.com"))
+            analytics.screen(screenTitle: "Segment Spec: Screen")
+            analytics.group(groupId: "Segment Spec: Group")
+            //analytics.alias(newId: "Segment Spec: Alias")
         }
         
         return true

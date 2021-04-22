@@ -20,9 +20,10 @@ public class HTTPClient {
     private var writeKeySessions = [String: URLSession]()
     private var apiHost: String
     private var apiKey: String
+    private var cdnHost: String
     private let analytics: Analytics
     
-    init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil) {
+    init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil, cdnHost: String? = nil) {
         self.analytics = analytics
         
         if let apiKey = apiKey {
@@ -35,6 +36,12 @@ public class HTTPClient {
             self.apiHost = apiHost
         } else {
             self.apiHost = Self.defaultAPIHost
+        }
+        
+        if let cdnHost = cdnHost {
+            self.cdnHost = cdnHost
+        } else {
+            self.cdnHost = Self.defaultCDNHost
         }
     }
     
@@ -103,7 +110,7 @@ public class HTTPClient {
         // from write key sessions for uploading.
         let settingsKey = "\(writeKey)_settings"
         
-        guard let settingsURL = segmentURL(for: Self.defaultCDNHost, path: "/projects/\(writeKey)/settings") else {
+        guard let settingsURL = segmentURL(for: cdnHost, path: "/projects/\(writeKey)/settings") else {
             completion(false, nil)
             return
         }
@@ -164,6 +171,10 @@ extension HTTPClient {
     
     internal static func getDefaultAPIHost() -> String {
         return Self.defaultAPIHost
+    }
+    
+    internal static func getDefaultCDNHost() -> String {
+        return Self.defaultCDNHost
     }
 }
 
