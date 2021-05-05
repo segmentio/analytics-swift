@@ -220,7 +220,7 @@ We have the following [types]
 ### Fundamentals
 We have 3 types of basic plugins that you can use as a foundation for modifying functionality
 
-- [`Plugin`]()
+- `Plugin`
 The most trivial plugin interface that will act on any event payload going through the timeline.
 For example if you wanted to add something to the context object of any event payload as an enrichment.
 ```swift
@@ -245,7 +245,7 @@ class SomePlugin: Plugin {
 }
 ```
 
-- [`EventPlugin`]()
+- `EventPlugin`
 A plugin interface that will act only on specific event types. You can choose the event types by only overriding the event functions you want.
 For example if you only wanted to act on `track` & `identify` events
 ```swift
@@ -271,7 +271,7 @@ class SomePlugin: EventPlugin {
 }
 ```
 
-- [`DestinationPlugin`]()
+- `DestinationPlugin`
 A plugin interface most commonly used for device-mode destinations. This plugin contains an internal timeline that follows the same process as the analytics timeline,
 allowing you to modify/augment how events reach the particular destination.
 For example if you wanted to implement a device mode destination plugin for Amplitude
@@ -305,14 +305,14 @@ analytics.track("Amplitude Event")
 ```
 
 ### Advanced concepts
-- [`update(settings:)`]()
+- `update(settings:)`
 Use this function to react to any settings updates. This will be implicitly called when settings are updated.
 - OS Lifecycle hooks
 Plugins can also hook into lifecycle events by conforming to the platform appropriate protocol. These functions will get called implicitly as the lifecycle events are processed.
-[`iOSLifecycleEvents`]()
-[`macOSLifecycleEvents`]()
-[`watchOSLifecycleEvents`]()
-[`LinuxLifecycleEvents`]()
+`iOSLifecycleEvents`
+`macOSLifecycleEvents`
+`watchOSLifecycleEvents`
+`LinuxLifecycleEvents`
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
