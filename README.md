@@ -7,25 +7,25 @@ supplant our `analytics-ios` library, but customers should not use this library 
 The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS/macOS/Linux).
 
 ## Table of Contents
-- Installation (#installation)
-- Usage (#usage)
-	- Setting up the client (#setting-up-the-client)
-	- Client Options (#client-options)
-- Client Methods (#client-methods)
-	- track
-	- identify
-	- screen
-	- group
-	- add
-	- find
-	- remove
-	- flush
-- Plugin Architecture (#plugin-architecture)
-	- Fundamentals (#fundamentals)
-	- Advanced Concepts (#advanced-concepts)
-- Contributing (#contributing)
-- Code of Conduct (#code-of-conduct)
-- License (#license)
+- [Installation](#installation)
+- [Usage](#usage)
+	- [Setting up the client](#setting-up-the-client)
+	- [Client Options](#client-options)
+- [Client Methods](#client-methods)
+	- [track](#track)
+	- [identify](#identify)
+	- [screen](#screen)
+	- [group](#group)
+	- [add](#add)
+	- [find](#find)
+	- [remove](#remove)
+	- [flush](#flush)
+- [Plugin Architecture](#plugin-architecture)
+	- [Fundamentals](#fundamentals)
+	- [Advanced Concepts](#advanced-concepts)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
+- [License](#license)
 
 ## Installation
 Add the Swift package as a dependency either via your package.swift, or via Xcode's File->Swift Packages->Add Package Dependency menu item.
@@ -206,9 +206,15 @@ analytics.remove("SomePlugin")
 ```
 
 ### flush
+flushes the current queue of events
+
+Example Usage:
+```swift
+analytics.flush()
+```
 
 ## Plugin Architecture
-Our new plugin architecture enables you to modify/augment how the analytics client works completely. From modifying event payloads to changing analytics functionality, Plugins are the easiest way to get things done
+Our new plugin architecture enables you to modify/augment how the analytics client works completely. From modifying event payloads to changing analytics functionality, plugins are the easiest way to get things done.
 Plugins are run through a timeline, which executes plugins in order of insertion based on their types.
 We have the following [types]
 - `before` _Executed before event processing begins_
