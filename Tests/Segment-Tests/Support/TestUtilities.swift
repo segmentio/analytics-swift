@@ -91,8 +91,8 @@ class MyDestination: DestinationPlugin {
 }
 
 class OutputReaderPlugin: Plugin {
-    var type: PluginType
-    var name: String
+    let type: PluginType
+    let name: String
     var analytics: Analytics?
     
     var lastEvent: RawEvent? = nil

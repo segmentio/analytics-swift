@@ -13,12 +13,11 @@ class LinuxLifecycleMonitor: PlatformPlugin {
     let type: PluginType
     let name: String
     
-    weak var analytics: Analytics? = nil
+    var analytics: Analytics?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.type = .utility
         self.name = name
-        self.analytics = analytics
     }
 
 }

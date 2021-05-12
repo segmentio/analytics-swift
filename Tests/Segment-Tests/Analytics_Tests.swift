@@ -72,6 +72,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(token == "1234")
     }
     
+    #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
     func testDeviceTokenData() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
@@ -86,6 +87,7 @@ final class Analytics_Tests: XCTestCase {
         let token = device?[keyPath: "device.token"] as? String
         XCTAssertTrue(token?.count == 32) // it's a uuid w/o the dashes.  36 becomes 32.
     }
+    #endif
     
     func testTrack() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
