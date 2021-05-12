@@ -11,15 +11,14 @@ import UIKit
 class iOSAppBackground: PlatformPlugin {
     static var specificName = "Segment_iOSAppBackground"
     
-    var type: PluginType
-    var name: String
-    var analytics: Analytics
+    let type: PluginType
+    let name: String
+    var analytics: Analytics?
     private let backgroundQueue = DispatchQueue(label: "com.segment.queueflush")
     private var taskID: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier(rawValue: 0)
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .utility
     }
     

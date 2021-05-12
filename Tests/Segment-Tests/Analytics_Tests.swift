@@ -5,23 +5,38 @@ final class Analytics_Tests: XCTestCase {
     
     func testBaseEventCreation() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
-        myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
+        let myDestination = MyDestination(name: "fakeDestination")
+        myDestination.add(plugin: GooberPlugin(name: "booya"))
         
-        analytics.add(plugin: ZiggyPlugin(name: "crikey", analytics: analytics))
+        analytics.add(plugin: ZiggyPlugin(name: "crikey"))
         analytics.add(plugin: myDestination)
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
     }
     
+    func testPluginConfigure() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let ziggy = ZiggyPlugin(name: "crikey")
+        let myDestination = MyDestination(name: "fakeDestination")
+        let goober = GooberPlugin(name: "booya")
+        myDestination.add(plugin: goober)
+
+        analytics.add(plugin: ziggy)
+        analytics.add(plugin: myDestination)
+        
+        XCTAssertNotNil(ziggy.analytics)
+        XCTAssertNotNil(myDestination.analytics)
+        XCTAssertNotNil(goober.analytics)
+    }
+    
     func testPluginRemove() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let myDestination = MyDestination(name: "fakeDestination", analytics: analytics)
-        myDestination.add(plugin: GooberPlugin(name: "booya", analytics: analytics))
+        let myDestination = MyDestination(name: "fakeDestination")
+        myDestination.add(plugin: GooberPlugin(name: "booya"))
         
         let expectation = XCTestExpectation(description: "Ziggy Expectation")
-        let ziggy = ZiggyPlugin(name: "crikey", analytics: analytics)
+        let ziggy = ZiggyPlugin(name: "crikey")
         ziggy.completion = {
             expectation.fulfill()
         }
@@ -45,7 +60,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testDeviceToken() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.setDeviceToken("1234")
@@ -59,7 +74,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testDeviceTokenData() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         let dataToken = UUID().asData()
@@ -74,7 +89,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testTrack() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.track(name: "test track")
@@ -86,7 +101,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testIdentify() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
@@ -99,7 +114,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testUserIdAndTraitsPersistCorrectly() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
@@ -123,7 +138,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testScreen() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.screen(screenTitle: "screen1", category: "category1")
@@ -143,7 +158,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testGroup() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.group(groupId: "1234")
@@ -161,7 +176,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testReset() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
@@ -200,7 +215,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testVersion() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader", analytics: analytics)
+        let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
         analytics.track(name: "whataversion")

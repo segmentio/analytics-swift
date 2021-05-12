@@ -26,11 +26,10 @@ struct MyTraits: Codable {
 class GooberPlugin: EventPlugin {
     let type: PluginType
     let name: String
-    let analytics: Analytics
+    var analytics: Analytics?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .enrichment
     }
     
@@ -52,13 +51,12 @@ class GooberPlugin: EventPlugin {
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
     let name: String
-    let analytics: Analytics
+    var analytics: Analytics?
     
     var completion: (() -> Void)?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .enrichment
     }
     
@@ -78,11 +76,10 @@ class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType
     let name: String
-    let analytics: Analytics
+    var analytics: Analytics?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .destination
         self.timeline = Timeline()
     }
@@ -96,14 +93,13 @@ class MyDestination: DestinationPlugin {
 class OutputReaderPlugin: Plugin {
     var type: PluginType
     var name: String
-    var analytics: Analytics
+    var analytics: Analytics?
     
     var lastEvent: RawEvent? = nil
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.type = .after
         self.name = name
-        self.analytics = analytics
     }
     
     func execute<T>(event: T?) -> T? where T : RawEvent {

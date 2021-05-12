@@ -10,17 +10,15 @@ import Foundation
 public class Context: PlatformPlugin {
     static var specificName: String = "Segment_Context"
     
-    public var type: PluginType
-    public var name: String
-    public var analytics: Analytics
+    public let type: PluginType = .before
+    public let name: String = specificName
+    public var analytics: Analytics?
     
     internal var staticContext = staticContextData()
     internal static var device = VendorSystem.current
     
-    public required init(name: String, analytics: Analytics) {
-        self.analytics = analytics
-        self.name = name
-        self.type = .before
+    public required init(name: String) {
+        // ignore name here; it's hardcoded above.
     }
     
     public func execute<T: RawEvent>(event: T?) -> T? {

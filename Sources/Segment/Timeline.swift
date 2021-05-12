@@ -55,7 +55,7 @@ public class Timeline: Subscriber {
 internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
-        if let settings = plugin.analytics.settings() {
+        if let settings = plugin.analytics?.settings() {
             plugin.update(settings: settings)
         }
     }
