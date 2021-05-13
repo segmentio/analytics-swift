@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let analytics = Analytics(configuration: config)
         self.analytics = analytics
         
-        analytics.add(plugin: AfterPlugin(name: "AfterPlugin_EndOfTimeline", analytics: analytics))
+        analytics.add(plugin: AfterPlugin(name: "AfterPlugin_EndOfTimeline"))
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
             analytics.identify(userId: "Segment Spec: Identify")

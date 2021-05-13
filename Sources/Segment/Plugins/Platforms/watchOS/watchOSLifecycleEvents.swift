@@ -16,12 +16,11 @@ class watchOSLifecycleMonitor: PlatformPlugin {
     
     var type: PluginType
     var name: String
-    var analytics: Analytics
+    var analytics: Analytics?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.type = .utility
         self.name = name
-        self.analytics = analytics
     }
     
     // ...

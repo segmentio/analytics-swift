@@ -8,16 +8,23 @@
 import Foundation
 
 public class SegmentDestination: DestinationPlugin {
-    public var analytics: Analytics
-    public var timeline: Timeline
-    public var type: PluginType
-    public var name: String
-    
-    private var httpClient: HTTPClient
+    public let type: PluginType = .destination
+    public let name: String
+    public let timeline = Timeline()
+    public var analytics: Analytics? {
+        didSet {
+            initialSetup()
+        }
+    }
+
+    private var httpClient: HTTPClient?
     private var pendingURLs = [URL]()
     private var uploadInProgress = false
-    private var storage: Storage
+    private var storage: Storage?
     private var maxPayloadSize = 500000 // Max 500kb
+    
+    private var apiKey: String? = nil
+    private var apiHost: String? = nil
     
     @Atomic private var eventCount: Int = 0
     private var flushTimer: Timer? = nil
@@ -28,11 +35,12 @@ public class SegmentDestination: DestinationPlugin {
         case apiKey = "apiKey"
     }
     
-    required public init(name: String, analytics: Analytics) {
-        type = .destination
+    required public init(name: String) {
         self.name = name
-        self.analytics = analytics
-        timeline = Timeline()
+    }
+    
+    internal func initialSetup() {
+        guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
         flushTimer = Timer.scheduledTimer(withTimeInterval: analytics.configuration.values.flushInterval, repeats: true, block: { _ in
@@ -42,10 +50,10 @@ public class SegmentDestination: DestinationPlugin {
     
     public func update(settings: Settings) {
         let segmentInfo = settings.integrationSettings(for: Self.Constants.integrationName.rawValue)
-        let apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
-        let apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String
-        if (apiHost != nil && apiKey != nil) {
-            httpClient = HTTPClient(analytics: self.analytics, apiKey: apiKey, apiHost: apiHost)
+        apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
+        apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String
+        if (apiHost != nil && apiKey != nil), let analytics = self.analytics {
+            httpClient = HTTPClient(analytics: analytics, apiKey: apiKey, apiHost: apiHost)
         }
     }
     
@@ -77,6 +85,9 @@ public class SegmentDestination: DestinationPlugin {
     
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
+        guard let storage = self.storage else { return }
+        guard let analytics = self.analytics else { return }
+        
         // Send Event to File System
         storage.write(.events, value: event)
         eventCount += 1
@@ -87,6 +98,10 @@ public class SegmentDestination: DestinationPlugin {
     }
     
     internal func flush() {
+        guard let storage = self.storage else { return }
+        guard let analytics = self.analytics else { return }
+        guard let httpClient = self.httpClient else { return }
+
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
@@ -121,9 +136,9 @@ public class SegmentDestination: DestinationPlugin {
                     
                     if succeeded {
                         // Remove events
-                        self?.storage.remove(file: url)
+                        storage.remove(file: url)
                     } else {
-                        self?.analytics.logFlush()
+                        analytics.logFlush()
                     }
 
                     if processedCall.count == data.count {

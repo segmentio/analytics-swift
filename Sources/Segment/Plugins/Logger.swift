@@ -19,13 +19,12 @@ class Logger: UtilityPlugin {
     
     let type: PluginType
     let name: String
-    let analytics: Analytics
+    var analytics: Analytics?
     
     private var messages = [LogMessage]()
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .utility
     }
     

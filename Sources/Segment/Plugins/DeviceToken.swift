@@ -12,13 +12,12 @@ public class DeviceToken: PlatformPlugin {
     
     public let type: PluginType = .before
     public let name: String = specificName
-    public let analytics: Analytics
+    public var analytics: Analytics?
     
     public var token: String? = nil
 
-    public required init(name: String, analytics: Analytics) {
+    public required init(name: String) {
         // ignore `name` here, it's hard coded above.
-        self.analytics = analytics
     }
     
     public func execute<T: RawEvent>(event: T?) -> T? {
@@ -36,7 +35,7 @@ extension Analytics {
         if let tokenPlugin = self.find(pluginName: DeviceToken.specificName) as? DeviceToken {
             tokenPlugin.token = token
         } else {
-            let tokenPlugin = DeviceToken(name: DeviceToken.specificName, analytics: self)
+            let tokenPlugin = DeviceToken(name: DeviceToken.specificName)
             tokenPlugin.token = token
             add(plugin: tokenPlugin)
         }

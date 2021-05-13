@@ -9,13 +9,12 @@ import Foundation
 import Segment
 
 class GooberPlugin: EventPlugin {
-    let analytics: Analytics
+    var analytics: Analytics?
     let type: PluginType
     let name: String
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .enrichment
     }
     
@@ -28,16 +27,15 @@ class GooberPlugin: EventPlugin {
 }
 
 class ZiggyPlugin: EventPlugin {
-    let analytics: Analytics
+    var analytics: Analytics?
     let type: PluginType
     let name: String
     
     var completion: (() -> Void)?
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
         self.type = .enrichment
-        self.analytics = analytics
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -53,16 +51,15 @@ class ZiggyPlugin: EventPlugin {
 }
 
 class MyDestination: DestinationPlugin {
-    let analytics: Analytics
+    var analytics: Analytics?
     
     var timeline: Timeline
     let type: PluginType
     let name: String
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
         self.type = .destination
-        self.analytics = analytics
         self.timeline = Timeline()
     }
     
@@ -76,15 +73,14 @@ class MyDestination: DestinationPlugin {
 }
 
 class AfterPlugin: Plugin {
-    let analytics: Analytics
+    var analytics: Analytics?
     
     var timeline: Timeline
     let type: PluginType
     let name: String
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .after
         self.timeline = Timeline()
     }

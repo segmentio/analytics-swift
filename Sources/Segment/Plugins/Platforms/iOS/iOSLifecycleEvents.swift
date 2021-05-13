@@ -17,18 +17,17 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     
     static var specificName: String = "Segment_iOSLifecycleEvents"
     
-    var type: PluginType
-    var name: String
-    var analytics: Analytics
+    let type: PluginType
+    let name: String
+    var analytics: Analytics?
     
-    public required init(name: String, analytics: Analytics) {
-        self.analytics = analytics
+    public required init(name: String) {
         self.name = name
         self.type = .before
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
         
@@ -39,12 +38,12 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
         if previousBuild != nil {
-            analytics.track(name: "Application Installed", properties: [
+            analytics?.track(name: "Application Installed", properties: [
                 "version": currentVersion ?? "",
                 "build": currentBuild ?? ""
             ])
         } else if currentBuild != previousBuild {
-            analytics.track(name: "Application Updated", properties: [
+            analytics?.track(name: "Application Updated", properties: [
                 "previous_version": previousVersion ?? "",
                 "previous_build": previousBuild ?? "",
                 "version": currentVersion ?? "",
@@ -52,7 +51,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
             ])
         }
         
-        analytics.track(name: "Application Opened", properties: [
+        analytics?.track(name: "Application Opened", properties: [
             "from_background": false,
             "version": currentVersion ?? "",
             "build": currentBuild ?? "",
@@ -65,14 +64,14 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     }
     
     func applicationWillEnterForeground(application: UIApplication) {
-        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
         
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
-        analytics.track(name: "Application Opened", properties: [
+        analytics?.track(name: "Application Opened", properties: [
             "from_background": true,
             "version": currentVersion ?? "",
             "build": currentBuild ?? ""
@@ -80,11 +79,11 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     }
     
     func applicationDidEnterBackground() {
-        if analytics.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
         
-        analytics.track(name: "Application Backgrounded")
+        analytics?.track(name: "Application Backgrounded")
     }
 }
 

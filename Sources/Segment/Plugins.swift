@@ -26,9 +26,10 @@ public enum PluginType: Int, CaseIterable {
 public protocol Plugin: AnyObject {
     var type: PluginType { get }
     var name: String { get }
-    var analytics: Analytics { get }
+    var analytics: Analytics? { get set }
     
-    init(name: String, analytics: Analytics)
+    init(name: String)
+    func configure(analytics: Analytics)
     func update(settings: Settings)
     func execute<T: RawEvent>(event: T?) -> T?
     func shutdown()
@@ -43,7 +44,7 @@ public protocol EventPlugin: Plugin {
 }
 
 public protocol DestinationPlugin: EventPlugin {
-    var timeline: Timeline { get set }
+    var timeline: Timeline { get }
     func add(plugin: Plugin) -> String
     func apply(closure: (Plugin) -> Void)
     func remove(pluginName: String)
@@ -57,8 +58,15 @@ internal protocol PlatformPlugin: Plugin {
 }
 
 extension PlatformPlugin {
-    internal init(analytics: Analytics) {
-        self.init(name: Self.specificName, analytics: analytics)
+    internal init() {
+        self.init(name: Self.specificName)
+    }
+}
+
+// MARK: - Plugin instance helpers
+extension Plugin {
+    public func configure(analytics: Analytics) {
+        self.analytics = analytics
     }
 }
 
@@ -66,6 +74,13 @@ extension PlatformPlugin {
 // MARK: - Adding/Removing Plugins
 
 extension DestinationPlugin {
+    public func configure(analytics: Analytics) {
+        self.analytics = analytics
+        apply { plugin in
+            plugin.configure(analytics: analytics)
+        }
+    }
+    
     /**
      Applies the supplied closure to the currently loaded set of plugins.
      
@@ -85,6 +100,9 @@ extension DestinationPlugin {
      */
     @discardableResult
     public func add(plugin: Plugin) -> String {
+        if let analytics = self.analytics {
+            plugin.configure(analytics: analytics)
+        }
         timeline.add(plugin: plugin)
         return plugin.name
     }
@@ -121,6 +139,7 @@ extension Analytics {
      */
     @discardableResult
     public func add(plugin: Plugin) -> String {
+        plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
         if plugin is DestinationPlugin && !(plugin is SegmentDestination) {
             store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
@@ -142,4 +161,3 @@ extension Analytics {
         return timeline.find(pluginName: pluginName)
     }
 }
-

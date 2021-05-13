@@ -32,7 +32,7 @@ final class Logger_Tests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "Called")
         
-        let mockLogger = LoggerMock(name: "Blah", analytics: analytics)
+        let mockLogger = LoggerMock(name: "Blah")
         mockLogger.logClosure = { (type, message) in
             expectation.fulfill()
             
