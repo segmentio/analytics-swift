@@ -34,7 +34,11 @@ public class Context: PlatformPlugin {
             context.merge(eventContext) { (_, new) in new }
         }
         
-        workingEvent.context = try? JSON(context)
+        do {
+            workingEvent.context = try JSON(context)
+        } catch {
+            exceptionFailure("Unable to convert context to JSON: \(error)")
+        }
         
         return workingEvent
     }
