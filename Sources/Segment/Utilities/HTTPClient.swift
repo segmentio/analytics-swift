@@ -69,6 +69,7 @@ public class HTTPClient {
         urlRequest.httpMethod = "POST"
         
         guard let session = try? configuredSession(for: writeKey) else {
+            exceptionFailure("Unable to create a HTTPClient session!")
             completion(false)
             return nil
         }

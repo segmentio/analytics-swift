@@ -34,7 +34,7 @@
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
 		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
-		46E382E5264C738100BA2502 /* LateInit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E4264C738100BA2502 /* LateInit.swift */; };
+		46E382E72654429A00BA2502 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E62654429A00BA2502 /* Utils.swift */; };
 		46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */; };
@@ -139,7 +139,7 @@
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
-		46E382E4264C738100BA2502 /* LateInit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LateInit.swift; sourceTree = "<group>"; };
+		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle_.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleMonitor.swift; sourceTree = "<group>"; };
@@ -324,7 +324,7 @@
 				46FE4CDF25A53FAD003A7362 /* Storage.swift */,
 				4621080B2605332D00EBC4A8 /* KeyPath.swift */,
 				46022770261F7A4800A9E913 /* Atomic.swift */,
-				46E382E4264C738100BA2502 /* LateInit.swift */,
+				46E382E62654429A00BA2502 /* Utils.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -559,11 +559,11 @@
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
 				46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */,
+				46E382E72654429A00BA2502 /* Utils.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
-				46E382E5264C738100BA2502 /* LateInit.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
