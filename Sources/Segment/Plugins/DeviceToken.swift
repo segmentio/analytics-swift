@@ -24,7 +24,11 @@ public class DeviceToken: PlatformPlugin {
         guard var workingEvent = event else { return event }
         if var context = workingEvent.context?.dictionaryValue, let token = token {
             context[keyPath: "device.token"] = token
-            workingEvent.context = try? JSON(context)
+            do {
+                workingEvent.context = try JSON(context)
+            } catch {
+                exceptionFailure("Unable to convert context to JSON: \(error)")
+            }
         }
         return workingEvent
     }

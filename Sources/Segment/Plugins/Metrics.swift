@@ -31,13 +31,18 @@ public enum MetricType: Int {
 
 public extension RawEvent {
     mutating func addMetric(_ type: MetricType, name: String, value: Double, tags: [String]?, timestamp: Date) {
-        guard let metric = try? JSON(with: Metric(eventName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else { return }
+        guard let metric = try? JSON(with: Metric(eventName: "\(Self.self)", metricName: name, value: value, tags: tags, type: type, timestamp: Date())) else {
+            exceptionFailure("Unable to add metric `\(name)`")
+            return
+        }
         if self.metrics == nil {
             metrics = [JSON]()
         }
         
         if let jsonEncoded = try? JSON(with: metric) {
             metrics?.append(jsonEncoded)
+        } else {
+            exceptionFailure("Unable to encode metric `\(name)` to JSON.")
         }
     }
 }

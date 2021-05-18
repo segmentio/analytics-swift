@@ -27,14 +27,18 @@ extension Analytics {
             }
             
         } catch {
-            assertionFailure("\(error)")
+            exceptionFailure("\(error)")
         }
     }
     
     public func track(name: String, properties: [String: Any]?) {
         var props: JSON? = nil
         if let properties = properties {
-            props = try? JSON(properties)
+            do {
+                props = try JSON(properties)
+            } catch {
+                exceptionFailure("\(error)")
+            }
         }
         let event = TrackEvent(event: name, properties: props)
         process(incomingEvent: event)
@@ -64,7 +68,7 @@ extension Analytics {
             let event = IdentifyEvent(userId: userId, traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
-            assertionFailure("\(error)")
+            exceptionFailure("\(error)")
         }
     }
     
@@ -78,7 +82,7 @@ extension Analytics {
             let event = IdentifyEvent(traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
-            assertionFailure("\(error)")
+            exceptionFailure("\(error)")
         }
     }
 
@@ -109,7 +113,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            assertionFailure("\(error)")
+            exceptionFailure("\(error)")
         }
     }
     
@@ -133,7 +137,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            assertionFailure("\(error)")
+            exceptionFailure("\(error)")
         }
     }
     
