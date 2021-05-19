@@ -17,7 +17,7 @@ jobs:
   build_and_test_spm_linux:
     docker:
       # See images here: https://hub.docker.com/r/norionomura/swift/
-      image: norionomura/swift:54
+      - image: norionomura/swift:54
     steps:
       - checkout
       - run: swift build
