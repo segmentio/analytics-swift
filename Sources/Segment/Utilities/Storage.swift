@@ -47,8 +47,8 @@ extension Storage {
                 // this is synchronized against finish(file:) down below.
                 var currentFile = 0
                 syncQueue.sync {
-                    let index: Int = userDefaults?.value(forKey: key.rawValue) as? Int ?? 0
-                    userDefaults?.setValue(index, forKey: key.rawValue)
+                    let index: Int = userDefaults?.integer(forKey: key.rawValue) ?? 0
+                    userDefaults?.set(index, forKey: key.rawValue)
                     currentFile = index
                 }
                 self.storeEvent(toFile: self.eventsFile(index: currentFile), event: event)
@@ -57,12 +57,12 @@ extension Storage {
         default:
             if isBasicType(value: value) {
                 // we can write it like normal
-                userDefaults?.setValue(value, forKey: key.rawValue)
+                userDefaults?.set(value, forKey: key.rawValue)
             } else {
                 // encode it to a data object to store
                 let encoder = PropertyListEncoder()
                 if let plistValue = try? encoder.encode(value) {
-                    userDefaults?.setValue(plistValue, forKey: key.rawValue)
+                    userDefaults?.set(plistValue, forKey: key.rawValue)
                 }
             }
         }
@@ -103,7 +103,7 @@ extension Storage {
         if doYouKnowHowToUseThis != true { return }
         let urls = eventFiles(includeUnfinished: true)
         for key in Constants.allCases {
-            userDefaults?.setValue(nil, forKey: key.rawValue)
+            userDefaults?.set(nil, forKey: key.rawValue)
         }
         for url in urls {
             try? FileManager.default.removeItem(atPath: url.path)
@@ -178,7 +178,7 @@ extension Storage {
         // finish out any file in progress
         var index: Int = 0
         syncQueue.sync {
-            index = userDefaults?.value(forKey: Constants.events.rawValue) as? Int ?? 0
+            index = userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0
         }
         finish(file: eventsFile(index: index))
         
@@ -267,8 +267,8 @@ extension Storage {
                 //assert(false, "Storage: event storage \(file) is messed up!")
             }
             
-            let currentFile: Int = (userDefaults?.value(forKey: Constants.events.rawValue) as? Int ?? 0) + 1
-            userDefaults?.setValue(currentFile, forKey: Constants.events.rawValue)
+            let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
+            userDefaults?.set(currentFile, forKey: Constants.events.rawValue)
         }
     }
     

@@ -10,46 +10,45 @@ import Foundation
 #if os(Linux)
 
 class LinuxVendorSystem: VendorSystem {
-    var manufacturer: String {
+    override var manufacturer: String {
         return "unknown"
     }
     
-    var type: String {
+    override var type: String {
         return "Linux"
     }
     
-    var model: String {
+    override var model: String {
         return "unknown"
     }
     
-    var name: String {
+    override var name: String {
         return "unknown"
     }
     
-    var identifierForVendor: String? {
+    override var identifierForVendor: String? {
         return nil
     }
     
-    var systemName: String {
+    override var systemName: String {
         return "unknown"
     }
     
-    var systemVersion: String {
+    override var systemVersion: String {
         return ""
     }
     
-    var screenSize: ScreenSize {
+    override var screenSize: ScreenSize {
         return ScreenSize(width: 0, height: 0)
     }
     
-    var userAgent: String? {
+    override var userAgent: String? {
         return "unknown"
     }
     
-    var connection: ConnectionStatus {
+    override var connection: ConnectionStatus {
         return ConnectionStatus.unknown
     }
-
 }
 
 #endif
