@@ -101,10 +101,15 @@ extension Storage {
     
     func hardReset(doYouKnowHowToUseThis: Bool) {
         if doYouKnowHowToUseThis != true { return }
+
         let urls = eventFiles(includeUnfinished: true)
         for key in Constants.allCases {
-            userDefaults?.set(nil, forKey: key.rawValue)
+            // on linux, setting a key's value to nil just deadlocks.
+            // however just removing it works, which is what we really
+            // wanna do anyway.
+            userDefaults?.removeObject(forKey: key.rawValue)
         }
+
         for url in urls {
             try? FileManager.default.removeItem(atPath: url.path)
         }

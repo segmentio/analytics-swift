@@ -1,9 +1,10 @@
 import XCTest
 
-#if !canImport(ObjectiveC)
+/*#if !canImport(ObjectiveC)
 public func allTests() -> [XCTestCaseEntry] {
     return [
         testCase(Segment_Tests.allTests),
     ]
 }
-#endif
+#endif*/
+

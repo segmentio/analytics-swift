@@ -338,6 +338,7 @@
 		OBJ_11 /* Segment-Tests */ = {
 			isa = PBXGroup;
 			children = (
+				OBJ_13 /* XCTestManifests.swift */,
 				4621082D2609206D00EBC4A8 /* Support */,
 				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
 				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
@@ -345,7 +346,6 @@
 				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
-				OBJ_13 /* XCTestManifests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
 			);
 			name = "Segment-Tests";
