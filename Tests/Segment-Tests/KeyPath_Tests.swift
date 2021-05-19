@@ -199,13 +199,4 @@ class KeyPath_Tests: XCTestCase {
         }
     }
     
-    func testValueForKeyPathSpeed() {
-        let dict = baseDictionary
-        measure {
-            for _ in 0..<100 {
-                let gyro = (dict as NSDictionary).value(forKeyPath: "data.characters.Gyro") as? String
-                XCTAssertTrue(gyro == "Leather")
-            }
-        }
-    }
 }
