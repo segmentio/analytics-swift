@@ -7,7 +7,6 @@
 
 import Foundation
 import Sovran
-import zlib
 
 internal class Storage: Subscriber {
     let store: Store
