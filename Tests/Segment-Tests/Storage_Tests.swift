@@ -58,7 +58,6 @@ class StorageTests: XCTestCase {
         
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
-        print(fileURL)
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         
         let json = try! JSONSerialization.jsonObject(with: Data(contentsOf: fileURL), options: []) as! [String: Any]
