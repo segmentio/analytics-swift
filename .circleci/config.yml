@@ -73,8 +73,4 @@ jobs:
           destination: scan-output
 workflows:
   version: 2
-  build_and_test:
-    jobs:
-      - build_and_test:
-          context: snyk
-          
+  
