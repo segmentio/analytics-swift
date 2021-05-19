@@ -1,18 +1,84 @@
 version: 2.1
 jobs:
-  build_and_test:
+  build_and_test_spm_mac:
+    macos:
+      xcode: "12.0.0"
+    steps:
+      - checkout
+      - run: swift build
+      - run: swift test
+      # Collect XML test results data to show in the UI, and save the same XML
+      # files under test-results folder in the Artifacts tab
+      - store_test_results:
+          path: test_output
+      - store_artifacts:
+          path: test_output
+          destination: scan-output
+  build_and_test_spm_linux:
+    docker:
+      # See images here: https://hub.docker.com/r/norionomura/swift/
+      - image: norionomura/swift:54
+    steps:
+      - checkout
+      - run: swift build
+      - run: swift test --enable-test-discovery
+      # Collect XML test results data to show in the UI, and save the same XML
+      # files under test-results folder in the Artifacts tab
+      - store_test_results:
+          path: test_output
+      - store_artifacts:
+          path: test_output
+          destination: scan-output
+  build_and_test_ios:
     macos:
       xcode: "12.4.0"
     steps:
       - checkout
-      - run: swift build
-      #- run:
-      #    name: Snyk
-      #    command: curl -sL https://raw.githubusercontent.com/segmentio/snyk_helpers/master/initialization/snyk.sh | sh
-      #    environment:
-      #      SNYK_FAIL_ON: upgradable
-      #      SNYK_SEVERITY_THRESHOLD: high
-
+      # Workarounds for Xcode/SPM failing to get packages
+      - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
+      - run: rm ~/.ssh/id_rsa || true
+      - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
+      - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+      # Xcodebuild will automatically build so no need to call it out specifically.
+      - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
+      # Collect XML test results data to show in the UI, and save the same XML
+      # files under test-results folder in the Artifacts tab
+      - store_test_results:
+          path: test_output
+      - store_artifacts:
+          path: test_output
+          destination: scan-output
+  build_and_test_tvos:
+    macos:
+      xcode: "12.4.0"
+    steps:
+      - checkout
+      # Workarounds for Xcode/SPM failing to get packages
+      - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
+      - run: rm ~/.ssh/id_rsa || true
+      - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
+      - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+      # Xcodebuild will automatically build so no need to call it out specifically.
+      - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+      # Collect XML test results data to show in the UI, and save the same XML
+      # files under test-results folder in the Artifacts tab
+      - store_test_results:
+          path: test_output
+      - store_artifacts:
+          path: test_output
+          destination: scan-output
+  build_and_test_watchos:
+    macos:
+      xcode: "12.4.0"
+    steps:
+      - checkout
+      # Workarounds for Xcode/SPM failing to get packages
+      - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
+      - run: rm ~/.ssh/id_rsa || true
+      - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
+      - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+      # Xcodebuild will automatically build so no need to call it out specifically.
+      - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
       # Collect XML test results data to show in the UI, and save the same XML
       # files under test-results folder in the Artifacts tab
       - store_test_results:
@@ -24,6 +90,11 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_and_test:
-          context: snyk
+      - build_and_test_spm_mac
+      - build_and_test_spm_linux
+      - build_and_test_ios
+      - build_and_test_tvos
+      #- build_and_test_watchos
+        
+      
           

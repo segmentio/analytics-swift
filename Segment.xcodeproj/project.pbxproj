@@ -35,7 +35,6 @@
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
 		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
 		46E382E72654429A00BA2502 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E62654429A00BA2502 /* Utils.swift */; };
-		46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */; };
 		46FE4CA725A3F836003A7362 /* TestPlugins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CA625A3F836003A7362 /* TestPlugins.swift */; };
@@ -140,7 +139,6 @@
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
 		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lifecycle_.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4CA625A3F836003A7362 /* TestPlugins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPlugins.swift; sourceTree = "<group>"; };
@@ -340,6 +338,7 @@
 		OBJ_11 /* Segment-Tests */ = {
 			isa = PBXGroup;
 			children = (
+				OBJ_13 /* XCTestManifests.swift */,
 				4621082D2609206D00EBC4A8 /* Support */,
 				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
 				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
@@ -347,7 +346,6 @@
 				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
-				OBJ_13 /* XCTestManifests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
 			);
 			name = "Segment-Tests";
@@ -395,7 +393,6 @@
 				A3AEE1872581A8F1002386EB /* Deprecations.swift */,
 				9620862B2575C0C800314F8D /* Events.swift */,
 				A31A16C225794BEF00C9CDDF /* Plugins.swift */,
-				46FE4C9125A3EE90003A7362 /* Lifecycle_.swift */,
 				96C33AB0258961F500F3D538 /* Settings.swift */,
 				9692724D25A4E5B7009B5298 /* Startup.swift */,
 				A31A162E2576B73F00C9CDDF /* State.swift */,
@@ -558,7 +555,6 @@
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
 				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
-				46FE4C9225A3EE90003A7362 /* Lifecycle_.swift in Sources */,
 				46E382E72654429A00BA2502 /* Utils.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
@@ -957,6 +953,7 @@
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				USE_HEADERMAP = NO;
 			};
 			name = Debug;
@@ -1026,6 +1023,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				USE_HEADERMAP = NO;
 			};
 			name = Release;

@@ -30,7 +30,7 @@ class StorageTests: XCTestCase {
         // This is a hack that needs to be dealt with
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
         
-        if let userId = analytics.storage.userDefaults?.value(forKey: Storage.Constants.userId.rawValue) as? String {
+        if let userId = analytics.storage.userDefaults?.string(forKey: Storage.Constants.userId.rawValue) {
             XCTAssertTrue(userId == "brandon")
         } else {
             XCTFail("Could not read from storage the userId")
@@ -66,13 +66,13 @@ class StorageTests: XCTestCase {
         let item1 = batch[0]["userId"] as! String
         let item2 = batch[1]["userId"] as! String
         let item3 = batch[2]["userId"] as! String
-        
+
         XCTAssertTrue(item1 == "brandon1")
         XCTAssertTrue(item2 == "brandon2")
         XCTAssertTrue(item3 == "brandon3")
 
         analytics.storage.remove(file: fileURL)
-        
+
         // make sure our original and temp files are named correctly, and gone.
         let originalFile = fileURL.deletingPathExtension()
         let tempFile = fileURL

@@ -22,8 +22,8 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(
             name: "Sovran",
-            url: "git@github.com:segmentio/Sovran-Swift.git",
-            from: "1.0.0"
+            url: "https://github.com/segmentio/Sovran-Swift.git",
+            from: "1.0.1"
         )
     ],
     targets: [

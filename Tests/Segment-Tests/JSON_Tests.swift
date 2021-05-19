@@ -91,7 +91,13 @@ class JSONTests: XCTestCase {
         
         let str = typedDict?["str"] as? String
         let bool = typedDict?["bool"] as? Bool
+        #if os(Linux)
+        // the linux implementation of Dictionary has
+        // some issues w/ type conversion to float.
+        let float = typedDict?["float"] as? Decimal
+        #else
         let float = typedDict?["float"] as? Float
+        #endif
         let int = typedDict?["int"] as? Int
         let uint = typedDict?["uint"] as? UInt
         let double = typedDict?["double"] as? Double
