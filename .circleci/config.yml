@@ -69,7 +69,8 @@ jobs:
           destination: scan-output
   build_and_test_watchos:
     macos:
-      xcode: "12.4.0"
+      xcode: "12.5.0"
+    resource_class: m2.medium
     steps:
       - checkout
       # Workarounds for Xcode/SPM failing to get packages
