@@ -95,7 +95,7 @@ workflows:
       - build_and_test_spm_linux
       - build_and_test_ios
       - build_and_test_tvos
-      #- build_and_test_watchos
+      - build_and_test_watchos
         
       
           
