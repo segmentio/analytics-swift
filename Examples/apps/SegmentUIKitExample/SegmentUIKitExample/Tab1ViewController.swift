@@ -15,6 +15,7 @@ class Tab1ViewController: UITableViewController {
     }
 
     @IBAction func queryAction(_ sender: Any) {
+        // tap the "?" in the navbar and see an example of customized screen tracking.
         let alertController = QueryAlertController(title: "I know you like pie", message: "Everyone likes pie", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Yeah, I do", style: .default, handler: nil))
         present(alertController, animated: true, completion: nil)
