@@ -90,7 +90,7 @@ jobs:
       - store_artifacts:
           path: test_output
           destination: scan-output
-  build_ios_examples:
+  build_examples:
     macos:
       xcode: "12.5.0"
     resource_class: m2.medium
@@ -102,13 +102,20 @@ jobs:
       - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
       - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
       - run:
+        # build for ios simulator
           command: |
             cd Examples/apps/BasicExample
             xcodebuild -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator
       - run:
+        # build for ios simulator
           command: |
             cd Examples/apps/SegmentUIKitExample
             xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
+      - run:
+        # build for mac catalyst
+          command: |
+            cd Examples/apps/SegmentUIKitExample
+            xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk macosx
       # Collect XML test results data to show in the UI, and save the same XML
       # files under test-results folder in the Artifacts tab
       - store_test_results:
@@ -125,7 +132,7 @@ workflows:
       - build_and_test_ios
       - build_and_test_tvos
       - build_and_test_watchos
-      - build_ios_examples
+      - build_examples
         
       
           
