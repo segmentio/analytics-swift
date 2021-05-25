@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  SegmentExample
+//  BasicExample
 //
-//  Created by Cody Garvin on 12/30/20.
+//  Created by Brandon Sneed on 5/21/21.
 //
 
 import UIKit
@@ -15,23 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let config = Configuration(writeKey: "WRITE_KEY")
-            .flushAt(3)
+        
+        let configuration = Configuration(writeKey: "<WRITE KEY>")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
         
-        let analytics = Analytics(configuration: config)
-        self.analytics = analytics
-        
-        analytics.add(plugin: AfterPlugin(name: "AfterPlugin_EndOfTimeline"))
-
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
-            analytics.identify(userId: "Segment Spec: Identify")
-            analytics.track(name: "Segment Spec: Track", properties: MyTraits(email: "info@segment.com"))
-            analytics.screen(screenTitle: "Segment Spec: Screen")
-            analytics.group(groupId: "Segment Spec: Group")
-            //analytics.alias(newId: "Segment Spec: Alias")
-        }
+        analytics = Analytics(configuration: configuration)
         
         return true
     }
@@ -53,6 +42,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
-struct MyTraits: Codable {
-    let email: String?
+extension UIApplicationDelegate {
+    var analytics: Analytics? {
+        if let appDelegate = self as? AppDelegate {
+            return appDelegate.analytics
+        }
+        return nil
+    }
 }

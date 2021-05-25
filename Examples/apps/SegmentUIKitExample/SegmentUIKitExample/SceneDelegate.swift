@@ -1,8 +1,8 @@
 //
 //  SceneDelegate.swift
-//  SegmentExample
+//  SegmentUIKitExample
 //
-//  Created by Cody Garvin on 12/30/20.
+//  Created by Brandon Sneed on 4/8/21.
 //
 
 import UIKit
