@@ -8,15 +8,15 @@
 import Foundation
 
 @propertyWrapper
-internal struct Atomic<T> {
-    private var value: T
+public struct Atomic<T> {
+    var value: T
     private let lock = NSLock()
 
-    init(wrappedValue value: T) {
+    public init(wrappedValue value: T) {
         self.value = value
     }
 
-    var wrappedValue: T {
+    public var wrappedValue: T {
       get { return load() }
       set { store(newValue: newValue) }
     }
