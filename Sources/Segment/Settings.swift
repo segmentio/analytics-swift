@@ -45,6 +45,11 @@ public struct Settings: Codable {
         let result = settings[name] as? [String: Any]
         return result
     }
+    
+    public func integrationSettings<T: Codable>(name: String) -> T? {
+        return nil
+    }
+
 }
 
 extension Analytics {

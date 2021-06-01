@@ -109,6 +109,11 @@ jobs:
       - run:
         # build for ios simulator
           command: |
+            cd Examples/apps/DestinationsExample
+            xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
+      - run:
+        # build for ios simulator
+          command: |
             cd Examples/apps/SegmentUIKitExample
             xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
       - run:
