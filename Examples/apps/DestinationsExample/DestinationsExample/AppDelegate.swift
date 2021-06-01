@@ -15,6 +15,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let configuration = Configuration(writeKey: "<WRITE KEY>")
+            .trackApplicationLifecycleEvents(true)
+            .flushInterval(10)
+        
+        analytics = Analytics(configuration: configuration)
+        
+        analytics?.add(plugin: AdjustDestination(name: "Adjust"))
+
         return true
     }
 
