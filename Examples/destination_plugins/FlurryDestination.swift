@@ -35,17 +35,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import Foundation
-import Segment
-/**
- An implmentation of the Flurry Analytics device mode destination as a plugin.
- 
- NOTE: This is currently commented out due to lack of arm64 support in the flurry SDK via swift package manager.
- See here: https://github.com/flurry/FlurrySwiftPackage/issues/3
- */
+/* If flurry ever gets their swift package working, we can re-enable this */
 
 /*
+import Foundation
+import Segment
 import FlurryAnalytics
+
+/**
+ An implmentation of the Flurry Analytics device mode destination as a plugin.
+ */
 
 class FlurryDestination: DestinationPlugin {
     let timeline: Timeline = Timeline()

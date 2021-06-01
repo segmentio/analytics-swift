@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 469EC8CF266066130068F9E3 /* SystemConfiguration.framework */; };
 		469F7B08266011690038E773 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B07266011690038E773 /* AppDelegate.swift */; };
 		469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B09266011690038E773 /* SceneDelegate.swift */; };
 		469F7B0C266011690038E773 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B0B266011690038E773 /* ViewController.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		469EC8CF266066130068F9E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		469F7B04266011690038E773 /* DestinationsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DestinationsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		469F7B07266011690038E773 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		469F7B09266011690038E773 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
 				469F7B23266013100038E773 /* Adjust in Frameworks */,
 			);
@@ -80,6 +83,7 @@
 		469F7B1B266011D70038E773 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				469EC8CF266066130068F9E3 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
