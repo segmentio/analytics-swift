@@ -20,11 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Analytics.support.add(plugin: ConsoleLogger(name: "support"))
         Analytics.support.add(plugin: ConsentTracking(name: "consent"))
-
-        // setup flurry on the main instance
-        // NOTE: This is currently commented out due to lack of arm64 support in the flurry SDK via swift package manager.
-        //let flurry = FlurryDestination(name: "Flurry", analytics: Analytics.main)
-        //Analytics.main.add(plugin: flurry)
         
         Analytics.support.track(name: "test event")
         
