@@ -25,6 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // NOTE: This is currently commented out due to lack of arm64 support in the flurry SDK via swift package manager.
         //let flurry = FlurryDestination(name: "Flurry", analytics: Analytics.main)
         //Analytics.main.add(plugin: flurry)
+        Analytics.main.add(plugin: MixpanelDestination(name: "Mixpanel"))
         
         Analytics.support.track(name: "test event")
         
