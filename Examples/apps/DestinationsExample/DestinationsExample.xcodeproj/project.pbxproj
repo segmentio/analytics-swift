@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 469EC8CF266066130068F9E3 /* SystemConfiguration.framework */; };
+		469EC8E0266828860068F9E3 /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */; };
 		469F7B08266011690038E773 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B07266011690038E773 /* AppDelegate.swift */; };
 		469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B09266011690038E773 /* SceneDelegate.swift */; };
 		469F7B0C266011690038E773 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B0B266011690038E773 /* ViewController.swift */; };
@@ -25,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		469EC8CF266066130068F9E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		469EC8E1266828AF0068F9E3 /* DestinationsExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DestinationsExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		469F7B04266011690038E773 /* DestinationsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DestinationsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		469F7B07266011690038E773 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		469F7B09266011690038E773 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -44,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				469EC8E0266828860068F9E3 /* FlurryAnalyticsSPM in Frameworks */,
 				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
 				965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */,
@@ -78,6 +81,7 @@
 				469F7B07266011690038E773 /* AppDelegate.swift */,
 				469F7B09266011690038E773 /* SceneDelegate.swift */,
 				469F7B0B266011690038E773 /* ViewController.swift */,
+				469EC8E1266828AF0068F9E3 /* DestinationsExample-Bridging-Header.h */,
 				469F7B0D266011690038E773 /* Main.storyboard */,
 				469F7B102660116A0038E773 /* Assets.xcassets */,
 				469F7B122660116A0038E773 /* LaunchScreen.storyboard */,
@@ -126,6 +130,7 @@
 				469F7B1C266011D70038E773 /* Segment */,
 				469F7B22266013100038E773 /* Adjust */,
 				965DC0FD2668079400DDF9C7 /* Mixpanel */,
+				469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */,
 			);
 			productName = DestinationsExample;
 			productReference = 469F7B04266011690038E773 /* DestinationsExample.app */;
@@ -157,6 +162,7 @@
 			packageReferences = (
 				469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */,
 				965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+				469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
 			);
 			productRefGroup = 469F7B05266011690038E773 /* Products */;
 			projectDirPath = "";
@@ -274,6 +280,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "DestinationsExample/DestinationsExample-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -328,6 +335,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "DestinationsExample/DestinationsExample-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -393,6 +401,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:flurry/FlurrySwiftPackage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.2.1;
+			};
+		};
 		469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adjust/ios_sdk.git";
@@ -412,6 +428,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
+			productName = FlurryAnalyticsSPM;
+		};
 		469F7B1C266011D70038E773 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
