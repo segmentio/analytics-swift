@@ -50,7 +50,7 @@ internal struct AdjustSettings: Codable {
 }
 
 @objc
-public class AdjustDestination: NSObject, DestinationPlugin {
+public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
     public let timeline: Timeline = Timeline()
     public let type: PluginType = .destination
     public let name: String
@@ -144,6 +144,16 @@ public class AdjustDestination: NSObject, DestinationPlugin {
         guard started == true else { return event }
         
         return event
+    }
+    
+    public func reset() {
+        guard started == true else { return }
+        Adjust.resetSessionPartnerParameters()
+    }
+    
+    public func registeredForRemoteNotifications(deviceToken: Data) {
+        guard started == true else { return }
+        Adjust.setDeviceToken(deviceToken)
     }
 }
 

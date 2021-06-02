@@ -85,11 +85,20 @@ extension Analytics {
     }
     
     public func flush() {
-        flushCurrentQueue()
+        apply { plugin in
+            if let p = plugin as? EventPlugin {
+                p.flush()
+            }
+        }
     }
     
     public func reset() {
         store.dispatch(action: UserInfo.ResetAction())
+        apply { plugin in
+            if let p = plugin as? EventPlugin {
+                p.reset()
+            }
+        }
     }
     
     public func settings() -> Settings? {

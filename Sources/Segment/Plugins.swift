@@ -41,6 +41,8 @@ public protocol EventPlugin: Plugin {
     func group(event: GroupEvent) -> GroupEvent?
     func alias(event: AliasEvent) -> AliasEvent?
     func screen(event: ScreenEvent) -> ScreenEvent?
+    func reset()
+    func flush()
 }
 
 public protocol DestinationPlugin: EventPlugin {
