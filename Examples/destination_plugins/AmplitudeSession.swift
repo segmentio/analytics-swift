@@ -5,6 +5,11 @@
 //  Created by Cody Garvin on 2/16/21.
 //
 
+// NOTE: This Plugin replicates Amplitude's session tracking functionality. 
+// It should be used to send session data to Amplitude via a cloud mode
+// connection. Once implemented, the Amplitude SDK can be removed from 
+// your application. 
+
 // NOTE: You can see this plugin in use in the DestinationsExample application.
 //
 // This plugin is NOT SUPPORTED by Segment.  It is here merely as an example,
