@@ -22,7 +22,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         analytics = Analytics(configuration: configuration)
         
+        // Add Adjust destination plugin
         analytics?.add(plugin: AdjustDestination(name: "Adjust"))
+        
+        // Add Amplitude session plugin
+        analytics?.add(plugin: AmplitudeSession(name: "Amplitude"))
+        
+        // Add Mixpanel destination plugin
+        analytics?.add(plugin: MixpanelDestination(name: "Mixpanel"))
+        
+        // setup flurry on the main instance
+        // NOTE: This is currently commented out due to lack of arm64 support in the flurry SDK via swift package manager.
+        //let flurry = FlurryDestination(name: "Flurry", analytics: Analytics.main)
+        //Analytics.main.add(plugin: flurry)
 
         return true
     }

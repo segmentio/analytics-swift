@@ -5,21 +5,21 @@
 //  Created by Cody Garvin on 2/16/21.
 //
 
+import Foundation
 import Segment
 
 class AmplitudeSession: EventPlugin, iOSLifecycle {
     
     var type: PluginType
     var name: String
-    var analytics: Analytics
+    var analytics: Analytics?
     
     private var sessionTimer: Timer?
     private var sessionID: TimeInterval?
     private let fireTime = TimeInterval(300)
     
-    required init(name: String, analytics: Analytics) {
+    required init(name: String) {
         self.name = name
-        self.analytics = analytics
         self.type = .enrichment
     }
     
@@ -87,10 +87,13 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
     }
     
     func startTimer() {
-        sessionTimer = Timer(timeInterval: fireTime, target: self, selector: #selector(handleTimerFire(_:)), userInfo: nil, repeats: true)
+        sessionTimer = Timer(timeInterval: fireTime, target: self,
+                             selector: #selector(handleTimerFire(_:)),
+                             userInfo: nil, repeats: true)
         sessionTimer?.tolerance = 0.3
         sessionID = Date().timeIntervalSince1970
         if let sessionTimer = sessionTimer {
+            // Use the RunLoop current to avoid retaining self
             RunLoop.current.add(sessionTimer, forMode: .common)
         }
     }
