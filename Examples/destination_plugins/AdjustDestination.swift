@@ -8,8 +8,7 @@
 // NOTE: You can see this plugin in use in the DestinationsExample application.
 //
 // This plugin is NOT SUPPORTED by Segment.  It is here merely as an example,
-// and for your convenience should you find it useful.  Please contact Adjust
-// about providing full support and publishing if desired.
+// and for your convenience should you find it useful.
 //
 // Adjust SPM package can be found here: https://github.com/adjust/ios_sdk
 

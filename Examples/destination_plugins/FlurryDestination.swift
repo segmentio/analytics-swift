@@ -1,15 +1,14 @@
 //
 //  FlurryDestination.swift
-//  SegmentUIKitExample
+//  DestinationsExample
 //
 //  Created by Brandon Sneed on 4/9/21.
 //
 
-// NOTE: You can see this plugin in use in the SwiftUIKitExample application.
+// NOTE: You can see this plugin in use in the DestinationsExample application.
 //
 // This plugin is NOT SUPPORTED by Segment.  It is here merely as an example,
-// and for your convenience should you find it useful.  Please contact Flurry
-// about providing full support and publishing if desired.
+// and for your convenience should you find it useful.
 //
 // Flurry SPM package can be found here: https://github.com/flurry/FlurrySwiftPackage
 
@@ -35,9 +34,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/* If flurry ever gets their swift package working, we can re-enable this */
-
-/*
 import Foundation
 import Segment
 import FlurryAnalytics
@@ -133,4 +129,3 @@ extension FlurryDestination {
     }
 }
 
-*/
