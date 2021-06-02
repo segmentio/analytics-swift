@@ -97,7 +97,7 @@ public class SegmentDestination: DestinationPlugin {
         }
     }
     
-    internal func flush() {
+    public func flush() {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
@@ -145,16 +145,6 @@ public class SegmentDestination: DestinationPlugin {
                         self?.uploadInProgress = false
                     }
                 })
-            }
-        }
-    }
-}
-
-extension Analytics {
-    internal func flushCurrentQueue() {
-        apply { (plugin) in
-            if let destinationPlugin = plugin as? SegmentDestination {
-                destinationPlugin.flush()
             }
         }
     }

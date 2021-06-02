@@ -189,6 +189,9 @@ extension EventPlugin {
     public func alias(event: AliasEvent) -> AliasEvent? {
         return event
     }
+    
+    public func flush() { }
+    public func reset() { }
 }
 
 // MARK: - Destination Timeline
