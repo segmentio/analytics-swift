@@ -18,6 +18,9 @@
 		469F7B20266012CB0038E773 /* FlurryDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B1F266012CB0038E773 /* FlurryDestination.swift */; };
 		469F7B23266013100038E773 /* Adjust in Frameworks */ = {isa = PBXBuildFile; productRef = 469F7B22266013100038E773 /* Adjust */; };
 		469F7B25266013320038E773 /* AdjustDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B24266013320038E773 /* AdjustDestination.swift */; };
+		965DC0FA2668077400DDF9C7 /* MixpanelDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */; };
+		965DC0FB2668077400DDF9C7 /* AmplitudeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */; };
+		965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 965DC0FD2668079400DDF9C7 /* Mixpanel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +35,8 @@
 		469F7B152660116A0038E773 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		469F7B1F266012CB0038E773 /* FlurryDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
 		469F7B24266013320038E773 /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
+		965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MixpanelDestination.swift; sourceTree = "<group>"; };
+		965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmplitudeSession.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +46,7 @@
 			files = (
 				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
+				965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */,
 				469F7B23266013100038E773 /* Adjust in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,8 +97,10 @@
 		469F7B1E266012CB0038E773 /* destination_plugins */ = {
 			isa = PBXGroup;
 			children = (
-				469F7B1F266012CB0038E773 /* FlurryDestination.swift */,
 				469F7B24266013320038E773 /* AdjustDestination.swift */,
+				965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */,
+				469F7B1F266012CB0038E773 /* FlurryDestination.swift */,
+				965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */,
 			);
 			name = destination_plugins;
 			path = ../../../destination_plugins;
@@ -117,6 +125,7 @@
 			packageProductDependencies = (
 				469F7B1C266011D70038E773 /* Segment */,
 				469F7B22266013100038E773 /* Adjust */,
+				965DC0FD2668079400DDF9C7 /* Mixpanel */,
 			);
 			productName = DestinationsExample;
 			productReference = 469F7B04266011690038E773 /* DestinationsExample.app */;
@@ -147,6 +156,7 @@
 			mainGroup = 469F7AFB266011690038E773;
 			packageReferences = (
 				469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */,
+				965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
 			);
 			productRefGroup = 469F7B05266011690038E773 /* Products */;
 			projectDirPath = "";
@@ -177,6 +187,8 @@
 			files = (
 				469F7B20266012CB0038E773 /* FlurryDestination.swift in Sources */,
 				469F7B0C266011690038E773 /* ViewController.swift in Sources */,
+				965DC0FA2668077400DDF9C7 /* MixpanelDestination.swift in Sources */,
+				965DC0FB2668077400DDF9C7 /* AmplitudeSession.swift in Sources */,
 				469F7B08266011690038E773 /* AppDelegate.swift in Sources */,
 				469F7B25266013320038E773 /* AdjustDestination.swift in Sources */,
 				469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */,
@@ -389,6 +401,14 @@
 				minimumVersion = 4.29.2;
 			};
 		};
+		965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:mixpanel/mixpanel-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -400,6 +420,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */;
 			productName = Adjust;
+		};
+		965DC0FD2668079400DDF9C7 /* Mixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
+			productName = Mixpanel;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
