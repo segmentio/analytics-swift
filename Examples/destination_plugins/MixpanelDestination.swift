@@ -194,8 +194,11 @@ class MixpanelDestination: DestinationPlugin {
         mixpanel?.flush()
         analytics?.log(message: "Mixpanel Flush")
     }
+}
+
+// MARK: - Mixpanel Helper Methods
+extension MixpanelDestination {
     
-    // MARK: - Private Methods
     private func mixpanelTrack(_ eventName: String, properties: [String: Any]? = nil) {
         // Track the raw event
         let typedProperties: Properties? = properties as? Properties ?? nil

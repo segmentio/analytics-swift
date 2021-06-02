@@ -58,6 +58,19 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
         return returnEvent
     }
     
+    func applicationWillBecomeActive() {
+        startTimer()
+        print(sessionID ?? "")
+    }
+    
+    func applicationWillResignActive() {
+        stopTimer()
+    }
+}
+
+// MARK: - AmplitudeSession Helper Methods
+extension AmplitudeSession {
+    
     func insertSession(event: RawEvent) -> RawEvent {
         var returnEvent = event
         if var integrations = event.integrations?.dictionaryValue,
@@ -67,15 +80,6 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
             returnEvent.integrations = try? JSON(integrations as Any)
         }
         return returnEvent
-    }
-    
-    func applicationWillBecomeActive() {
-        startTimer()
-        print(sessionID ?? "")
-    }
-    
-    func applicationWillResignActive() {
-        stopTimer()
     }
     
     @objc
