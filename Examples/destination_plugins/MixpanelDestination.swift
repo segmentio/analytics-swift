@@ -38,11 +38,10 @@ import Foundation
 import Mixpanel
 import Segment
 
-class MixpanelDestination: DestinationPlugin {
+class MixpanelDestination: QueueingCore, DestinationPlugin {
     
     var type: PluginType
     var name: String
-    var analytics: Analytics?
     var timeline: Timeline
     private var mixpanel: MixpanelInstance? = nil
     private var settings: [String: Any]? = nil
@@ -74,9 +73,10 @@ class MixpanelDestination: DestinationPlugin {
             mixpanel = nil
             analytics?.log(message: "Could not load Mixpanel settings")
         }
+        started = true
     }
     
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
+    override func identify(event: IdentifyEvent) -> IdentifyEvent? {
         
         // Ensure that the userID is set and valid
         if let eventUserID = event.userId, !eventUserID.isEmpty {
@@ -134,12 +134,12 @@ class MixpanelDestination: DestinationPlugin {
         return event
     }
     
-    func track(event: TrackEvent) -> TrackEvent? {
+    override func track(event: TrackEvent) -> TrackEvent? {
         mixpanelTrack(event.event, properties: event.properties?.dictionaryValue)
         return event
     }
     
-    func screen(event: ScreenEvent) -> ScreenEvent? {
+    override func screen(event: ScreenEvent) -> ScreenEvent? {
         if settings?["consolidatedPageCalls"] as? Bool ?? false,
            var payloadProps = event.properties?.dictionaryValue {
             
@@ -171,7 +171,7 @@ class MixpanelDestination: DestinationPlugin {
         return event
     }
     
-    func group(event: GroupEvent) -> GroupEvent? {
+    override func group(event: GroupEvent) -> GroupEvent? {
         
         guard let groupID = event.groupId, !groupID.isEmpty,
               let groupIdentifierProperties = settings?["groupIdentifierTraits"] as? [String] else {
@@ -199,7 +199,7 @@ class MixpanelDestination: DestinationPlugin {
         return event
     }
     
-    func alias(event: AliasEvent) -> AliasEvent? {
+    override func alias(event: AliasEvent) -> AliasEvent? {
         // Use Mixpanel generated id
         if let distinctId = mixpanel?.distinctId, let newId = event.userId {
             mixpanel?.createAlias(newId, distinctId: distinctId)

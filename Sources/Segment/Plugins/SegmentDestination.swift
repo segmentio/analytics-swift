@@ -7,11 +7,11 @@
 
 import Foundation
 
-public class SegmentDestination: DestinationPlugin {
+public class SegmentDestination: QueueingCore, DestinationPlugin {
     public let type: PluginType = .destination
     public let name: String
     public let timeline = Timeline()
-    public var analytics: Analytics? {
+    public override var analytics: Analytics? {
         didSet {
             initialSetup()
         }
@@ -58,27 +58,27 @@ public class SegmentDestination: DestinationPlugin {
     }
     
     // MARK: - Event Handling Methods
-    public func identify(event: IdentifyEvent) -> IdentifyEvent? {
+    public override func identify(event: IdentifyEvent) -> IdentifyEvent? {
         queueEvent(event: event)
         return event
     }
     
-    public func track(event: TrackEvent) -> TrackEvent? {
+    public override func track(event: TrackEvent) -> TrackEvent? {
         queueEvent(event: event)
         return event
     }
     
-    public func screen(event: ScreenEvent) -> ScreenEvent? {
+    public override func screen(event: ScreenEvent) -> ScreenEvent? {
         queueEvent(event: event)
         return event
     }
     
-    public func alias(event: AliasEvent) -> AliasEvent? {
+    public override func alias(event: AliasEvent) -> AliasEvent? {
         queueEvent(event: event)
         return event
     }
     
-    public func group(event: GroupEvent) -> GroupEvent? {
+    public override func group(event: GroupEvent) -> GroupEvent? {
         queueEvent(event: event)
         return event
     }

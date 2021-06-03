@@ -42,13 +42,11 @@ import FlurryAnalytics
  An implmentation of the Flurry Analytics device mode destination as a plugin.
  */
 
-class FlurryDestination: DestinationPlugin {
+class FlurryDestination: QueueingCore, DestinationPlugin {
     let timeline: Timeline = Timeline()
     let type: PluginType = .destination
     let name: String
-    var analytics: Analytics? = nil
-    
-    var started = false
+
     var screenTracksEvents = false
     
     required init(name: String) {
@@ -73,9 +71,7 @@ class FlurryDestination: DestinationPlugin {
         started = true
     }
     
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        guard started == true else { return event }
-        
+    override func identify(event: IdentifyEvent) -> IdentifyEvent? {
         Flurry.setUserID(event.userId)
         
         if let traits = event.traits?.dictionaryValue {
@@ -91,17 +87,13 @@ class FlurryDestination: DestinationPlugin {
         return event
     }
     
-    func track(event: TrackEvent) -> TrackEvent? {
-        guard started == true else { return event }
-        
+    override func track(event: TrackEvent) -> TrackEvent? {
         let props = truncate(properties: event.properties?.dictionaryValue)
         Flurry.logEvent(event.event, withParameters: props)
         return event
     }
     
-    func screen(event: ScreenEvent) -> ScreenEvent? {
-        guard started == true else { return event }
-        
+    override func screen(event: ScreenEvent) -> ScreenEvent? {
         if screenTracksEvents {
             let props = truncate(properties: event.properties?.dictionaryValue)
             Flurry.logEvent("Viewed \(event.name ?? "") Screen", withParameters: props)

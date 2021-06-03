@@ -52,43 +52,32 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
     }
     
     func track(event: TrackEvent) -> TrackEvent? {
-        guard let returnEvent = insertSession(event: event) as? TrackEvent else {
-            return nil
-        }
+        let returnEvent = insertSession(event: event)
         return returnEvent
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        guard let returnEvent = insertSession(event: event) as? IdentifyEvent else {
-            return nil
-        }
+        let returnEvent = insertSession(event: event)
         return returnEvent
     }
     
     func alias(event: AliasEvent) -> AliasEvent? {
-        guard let returnEvent = insertSession(event: event) as? AliasEvent else {
-            return nil
-        }
+        let returnEvent = insertSession(event: event)
         return returnEvent
     }
     
     func screen(event: ScreenEvent) -> ScreenEvent? {
-        guard let returnEvent = insertSession(event: event) as? ScreenEvent else {
-            return nil
-        }
+        let returnEvent = insertSession(event: event)
         return returnEvent
     }
     
     func group(event: GroupEvent) -> GroupEvent? {
-        guard let returnEvent = insertSession(event: event) as? GroupEvent else {
-            return nil
-        }
+        let returnEvent = insertSession(event: event)
         return returnEvent
     }
     
     func applicationWillBecomeActive() {
         startTimer()
-        print(sessionID ?? "")
     }
     
     func applicationWillResignActive() {
@@ -99,11 +88,10 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
 // MARK: - AmplitudeSession Helper Methods
 extension AmplitudeSession {
     
-    func insertSession(event: RawEvent) -> RawEvent {
+    func insertSession<T: RawEvent>(event: T) -> T {
         var returnEvent = event
         if var integrations = event.integrations?.dictionaryValue,
            let sessionID = sessionID {
-            
             integrations["Amplitude"] = ["session_id": (Int(sessionID) * 1000)]
             returnEvent.integrations = try? JSON(integrations as Any)
         }
@@ -112,8 +100,6 @@ extension AmplitudeSession {
     
     @objc
     func handleTimerFire(_ timer: Timer) {
-        print("Timer Fired")
-        print("Session: \(sessionID ?? -1)")
         stopTimer()
         startTimer()
     }

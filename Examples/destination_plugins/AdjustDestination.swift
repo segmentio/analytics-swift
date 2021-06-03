@@ -48,16 +48,12 @@ internal struct AdjustSettings: Codable {
     let delayTime: Double?
 }
 
-@objc
-public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
+public class AdjustDestination: QueueingCore, DestinationPlugin, RemoteNotifications {
     public let timeline: Timeline = Timeline()
     public let type: PluginType = .destination
     public let name: String
-    public var analytics: Analytics? = nil
     
     internal var settings: AdjustSettings? = nil
-    
-    @Atomic var started = false
     
     required public init(name: String) {
         self.name = name
@@ -91,9 +87,7 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
         started = true
     }
     
-    public func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        guard started == true else { return event }
-        
+    public override func identify(event: IdentifyEvent) -> IdentifyEvent? {
         if let userId = event.userId, userId.count > 0 {
             Adjust.addSessionPartnerParameter("user_id", value: userId)
         }
@@ -105,9 +99,7 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
         return event
     }
     
-    public func track(event: TrackEvent) -> TrackEvent? {
-        guard started == true else { return event }
-        
+    public override func track(event: TrackEvent) -> TrackEvent? {
         if let anonId = event.anonymousId, anonId.count > 0 {
             Adjust.addSessionPartnerParameter("anonymous_id", value: anonId)
         }
@@ -136,12 +128,6 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
             
         }
 
-        return event
-    }
-    
-    public func screen(event: ScreenEvent) -> ScreenEvent? {
-        guard started == true else { return event }
-        
         return event
     }
     
