@@ -77,6 +77,7 @@ class MyDestination: DestinationPlugin {
     let type: PluginType
     let name: String
     var analytics: Analytics?
+    @Atomic var started: Bool = false
     
     required init(name: String) {
         self.name = name
@@ -86,6 +87,7 @@ class MyDestination: DestinationPlugin {
     
     func update(settings: Settings) {
         //
+        started = true
     }
     
 }

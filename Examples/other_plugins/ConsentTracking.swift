@@ -117,6 +117,7 @@ class ConsentTracking: Plugin {
         for instance in Self.instances {
             instance.replayEvents()
         }
+        clearQueuedEvents()
     }
     
     func replayEvents() {

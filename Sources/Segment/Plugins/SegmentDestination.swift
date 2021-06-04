@@ -17,6 +17,8 @@ public class SegmentDestination: DestinationPlugin {
         }
     }
 
+    @Atomic public var started: Bool = false
+
     private var httpClient: HTTPClient?
     private var pendingURLs = [URL]()
     private var uploadInProgress = false
@@ -55,6 +57,7 @@ public class SegmentDestination: DestinationPlugin {
         if (apiHost != nil && apiKey != nil), let analytics = self.analytics {
             httpClient = HTTPClient(analytics: analytics, apiKey: apiKey, apiHost: apiHost)
         }
+        started = true
     }
     
     // MARK: - Event Handling Methods

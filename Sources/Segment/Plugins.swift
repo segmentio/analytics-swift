@@ -47,6 +47,7 @@ public protocol EventPlugin: Plugin {
 
 public protocol DestinationPlugin: EventPlugin {
     var timeline: Timeline { get }
+    var started: Bool { get }
     func add(plugin: Plugin) -> String
     func apply(closure: (Plugin) -> Void)
     func remove(pluginName: String)
