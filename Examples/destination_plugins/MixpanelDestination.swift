@@ -47,6 +47,8 @@ class MixpanelDestination: DestinationPlugin {
     private var mixpanel: MixpanelInstance? = nil
     private var settings: [String: Any]? = nil
     
+    @Atomic public var started = false
+    
     required init(name: String) {
         self.name = name
         type = .destination
@@ -74,6 +76,8 @@ class MixpanelDestination: DestinationPlugin {
             mixpanel = nil
             analytics?.log(message: "Could not load Mixpanel settings")
         }
+        
+        started = true
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {

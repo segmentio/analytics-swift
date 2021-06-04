@@ -57,7 +57,7 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
     
     internal var settings: AdjustSettings? = nil
     
-    @Atomic var started = false
+    @Atomic public var started = false
     
     required public init(name: String) {
         self.name = name
