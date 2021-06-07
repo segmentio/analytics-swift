@@ -14,9 +14,7 @@ public class Analytics {
     internal var configuration: Configuration
     internal var store: Store
     internal var storage: Storage
-
-    private var built = false
-
+    
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public var debugLogsEnabled = false
     
@@ -33,7 +31,7 @@ public class Analytics {
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
         store.provide(state: UserInfo.defaultState(from: storage))
         
-        // Get everything hot and sweaty here
+        // Get everything running
         platformStartup()
     }
     

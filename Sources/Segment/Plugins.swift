@@ -47,7 +47,6 @@ public protocol EventPlugin: Plugin {
 
 public protocol DestinationPlugin: EventPlugin {
     var timeline: Timeline { get }
-    var started: Bool { get }
     func add(plugin: Plugin) -> String
     func apply(closure: (Plugin) -> Void)
     func remove(pluginName: String)
@@ -142,11 +141,29 @@ extension Analytics {
      */
     @discardableResult
     public func add(plugin: Plugin) -> String {
+        // we need to know if the system is already started.
+        var wasStarted = false
+        if let system: System = store.currentState(), system.started {
+            wasStarted = system.started
+            // if it was, we need to stop it temporarily.
+            store.dispatch(action: System.SetStartedAction(started: false))
+            // adding the plugin to the timeline below will eventually call
+            // update(settings:) at which point, we can start it up again.
+        }
+        
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
         if plugin is DestinationPlugin && !(plugin is SegmentDestination) {
+            // need to maintain the list of integrations to inject into payload
             store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
         }
+        
+        // if the timeline had started before, set it back to started since
+        // update(settings:) will have been called by now.
+        if wasStarted {
+            store.dispatch(action: System.SetStartedAction(started: true))
+        }
+        
         return plugin.name
     }
     
