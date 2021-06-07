@@ -10,7 +10,8 @@ import Sovran
 
 class StartupQueue: Plugin, Subscriber {
     static var specificName = "Segment_StartupQueue"
-    
+    static let maxSize = 1000
+
     @Atomic var started: Bool = false
     
     let type: PluginType = .before
@@ -28,8 +29,12 @@ class StartupQueue: Plugin, Subscriber {
     }
     
     func execute<T: RawEvent>(event: T?) -> T? {
-        if let e = event, started == false  {
+        if started == false, let e = event  {
             // timeline hasn't started, so queue it up.
+            if queuedEvents.count >= Self.maxSize {
+                // if we've exceeded the max queue size start dropping events
+                queuedEvents.removeFirst()
+            }
             queuedEvents.append(e)
             return nil
         }

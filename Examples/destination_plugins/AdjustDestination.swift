@@ -141,6 +141,7 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
 }
 
 // MARK: - Adjust Delegate conformance
+
 extension AdjustDestination: AdjustDelegate {
     public func adjustAttributionChanged(_ attribution: ADJAttribution?) {
         let campaign: [String: Any] = [
