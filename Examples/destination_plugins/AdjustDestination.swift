@@ -131,10 +131,6 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
         return event
     }
     
-    public func screen(event: ScreenEvent) -> ScreenEvent? {
-        return event
-    }
-    
     public func reset() {
         Adjust.resetSessionPartnerParameters()
     }
@@ -165,6 +161,7 @@ extension AdjustDestination: AdjustDelegate {
         analytics?.track(name: "Install Attributed", properties: properties)
     }
 }
+
 // MARK: - Support methods
 
 extension AdjustDestination {
@@ -192,16 +189,3 @@ extension AdjustDestination {
         return result
     }
 }
-
-// we are missing support for:
-/*
- reset()
- flush()
- receivedRemoteNotification
- failedToRegisterForRemoteNotification
- registerForRemoteNotifications(deviceToken:)
- handleActionWithIdentifier
- continueUserActivity
- openURL:options:
- */
-

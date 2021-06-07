@@ -117,8 +117,6 @@ extension AmplitudeSession {
     
     @objc
     func handleTimerFire(_ timer: Timer) {
-        print("Timer Fired")
-        print("Session: \(sessionID ?? -1)")
         stopTimer()
         startTimer()
     }
