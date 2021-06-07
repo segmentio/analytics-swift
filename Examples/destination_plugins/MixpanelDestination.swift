@@ -76,8 +76,7 @@ class MixpanelDestination: DestinationPlugin {
         }
     }
     
-    func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        
+    func identify(event: IdentifyEvent) -> IdentifyEvent? {        
         // Ensure that the userID is set and valid
         if let eventUserID = event.userId, !eventUserID.isEmpty {
             mixpanel?.identify(distinctId: eventUserID)

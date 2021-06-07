@@ -32,6 +32,7 @@ extension Analytics: Subscriber {
             if let settings = state.settings {
                 self.update(settings: settings)
             }
+            self.store.dispatch(action: System.SetStartedAction(started: true))
         }
         
         // plugins will receive any settings we currently have as they are added.

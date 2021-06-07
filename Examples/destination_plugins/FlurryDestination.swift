@@ -48,7 +48,6 @@ class FlurryDestination: DestinationPlugin {
     let name: String
     var analytics: Analytics? = nil
     
-    var started = false
     var screenTracksEvents = false
     
     required init(name: String) {
@@ -70,12 +69,9 @@ class FlurryDestination: DestinationPlugin {
         }
         
         Flurry.startSession(flurryApiKey, with: builder)
-        started = true
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        guard started == true else { return event }
-        
         Flurry.setUserID(event.userId)
         
         if let traits = event.traits?.dictionaryValue {
@@ -92,16 +88,12 @@ class FlurryDestination: DestinationPlugin {
     }
     
     func track(event: TrackEvent) -> TrackEvent? {
-        guard started == true else { return event }
-        
         let props = truncate(properties: event.properties?.dictionaryValue)
         Flurry.logEvent(event.event, withParameters: props)
         return event
     }
     
     func screen(event: ScreenEvent) -> ScreenEvent? {
-        guard started == true else { return event }
-        
         if screenTracksEvents {
             let props = truncate(properties: event.properties?.dictionaryValue)
             Flurry.logEvent("Viewed \(event.name ?? "") Screen", withParameters: props)
