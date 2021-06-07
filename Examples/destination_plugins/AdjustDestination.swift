@@ -57,8 +57,6 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
     
     internal var settings: AdjustSettings? = nil
     
-    @Atomic public var started = false
-    
     required public init(name: String) {
         self.name = name
     }
@@ -87,13 +85,9 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
         }
         
         Adjust.appDidLaunch(adjustConfig)
-
-        started = true
     }
     
     public func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        guard started == true else { return event }
-        
         if let userId = event.userId, userId.count > 0 {
             Adjust.addSessionPartnerParameter("user_id", value: userId)
         }
@@ -106,8 +100,6 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
     }
     
     public func track(event: TrackEvent) -> TrackEvent? {
-        guard started == true else { return event }
-        
         if let anonId = event.anonymousId, anonId.count > 0 {
             Adjust.addSessionPartnerParameter("anonymous_id", value: anonId)
         }
@@ -140,18 +132,14 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
     }
     
     public func screen(event: ScreenEvent) -> ScreenEvent? {
-        guard started == true else { return event }
-        
         return event
     }
     
     public func reset() {
-        guard started == true else { return }
         Adjust.resetSessionPartnerParameters()
     }
     
     public func registeredForRemoteNotifications(deviceToken: Data) {
-        guard started == true else { return }
         Adjust.setDeviceToken(deviceToken)
     }
 }
