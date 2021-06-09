@@ -22,6 +22,8 @@
 		965DC0FA2668077400DDF9C7 /* MixpanelDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */; };
 		965DC0FB2668077400DDF9C7 /* AmplitudeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */; };
 		965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 965DC0FD2668079400DDF9C7 /* Mixpanel */; };
+		965DC1212669942800DDF9C7 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 965DC1202669942800DDF9C7 /* FirebaseAnalytics */; };
+		965DC1232669947F00DDF9C7 /* FirebaseDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC1222669947F00DDF9C7 /* FirebaseDestination.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,7 @@
 		469F7B24266013320038E773 /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
 		965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MixpanelDestination.swift; sourceTree = "<group>"; };
 		965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmplitudeSession.swift; sourceTree = "<group>"; };
+		965DC1222669947F00DDF9C7 /* FirebaseDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDestination.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +51,7 @@
 			files = (
 				469EC8E0266828860068F9E3 /* FlurryAnalyticsSPM in Frameworks */,
 				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
+				965DC1212669942800DDF9C7 /* FirebaseAnalytics in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
 				965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */,
 				469F7B23266013100038E773 /* Adjust in Frameworks */,
@@ -103,6 +107,7 @@
 			children = (
 				469F7B24266013320038E773 /* AdjustDestination.swift */,
 				965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */,
+				965DC1222669947F00DDF9C7 /* FirebaseDestination.swift */,
 				469F7B1F266012CB0038E773 /* FlurryDestination.swift */,
 				965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */,
 			);
@@ -131,6 +136,7 @@
 				469F7B22266013100038E773 /* Adjust */,
 				965DC0FD2668079400DDF9C7 /* Mixpanel */,
 				469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */,
+				965DC1202669942800DDF9C7 /* FirebaseAnalytics */,
 			);
 			productName = DestinationsExample;
 			productReference = 469F7B04266011690038E773 /* DestinationsExample.app */;
@@ -163,6 +169,7 @@
 				469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */,
 				965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
 				469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
+				965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 469F7B05266011690038E773 /* Products */;
 			projectDirPath = "";
@@ -198,6 +205,7 @@
 				469F7B08266011690038E773 /* AppDelegate.swift in Sources */,
 				469F7B25266013320038E773 /* AdjustDestination.swift in Sources */,
 				469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */,
+				965DC1232669947F00DDF9C7 /* FirebaseDestination.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +433,14 @@
 				minimumVersion = 2.9.3;
 			};
 		};
+		965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -446,6 +462,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
 			productName = Mixpanel;
+		};
+		965DC1202669942800DDF9C7 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
