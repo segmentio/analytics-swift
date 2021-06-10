@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Segment
+@testable import Segment
 
 extension UUID{
     public func asUInt8Array() -> [UInt8]{
@@ -105,5 +105,18 @@ class OutputReaderPlugin: Plugin {
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
         return event
+    }
+}
+
+func waitUntilStarted(analytics: Analytics?) {
+    guard let analytics = analytics else { return }
+    var started = false
+    while started == false {
+        if let system: System = analytics.store.currentState() {
+            if system.started {
+                started = true
+            }
+        }
+        RunLoop.main.run(until: Date.distantPast)
     }
 }
