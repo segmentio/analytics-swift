@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let configuration = Configuration(writeKey: "<WRITE KEY>")
+        let configuration = Configuration(writeKey: "1234")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
         
@@ -25,14 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add Adjust destination plugin
         analytics?.add(plugin: AdjustDestination(name: "Adjust"))
         
-        // Add Amplitude session plugin
+        /*// Add Amplitude session plugin
         analytics?.add(plugin: AmplitudeSession(name: "Amplitude"))
         
         // Add Mixpanel destination plugin
         analytics?.add(plugin: MixpanelDestination(name: "Mixpanel"))
         
         // Add Flurry destination plugin
-        analytics?.add(plugin: FlurryDestination(name: "Flurry"))
+        analytics?.add(plugin: FlurryDestination(name: "Flurry"))*/
 
         return true
     }

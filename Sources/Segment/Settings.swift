@@ -23,7 +23,7 @@ public struct Settings: Codable {
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        integrations = try? values.decode(JSON.self, forKey: CodingKeys.integrations)
+        self.integrations = try? values.decode(JSON.self, forKey: CodingKeys.integrations)
         self.plan = try? values.decode(JSON.self, forKey: CodingKeys.plan)
         self.edgeFunctions = try? values.decode(JSON.self, forKey: CodingKeys.edgeFunctions)
     }
@@ -52,18 +52,49 @@ public struct Settings: Codable {
 
 }
 
+extension Settings: Equatable {
+    public static func == (lhs: Settings, rhs: Settings) -> Bool {
+        let l = lhs.prettyPrint()
+        let r = rhs.prettyPrint()
+        return l == r
+    }
+}
+
 extension Analytics {
-    func checkSettings() {
+    internal func update(settings: Settings) {
+        apply { (plugin) in
+            // tell all top level plugins to update.
+            update(plugin: plugin, settings: settings)
+        }
+    }
+    
+    internal func update(plugin: Plugin, settings: Settings) {
+        plugin.update(settings: settings)
+        // if it's a destination, tell it's plugins to update as well.
+        if let dest = plugin as? DestinationPlugin {
+            dest.apply { (subPlugin) in
+                subPlugin.update(settings: settings)
+            }
+        }
+    }
+    
+    internal func checkSettings() {
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)
+        // stop things; queue in case our settings have changed.
+        self.store.dispatch(action: System.ToggleRunningAction(running: false))
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success {
                 if let s = settings {
                     // put the new settings in the state store.
                     // this will cause them to be cached.
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
+                    // let plugins know we just received some settings..
+                    self.update(settings: s)
                 }
             }
+            // we're good to go back to a running state.
+            self.store.dispatch(action: System.ToggleRunningAction(running: true))
         }
     }
 }

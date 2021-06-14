@@ -29,35 +29,10 @@ extension Analytics: Subscriber {
             }
         }
         
-        // prepare our subscription for settings updates from segment.com
-        store.subscribe(self, initialState: true) { (state: System) in
-            if let settings = state.settings {
-                self.update(settings: settings)
-            }
-            self.store.dispatch(action: System.SetStartedAction(started: true))
-        }
-        
         // plugins will receive any settings we currently have as they are added.
         // ... but lets go check if we have new stuff ....
         // start checking periodically for settings changes from segment.com
         setupSettingsCheck()
-    }
-    
-    internal func update(settings: Settings) {
-        apply { (plugin) in
-            // tell all top level plugins to update.
-            update(plugin: plugin, settings: settings)
-        }
-    }
-    
-    internal func update(plugin: Plugin, settings: Settings) {
-        plugin.update(settings: settings)
-        // if it's a destination, tell it's plugins to update as well.
-        if let dest = plugin as? DestinationPlugin {
-            dest.apply { (subPlugin) in
-                subPlugin.update(settings: settings)
-            }
-        }
     }
     
     internal func platformPlugins() -> [PlatformPlugin.Type]? {

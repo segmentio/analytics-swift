@@ -8,14 +8,13 @@
 import Foundation
 import Sovran
 
-
 // MARK: - System (Overall)
 
 struct System: State {
     let configuration: Configuration
     let integrations: JSON?
     let settings: Settings?
-    let started: Bool
+    let running: Bool
     
     struct UpdateSettingsAction: Action {
         let settings: Settings
@@ -24,7 +23,7 @@ struct System: State {
             let result = System(configuration: state.configuration,
                                 integrations: state.integrations,
                                 settings: settings,
-                                started: state.started)
+                                running: state.running)
             return result
         }
     }
@@ -42,7 +41,7 @@ struct System: State {
                     let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,
                                         settings: state.settings,
-                                        started: state.started)
+                                        running: state.running)
                     return result
                 }
             }
@@ -60,7 +59,7 @@ struct System: State {
                     let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,
                                         settings: state.settings,
-                                        started: state.started)
+                                        running: state.running)
                     return result
                 }
             }
@@ -68,15 +67,14 @@ struct System: State {
         }
     }
     
-    struct SetStartedAction: Action {
-        let started: Bool
+    struct ToggleRunningAction: Action {
+        let running: Bool
         
         func reduce(state: System) -> System {
-            let result = System(configuration: state.configuration,
-                                integrations: state.integrations,
-                                settings: state.settings,
-                                started: started)
-            return result
+            return System(configuration: state.configuration,
+                          integrations: state.integrations,
+                          settings: state.settings,
+                          running: running)
         }
     }
 }
@@ -142,7 +140,7 @@ extension System {
             }
         }
         let integrationDictionary = try! JSON([String: Any]())
-        return System(configuration: configuration, integrations: integrationDictionary, settings: settings, started: false)
+        return System(configuration: configuration, integrations: integrationDictionary, settings: settings, running: false)
     }
 }
 
