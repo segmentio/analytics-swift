@@ -19,8 +19,6 @@ class ViewController: UIViewController {
 
     @IBAction func trackAction(_ sender: Any) {
         analytics?.track(name: "test event", properties: ["testValue": 42])
-        
-        analytics?.add(plugin: MixpanelDestination(name: "Mixpanel"))
     }
 }
 

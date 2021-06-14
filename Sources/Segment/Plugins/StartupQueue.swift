@@ -12,11 +12,7 @@ class StartupQueue: Plugin, Subscriber {
     static var specificName = "Segment_StartupQueue"
     static let maxSize = 1000
 
-    @Atomic var running: Bool = false {
-        didSet {
-            print("queuing = \(!running)")
-        }
-    }
+    @Atomic var running: Bool = false
     
     let type: PluginType = .before
     let name: String = specificName
@@ -40,7 +36,6 @@ class StartupQueue: Plugin, Subscriber {
                 queuedEvents.removeFirst()
             }
             queuedEvents.append(e)
-            print("queued event: \(e.type)")
             return nil
         }
         // the timeline has started, so let the event pass.

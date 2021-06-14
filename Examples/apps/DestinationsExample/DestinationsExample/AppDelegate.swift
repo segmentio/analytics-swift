@@ -25,14 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add Adjust destination plugin
         analytics?.add(plugin: AdjustDestination(name: "Adjust"))
         
-        /*// Add Amplitude session plugin
+        // Add Amplitude session plugin
         analytics?.add(plugin: AmplitudeSession(name: "Amplitude"))
         
         // Add Mixpanel destination plugin
         analytics?.add(plugin: MixpanelDestination(name: "Mixpanel"))
         
         // Add Flurry destination plugin
-        analytics?.add(plugin: FlurryDestination(name: "Flurry"))*/
+        analytics?.add(plugin: FlurryDestination(name: "Flurry"))
 
         return true
     }
