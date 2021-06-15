@@ -123,6 +123,7 @@ extension ViewController {
             
             let captureView = UIView()
             captureView.tag = propertiesFields.count + 100
+            captureView.alpha = 0.0
             
             let nextKeyField = UITextField()
             nextKeyField.placeholder = "Key..."
@@ -151,6 +152,12 @@ extension ViewController {
             nextField.bottomAnchor.constraint(equalTo: captureView.bottomAnchor).isActive = true
             
             propertiesStack?.addArrangedSubview(captureView)
+            
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
+                captureView.alpha = 1.0
+                captureView.layoutIfNeeded()
+            }, completion: nil)
+            
         } else {
             if propertiesFields.last != nil,
                keysFields.last != nil,
