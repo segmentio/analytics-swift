@@ -33,6 +33,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Add Flurry destination plugin
         analytics?.add(plugin: FlurryDestination(name: "Flurry"))
+        
+        // Add the Firebase destination plugin
+        analytics?.add(plugin: FirebaseDestination(name: "Firebase"))
 
         return true
     }
