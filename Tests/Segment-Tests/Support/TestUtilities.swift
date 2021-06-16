@@ -110,13 +110,14 @@ class OutputReaderPlugin: Plugin {
 
 func waitUntilStarted(analytics: Analytics?) {
     guard let analytics = analytics else { return }
-    var started = false
-    while started == false {
+    var running = false
+    while running == false {
         if let system: System = analytics.store.currentState() {
-            if system.started {
-                started = true
+            if system.running {
+                running = true
             }
         }
         RunLoop.main.run(until: Date.distantPast)
     }
+    //RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
 }

@@ -79,10 +79,23 @@ extension Analytics {
     }
     
     internal func checkSettings() {
+        if isUnitTesting {
+            // we don't really wanna wait for this network call during tests...
+            // but we should make it work similarly.
+            store.dispatch(action: System.ToggleRunningAction(running: false))
+            DispatchQueue.main.async {
+                if let state: System = self.store.currentState(), let settings = state.settings {
+                    self.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
+                }
+                self.store.dispatch(action: System.ToggleRunningAction(running: true))
+            }
+            return
+        }
+        
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)
         // stop things; queue in case our settings have changed.
-        self.store.dispatch(action: System.ToggleRunningAction(running: false))
+        store.dispatch(action: System.ToggleRunningAction(running: false))
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success {
                 if let s = settings {

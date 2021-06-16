@@ -66,12 +66,18 @@ extension Analytics: Subscriber {
     }
 }
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import UIKit
 extension Analytics {
     internal func setupSettingsCheck() {
+        // do the first one
+        checkSettings()
+        // set up return-from-background to do it again.
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
-            self.checkSettings()
+            guard let app = notification.object as? UIApplication else { return }
+            if app.applicationState == .background {
+                self.checkSettings()
+            }
         }
     }
 }
@@ -79,13 +85,19 @@ extension Analytics {
 extension Analytics {
     internal func setupSettingsCheck() {
         // TBD: we don't know what to do here yet.
+        checkSettings()
     }
 }
 #elseif os(macOS)
 import Cocoa
 extension Analytics {
     internal func setupSettingsCheck() {
-        NotificationCenter.default.addObserver(forName: NSApplication.willBecomeActiveNotification, object: nil, queue: OperationQueue.main) { (notification) in
+        // do the first one
+        checkSettings()
+        // now set up a timer to do it every 24 hrs.
+        // mac apps change focus a lot more than iOS apps, so this
+        // seems more appropriate here.
+        QueueTimer.schedule(interval: 5, queue: .main) {
             self.checkSettings()
         }
     }
@@ -93,7 +105,7 @@ extension Analytics {
 #elseif os(Linux)
 extension Analytics {
     internal func setupSettingsCheck() {
-        // TBD: we don't know what to do here.
+        checkSettings()
     }
 }
 #endif
