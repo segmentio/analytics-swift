@@ -5,7 +5,7 @@
 //  Created by Cody Garvin on 12/4/20.
 //
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 
 import Foundation
 import UIKit
@@ -169,9 +169,15 @@ class iOSLifecycleMonitor: PlatformPlugin {
     }
 }
 
+// MARK: - Segment Destination Extension
+
 extension SegmentDestination: iOSLifecycle {
+    public func applicationWillEnterForeground(application: UIApplication) {
+        flushTimer?.resume()
+    }
     
     public func applicationDidEnterBackground() {
+        flushTimer?.suspend()
         analytics?.beginBackgroundTask()
         flush()
     }

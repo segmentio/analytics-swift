@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Segment
+@testable import Segment
 
 extension UUID{
     public func asUInt8Array() -> [UInt8]{
@@ -104,6 +104,19 @@ class OutputReaderPlugin: Plugin {
     
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
+        if let t = lastEvent as? TrackEvent {
+            print("EVENT: \(t.event)")
+        }
         return event
+    }
+}
+
+func waitUntilStarted(analytics: Analytics?) {
+    guard let analytics = analytics else { return }
+    // wait until the startup queue has emptied it's events.
+    if let startupQueue = analytics.find(pluginName: StartupQueue.specificName) as? StartupQueue {
+        while startupQueue.running != true {
+            RunLoop.main.run(until: Date.distantPast)
+        }
     }
 }

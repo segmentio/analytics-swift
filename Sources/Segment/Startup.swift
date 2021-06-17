@@ -11,6 +11,8 @@ import Sovran
 extension Analytics: Subscriber {
         
     internal func platformStartup() {
+        add(plugin: StartupQueue(name: StartupQueue.specificName))
+        
         // add segment destination plugin unless
         // asked not to via configuration.
         if configuration.values.autoAddSegmentDestination {
@@ -27,35 +29,10 @@ extension Analytics: Subscriber {
             }
         }
         
-        // prepare our subscription for settings updates from segment.com
-        store.subscribe(self, initialState: true) { (state: System) in
-            if let settings = state.settings {
-                self.update(settings: settings)
-            }
-            self.store.dispatch(action: System.SetStartedAction(started: true))
-        }
-        
         // plugins will receive any settings we currently have as they are added.
         // ... but lets go check if we have new stuff ....
         // start checking periodically for settings changes from segment.com
         setupSettingsCheck()
-    }
-    
-    internal func update(settings: Settings) {
-        apply { (plugin) in
-            // tell all top level plugins to update.
-            update(plugin: plugin, settings: settings)
-        }
-    }
-    
-    internal func update(plugin: Plugin, settings: Settings) {
-        plugin.update(settings: settings)
-        // if it's a destination, tell it's plugins to update as well.
-        if let dest = plugin as? DestinationPlugin {
-            dest.apply { (subPlugin) in
-                subPlugin.update(settings: settings)
-            }
-        }
     }
     
     internal func platformPlugins() -> [PlatformPlugin.Type]? {
@@ -89,12 +66,18 @@ extension Analytics: Subscriber {
     }
 }
 
-#if os(iOS) || os(tvOS)
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import UIKit
 extension Analytics {
     internal func setupSettingsCheck() {
+        // do the first one
+        checkSettings()
+        // set up return-from-background to do it again.
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
-            self.checkSettings()
+            guard let app = notification.object as? UIApplication else { return }
+            if app.applicationState == .background {
+                self.checkSettings()
+            }
         }
     }
 }
@@ -102,13 +85,19 @@ extension Analytics {
 extension Analytics {
     internal func setupSettingsCheck() {
         // TBD: we don't know what to do here yet.
+        checkSettings()
     }
 }
 #elseif os(macOS)
 import Cocoa
 extension Analytics {
     internal func setupSettingsCheck() {
-        NotificationCenter.default.addObserver(forName: NSApplication.willBecomeActiveNotification, object: nil, queue: OperationQueue.main) { (notification) in
+        // do the first one
+        checkSettings()
+        // now set up a timer to do it every 24 hrs.
+        // mac apps change focus a lot more than iOS apps, so this
+        // seems more appropriate here.
+        QueueTimer.schedule(interval: .days(1), queue: .main) {
             self.checkSettings()
         }
     }
@@ -116,7 +105,7 @@ extension Analytics {
 #elseif os(Linux)
 extension Analytics {
     internal func setupSettingsCheck() {
-        // TBD: we don't know what to do here.
+        checkSettings()
     }
 }
 #endif

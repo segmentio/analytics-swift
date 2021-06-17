@@ -62,6 +62,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
         
         analytics.setDeviceToken("1234")
         analytics.track(name: "token check")
@@ -77,6 +79,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
         
         let dataToken = UUID().asData()
         analytics.registeredForRemoteNotifications(deviceToken: dataToken)
@@ -94,6 +98,8 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
+        waitUntilStarted(analytics: analytics)
+        
         analytics.track(name: "test track")
         
         let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
@@ -105,6 +111,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -118,6 +126,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -143,6 +153,8 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
+        waitUntilStarted(analytics: analytics)
+        
         analytics.screen(screenTitle: "screen1", category: "category1")
         
         let screen1Event: ScreenEvent? = outputReader.lastEvent as? ScreenEvent
@@ -163,6 +175,8 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
         
+        waitUntilStarted(analytics: analytics)
+        
         analytics.group(groupId: "1234")
         
         let group1Event: GroupEvent? = outputReader.lastEvent as? GroupEvent
@@ -180,6 +194,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -203,6 +219,9 @@ final class Analytics_Tests: XCTestCase {
 
     func testFlush() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
     
         let currentBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
@@ -219,6 +238,8 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin(name: "outputReader")
         analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
         
         analytics.track(name: "whataversion")
         
