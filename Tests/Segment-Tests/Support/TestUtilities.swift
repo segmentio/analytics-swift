@@ -119,5 +119,6 @@ func waitUntilStarted(analytics: Analytics?) {
         }
         RunLoop.main.run(until: Date.distantPast)
     }
-    //RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
+    // make sure stuff in the startup queue has time to process
+    RunLoop.main.run(until: Date.distantPast)
 }
