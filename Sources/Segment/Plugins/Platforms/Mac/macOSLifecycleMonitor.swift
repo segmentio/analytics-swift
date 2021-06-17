@@ -230,11 +230,14 @@ class macOSLifecycleMonitor: PlatformPlugin {
 }
 
 extension SegmentDestination: macOSLifecycle {
+    public func applicationDidBecomeActive() {
+        flushTimer?.resume()
+    }
     
-    public func applicationDidEnterBackground() {
-        // TODO: Look into mac background tasks
-        //analytics.beginBackgroundTask()
+    public func applicationWillResignActive() {
+        flushTimer?.suspend()
         flush()
     }
 }
+
 #endif
