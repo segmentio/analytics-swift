@@ -27,7 +27,7 @@ public class SegmentDestination: DestinationPlugin {
     private var apiHost: String? = nil
     
     @Atomic private var eventCount: Int = 0
-    private var flushTimer: Timer? = nil
+    internal var flushTimer: QueueTimer? = nil
     
     internal enum Constants: String {
         case integrationName = "Segment.io"
@@ -43,9 +43,9 @@ public class SegmentDestination: DestinationPlugin {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        flushTimer = Timer.scheduledTimer(withTimeInterval: analytics.configuration.values.flushInterval, repeats: true, block: { _ in
+        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) {
             self.flush()
-        })
+        }
     }
     
     public func update(settings: Settings) {
@@ -149,3 +149,4 @@ public class SegmentDestination: DestinationPlugin {
         }
     }
 }
+
