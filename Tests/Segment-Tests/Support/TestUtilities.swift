@@ -113,15 +113,10 @@ class OutputReaderPlugin: Plugin {
 
 func waitUntilStarted(analytics: Analytics?) {
     guard let analytics = analytics else { return }
-    var running = false
-    while running == false {
-        if let system: System = analytics.store.currentState() {
-            if system.running {
-                running = true
-            }
+    // wait until the startup queue has emptied it's events.
+    if let startupQueue = analytics.find(pluginName: StartupQueue.specificName) as? StartupQueue {
+        while startupQueue.running != true {
+            RunLoop.main.run(until: Date.distantPast)
         }
-        RunLoop.main.run(until: Date.distantPast)
     }
-    // make sure stuff in the startup queue has time to process
-    RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
 }

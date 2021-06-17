@@ -8,7 +8,7 @@
 import Foundation
 import Sovran
 
-class StartupQueue: Plugin, Subscriber {
+internal class StartupQueue: Plugin, Subscriber {
     static var specificName = "Segment_StartupQueue"
     static let maxSize = 1000
 
@@ -45,10 +45,10 @@ class StartupQueue: Plugin, Subscriber {
 
 extension StartupQueue {
     internal func runningUpdate(state: System) {
-        running = state.running
-        if running {
+        if state.running {
             replayEvents()
         }
+        running = state.running
     }
     
     internal func replayEvents() {
