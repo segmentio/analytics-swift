@@ -104,6 +104,9 @@ class OutputReaderPlugin: Plugin {
     
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
+        if let t = lastEvent as? TrackEvent {
+            print("EVENT: \(t.event)")
+        }
         return event
     }
 }
@@ -120,5 +123,5 @@ func waitUntilStarted(analytics: Analytics?) {
         RunLoop.main.run(until: Date.distantPast)
     }
     // make sure stuff in the startup queue has time to process
-    RunLoop.main.run(until: Date.distantPast)
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 2))
 }
