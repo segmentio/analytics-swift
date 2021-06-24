@@ -16,9 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let configuration = Configuration(writeKey: "1234")
+        let configuration = Configuration(writeKey: "U6VRDTUtphNDFkUAyDvCCoHusBXgKtCG")
             .trackApplicationLifecycleEvents(true)
-            .flushInterval(10)
+            .flushInterval(1)
         
         analytics = Analytics(configuration: configuration)
         
@@ -37,6 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add the Firebase destination plugin
         analytics?.add(plugin: FirebaseDestination(name: "Firebase"))
 
+        analytics?.add(plugin: AppsFlyerDestination(name: "AppsFlyer"))
+        
         return true
     }
 
