@@ -176,7 +176,7 @@ Method signature:
 
 Example Usage:
 ```swift
-analytics.add(plugin: UIKitScreenTracking(name: "ScreenTracking", analytics: analytics))
+analytics.add(plugin: UIKitScreenTracking(name: "ScreenTracking"))
 ```
 
 ### find
@@ -235,9 +235,8 @@ class SomePlugin: Plugin {
 	let name: String
 	let analytics: Analytics
 
-	init(name: String, analytics: Analytics) {
+	init(name: String) {
 		self.name = name
-		self.analytics = analytics
 	}
 	
 	override fun execute(event: BaseEvent): BaseEvent? {
@@ -260,9 +259,8 @@ class SomePlugin: EventPlugin {
 	let name: String
 	let analytics: Analytics
 
-	init(name: String, analytics: Analytics) {
+	init(name: String) {
 		self.name = name
-		self.analytics = analytics
 	}
 
 	func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -280,34 +278,47 @@ class SomePlugin: EventPlugin {
 - `DestinationPlugin`
 A plugin interface most commonly used for device-mode destinations. This plugin contains an internal timeline that follows the same process as the analytics timeline,
 allowing you to modify/augment how events reach the particular destination.
-For example if you wanted to implement a device mode destination plugin for Amplitude
+For example if you wanted to implement a device mode destination plugin for AppsFlyer
 ```swift
-class AmplitudePlugin: DestinationPlugin {
-	let type: PluginType = .destination
-	let name: String
-	let analytics: Analytics
-	let timeline: Timeline
-	let amplitudeSDK: Amplitude
-	
-	init(name: String, analytics: Analytics) {
-		self.name = name
-		self.analytics = analytics
-		self.timeline = Timeline()
-		
-		amplitudeSDK = Amplitude.instance()
-		amplitudeSDK.initializeApiKey("API_KEY")
-	}
-	
-	func track(event: TrackEvent) -> TrackEvent? {
-		amplitudeSDK.logEvent(event.name)
-		return event
-	}
+internal struct AppsFlyerSettings: Codable {
+    let appsFlyerDevKey: String
+    let appleAppID: String
+    let trackAttributionData: Bool?
 }
+
+@objc
+class AppsFlyerDestination: UIResponder, DestinationPlugin, UserActivities, RemoteNotifications {
+    
+    let timeline: Timeline = Timeline()
+    let type: PluginType = .destination
+    let name: String
+    var analytics: Analytics?
+    
+    internal var settings: AppsFlyerSettings? = nil
+    
+     required init(name: String) {
+        self.name = name
+        analytics?.track(name: "AppsFlyer Loaded")
+    }
+    
+    public func update(settings: Settings) {
+                
+        guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else {return}
+        self.settings = settings
+    
+       
+        AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey
+        AppsFlyerLib.shared().appleAppID = settings.appleAppID
+        AppsFlyerLib.shared().isDebug = true
+        AppsFlyerLib.shared().deepLinkDelegate = self
+    
+	// additional update logic
+  }
 
 // ...
 
-analytics.add(plugin: AmplitudePlugin(name: "Amplitude", analytics: analytics))
-analytics.track("Amplitude Event")
+analytics.add(plugin: AppsFlyerPlugin(name: "AppsFlyer"))
+analytics.track("AppsFlyer Event")
 ```
 
 ### Advanced concepts
