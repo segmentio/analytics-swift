@@ -30,7 +30,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
+//
 // *** To Implement Deep Linking functionality reference: https://support.appsflyer.com/hc/en-us/articles/208874366 ****
 
 import Foundation
@@ -38,7 +38,7 @@ import Segment
 import AppsFlyerLib
 import  UIKit
 
-internal struct AppsFlyerSettings: Codable {
+private struct AppsFlyerSettings: Codable {
     let appsFlyerDevKey: String
     let appleAppID: String
     let trackAttributionData: Bool?
@@ -52,7 +52,7 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
     let name: String
     var analytics: Analytics?
     
-    internal var settings: AppsFlyerSettings? = nil
+    fileprivate var settings: AppsFlyerSettings? = nil
     
     required init(name: String) {
         self.name = name
@@ -115,8 +115,6 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
             }
             
             AppsFlyerLib.shared().customData = aFTraits
-            
-            print("hello")
         }
         
         return event
@@ -156,14 +154,15 @@ extension AppsFlyerDestination: UserActivities {
 
 
 //MARK: - Support methods
-
+// matches existing AppsFlyer Destination to set revenue and currency as reserved properties
+// https://github.com/AppsFlyerSDK/segment-appsflyer-ios/blob/master/segment-appsflyer-ios/Classes/SEGAppsFlyerIntegration.m#L148
 extension AppsFlyerDestination {
     internal func extractRevenue(key: String, from properties: [String: Any]?) -> Double? {
         
-        guard let revenueProperty =  properties?[key] as? Double else { return nil }
+        guard let revenueProperty =  properties?[key] as? Double else {return nil}
         
-        if  properties?["revenue"] is String  {
-            let revenueProperty = Double(properties?["revenue"] as! String)
+        if let revenue = properties?["revenue"] as? String  {
+            let revenueProperty = Double(revenue)
             return revenueProperty
             
         }
@@ -173,8 +172,7 @@ extension AppsFlyerDestination {
     
     internal func extractCurrency(key: String, from properties: [String: Any]?, withDefault value: String? = nil) -> String? {
         
-        if properties?[key] != nil {
-            guard let currency = properties?[key] as? String else{return nil}
+        if let currency = properties?[key] as? String {
             return currency
         }
         
@@ -187,7 +185,7 @@ extension AppsFlyerDestination {
 
 extension AppsFlyerDestination: AppsFlyerLibDelegate {
     func onConversionDataSuccess(_ conversionInfo: [AnyHashable : Any]) {
-        guard let first_launch_flag = conversionInfo["is_first_launch"] as? Int else {
+        guard let firstLaunchFlag = conversionInfo["is_first_launch"] as? Int else {
             return
         }
         
@@ -195,12 +193,12 @@ extension AppsFlyerDestination: AppsFlyerLibDelegate {
             return
         }
         
-        if(first_launch_flag == 1) {
-            if(status == "Non-organic") {
-                if let media_source = conversionInfo["media_source"] , let campaign = conversionInfo["campaign"]{
+        if (firstLaunchFlag == 1) {
+            if (status == "Non-organic") {
+                if let mediaSource = conversionInfo["media_source"] , let campaign = conversionInfo["campaign"]{
                     
                     let campaign: [String: Any] = [
-                        "source": media_source,
+                        "source": mediaSource,
                         "name": campaign
                     ]
                     
@@ -214,16 +212,15 @@ extension AppsFlyerDestination: AppsFlyerLibDelegate {
                 }
             } else {
                 analytics?.track(name: "Organic Install")
-                print("This is an organic install.")
             }
         } else {
-            print("Not First Launch")
+            analytics?.log(message: "Not First Launch")
         }
         
     }
     
     func onConversionDataFail(_ error: Error) {
-        print("\(error)")
+        analytics?.log(message: "\(error)")
     }
     
     
@@ -249,7 +246,7 @@ extension AppsFlyerDestination: AppsFlyerLibDelegate {
     
     
     func onAppOpenAttributionFailure(_ error: Error) {
-        print("\(error)")
+        analytics?.log(message: "\(error)")
     }
 }
 
@@ -261,21 +258,18 @@ extension AppsFlyerDestination: DeepLinkDelegate, UIApplicationDelegate {
         print(result)
         switch result.status {
         case .notFound:
-            print("AppsFlyer: Deep link not found")
+            analytics?.log(message: "AppsFlyer: Deep link not found")
             return
         case .failure:
-            print("Error %@", result.error!)
+            analytics?.log(message: "AppsFlyer: Deep link failure!")
             return
         case .found:
-            print("AppsFlyer Deep link found")
+            analytics?.log(message: "AppsFlyer Deep link found")
         }
         
-        guard let deepLinkObj:DeepLink = result.deepLink else {
-            print("AppsFlyer: Could not extract deep link object")
-            return
-        }
+        guard let deepLinkObj:DeepLink = result.deepLink else { return }
         
-        if( deepLinkObj.isDeferred == true) {
+        if (deepLinkObj.isDeferred == true) {
             
             let campaign: [String: Any] = [
                 "source": deepLinkObj.mediaSource ?? "",

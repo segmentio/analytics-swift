@@ -58,28 +58,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
-    //MARK: - Deep Link functionality
+    // MARK: - Deep Link functionality
     
+    // This functionality is needed to forward deep link attribution data with AppsFlyer
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         analytics?.continueUserActivity(userActivity)
         return true
     }
     
+    // This functionality is needed to forward deep link attribution data with AppsFlyer
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
         analytics?.continueUserActivity(userActivity)
         return true
     }
     
+    // This functionality is needed to forward deep link attribution data with AppsFlyer
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         analytics?.openURL(url)
         return true
     }
     
+    // This functionality is needed to forward deep link attribution data with AppsFlyer
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         analytics?.openURL(url, options: options)
         return true
     }
     
+    // This functionality is needed to forward deep link attribution data with AppsFlyer
     // Report Push Notification attribution data for re-engagements
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [String : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // this enables remote notifications for various destinations (appsflyer)
