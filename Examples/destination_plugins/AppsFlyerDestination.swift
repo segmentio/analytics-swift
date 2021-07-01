@@ -127,9 +127,9 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
         let revenue: Double? = extractRevenue(key: "revenue", from: properties)
         let currency: String? = extractCurrency(key: "currency", from: properties, withDefault: "USD")
         
-        if let af_revenue = revenue, let af_currency = currency {
-            properties?["af_revenue"] = af_revenue
-            properties?["af_currency"] = af_currency
+        if let afRevenue = revenue, let afCurrency = currency {
+            properties?["af_revenue"] = afRevenue
+            properties?["af_currency"] = afCurrency
             
             properties?.removeValue(forKey: "revenue")
             properties?.removeValue(forKey: "currency")
