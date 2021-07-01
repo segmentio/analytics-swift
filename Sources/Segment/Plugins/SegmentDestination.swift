@@ -17,9 +17,17 @@ public class SegmentDestination: DestinationPlugin {
         }
     }
 
+    internal struct UploadTaskInfo {
+        let url: URL
+        let task: URLSessionDataTask
+        // set/used via an extension in iOSLifecycleMonitor.swift
+        typealias CleanupClosure = () -> Void
+        var taskID: Int = 0
+        var cleanup: CleanupClosure? = nil
+    }
+    
     private var httpClient: HTTPClient?
-    private var pendingURLs = [URL]()
-    private var uploadInProgress = false
+    private var uploads = [UploadTaskInfo]()
     private var storage: Storage?
     private var maxPayloadSize = 500000 // Max 500kb
     
@@ -83,6 +91,16 @@ public class SegmentDestination: DestinationPlugin {
         return event
     }
     
+    // MARK: - Abstracted Lifecycle Methods
+    internal func enterForeground() {
+        flushTimer?.resume()
+    }
+    
+    internal func enterBackground() {
+        flushTimer?.suspend()
+        flush()
+    }
+    
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         guard let storage = self.storage else { return }
@@ -105,48 +123,89 @@ public class SegmentDestination: DestinationPlugin {
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
-        if !uploadInProgress {
-            uploadInProgress = true
-            var processedCall = [Bool]()
-            
-            var fileSizeTotal: Int64 = 0
+        cleanupUploads()
+        
+        analytics.log(message: "Uploads in-progress: \(pendingUploads)")
+        
+        if pendingUploads == 0 {
             for url in data {
-                // Get the file size
-                do {
-                    let attributes = try FileManager.default.attributesOfItem(atPath: url.absoluteString)
-                    guard let fileSize = attributes[FileAttributeKey.size] as? Int64 else {
-                        analytics.log(message: "File size could not be read")
-                        return
-                    }
-                    fileSizeTotal += fileSize
-                } catch {
-                    analytics.log(message: "Could not read file attributes")
-                }
+                analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                 
-                // Don't continue sending if the file size total has become too large
-                // send it off in the next flush.
-                if fileSizeTotal > maxPayloadSize {
-                    analytics.log(message: "Batch file is too large to be sent")
-                    break
-                }
-                
-                httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url, completion: { [weak self] (succeeded) in
-                    // Track that the call has finished
-                    processedCall.append(succeeded)
-                    
-                    if succeeded {
-                        // Remove events
-                        storage.remove(file: url)
-                    } else {
-                        analytics.logFlush()
-                    }
+                if isPayloadSizeAcceptable(url: url) {
+                    let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (succeeded) in
+                        if succeeded {
+                            // Remove events
+                            storage.remove(file: url)
+                        } else {
+                            analytics.logFlush()
+                        }
 
-                    if processedCall.count == data.count {
-                        self?.uploadInProgress = false
+                        analytics.log(message: "Processed: \(url.lastPathComponent)")
                     }
-                })
+                    // we have a legit upload in progress now, so add it to our list.
+                    if let upload = uploadTask {
+                        add(uploadTask: UploadTaskInfo(url: url, task: upload))
+                    }
+                }
             }
+        } else {
+            analytics.log(message: "Skipping processing; Uploads in progress.")
         }
     }
 }
 
+// MARK: - Upload management
+
+extension SegmentDestination {
+    internal func cleanupUploads() {
+        // lets go through and get rid of any tasks that aren't running.
+        // either they were suspended because a background task took too
+        // long, or the os orphaned it due to device constraints (like a watch).
+        let before = uploads.count
+        var newPending = uploads
+        newPending.removeAll { uploadInfo in
+            let shouldRemove = uploadInfo.task.state != .running
+            if shouldRemove, let cleanup = uploadInfo.cleanup {
+                cleanup()
+            }
+            return shouldRemove
+        }
+        uploads = newPending
+        let after = uploads.count
+        analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
+    }
+    
+    internal var pendingUploads: Int {
+        return uploads.count
+    }
+    
+    internal func add(uploadTask: UploadTaskInfo) {
+        uploads.append(uploadTask)
+    }
+    
+    internal func isPayloadSizeAcceptable(url: URL) -> Bool {
+        var result = true
+        var fileSizeTotal: Int64 = 0
+        
+        // Make sure we're under the max payload size.
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+            guard let fileSize = attributes[FileAttributeKey.size] as? Int64 else {
+                analytics?.log(message: "File size could not be read")
+                // none of the logic beyond here will work if we can't get the
+                // filesize so assume everything is good and hope for the best.
+                return true
+            }
+            fileSizeTotal += fileSize
+        } catch {
+            analytics?.log(message: "Could not read file attributes")
+        }
+        
+        if fileSizeTotal >= maxPayloadSize {
+            analytics?.log(message: "Batch file is too large to be sent")
+            result = false
+        }
+        return result
+    }
+    
+}
