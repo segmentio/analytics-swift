@@ -18,9 +18,7 @@ public class HTTPClient {
     private static let defaultAPIHost = "api.segment.io/v1"
     private static let defaultCDNHost = "cdn-settings.segment.com/v1"
     
-    public var sessionDelegate: URLSessionDelegate?
-    
-    private var writeKeySessions = [String: URLSession]()
+    private var session: URLSession
     private var apiHost: String
     private var apiKey: String
     private var cdnHost: String
@@ -46,6 +44,8 @@ public class HTTPClient {
         } else {
             self.cdnHost = Self.defaultCDNHost
         }
+        
+        self.session = Self.configuredSession(for: self.apiKey)
     }
     
     func segmentURL(for host: String, path: String) -> URL? {
@@ -71,20 +71,11 @@ public class HTTPClient {
         var urlRequest = URLRequest(url: uploadURL)
         urlRequest.httpMethod = "POST"
         
-        guard let session = try? configuredSession(for: writeKey) else {
-            exceptionFailure("Unable to create a HTTPClient session!")
-            completion(false)
-            return nil
-        }
-        
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
                 completion(true)
-                return
-            }
-            
-            if let httpResponse = response as? HTTPURLResponse {
+            } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
                 case 1..<300:
                     completion(true)
@@ -110,10 +101,6 @@ public class HTTPClient {
     }
     
     func settingsFor(writeKey: String, completion: @escaping (Bool, Settings?) -> Void) {
-        // Change the key specific to settings so it can be fetched separately
-        // from write key sessions for uploading.
-        let settingsKey = "\(writeKey)_settings"
-        
         guard let settingsURL = segmentURL(for: cdnHost, path: "/projects/\(writeKey)/settings") else {
             completion(false, nil)
             return
@@ -122,11 +109,6 @@ public class HTTPClient {
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "GET"
 
-        guard let session = try? configuredSession(for: settingsKey) else {
-            completion(false, nil)
-            return
-        }
-        
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error fetching settings \(error.localizedDescription).")
@@ -156,9 +138,7 @@ public class HTTPClient {
     
     deinit {
         // finish any tasks that may be processing
-        for session in writeKeySessions.values {
-            session.finishTasksAndInvalidate()
-        }
+        session.finishTasksAndInvalidate()
     }
 }
 
@@ -180,25 +160,16 @@ extension HTTPClient {
     internal static func getDefaultCDNHost() -> String {
         return Self.defaultCDNHost
     }
-}
-
-
-extension HTTPClient {
     
-    private func configuredSession(for writeKey: String) throws -> URLSession {
-        if !writeKeySessions.keys.contains(writeKey) {
-            let configuration = URLSessionConfiguration.default
-            configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                                   "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
-                                                   "User-Agent": "analytics-ios/\(Analytics.version())"]
-            let session = URLSession.init(configuration: configuration, delegate: sessionDelegate, delegateQueue: nil)
-            writeKeySessions[writeKey] = session
-        }
-        
-        guard let session = writeKeySessions[writeKey] else {
-            throw HTTPClientErrors.badSession
-        }
-        
+    internal static func configuredSession(for writeKey: String) -> URLSession {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        let session = URLSession.init(configuration: configuration, delegate: nil, delegateQueue: nil)
         return session
     }
 }
