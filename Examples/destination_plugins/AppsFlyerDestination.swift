@@ -61,7 +61,7 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
     
     public func update(settings: Settings) {
         
-        guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else {return}
+        guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else { return }
         self.settings = settings
         
         AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey
@@ -160,7 +160,7 @@ extension AppsFlyerDestination: UserActivities {
 extension AppsFlyerDestination {
     internal func extractRevenue(key: String, from properties: [String: Any]?) -> Double? {
         
-        guard let revenueProperty =  properties?[key] as? Double else {return nil}
+        guard let revenueProperty =  properties?[key] as? Double else { return nil }
         
         if  properties?["revenue"] is String  {
             let revenueProperty = Double(properties?["revenue"] as! String)
