@@ -31,6 +31,9 @@
 		46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */; };
 		46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210835260BBEE400EBC4A8 /* DeviceToken.swift */; };
 		4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */; };
+		465879B72686554400180335 /* EventsObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B62686554400180335 /* EventsObjC.swift */; };
+		465879BA2686560C00180335 /* watchOSDelegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B82686560C00180335 /* watchOSDelegation.swift */; };
+		465879BB2686560C00180335 /* watchOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */; };
 		4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4663C728267A799100ADDD1A /* QueueTimer.swift */; };
 		46A018C225E5857D00F9CCD8 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C125E5857D00F9CCD8 /* Context.swift */; };
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
@@ -49,7 +52,6 @@
 		967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */; };
 		9692724E25A4E5B7009B5298 /* Startup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692724D25A4E5B7009B5298 /* Startup.swift */; };
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
-		969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 969A534225B10324009227D9 /* iOSAppBackground.swift */; };
 		96C33A9C25880A5E00F3D538 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* Logger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
@@ -110,6 +112,9 @@
 		46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath_Tests.swift; sourceTree = "<group>"; };
 		46210835260BBEE400EBC4A8 /* DeviceToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceToken.swift; sourceTree = "<group>"; };
 		4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient_Tests.swift; sourceTree = "<group>"; };
+		465879B62686554400180335 /* EventsObjC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsObjC.swift; sourceTree = "<group>"; };
+		465879B82686560C00180335 /* watchOSDelegation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = watchOSDelegation.swift; sourceTree = "<group>"; };
+		465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		4663C728267A799100ADDD1A /* QueueTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTimer.swift; sourceTree = "<group>"; };
 		46A018C125E5857D00F9CCD8 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
@@ -129,7 +134,6 @@
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9692724D25A4E5B7009B5298 /* Startup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Startup.swift; sourceTree = "<group>"; };
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
-		969A534225B10324009227D9 /* iOSAppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSAppBackground.swift; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -175,6 +179,8 @@
 		460227402612984100A9E913 /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				465879B82686560C00180335 /* watchOSDelegation.swift */,
+				465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */,
 				460227412612987300A9E913 /* watchOSLifecycleEvents.swift */,
 			);
 			path = watchOS;
@@ -186,6 +192,14 @@
 				46FE4CFA25A6C671003A7362 /* TestUtilities.swift */,
 			);
 			path = Support;
+			sourceTree = "<group>";
+		};
+		465879B52686554400180335 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				465879B62686554400180335 /* EventsObjC.swift */,
+			);
+			path = ObjC;
 			sourceTree = "<group>";
 		};
 		46A018D825E97FCB00F9CCD8 /* Vendors */ = {
@@ -236,7 +250,6 @@
 			isa = PBXGroup;
 			children = (
 				9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */,
-				969A534225B10324009227D9 /* iOSAppBackground.swift */,
 				46022763261E64A800A9E913 /* iOSLifecycleEvents.swift */,
 				4602276B261E7BF900A9E913 /* iOSDelegation.swift */,
 			);
@@ -331,6 +344,7 @@
 		OBJ_8 /* Segment */ = {
 			isa = PBXGroup;
 			children = (
+				465879B52686554400180335 /* ObjC */,
 				9620864E257AA82900314F8D /* Plugins */,
 				A31A16A325780A8D00C9CDDF /* Utilities */,
 				OBJ_9 /* Analytics.swift */,
@@ -445,11 +459,11 @@
 				A3AEE14A2580208E002386EB /* iso8601.swift in Sources */,
 				46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */,
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
+				465879BA2686560C00180335 /* watchOSDelegation.swift in Sources */,
 				46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */,
 				4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
-				969A534325B10324009227D9 /* iOSAppBackground.swift in Sources */,
 				46E382E72654429A00BA2502 /* Utils.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
@@ -460,6 +474,7 @@
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
+				465879B72686554400180335 /* EventsObjC.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
@@ -477,6 +492,7 @@
 				96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */,
 				96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */,
 				46031D65266E7C10009BA540 /* StartupQueue.swift in Sources */,
+				465879BB2686560C00180335 /* watchOSLifecycleMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,7 +546,6 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
@@ -547,8 +562,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
-				TVOS_DEPLOYMENT_TARGET = 11.0;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Debug;
 		};
@@ -562,7 +575,6 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
@@ -579,8 +591,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Segment;
-				TVOS_DEPLOYMENT_TARGET = 11.0;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Release;
 		};
@@ -595,7 +605,6 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Tests_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@loader_path/../Frameworks",
@@ -608,8 +617,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = "Segment-Tests";
-				TVOS_DEPLOYMENT_TARGET = 11.0;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Debug;
 		};
@@ -624,7 +631,6 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Segment.xcodeproj/Segment_Tests_Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@loader_path/../Frameworks",
@@ -637,8 +643,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
 				TARGET_NAME = "Segment-Tests";
-				TVOS_DEPLOYMENT_TARGET = 11.0;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
 			};
 			name = Release;
 		};
@@ -684,6 +688,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
@@ -693,7 +698,9 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 				USE_HEADERMAP = NO;
+				WATCHOS_DEPLOYMENT_TARGET = 7.1;
 			};
 			name = Debug;
 		};
@@ -754,6 +761,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -763,7 +771,9 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 				USE_HEADERMAP = NO;
+				WATCHOS_DEPLOYMENT_TARGET = 7.1;
 			};
 			name = Release;
 		};
