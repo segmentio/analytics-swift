@@ -11,13 +11,15 @@ import Segment
 
 
 class InterfaceController: WKInterfaceController {
-
+    var analytics = WKExtension.shared().delegate?.analytics
+    
     override func awake(withContext context: Any?) {
         // Configure interface objects here.
     }
     
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
+        analytics?.screen(screenTitle: "Main Screen")
     }
     
     override func didDeactivate() {
@@ -25,8 +27,10 @@ class InterfaceController: WKInterfaceController {
     }
 
     @IBAction func trackTapped() {
+        analytics?.track(name: "track tapped")
     }
     
     @IBAction func identifyTapped() {
+        analytics?.identify(userId: "watchPerson")
     }
 }

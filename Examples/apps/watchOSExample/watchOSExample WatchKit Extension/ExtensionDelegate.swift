@@ -9,9 +9,16 @@ import WatchKit
 import Segment
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate {
-
+    var analytics: Analytics? = nil
+    
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
+        let configuration = Configuration(writeKey: "lAtKCqFrmtnhIVV7LDPTrgoCbL0ujlBe")
+            .trackApplicationLifecycleEvents(true)
+            .flushInterval(10)
+        
+        analytics = Analytics(configuration: configuration)
+        analytics?.add(plugin: ConsoleLogger(name: "consoleLogger"))
     }
 
     func applicationDidBecomeActive() {
@@ -53,4 +60,13 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
         }
     }
 
+}
+
+extension WKExtensionDelegate {
+    var analytics: Analytics? {
+        if let extDelegate = self as? ExtensionDelegate {
+            return extDelegate.analytics
+        }
+        return nil
+    }
 }
