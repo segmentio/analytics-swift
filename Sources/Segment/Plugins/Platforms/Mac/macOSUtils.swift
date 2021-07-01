@@ -12,67 +12,69 @@ import Foundation
 import WebKit
 import Cocoa
 
-internal func insertStaticPlatformContextData(context: inout [String: Any]) {
-    let device = ProcessInfo.processInfo
-    
-    // device
-    // TODO: handle "token"
-    context["device"] = [
-        "manufacturer": "Apple",
-        "type": "macos",
-        "model": deviceModel(),
-        "id": macAddress(bsd: "en0") ?? "", // apple suggested to use this for receipt validation in MAS, works for this too.
-        "name": device.hostName
-    ]
-    // os
-    context["os"] = [
-        "name": device.operatingSystemVersionString,
-        "version": String(format: "%ld.%ld.%ld",
-                          device.operatingSystemVersion.majorVersion,
-                          device.operatingSystemVersion.minorVersion,
-                          device.operatingSystemVersion.patchVersion)
-    ]
-    // screen
-    if let screen = NSScreen.main?.frame.size {
-        context["screen"] = [
-            "width": screen.width,
-            "height": screen.height
+extension Context {
+    internal func insertStaticPlatformContextData(context: inout [String: Any]) {
+        let device = ProcessInfo.processInfo
+        
+        // device
+        // TODO: handle "token"
+        context["device"] = [
+            "manufacturer": "Apple",
+            "type": "macos",
+            "model": deviceModel(),
+            "id": macAddress(bsd: "en0") ?? "", // apple suggested to use this for receipt validation in MAS, works for this too.
+            "name": device.hostName
         ]
+        // os
+        context["os"] = [
+            "name": device.operatingSystemVersionString,
+            "version": String(format: "%ld.%ld.%ld",
+                              device.operatingSystemVersion.majorVersion,
+                              device.operatingSystemVersion.minorVersion,
+                              device.operatingSystemVersion.patchVersion)
+        ]
+        // screen
+        if let screen = NSScreen.main?.frame.size {
+            context["screen"] = [
+                "width": screen.width,
+                "height": screen.height
+            ]
+        }
+        // user-agent
+        let userAgent = WKWebView().value(forKey: "userAgent")
+        context["userAgent"] = userAgent
+        // locale
+        if Locale.preferredLanguages.count > 0 {
+            context["locale"] = Locale.preferredLanguages[0]
+        }
+        // timezone
+        context["timezone"] = TimeZone.current.identifier
     }
-    // user-agent
-    let userAgent = WKWebView().value(forKey: "userAgent")
-    context["userAgent"] = userAgent
-    // locale
-    if Locale.preferredLanguages.count > 0 {
-        context["locale"] = Locale.preferredLanguages[0]
-    }
-    // timezone
-    context["timezone"] = TimeZone.current.identifier
-}
 
-internal func insertDynamicPlatformContextData(context: inout [String: Any]) {
-    // network
-    let status = connectionStatus()
-    
-    var cellular = false
-    var wifi = false
-    
-    switch status {
-    case .online(.cellular):
-        cellular = true
-    case .online(.wifi):
-        wifi = true
-    default:
-        break
+    internal func insertDynamicPlatformContextData(context: inout [String: Any]) {
+        // network
+        let status = connectionStatus()
+        
+        var cellular = false
+        var wifi = false
+        
+        switch status {
+        case .online(.cellular):
+            cellular = true
+        case .online(.wifi):
+            wifi = true
+        default:
+            break
+        }
+        
+        context["network"] = [
+            "bluetooth": false, // ios doesn't really support bluetooth network, does it??
+            "cellular": cellular,
+            "wifi": wifi
+        ]
+        
+        // other stuff?? ...
     }
-    
-    context["network"] = [
-        "bluetooth": false, // ios doesn't really support bluetooth network, does it??
-        "cellular": cellular,
-        "wifi": wifi
-    ]
-    
-    // other stuff?? ...
 }
 
 private func deviceModel() -> String {

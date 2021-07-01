@@ -78,7 +78,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         ])
     }
     
-    func applicationDidEnterBackground() {
+    func applicationDidEnterBackground(application: UIApplication) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
