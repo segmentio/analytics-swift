@@ -301,6 +301,9 @@ extension AppsFlyerDestination: DeepLinkDelegate, UIApplicationDelegate {
             
         }
         
+        // Uncomment the following code and alter to fit your implementation in order
+        // to collect deep linking attribution data
+        
         //Logic to grab AppsFlyer's deep link value to instantiate correct VC
         //        guard let productNameStr = deepLinkObj.deeplinkValue else {
         //            print("Could not extract deep_link_value from deep link object")
