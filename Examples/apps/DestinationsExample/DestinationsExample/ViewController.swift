@@ -7,6 +7,7 @@
 
 import UIKit
 import Segment
+import AppsFlyerLib
 
 enum SpecEvent: Int {
     case track
@@ -44,6 +45,9 @@ class ViewController: UIViewController {
     private var keysFields = [UITextField]()
     private var propertiesFields = [UITextField]()
     
+    var deepLinkData: DeepLink? = nil
+        
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.

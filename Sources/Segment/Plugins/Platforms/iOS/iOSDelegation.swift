@@ -16,14 +16,14 @@ import UIKit
 public protocol RemoteNotifications: Plugin {
     func registeredForRemoteNotifications(deviceToken: Data)
     func failedToRegisterForRemoteNotification(error: Error?)
-    func receivedRemoteNotification(userInfo: [String: Any])
+    func receivedRemoteNotification(userInfo: [AnyHashable: Any])
     func handleAction(identifier: String, userInfo: [String: Any])
 }
 
 extension RemoteNotifications {
     public func registeredForRemoteNotifications(deviceToken: Data) {}
     public func failedToRegisterForRemoteNotification(error: Error?) {}
-    public func receivedRemoteNotification(userInfo: [String: Any]) {}
+    public func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {}
     public func handleAction(identifier: String, userInfo: [String: Any]) {}
 }
 
@@ -46,7 +46,7 @@ extension Analytics {
         }
     }
     
-    public func receivedRemoteNotification(userInfo: [String: Any]) {
+    public func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
         apply { plugin in
             if let p = plugin as? RemoteNotifications {
                 p.receivedRemoteNotification(userInfo: userInfo)

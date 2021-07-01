@@ -49,6 +49,7 @@
 		965DC1252671656C00DDF9C7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9697C1F42679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Segment_Logo_Avatar_Grey-1024.png"; sourceTree = "<group>"; };
 		BA384C992682973300AFEA1B /* AppsFlyerDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppsFlyerDestination.swift; sourceTree = "<group>"; };
+		BA384C9D2686609000AFEA1B /* DestinationsExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DestinationsExample.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +90,7 @@
 		469F7B06266011690038E773 /* DestinationsExample */ = {
 			isa = PBXGroup;
 			children = (
+				BA384C9D2686609000AFEA1B /* DestinationsExample.entitlements */,
 				469F7B1E266012CB0038E773 /* destination_plugins */,
 				469F7B07266011690038E773 /* AppDelegate.swift */,
 				469F7B09266011690038E773 /* SceneDelegate.swift */,
@@ -378,7 +380,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DestinationsExample/DestinationsExample.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V8R4668S2H;
 				INFOPLIST_FILE = DestinationsExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -386,6 +391,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.segment.DestinationsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -396,7 +402,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DestinationsExample/DestinationsExample.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V8R4668S2H;
 				INFOPLIST_FILE = DestinationsExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -404,6 +413,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.segment.DestinationsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
