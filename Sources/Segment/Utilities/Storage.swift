@@ -232,7 +232,7 @@ extension Storage {
         // Verify file size isn't too large
         if let attributes = try? fm.attributesOfItem(atPath: storeFile.path),
            let fileSize = attributes[FileAttributeKey.size] as? UInt64,
-           fileSize >= MAXFILESIZE {
+           fileSize >= Storage.MAXFILESIZE {
             finish(file: storeFile)
             // Set the new file path
             storeFile = currentFile(.events)
