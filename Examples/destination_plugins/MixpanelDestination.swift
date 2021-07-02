@@ -38,7 +38,7 @@ import Foundation
 import Mixpanel
 import Segment
 
-class MixpanelDestination: DestinationPlugin {
+class MixpanelDestination: DestinationPlugin, RemoteNotifications {
     
     var type: PluginType
     var name: String
@@ -206,7 +206,7 @@ class MixpanelDestination: DestinationPlugin {
         return event
     }
     
-    func registeredForRemoteNotificationsWithDeviceToken(_ deviceToken: Data) {
+    func registeredForRemoteNotifications(deviceToken: Data) {
         mixpanel?.people.addPushDeviceToken(deviceToken)
         analytics?.log(message: "Mixpanel people addPushDeviceToken \(deviceToken.toString())")
     }
