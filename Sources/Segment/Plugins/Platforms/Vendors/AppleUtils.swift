@@ -171,6 +171,114 @@ internal class watchOSVendorSystem: VendorSystem {
 
 #endif
 
+// MARK: - macOS
+
+#if os(macOS)
+
+import Cocoa
+import WebKit
+
+internal class MacOSVendorSystem: VendorSystem {
+    private let device = ProcessInfo.processInfo
+    
+    override var manufacturer: String {
+        return "Apple"
+    }
+    
+    override var type: String {
+        return "macos"
+    }
+    
+    override var model: String {
+        return deviceModel()
+    }
+    
+    override var name: String {
+        return device.hostName
+    }
+    
+    override var identifierForVendor: String? {
+        // apple suggested to use this for receipt validation
+        // in MAS, works for this too.
+        return macAddress(bsd: "en0")
+    }
+    
+    override var systemName: String {
+        return device.operatingSystemVersionString
+    }
+    
+    override var systemVersion: String {
+        return String(format: "%ld.%ld.%ld",
+                      device.operatingSystemVersion.majorVersion,
+                      device.operatingSystemVersion.minorVersion,
+                      device.operatingSystemVersion.patchVersion)
+    }
+    
+    override var screenSize: ScreenSize {
+        let screenSize = NSScreen.main?.frame.size ?? CGSize(width: 0, height: 0)
+        return ScreenSize(width: Double(screenSize.width), height: Double(screenSize.height))
+    }
+    
+    override var userAgent: String? {
+        return WKWebView().value(forKey: "userAgent") as? String
+    }
+    
+    override var connection: ConnectionStatus {
+        return connectionStatus()
+    }
+    
+    private func deviceModel() -> String {
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        return identifier
+    }
+
+    private func macAddress(bsd : String) -> String?
+    {
+        let MAC_ADDRESS_LENGTH = 6
+        let separator = ":"
+
+        var length : size_t = 0
+        var buffer : [CChar]
+
+        let bsdIndex = Int32(if_nametoindex(bsd))
+        if bsdIndex == 0 {
+            return nil
+        }
+        let bsdData = Data(bsd.utf8)
+        var managementInfoBase = [CTL_NET, AF_ROUTE, 0, AF_LINK, NET_RT_IFLIST, bsdIndex]
+
+        if sysctl(&managementInfoBase, 6, nil, &length, nil, 0) < 0 {
+            return nil;
+        }
+
+        buffer = [CChar](unsafeUninitializedCapacity: length, initializingWith: {buffer, initializedCount in
+            for x in 0..<length { buffer[x] = 0 }
+            initializedCount = length
+        })
+
+        if sysctl(&managementInfoBase, 6, &buffer, &length, nil, 0) < 0 {
+            return nil;
+        }
+
+        let infoData = Data(bytes: buffer, count: length)
+        let indexAfterMsghdr = MemoryLayout<if_msghdr>.stride + 1
+        let rangeOfToken = infoData[indexAfterMsghdr...].range(of: bsdData)!
+        let lower = rangeOfToken.upperBound
+        let upper = lower + MAC_ADDRESS_LENGTH
+        let macAddressData = infoData[lower..<upper]
+        let addressBytes = macAddressData.map { String(format:"%02x", $0) }
+        return addressBytes.joined(separator: separator)
+    }
+}
+
+#endif
+
 // MARK: - Reachability
 
 #if os(iOS) || os(tvOS) || os(macOS) || targetEnvironment(macCatalyst)

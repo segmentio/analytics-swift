@@ -425,7 +425,7 @@
 			attributes = {
 				LastSwiftMigration = 9999;
 				LastSwiftUpdateCheck = 1220;
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1250;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Segment" */;
 			compatibilityVersion = "Xcode 3.2";
