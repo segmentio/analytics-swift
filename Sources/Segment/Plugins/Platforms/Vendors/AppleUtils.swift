@@ -238,8 +238,7 @@ internal class MacOSVendorSystem: VendorSystem {
         return identifier
     }
 
-    private func macAddress(bsd : String) -> String?
-    {
+    private func macAddress(bsd : String) -> String? {
         let MAC_ADDRESS_LENGTH = 6
         let separator = ":"
 

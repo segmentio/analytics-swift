@@ -6,7 +6,12 @@
 //
 
 import Foundation
+
 #if os(Linux)
+// Whoever is doing swift/linux development over there
+// decided that it'd be a good idea to split out a TON
+// of stuff into another framework that NO OTHER PLATFORM
+// has; I guess to be special.  :man-shrugging:
 import FoundationNetworking
 #endif
 
