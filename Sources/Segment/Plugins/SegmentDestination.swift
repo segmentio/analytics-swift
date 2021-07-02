@@ -37,7 +37,6 @@ public class SegmentDestination: DestinationPlugin {
     private var httpClient: HTTPClient?
     private var uploads = [UploadTaskInfo]()
     private var storage: Storage?
-    private var maxPayloadSize = 500000 // Max 500kb
     
     private var apiKey: String? = nil
     private var apiHost: String? = nil
@@ -139,21 +138,19 @@ public class SegmentDestination: DestinationPlugin {
             for url in data {
                 analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                 
-                if isPayloadSizeAcceptable(url: url) {
-                    let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
-                        switch result {
+                let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
+                    switch result {
                         case .success(_):
                             storage.remove(file: url)
                         default:
                             analytics.logFlush()
-                        }
-
-                        analytics.log(message: "Processed: \(url.lastPathComponent)")
                     }
-                    // we have a legit upload in progress now, so add it to our list.
-                    if let upload = uploadTask {
-                        add(uploadTask: UploadTaskInfo(url: url, task: upload))
-                    }
+                    
+                    analytics.log(message: "Processed: \(url.lastPathComponent)")
+                }
+                // we have a legit upload in progress now, so add it to our list.
+                if let upload = uploadTask {
+                    add(uploadTask: UploadTaskInfo(url: url, task: upload))
                 }
             }
         } else {
@@ -190,30 +187,4 @@ extension SegmentDestination {
     internal func add(uploadTask: UploadTaskInfo) {
         uploads.append(uploadTask)
     }
-    
-    internal func isPayloadSizeAcceptable(url: URL) -> Bool {
-        var result = true
-        var fileSizeTotal: Int64 = 0
-        
-        // Make sure we're under the max payload size.
-        do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
-            guard let fileSize = attributes[FileAttributeKey.size] as? Int64 else {
-                analytics?.log(message: "File size could not be read")
-                // none of the logic beyond here will work if we can't get the
-                // filesize so assume everything is good and hope for the best.
-                return true
-            }
-            fileSizeTotal += fileSize
-        } catch {
-            analytics?.log(message: "Could not read file attributes")
-        }
-        
-        if fileSizeTotal >= maxPayloadSize {
-            analytics?.log(message: "Batch file is too large to be sent")
-            result = false
-        }
-        return result
-    }
-    
 }

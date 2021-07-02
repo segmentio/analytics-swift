@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let configuration = Configuration(writeKey: "WRITE_KEY")
+        let configuration = Configuration(writeKey: "1234")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(1)
         
@@ -86,7 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // This functionality is needed to forward deep link attribution data with AppsFlyer
     // Report Push Notification attribution data for re-engagements
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [String : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // this enables remote notifications for various destinations (appsflyer)
         analytics?.receivedRemoteNotification(userInfo: userInfo)
     }

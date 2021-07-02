@@ -13,6 +13,7 @@ internal class Storage: Subscriber {
     let writeKey: String
     let syncQueue = DispatchQueue(label: "storage.segment.com")
     let userDefaults: UserDefaults?
+    static let MAXFILESIZE = 475000     // Server accepts max 500k per batch
     
     init(store: Store, writeKey: String) {
         self.store = store
@@ -44,14 +45,8 @@ extension Storage {
         switch key {
         case .events:
             if let event = value as? RawEvent {
-                // this is synchronized against finish(file:) down below.
-                var currentFile = 0
-                syncQueue.sync {
-                    let index: Int = userDefaults?.integer(forKey: key.rawValue) ?? 0
-                    userDefaults?.set(index, forKey: key.rawValue)
-                    currentFile = index
-                }
-                self.storeEvent(toFile: self.eventsFile(index: currentFile), event: event)
+                let eventStoreFile = currentFile(key)
+                self.storeEvent(toFile: eventStoreFile, event: event)
             }
             break
         default:
@@ -137,6 +132,16 @@ extension Storage {
         }
         return result
     }
+    
+    func currentFile(_ key: Storage.Constants) -> URL {
+        var currentFile = 0
+        syncQueue.sync {
+            let index: Int = userDefaults?.integer(forKey: key.rawValue) ?? 0
+            userDefaults?.set(index, forKey: key.rawValue)
+            currentFile = index
+        }
+        return self.eventsFile(index: currentFile)
+    }
 }
 
 // MARK: - State Subscriptions
@@ -213,10 +218,24 @@ extension Storage {
 
 extension Storage {
     func storeEvent(toFile file: URL, event: RawEvent) {
+        
+        var storeFile = file
+        
         let fm = FileManager.default
         var newFile = false
-        if fm.fileExists(atPath: file.path) == false {
-            start(file: file)
+        if fm.fileExists(atPath: storeFile.path) == false {
+            start(file: storeFile)
+            newFile = true
+        }
+        
+        // Verify file size isn't too large
+        if let attributes = try? fm.attributesOfItem(atPath: storeFile.path),
+           let fileSize = attributes[FileAttributeKey.size] as? UInt64,
+           fileSize >= MAXFILESIZE {
+            finish(file: storeFile)
+            // Set the new file path
+            storeFile = currentFile(.events)
+            start(file: storeFile)
             newFile = true
         }
         
@@ -224,7 +243,7 @@ extension Storage {
             do {
                 let jsonString = event.toString()
                 if let jsonData = jsonString.data(using: .utf8) {
-                    let handle = try FileHandle(forWritingTo: file)
+                    let handle = try FileHandle(forWritingTo: storeFile)
                     handle.seekToEndOfFile()
                     // prepare for the next entry
                     if newFile == false {
@@ -237,7 +256,7 @@ extension Storage {
                     assert(false, "Storage: Unable to convert event to json!")
                 }
             } catch {
-                assert(false, "Storage: failed to write event to \(file), error: \(error)")
+                assert(false, "Storage: failed to write event to \(storeFile), error: \(error)")
             }
         }
     }
