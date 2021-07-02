@@ -74,7 +74,7 @@ public class HTTPClient {
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
-                completion(true)
+                completion(false)
             } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
                 case 1..<300:
