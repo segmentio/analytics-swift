@@ -132,11 +132,11 @@ public class SegmentDestination: DestinationPlugin {
                 analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                 
                 if isPayloadSizeAcceptable(url: url) {
-                    let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (succeeded) in
-                        if succeeded {
-                            // Remove events
+                    let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
+                        switch result {
+                        case .success(_):
                             storage.remove(file: url)
-                        } else {
+                        default:
                             analytics.logFlush()
                         }
 

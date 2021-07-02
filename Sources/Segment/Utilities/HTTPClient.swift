@@ -12,6 +12,8 @@ import FoundationNetworking
 
 enum HTTPClientErrors: Error {
     case badSession
+    case failedToOpenBatch
+    case statusCode(code: Int)
 }
 
 public class HTTPClient {
@@ -62,9 +64,9 @@ public class HTTPClient {
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
-    func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ succeeded: Bool) -> Void) -> URLSessionDataTask? {
+    func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
         guard let uploadURL = segmentURL(for: apiHost, path: "/batch") else {
-            completion(false)
+            completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
                 
@@ -74,24 +76,24 @@ public class HTTPClient {
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
-                completion(false)
+                completion(.failure(error))
             } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
                 case 1..<300:
-                    completion(true)
+                    completion(.success(true))
                     return
                 case 300..<400:
                     self?.analytics.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
-                    completion(false)
+                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 case 429:
                     self?.analytics.log(message: "Server limited client with response code \(httpResponse.statusCode).")
-                    completion(false)
+                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 case 400..<500:
                     self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
-                    completion(false)
+                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 default: // All 500 codes
                     self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
-                    completion(false)
+                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 }
             }
         }
