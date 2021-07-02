@@ -86,7 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // This functionality is needed to forward deep link attribution data with AppsFlyer
     // Report Push Notification attribution data for re-engagements
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [String : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // this enables remote notifications for various destinations (appsflyer)
         analytics?.receivedRemoteNotification(userInfo: userInfo)
     }
