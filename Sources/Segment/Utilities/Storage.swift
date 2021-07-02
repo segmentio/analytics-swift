@@ -217,6 +217,7 @@ extension Storage {
 // MARK: - Event Storage
 
 extension Storage {
+    
     func storeEvent(toFile file: URL, event: RawEvent) {
         
         var storeFile = file
