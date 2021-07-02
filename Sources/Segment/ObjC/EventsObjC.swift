@@ -5,6 +5,8 @@
 //  Created by Cody Garvin on 6/10/21.
 //
 
+#if !os(Linux)
+
 import Foundation
 
 // MARK: - Objective-C friendly methods
@@ -116,3 +118,5 @@ extension Analytics {
         process(event: event)
     }
 }
+
+#endif

@@ -45,10 +45,10 @@ extension Analytics: Subscriber {
             plugins.append(Context.self)
             
             #if os(iOS) || os(tvOS)
-            plugins += [iOSLifecycleMonitor.self, iOSAppBackground.self, iOSLifecycleEvents.self, DeviceToken.self]
+            plugins += [iOSLifecycleMonitor.self, iOSLifecycleEvents.self, DeviceToken.self]
             #endif
             #if os(watchOS)
-            plugins.append(watchOSLifecycleMonitor.self)
+            plugins += [watchOSLifecycleMonitor.self, watchOSLifecycleEvents.self]
             #endif
             #if os(macOS)
             plugins += [macOSLifecycleMonitor.self, DeviceToken.self]

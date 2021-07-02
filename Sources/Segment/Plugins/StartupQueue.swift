@@ -45,10 +45,10 @@ internal class StartupQueue: Plugin, Subscriber {
 
 extension StartupQueue {
     internal func runningUpdate(state: System) {
+        running = state.running
         if state.running {
             replayEvents()
         }
-        running = state.running
     }
     
     internal func replayEvents() {

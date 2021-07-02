@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .flushInterval(10)
         
         analytics = Analytics(configuration: configuration)
+        analytics?.add(plugin: ConsoleLogger(name: "consoleLogger"))
         
         return true
     }

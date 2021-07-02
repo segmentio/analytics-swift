@@ -83,7 +83,6 @@ extension Analytics {
     ///   - userId: A database ID (or email address) for this user. If you don't have a userId
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
-    @objc
     public func identify(userId: String) {
         let event = IdentifyEvent(userId: userId, traits: nil)
         store.dispatch(action: UserInfo.SetUserIdAction(userId: userId))
@@ -134,13 +133,11 @@ extension Analytics {
         }
     }
     
-    @objc
     public func group(groupId: String) {
         group(groupId: groupId, traits: nil as GroupEvent?)
     }
     
     // MARK: - Alias
-    @objc
     public func alias(newId: String) {
 //        let userInfo: UserInfo? = store.currentState()
         

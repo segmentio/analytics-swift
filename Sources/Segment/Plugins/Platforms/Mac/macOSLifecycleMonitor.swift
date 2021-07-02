@@ -231,12 +231,11 @@ class macOSLifecycleMonitor: PlatformPlugin {
 
 extension SegmentDestination: macOSLifecycle {
     public func applicationDidBecomeActive() {
-        flushTimer?.resume()
+        enterForeground()
     }
     
     public func applicationWillResignActive() {
-        flushTimer?.suspend()
-        flush()
+        enterBackground()
     }
 }
 

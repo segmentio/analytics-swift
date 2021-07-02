@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 
 public protocol iOSLifecycle {
-    func applicationDidEnterBackground()
+    func applicationDidEnterBackground(application: UIApplication)
     func applicationWillEnterForeground(application: UIApplication)
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
     func applicationDidBecomeActive(application: UIApplication)
@@ -23,7 +23,7 @@ public protocol iOSLifecycle {
 }
 
 public extension iOSLifecycle {
-    func applicationDidEnterBackground() { }
+    func applicationDidEnterBackground(application: UIApplication) { }
     func applicationWillEnterForeground(application: UIApplication) { }
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) { }
     func applicationDidBecomeActive(application: UIApplication) { }
@@ -105,7 +105,7 @@ class iOSLifecycleMonitor: PlatformPlugin {
     func didEnterBackground(notification: NSNotification) {
         analytics?.apply { (ext) in
             if let validExt = ext as? iOSLifecycle {
-                validExt.applicationDidEnterBackground()
+                validExt.applicationDidEnterBackground(application: application)
             }
         }
     }
@@ -173,13 +173,28 @@ class iOSLifecycleMonitor: PlatformPlugin {
 
 extension SegmentDestination: iOSLifecycle {
     public func applicationWillEnterForeground(application: UIApplication) {
-        flushTimer?.resume()
+        enterForeground()
     }
     
-    public func applicationDidEnterBackground() {
-        flushTimer?.suspend()
-        analytics?.beginBackgroundTask()
-        flush()
+    public func applicationDidEnterBackground(application: UIApplication) {
+        enterBackground()
+    }
+}
+
+extension SegmentDestination.UploadTaskInfo {
+    init(url: URL, task: URLSessionDataTask) {
+        self.url = url
+        self.task = task
+        
+        let taskIdentifier = UIApplication.shared.beginBackgroundTask { [self] in
+            self.task.suspend()
+            self.cleanup?()
+        }
+        self.taskID = taskIdentifier.rawValue
+        
+        self.cleanup = { [self] in
+            UIApplication.shared.endBackgroundTask(UIBackgroundTaskIdentifier(rawValue: self.taskID))
+        }
     }
 }
 
