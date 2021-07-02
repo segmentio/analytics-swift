@@ -47,9 +47,13 @@ public struct Settings: Codable {
     }
     
     public func integrationSettings<T: Codable>(name: String) -> T? {
-        return nil
+        var result: T? = nil
+        guard let settings = integrations?.dictionaryValue else { return nil }
+        if let dict = settings[name], let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
+            result = try? JSONDecoder().decode(T.self, from: jsonData)
+        }
+        return result
     }
-
 }
 
 extension Settings: Equatable {

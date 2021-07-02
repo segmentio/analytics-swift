@@ -4,14 +4,12 @@
 //
 //  Created by Brandon Sneed on 5/27/21.
 //
-
 // NOTE: You can see this plugin in use in the DestinationsExample application.
 //
 // This plugin is NOT SUPPORTED by Segment.  It is here merely as an example,
 // and for your convenience should you find it useful.
 //
 // Adjust SPM package can be found here: https://github.com/adjust/ios_sdk
-
 // MIT License
 //
 // Copyright (c) 2021 Segment
@@ -141,7 +139,6 @@ public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications
 }
 
 // MARK: - Adjust Delegate conformance
-
 extension AdjustDestination: AdjustDelegate {
     public func adjustAttributionChanged(_ attribution: ADJAttribution?) {
         let campaign: [String: Any] = [
@@ -164,7 +161,6 @@ extension AdjustDestination: AdjustDelegate {
 }
 
 // MARK: - Support methods
-
 extension AdjustDestination {
     internal func mappedCustomEventToken(eventName: String) -> String? {
         var result: String? = nil
