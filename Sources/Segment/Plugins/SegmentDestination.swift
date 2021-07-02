@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if os(Linux)
+import FoundationNetworking
+#endif
 
 public class SegmentDestination: DestinationPlugin {
     public let type: PluginType = .destination
