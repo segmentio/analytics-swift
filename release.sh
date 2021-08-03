@@ -48,7 +48,7 @@ then
 	exit 1
 fi
 
-versionFile="./sources/Segment/version.swift"
+versionFile="./sources/Segment/Version.swift"
 
 # get last line in version.swift
 versionLine=$(tail -n 1 $versionFile)
