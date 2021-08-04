@@ -15,16 +15,8 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     static var versionKey = "SEGVersionKey"
     static var buildKey = "SEGBuildKeyV2"
     
-    static var specificName: String = "Segment_iOSLifecycleEvents"
-    
-    let type: PluginType
-    let name: String
+    let type = PluginType.before
     var analytics: Analytics?
-    
-    public required init(name: String) {
-        self.name = name
-        self.type = .before
-    }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {

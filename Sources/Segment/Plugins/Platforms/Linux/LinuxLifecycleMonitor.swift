@@ -9,16 +9,7 @@ import Foundation
 
 #if os(Linux)
 class LinuxLifecycleMonitor: PlatformPlugin {
-    static var specificName = "Segment_LinuxLifecycleMonitor"
-    let type: PluginType
-    let name: String
-    
+    let type = PluginType.utility
     var analytics: Analytics?
-    
-    required init(name: String) {
-        self.type = .utility
-        self.name = name
-    }
-
 }
 #endif

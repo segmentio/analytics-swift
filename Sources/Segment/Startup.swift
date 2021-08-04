@@ -47,13 +47,13 @@ extension Analytics: Subscriber {
             plugins += [iOSLifecycleMonitor(), iOSLifecycleEvents(), DeviceToken()]
             #endif
             #if os(watchOS)
-            plugins += [watchOSLifecycleMonitor.self, watchOSLifecycleEvents.self]
+            plugins += [watchOSLifecycleMonitor(), watchOSLifecycleEvents()]
             #endif
             #if os(macOS)
             plugins += [macOSLifecycleMonitor(), DeviceToken()]
             #endif
             #if os(Linux)
-            plugins.append(LinuxLifecycleMonitor.self)
+            plugins.append(LinuxLifecycleMonitor())
             #endif
         }
         

@@ -28,10 +28,7 @@ public extension watchOSLifecycle {
 
 
 class watchOSLifecycleMonitor: PlatformPlugin {
-    static var specificName: String = "Segment_watchOSLifecycleMonitor"
-    
-    var type: PluginType
-    var name: String
+    var type = PluginType.utility
     var analytics: Analytics?
     var wasBackgrounded: Bool = false
     
@@ -42,12 +39,8 @@ class watchOSLifecycleMonitor: PlatformPlugin {
                                                            WKExtension.applicationDidBecomeActiveNotification,
                                                            WKExtension.applicationWillResignActiveNotification]
     
-    required init(name: String) {
-        self.type = .utility
-        self.name = name
-        
+    required init() {
         watchExtension = WKExtension.shared()
-        
         setupListeners()
     }
     

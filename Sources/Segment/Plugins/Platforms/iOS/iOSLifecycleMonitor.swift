@@ -35,10 +35,7 @@ public extension iOSLifecycle {
 }
 
 class iOSLifecycleMonitor: PlatformPlugin {
-    static var specificName = "Segment_iOSLifecycleMonitor"
-    
-    let type: PluginType
-    let name: String
+    let type = PluginType.utility
     var analytics: Analytics?
     
     private var application: UIApplication
@@ -52,11 +49,8 @@ class iOSLifecycleMonitor: PlatformPlugin {
                                                            UIApplication.significantTimeChangeNotification,
                                                            UIApplication.backgroundRefreshStatusDidChangeNotification]
 
-    required init(name: String) {
-        self.type = .utility
-        self.name = name
+    required init() {
         application = UIApplication.shared
-        
         setupListeners()
     }
     
