@@ -24,22 +24,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         analytics = Analytics(configuration: configuration)
         
         // Add Adjust destination plugin
-        analytics?.add(plugin: AdjustDestination(name: "Adjust"))
+        analytics?.add(plugin: AdjustDestination())
         
         // Add Amplitude session plugin
-        analytics?.add(plugin: AmplitudeSession(name: "Amplitude"))
+        analytics?.add(plugin: AmplitudeSession())
         
         // Add Mixpanel destination plugin
-        analytics?.add(plugin: MixpanelDestination(name: "Mixpanel"))
+        analytics?.add(plugin: MixpanelDestination())
         
         // Add Flurry destination plugin
-        analytics?.add(plugin: FlurryDestination(name: "Flurry"))
+        analytics?.add(plugin: FlurryDestination())
         
         // Add the Firebase destination plugin
-        analytics?.add(plugin: FirebaseDestination(name: "Firebase"))
+        analytics?.add(plugin: FirebaseDestination())
         
         //Add the AppsFlyer destination plugin
-        analytics?.add(plugin: AppsFlyerDestination(name: "AppsFlyer"))
+        analytics?.add(plugin: AppsFlyerDestination())
         
         return true
     }

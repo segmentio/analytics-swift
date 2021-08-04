@@ -59,11 +59,13 @@ public struct Settings: Codable {
         return integrationSettings(forKey: plugin.key)
     }
     
-    /*
-    public func isDestinationEnabled(name: String) -> Bool {
+    public func isDestinationEnabled(key: String) -> Bool {
+        guard let settings = integrations?.dictionaryValue else { return false }
+        if settings.keys.contains(key) {
+            return true
+        }
         return false
     }
- */
 }
 
 extension Settings: Equatable {

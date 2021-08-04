@@ -45,13 +45,8 @@ import AppTrackingTransparency
  Don't forget to add "NSUserTrackingUsageDescription" with a description to your Info.plist.
  */
 class IDFACollection: Plugin {
-    let type: PluginType = .enrichment
-    let name: String
+    let type = PluginType.enrichment
     var analytics: Analytics? = nil
-    
-    required init(name: String) {
-        self.name = name
-    }
     
     func execute<T: RawEvent>(event: T?) -> T? {
         let status = ATTrackingManager.trackingAuthorizationStatus

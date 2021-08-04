@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46016C1326BB5BD700BCEE80 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 46016C1226BB5BD700BCEE80 /* Segment */; };
 		9613E655265C2E350078A2BD /* SegmentSwiftUIExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9613E654265C2E350078A2BD /* SegmentSwiftUIExampleApp.swift */; };
 		9613E657265C2E350078A2BD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9613E656265C2E350078A2BD /* ContentView.swift */; };
 		9613E659265C2E360078A2BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9613E658265C2E360078A2BD /* Assets.xcassets */; };
 		9613E65C265C2E360078A2BD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9613E65B265C2E360078A2BD /* Preview Assets.xcassets */; };
-		9613E665265C2E880078A2BD /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 9613E664265C2E880078A2BD /* Segment */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,18 +28,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9613E665265C2E880078A2BD /* Segment in Frameworks */,
+				46016C1326BB5BD700BCEE80 /* Segment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46016C1126BB5BD700BCEE80 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9613E648265C2E350078A2BD = {
 			isa = PBXGroup;
 			children = (
 				9613E653265C2E350078A2BD /* SegmentSwiftUIExample */,
 				9613E652265C2E350078A2BD /* Products */,
+				46016C1126BB5BD700BCEE80 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,7 +96,7 @@
 			);
 			name = SegmentSwiftUIExample;
 			packageProductDependencies = (
-				9613E664265C2E880078A2BD /* Segment */,
+				46016C1226BB5BD700BCEE80 /* Segment */,
 			);
 			productName = SegmentSwiftUIExample;
 			productReference = 9613E651265C2E350078A2BD /* SegmentSwiftUIExample.app */;
@@ -118,7 +126,6 @@
 			);
 			mainGroup = 9613E648265C2E350078A2BD;
 			packageReferences = (
-				9613E663265C2E880078A2BD /* XCRemoteSwiftPackageReference "analytics-swift" */,
 			);
 			productRefGroup = 9613E652265C2E350078A2BD /* Products */;
 			projectDirPath = "";
@@ -335,21 +342,9 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		9613E663265C2E880078A2BD /* XCRemoteSwiftPackageReference "analytics-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:segmentio/analytics-swift.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		9613E664265C2E880078A2BD /* Segment */ = {
+		46016C1226BB5BD700BCEE80 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9613E663265C2E880078A2BD /* XCRemoteSwiftPackageReference "analytics-swift" */;
 			productName = Segment;
 		};
 /* End XCSwiftPackageProductDependency section */

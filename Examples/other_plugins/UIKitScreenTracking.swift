@@ -50,12 +50,10 @@ class UIKitScreenTracking: UtilityPlugin {
     static let screenNameKey = "name"
     static let controllerKey = "controller"
     
-    let type: PluginType = .utility
-    let name: String
+    let type = PluginType.utility
     var analytics: Analytics? = nil
     
-    required init(name: String) {
-        self.name = name
+    init() {
         setupUIKitHooks()
     }
 

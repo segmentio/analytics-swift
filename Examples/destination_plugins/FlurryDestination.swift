@@ -42,33 +42,35 @@ import FlurryAnalytics
  An implmentation of the Flurry Analytics device mode destination as a plugin.
  */
 
+private struct FlurrySettings: Codable {
+    let apiKey: String
+    let sessionContinueSeconds: Int?
+    let screenTracksEvents: Bool?
+}
+
+
 class FlurryDestination: DestinationPlugin {
-    let timeline: Timeline = Timeline()
-    let type: PluginType = .destination
-    let name: String
+    let timeline = Timeline()
+    let type = PluginType.destination
+    let key = "Flurry"
     var analytics: Analytics? = nil
     
     var screenTracksEvents = false
     
-    required init(name: String) {
-        self.name = name
-    }
-    
     func update(settings: Settings) {
-        guard let jsonSettings = settings.integrationSettings(for: "Flurry") else { return }
-        guard let flurryApiKey = jsonSettings["apiKey"] as? String else { return }
+        guard let flurrySettings: FlurrySettings = settings.integrationSettings(forPlugin: self) else { return }
         
         let builder = FlurrySessionBuilder()
         
-        if let sessionContinueSeconds = jsonSettings["sessionContinueSeconds"] as? Int {
+        if let sessionContinueSeconds = flurrySettings.sessionContinueSeconds {
             builder.withSessionContinueSeconds(sessionContinueSeconds)
         }
         
-        if let screenTracksEvents = jsonSettings["screenTracksEvents"] as? Bool {
+        if let screenTracksEvents = flurrySettings.screenTracksEvents {
             self.screenTracksEvents = screenTracksEvents
         }
         
-        Flurry.startSession(flurryApiKey, with: builder)
+        Flurry.startSession(flurrySettings.apiKey, with: builder)
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
