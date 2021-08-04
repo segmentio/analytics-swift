@@ -39,11 +39,19 @@ then
 	exit 1
 fi
 
+# check if `gh` tool has auth access.
+# command will return non-zero if not auth'd.
+authd=$(gh auth status -t)
+if [[ $? != 0 ]]; then
+	echo "ex: $ gh auth login"
+	exit 1
+fi
+
 # check that we're on the `main` branch
 branch=$(git rev-parse --abbrev-ref HEAD)
-if [ branch != 'main' ] 
+if [ $branch != 'main' ] 
 then
-	echo "The 'main' branch must be the current branch out to make a release."
+	echo "The 'main' must be the current branch to make a release."
 	echo "You are currently on: $branch"
 	exit 1
 fi
@@ -70,8 +78,7 @@ then
 fi
 
 newVersion="${1%.*}.$((${1##*.}))"
-echo "$version"
-echo "$newVersion"
+echo "Preparing to release $newVersion..."
 
 vercomp $newVersion $version
 case $? in
@@ -86,12 +93,21 @@ then
 	exit 1
 fi
 
+read -r -p "Are you sure you want to release $newVersion? [y/N] " response
+case "$response" in
+	[yY][eE][sS]|[yY]) 
+		;;
+	*)
+		exit 1
+		;;
+esac
+
 # get the commits since the last release...
 # note: we do this here so the "Version x.x.x" commit doesn't show up in logs.
-changelog=git log --pretty=format:"- (%an) %s" $(git describe --tags --abbrev=0 @^)..@
+changelog=$(git log --pretty=format:"- (%an) %s" $(git describe --tags --abbrev=0 @^)..@)
 tempFile=$(mktemp)
 #write changelog to temp file.
-echo $changelog >> $tempFile
+echo -e "$changelog" >> $tempFile
 
 # update sources/Segment/Version.swift
 # - remove last line...
