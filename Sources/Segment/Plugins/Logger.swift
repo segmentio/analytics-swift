@@ -14,19 +14,14 @@ public enum LogType: Int {
 }
 
 class Logger: UtilityPlugin {
+    public var filterType = LogType.info
     
-    public var filterType: LogType = .info
-    
-    let type: PluginType
-    let name: String
+    let type = PluginType.utility
     var analytics: Analytics?
     
     private var messages = [LogMessage]()
     
-    required init(name: String) {
-        self.name = name
-        self.type = .utility
-    }
+    required init() { }
     
     func log(type: LogType, message: String, event: RawEvent?) {
         print("\(type) -- Message: \(message)")

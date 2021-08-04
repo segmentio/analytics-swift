@@ -65,7 +65,7 @@ class macOSLifecycleMonitor: PlatformPlugin {
          NSApplication.willTerminateNotification,
          NSApplication.didChangeScreenParametersNotification]
     
-    required init(name: String) {
+    required init() {
         self.application = NSApplication.shared        
         setupListeners()
     }

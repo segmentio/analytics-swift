@@ -9,13 +9,12 @@ import Foundation
 import Sovran
 
 internal class StartupQueue: Plugin, Subscriber {
-    static var specificName = "Segment_StartupQueue"
     static let maxSize = 1000
 
     @Atomic var running: Bool = false
     
     let type: PluginType = .before
-    let name: String = specificName
+    
     var analytics: Analytics? = nil {
         didSet {
             analytics?.store.subscribe(self, handler: runningUpdate)
@@ -24,9 +23,7 @@ internal class StartupQueue: Plugin, Subscriber {
     
     var queuedEvents = [RawEvent]()
     
-    required init(name: String) {
-        // ignore name; hardcoded above.
-    }
+    required init() { }
     
     func execute<T: RawEvent>(event: T?) -> T? {
         if running == false, let e = event  {

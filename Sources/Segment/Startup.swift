@@ -11,21 +11,20 @@ import Sovran
 extension Analytics: Subscriber {
         
     internal func platformStartup() {
-        add(plugin: StartupQueue(name: StartupQueue.specificName))
+        add(plugin: StartupQueue())
         
         // add segment destination plugin unless
         // asked not to via configuration.
         if configuration.values.autoAddSegmentDestination {
-            let segmentDestination = SegmentDestination(name: "Segment.io")
+            let segmentDestination = SegmentDestination()
             segmentDestination.analytics = self
             add(plugin: segmentDestination)
         }
         
         // Setup platform specific plugins
         if let platformPlugins = platformPlugins() {
-            for pluginType in platformPlugins {
-                let prebuilt = pluginType.init()
-                add(plugin: prebuilt)
+            for plugin in platformPlugins {
+                add(plugin: plugin)
             }
         }
         
@@ -35,23 +34,23 @@ extension Analytics: Subscriber {
         setupSettingsCheck()
     }
     
-    internal func platformPlugins() -> [PlatformPlugin.Type]? {
-        var plugins = [PlatformPlugin.Type]()
+    internal func platformPlugins() -> [PlatformPlugin]? {
+        var plugins = [PlatformPlugin]()
         
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents {
             // add context plugin as well as it's platform specific internally.
             // this must come first.
-            plugins.append(Context.self)
+            plugins.append(Context())
             
             #if os(iOS) || os(tvOS)
-            plugins += [iOSLifecycleMonitor.self, iOSLifecycleEvents.self, DeviceToken.self]
+            plugins += [iOSLifecycleMonitor(), iOSLifecycleEvents(), DeviceToken()]
             #endif
             #if os(watchOS)
             plugins += [watchOSLifecycleMonitor.self, watchOSLifecycleEvents.self]
             #endif
             #if os(macOS)
-            plugins += [macOSLifecycleMonitor.self, DeviceToken.self]
+            plugins += [macOSLifecycleMonitor(), DeviceToken()]
             #endif
             #if os(Linux)
             plugins.append(LinuxLifecycleMonitor.self)

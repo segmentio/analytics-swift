@@ -25,11 +25,9 @@ struct MyTraits: Codable {
 
 class GooberPlugin: EventPlugin {
     let type: PluginType
-    let name: String
     var analytics: Analytics?
     
-    required init(name: String) {
-        self.name = name
+    init() {
         self.type = .enrichment
     }
     
@@ -50,13 +48,11 @@ class GooberPlugin: EventPlugin {
 
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
-    let name: String
     var analytics: Analytics?
     
     var completion: (() -> Void)?
     
-    required init(name: String) {
-        self.name = name
+    required init() {
         self.type = .enrichment
     }
     
@@ -75,11 +71,11 @@ class ZiggyPlugin: EventPlugin {
 class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType
-    let name: String
+    let key: String
     var analytics: Analytics?
     
-    required init(name: String) {
-        self.name = name
+    init() {
+        self.key = "MyDestination"
         self.type = .destination
         self.timeline = Timeline()
     }
@@ -92,14 +88,12 @@ class MyDestination: DestinationPlugin {
 
 class OutputReaderPlugin: Plugin {
     let type: PluginType
-    let name: String
     var analytics: Analytics?
     
     var lastEvent: RawEvent? = nil
     
-    required init(name: String) {
+    init() {
         self.type = .after
-        self.name = name
     }
     
     func execute<T>(event: T?) -> T? where T : RawEvent {
@@ -114,7 +108,7 @@ class OutputReaderPlugin: Plugin {
 func waitUntilStarted(analytics: Analytics?) {
     guard let analytics = analytics else { return }
     // wait until the startup queue has emptied it's events.
-    if let startupQueue = analytics.find(pluginName: StartupQueue.specificName) as? StartupQueue {
+    if let startupQueue = analytics.find(pluginType: StartupQueue.self) {
         while startupQueue.running != true {
             RunLoop.main.run(until: Date.distantPast)
         }

@@ -54,6 +54,11 @@ public struct Settings: Codable {
         }
         return result
     }
+    /*
+    public func isDestinationEnabled(name: String) -> Bool {
+        return false
+    }
+ */
 }
 
 extension Settings: Equatable {

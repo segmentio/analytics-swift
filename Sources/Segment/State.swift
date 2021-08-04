@@ -29,14 +29,14 @@ struct System: State {
     }
     
     struct AddIntegrationAction: Action {
-        let pluginName: String
+        let key: String
         
         func reduce(state: System) -> System {
             // we need to set any destination plugins to false in the
             // integrations payload.  this prevents them from being sent
             // by segment.com once an event reaches segment.
             if var integrations = state.integrations?.dictionaryValue {
-                integrations[pluginName] = false
+                integrations[key] = false
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,
@@ -50,11 +50,11 @@ struct System: State {
     }
     
     struct RemoveIntegrationAction: Action {
-        let pluginName: String
+        let key: String
         
         func reduce(state: System) -> System {
             if var integrations = state.integrations?.dictionaryValue {
-                integrations.removeValue(forKey: pluginName)
+                integrations.removeValue(forKey: key)
                 if let jsonIntegrations = try? JSON(integrations) {
                     let result = System(configuration: state.configuration,
                                         integrations: jsonIntegrations,

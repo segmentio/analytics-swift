@@ -8,17 +8,12 @@
 import Foundation
 
 public class DeviceToken: PlatformPlugin {
-    static var specificName = "Segment_DeviceToken"
-    
-    public let type: PluginType = .before
-    public let name: String = specificName
+    public let type = PluginType.before
     public var analytics: Analytics?
     
     public var token: String? = nil
 
-    public required init(name: String) {
-        // ignore `name` here, it's hard coded above.
-    }
+    public required init() { }
     
     public func execute<T: RawEvent>(event: T?) -> T? {
         guard var workingEvent = event else { return event }
@@ -36,10 +31,10 @@ public class DeviceToken: PlatformPlugin {
 
 extension Analytics {
     public func setDeviceToken(_ token: String) {
-        if let tokenPlugin = self.find(pluginName: DeviceToken.specificName) as? DeviceToken {
+        if let tokenPlugin = self.find(pluginType: DeviceToken.self) {
             tokenPlugin.token = token
         } else {
-            let tokenPlugin = DeviceToken(name: DeviceToken.specificName)
+            let tokenPlugin = DeviceToken()
             tokenPlugin.token = token
             add(plugin: tokenPlugin)
         }
