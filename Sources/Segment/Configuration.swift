@@ -74,6 +74,12 @@ public extension Configuration {
     }
     
     @discardableResult
+    func defaultSettings(_ settings: Settings) -> Configuration {
+        values.defaultSettings = settings
+        return self
+    }
+    
+    @discardableResult
     func autoAddSegmentDestination(_ value: Bool) -> Configuration {
         values.autoAddSegmentDestination = value
         return self
