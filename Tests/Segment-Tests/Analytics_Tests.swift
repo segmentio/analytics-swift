@@ -49,6 +49,56 @@ final class Analytics_Tests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
     }
+
+    func testDestinationEnabled() {
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        
+        let expectation = XCTestExpectation(description: "MyDestination Expectation")
+        let myDestination = MyDestination {
+            expectation.fulfill()
+        }
+
+        var settings = Settings(writeKey: "test")
+        if let existing = settings.integrations?.dictionaryValue {
+            var newIntegrations = existing
+            newIntegrations[myDestination.key] = true
+            settings.integrations = try! JSON(newIntegrations)
+        }
+        let configuration = Configuration(writeKey: "test")
+        configuration.defaultSettings(settings)
+        let analytics = Analytics(configuration: configuration)
+
+        analytics.add(plugin: myDestination)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "testDestinationEnabled")
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testDestinationNotEnabled() {
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        
+        let expectation = XCTestExpectation(description: "MyDestination Expectation")
+        let myDestination = MyDestination {
+            expectation.fulfill()
+        }
+
+        let configuration = Configuration(writeKey: "test")
+        let analytics = Analytics(configuration: configuration)
+
+        analytics.add(plugin: myDestination)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "testDestinationEnabled")
+        
+        XCTExpectFailure()
+        wait(for: [expectation], timeout: 1.0)
+    }
     
     func testAnonymousId() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
