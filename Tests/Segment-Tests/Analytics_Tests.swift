@@ -78,6 +78,8 @@ final class Analytics_Tests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
+    // Linux doesn't support XCTExpectFailure
+    #if !os(Linux)
     func testDestinationNotEnabled() {
         // need to clear settings for this one.
         UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
@@ -99,6 +101,7 @@ final class Analytics_Tests: XCTestCase {
         XCTExpectFailure()
         wait(for: [expectation], timeout: 1.0)
     }
+    #endif
     
     func testAnonymousId() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
