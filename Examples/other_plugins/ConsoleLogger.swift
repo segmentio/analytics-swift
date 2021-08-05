@@ -40,7 +40,7 @@ import Segment
  run at the end of the event timeline, at which point it will print event data to the Xcode console window.
  */
 class ConsoleLogger: Plugin {
-    let type: PluginType = .after
+    let type = PluginType.after
     let name: String
     var analytics: Analytics? = nil
     

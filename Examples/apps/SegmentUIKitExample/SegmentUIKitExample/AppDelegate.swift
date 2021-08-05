@@ -14,12 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // add console logging plugins to our multiple instances
         Analytics.main.add(plugin: ConsoleLogger(name: "main"))
-        Analytics.main.add(plugin: ConsentTracking(name: "consent"))
-        Analytics.main.add(plugin: IDFACollection(name: "idfa"))
-        Analytics.main.add(plugin: UIKitScreenTracking(name: "autoScreenTracking"))
+        Analytics.main.add(plugin: ConsentTracking())
+        Analytics.main.add(plugin: IDFACollection())
+        Analytics.main.add(plugin: UIKitScreenTracking())
 
         Analytics.support.add(plugin: ConsoleLogger(name: "support"))
-        Analytics.support.add(plugin: ConsentTracking(name: "consent"))
+        Analytics.support.add(plugin: ConsentTracking())
         
         Analytics.support.track(name: "test event")
         

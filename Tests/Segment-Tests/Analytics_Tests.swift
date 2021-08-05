@@ -5,10 +5,10 @@ final class Analytics_Tests: XCTestCase {
     
     func testBaseEventCreation() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let myDestination = MyDestination(name: "fakeDestination")
-        myDestination.add(plugin: GooberPlugin(name: "booya"))
+        let myDestination = MyDestination()
+        myDestination.add(plugin: GooberPlugin())
         
-        analytics.add(plugin: ZiggyPlugin(name: "crikey"))
+        analytics.add(plugin: ZiggyPlugin())
         analytics.add(plugin: myDestination)
         
         let traits = MyTraits(email: "brandon@redf.net")
@@ -17,9 +17,9 @@ final class Analytics_Tests: XCTestCase {
     
     func testPluginConfigure() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let ziggy = ZiggyPlugin(name: "crikey")
-        let myDestination = MyDestination(name: "fakeDestination")
-        let goober = GooberPlugin(name: "booya")
+        let ziggy = ZiggyPlugin()
+        let myDestination = MyDestination()
+        let goober = GooberPlugin()
         myDestination.add(plugin: goober)
 
         analytics.add(plugin: ziggy)
@@ -32,11 +32,11 @@ final class Analytics_Tests: XCTestCase {
     
     func testPluginRemove() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let myDestination = MyDestination(name: "fakeDestination")
-        myDestination.add(plugin: GooberPlugin(name: "booya"))
+        let myDestination = MyDestination()
+        myDestination.add(plugin: GooberPlugin())
         
         let expectation = XCTestExpectation(description: "Ziggy Expectation")
-        let ziggy = ZiggyPlugin(name: "crikey")
+        let ziggy = ZiggyPlugin()
         ziggy.completion = {
             expectation.fulfill()
         }
@@ -45,7 +45,7 @@ final class Analytics_Tests: XCTestCase {
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
-        analytics.remove(pluginName: "crikey")
+        analytics.remove(plugin: ziggy)
         
         wait(for: [expectation], timeout: 1.0)
     }
@@ -60,7 +60,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testDeviceToken() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
         waitUntilStarted(analytics: analytics)
@@ -77,7 +77,7 @@ final class Analytics_Tests: XCTestCase {
     #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
     func testDeviceTokenData() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -95,7 +95,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testTrack() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -109,7 +109,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testIdentify() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -124,7 +124,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testUserIdAndTraitsPersistCorrectly() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -150,7 +150,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testScreen() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -172,7 +172,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testGroup() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -192,7 +192,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testReset() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
@@ -236,7 +236,7 @@ final class Analytics_Tests: XCTestCase {
     
     func testVersion() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        let outputReader = OutputReaderPlugin(name: "outputReader")
+        let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)

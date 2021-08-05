@@ -25,10 +25,8 @@ public enum PluginType: Int, CaseIterable {
 
 public protocol Plugin: AnyObject {
     var type: PluginType { get }
-    var name: String { get }
     var analytics: Analytics? { get set }
     
-    init(name: String)
     func configure(analytics: Analytics)
     func update(settings: Settings)
     func execute<T: RawEvent>(event: T?) -> T?
@@ -46,24 +44,18 @@ public protocol EventPlugin: Plugin {
 }
 
 public protocol DestinationPlugin: EventPlugin {
+    var key: String { get }
     var timeline: Timeline { get }
-    func add(plugin: Plugin) -> String
+    func add(plugin: Plugin) -> Plugin
     func apply(closure: (Plugin) -> Void)
-    func remove(pluginName: String)
+    func remove(plugin: Plugin)
 }
 
 public protocol UtilityPlugin: EventPlugin { }
 
 // For internal platform-specific bits
-internal protocol PlatformPlugin: Plugin {
-    static var specificName: String { get set }
-}
+internal protocol PlatformPlugin: Plugin { }
 
-extension PlatformPlugin {
-    internal init() {
-        self.init(name: Self.specificName)
-    }
-}
 
 // MARK: - Plugin instance helpers
 extension Plugin {
@@ -101,12 +93,12 @@ extension DestinationPlugin {
      
      */
     @discardableResult
-    public func add(plugin: Plugin) -> String {
+    public func add(plugin: Plugin) -> Plugin {
         if let analytics = self.analytics {
             plugin.configure(analytics: analytics)
         }
         timeline.add(plugin: plugin)
-        return plugin.name
+        return plugin
     }
     
     /**
@@ -114,8 +106,8 @@ extension DestinationPlugin {
      
      - Parameter pluginName: An plugin name.
      */
-    public func remove(pluginName: String) {
-        timeline.remove(pluginName: pluginName)
+    public func remove(plugin: Plugin) {
+        timeline.remove(plugin: plugin)
     }
 
 }
@@ -140,15 +132,15 @@ extension Analytics {
      
      */
     @discardableResult
-    public func add(plugin: Plugin) -> String {
+    public func add(plugin: Plugin) -> Plugin {
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
-        if plugin is DestinationPlugin && !(plugin is SegmentDestination) {
+        if !(plugin is SegmentDestination), let destPlugin = plugin as? DestinationPlugin {
             // need to maintain the list of integrations to inject into payload
-            store.dispatch(action: System.AddIntegrationAction(pluginName: plugin.name))
+            store.dispatch(action: System.AddIntegrationAction(key: destPlugin.key))
         }
         
-        return plugin.name
+        return plugin
     }
     
     /**
@@ -156,12 +148,14 @@ extension Analytics {
      
      - Parameter pluginName: An plugin name.
      */
-    public func remove(pluginName: String) {
-        timeline.remove(pluginName: pluginName)
-        store.dispatch(action: System.RemoveIntegrationAction(pluginName: pluginName))
+    public func remove(plugin: Plugin) {
+        timeline.remove(plugin: plugin)
+        if !(plugin is SegmentDestination), let destPlugin = plugin as? DestinationPlugin {
+            store.dispatch(action: System.RemoveIntegrationAction(key: destPlugin.key))
+        }
     }
     
-    public func find(pluginName: String) -> Plugin? {
-        return timeline.find(pluginName: pluginName)
+    public func find<T: Plugin>(pluginType: T.Type) -> T? {
+        return timeline.find(pluginType: pluginType)
     }
 }

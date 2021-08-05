@@ -40,19 +40,31 @@ public struct Settings: Codable {
      * - Parameter for: The string name of the integration
      * - Returns: The dictionary representing the settings for this integration as supplied by Segment.com
      */
-    public func integrationSettings(for name: String) -> [String: Any]? {
+    public func integrationSettings(forKey key: String) -> [String: Any]? {
         guard let settings = integrations?.dictionaryValue else { return nil }
-        let result = settings[name] as? [String: Any]
+        let result = settings[key] as? [String: Any]
         return result
     }
     
-    public func integrationSettings<T: Codable>(name: String) -> T? {
+    public func integrationSettings<T: Codable>(forKey key: String) -> T? {
         var result: T? = nil
         guard let settings = integrations?.dictionaryValue else { return nil }
-        if let dict = settings[name], let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
+        if let dict = settings[key], let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
             result = try? JSONDecoder().decode(T.self, from: jsonData)
         }
         return result
+    }
+    
+    public func integrationSettings<T: Codable>(forPlugin plugin: DestinationPlugin) -> T? {
+        return integrationSettings(forKey: plugin.key)
+    }
+    
+    public func isDestinationEnabled(key: String) -> Bool {
+        guard let settings = integrations?.dictionaryValue else { return false }
+        if settings.keys.contains(key) {
+            return true
+        }
+        return false
     }
 }
 

@@ -43,19 +43,19 @@ import FirebaseAnalytics
  An implmentation of the Firebase Analytics device mode destination as a plugin.
  */
 
+struct FirebaseSettings: Codable {
+    let deepLinkURLScheme: String?
+}
+
 class FirebaseDestination: DestinationPlugin {
-    let timeline: Timeline = Timeline()
-    let type: PluginType = .destination
-    let name: String
+    let timeline = Timeline()
+    let type = PluginType.destination
+    let key = "Firebase"
     var analytics: Segment.Analytics? = nil
     
-    required init(name: String) {
-        self.name = name
-    }
-    
     func update(settings: Settings) {
-        guard let firebaseSettings = settings.integrationSettings(for: "Firebase") else { return }
-        if let deepLinkURLScheme = firebaseSettings["deepLinkURLScheme"] as? String {
+        guard let firebaseSettings: FirebaseSettings = settings.integrationSettings(forPlugin: self) else { return }
+        if let deepLinkURLScheme = firebaseSettings.deepLinkURLScheme {
             FirebaseOptions.defaultOptions()?.deepLinkURLScheme = deepLinkURLScheme
             analytics?.log(message: "Added deepLinkURLScheme: \(deepLinkURLScheme)")
         }

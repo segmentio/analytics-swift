@@ -42,18 +42,45 @@ import Foundation
 import Segment
 
 class AmplitudeSession: EventPlugin, iOSLifecycle {
-    
-    var type: PluginType
-    var name: String
+    var key = "Amplitude"
+    var type = PluginType.enrichment
     var analytics: Analytics?
+    
+    var active = false
     
     private var sessionTimer: Timer?
     private var sessionID: TimeInterval?
     private let fireTime = TimeInterval(300)
     
-    required init(name: String) {
-        self.name = name
-        self.type = .enrichment
+    func update(settings: Settings) {
+        if settings.isDestinationEnabled(key: key) {
+            active = true
+        } else {
+            active = false
+        }
+    }
+    
+    func execute<T: RawEvent>(event: T?) -> T? {
+        if !active {
+            return event
+        }
+        
+        var result: T? = event
+        switch result {
+            case let r as IdentifyEvent:
+                result = self.identify(event: r) as? T
+            case let r as TrackEvent:
+                result = self.track(event: r) as? T
+            case let r as ScreenEvent:
+                result = self.screen(event: r) as? T
+            case let r as AliasEvent:
+                result = self.alias(event: r) as? T
+            case let r as GroupEvent:
+                result = self.group(event: r) as? T
+            default:
+                break
+        }
+        return result
     }
     
     func track(event: TrackEvent) -> TrackEvent? {
@@ -101,15 +128,15 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
     }
 }
 
+
 // MARK: - AmplitudeSession Helper Methods
 extension AmplitudeSession {
-    
     func insertSession(event: RawEvent) -> RawEvent {
         var returnEvent = event
         if var integrations = event.integrations?.dictionaryValue,
            let sessionID = sessionID {
             
-            integrations["Amplitude"] = ["session_id": (Int(sessionID) * 1000)]
+            integrations[key] = ["session_id": (Int(sessionID) * 1000)]
             returnEvent.integrations = try? JSON(integrations as Any)
         }
         return returnEvent

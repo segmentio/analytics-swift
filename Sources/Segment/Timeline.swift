@@ -60,9 +60,9 @@ internal class Mediator {
         }
     }
     
-    internal func remove(pluginName: String) {
-        plugins.removeAll { (plugin) -> Bool in
-            return plugin.name == pluginName
+    internal func remove(plugin: Plugin) {
+        plugins.removeAll { (storedPlugin) -> Bool in
+            return plugin === storedPlugin
         }
     }
 
@@ -103,31 +103,31 @@ extension Timeline {
         }
     }
     
-    internal func remove(pluginName: String) {
+    internal func remove(plugin: Plugin) {
         // remove all plugins with this name in every category
         for type in PluginType.allCases {
             if let mediator = plugins[type] {
-                let toRemove = mediator.plugins.filter { (plugin) -> Bool in
-                    return plugin.name == pluginName
+                let toRemove = mediator.plugins.filter { (storedPlugin) -> Bool in
+                    return plugin === storedPlugin
                 }
                 toRemove.forEach { (plugin) in
                     plugin.shutdown()
-                    mediator.remove(pluginName: pluginName)
+                    mediator.remove(plugin: plugin)
                 }
             }
         }
     }
     
-    internal func find(pluginName: String) -> Plugin? {
+    internal func find<T: Plugin>(pluginType: T.Type) -> T? {
         var found = [Plugin]()
         for type in PluginType.allCases {
             if let mediator = plugins[type] {
                 found.append(contentsOf: mediator.plugins.filter { (plugin) -> Bool in
-                    return plugin.name == pluginName
+                    return plugin is T
                 })
             }
         }
-        return found.first
+        return found.first as? T
     }
 }
 
@@ -208,6 +208,11 @@ extension DestinationPlugin {
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // This will process plugins (think destination middleware) that are tied
         // to this destination.
+        
+        // For destination plugins, we will always have some kind of `settings`,
+        // and if we don't, it means this destination hasn't been setup on app.segment.com,
+        // which in turn ALSO means that we shouldn't be sending events to it.
+        
         
         // apply .before and .enrichment types first ...
         let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)

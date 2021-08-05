@@ -16,8 +16,14 @@ import FoundationNetworking
 #endif
 
 public class SegmentDestination: DestinationPlugin {
-    public let type: PluginType = .destination
-    public let name: String
+    internal enum Constants: String {
+        case integrationName = "Segment.io"
+        case apiHost = "apiHost"
+        case apiKey = "apiKey"
+    }
+    
+    public let type = PluginType.destination
+    public let key: String = Constants.integrationName.rawValue
     public let timeline = Timeline()
     public var analytics: Analytics? {
         didSet {
@@ -44,16 +50,6 @@ public class SegmentDestination: DestinationPlugin {
     @Atomic private var eventCount: Int = 0
     internal var flushTimer: QueueTimer? = nil
     
-    internal enum Constants: String {
-        case integrationName = "Segment.io"
-        case apiHost = "apiHost"
-        case apiKey = "apiKey"
-    }
-    
-    required public init(name: String) {
-        self.name = name
-    }
-    
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
@@ -64,7 +60,7 @@ public class SegmentDestination: DestinationPlugin {
     }
     
     public func update(settings: Settings) {
-        let segmentInfo = settings.integrationSettings(for: Self.Constants.integrationName.rawValue)
+        let segmentInfo = settings.integrationSettings(forKey: self.key)
         apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
         apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String
         if (apiHost != nil && apiKey != nil), let analytics = self.analytics {

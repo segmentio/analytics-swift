@@ -14,16 +14,8 @@ class watchOSLifecycleEvents: PlatformPlugin, watchOSLifecycle {
     static var versionKey = "SEGVersionKey"
     static var buildKey = "SEGBuildKeyV2"
     
-    static var specificName: String = "Segment_watchOSLifecycleEvents"
-    
-    let type: PluginType
-    let name: String
+    let type = PluginType.before
     var analytics: Analytics?
-    
-    public required init(name: String) {
-        self.name = name
-        self.type = .before
-    }
     
     func applicationDidFinishLaunching(watchExtension: WKExtension) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {

@@ -46,22 +46,17 @@ private struct AppsFlyerSettings: Codable {
 
 @objc
 class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications, iOSLifecycle  {
+    let timeline = Timeline()
+    let type = PluginType.destination
+    let key = "AppsFlyer"
     
-    let timeline: Timeline = Timeline()
-    let type: PluginType = .destination
-    let name: String
     var analytics: Analytics?
     
     fileprivate var settings: AppsFlyerSettings? = nil
     
-    required init(name: String) {
-        self.name = name
-        analytics?.track(name: "AppsFlyer Loaded")
-    }
-    
     public func update(settings: Settings) {
         
-        guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else { return }
+        guard let settings: AppsFlyerSettings = settings.integrationSettings(forPlugin: self) else { return }
         self.settings = settings
         
         AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey

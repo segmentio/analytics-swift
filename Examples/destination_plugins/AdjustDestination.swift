@@ -47,20 +47,16 @@ internal struct AdjustSettings: Codable {
 }
 
 @objc
-public class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
-    public let timeline: Timeline = Timeline()
-    public let type: PluginType = .destination
-    public let name: String
-    public var analytics: Analytics? = nil
+class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
+    let timeline = Timeline()
+    let type = PluginType.destination
+    let key = "Adjust"
+    var analytics: Analytics? = nil
     
     internal var settings: AdjustSettings? = nil
     
-    required public init(name: String) {
-        self.name = name
-    }
-    
     public func update(settings: Settings) {
-        guard let settings: AdjustSettings = settings.integrationSettings(name: "Adjust") else { return }
+        guard let settings: AdjustSettings = settings.integrationSettings(forPlugin: self) else { return }
         self.settings = settings
         
         var environment = ADJEnvironmentSandbox

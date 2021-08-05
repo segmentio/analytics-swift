@@ -45,8 +45,7 @@ import UIKit
  If consent is declined, all events are dropped immediately after entering the event timeline.
  */
 class ConsentTracking: Plugin {
-    let type: PluginType = .before
-    let name: String
+    let type = PluginType.before
     var analytics: Analytics? = nil
     
     var queuedEvents = [RawEvent]()
@@ -56,9 +55,7 @@ class ConsentTracking: Plugin {
     static var lock = NSLock()
     static var instances = [ConsentTracking]()
     
-    required init(name: String) {
-        self.name = name
-        
+    init() {
         Self.instances.append(self)
         
         // In our example, we'll be adding this plugin to multiple instances of Analytics.

@@ -39,19 +39,13 @@ import Mixpanel
 import Segment
 
 class MixpanelDestination: DestinationPlugin, RemoteNotifications {
-    
-    var type: PluginType
-    var name: String
+    let timeline = Timeline()
+    let type = PluginType.destination
+    let key = "Mixpanel"
     var analytics: Analytics?
-    var timeline: Timeline
+    
     private var mixpanel: MixpanelInstance? = nil
     private var settings: [String: Any]? = nil
-    
-    required init(name: String) {
-        self.name = name
-        type = .destination
-        self.timeline = Timeline()
-    }
     
     func update(settings: Settings) {
         
@@ -59,7 +53,7 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
         mixpanel?.flush()
         
         // TODO: Update the proper types
-        if let mixPanelSettings = settings.integrationSettings(for: "Mixpanel"),
+        if let mixPanelSettings = settings.integrationSettings(forKey: key),
            let token = mixPanelSettings["token"] as? String {
             self.settings = mixPanelSettings
             mixpanel = Mixpanel.initialize(token: token)
