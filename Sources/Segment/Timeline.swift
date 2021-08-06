@@ -209,37 +209,40 @@ extension DestinationPlugin {
         // This will process plugins (think destination middleware) that are tied
         // to this destination.
         
+        var result: E? = nil
+        
         // For destination plugins, we will always have some kind of `settings`,
         // and if we don't, it means this destination hasn't been setup on app.segment.com,
         // which in turn ALSO means that we shouldn't be sending events to it.
-        
-        
-        // apply .before and .enrichment types first ...
-        let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)
-        let enrichmentResult = timeline.applyPlugins(type: .enrichment, event: beforeResult)
-        
-        // now we execute any overrides we may have made.  basically, the idea is to take an
-        // incoming event, like identify, and map it to whatever is appropriate for this destination.
-        var destinationResult: E? = nil
-        switch enrichmentResult {
-            case let e as IdentifyEvent:
-                destinationResult = identify(event: e) as? E
-            case let e as TrackEvent:
-                destinationResult = track(event: e) as? E
-            case let e as ScreenEvent:
-                destinationResult = screen(event: e) as? E
-            case let e as GroupEvent:
-                destinationResult = group(event: e) as? E
-            case let e as AliasEvent:
-                destinationResult = alias(event: e) as? E
-            default:
-                break
+
+        if let enabled = analytics?.settings()?.isDestinationEnabled(key: self.key), enabled == true {
+            // apply .before and .enrichment types first ...
+            let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)
+            let enrichmentResult = timeline.applyPlugins(type: .enrichment, event: beforeResult)
+            
+            // now we execute any overrides we may have made.  basically, the idea is to take an
+            // incoming event, like identify, and map it to whatever is appropriate for this destination.
+            var destinationResult: E? = nil
+            switch enrichmentResult {
+                case let e as IdentifyEvent:
+                    destinationResult = identify(event: e) as? E
+                case let e as TrackEvent:
+                    destinationResult = track(event: e) as? E
+                case let e as ScreenEvent:
+                    destinationResult = screen(event: e) as? E
+                case let e as GroupEvent:
+                    destinationResult = group(event: e) as? E
+                case let e as AliasEvent:
+                    destinationResult = alias(event: e) as? E
+                default:
+                    break
+            }
+            
+            // apply .after plugins ...
+            result = timeline.applyPlugins(type: .after, event: destinationResult)
         }
         
-        // apply .after plugins ...
-        let afterResult = timeline.applyPlugins(type: .after, event: destinationResult)
-
-        return afterResult
+        return result
     }
 }
 

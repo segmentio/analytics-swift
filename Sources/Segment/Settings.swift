@@ -21,6 +21,15 @@ public struct Settings: Codable {
         ])
     }
     
+    public init(writeKey: String) {
+        integrations = try! JSON([
+            SegmentDestination.Constants.integrationName.rawValue: [
+                SegmentDestination.Constants.apiKey.rawValue: writeKey,
+                SegmentDestination.Constants.apiHost.rawValue: HTTPClient.getDefaultAPIHost()
+            ]
+        ])
+    }
+    
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.integrations = try? values.decode(JSON.self, forKey: CodingKeys.integrations)

@@ -73,17 +73,25 @@ class MyDestination: DestinationPlugin {
     let type: PluginType
     let key: String
     var analytics: Analytics?
+    let trackCompletion: (() -> Void)?
     
-    init() {
+    init(trackCompletion: (() -> Void)? = nil) {
         self.key = "MyDestination"
         self.type = .destination
         self.timeline = Timeline()
+        self.trackCompletion = trackCompletion
     }
     
     func update(settings: Settings) {
         //
     }
     
+    func track(event: TrackEvent) -> TrackEvent? {
+        if let completion = trackCompletion {
+            completion()
+        }
+        return event
+    }
 }
 
 class OutputReaderPlugin: Plugin {
