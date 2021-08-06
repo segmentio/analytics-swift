@@ -50,10 +50,9 @@ class iOSLifecycleMonitor: PlatformPlugin {
                                                            UIApplication.backgroundRefreshStatusDidChangeNotification]
 
     required init() {
-        // App extensions can't use UIAppication.shared.
-        if !isAppExtension {
-            application = UIApplication.safeShared
-        }
+        // App extensions can't use UIAppication.shared, so
+        // funnel it through something to check; Could be nil.
+        application = UIApplication.safeShared
         setupListeners()
     }
     
