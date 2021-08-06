@@ -11,34 +11,34 @@ import Foundation
 import UIKit
 
 public protocol iOSLifecycle {
-    func applicationDidEnterBackground(application: UIApplication)
-    func applicationWillEnterForeground(application: UIApplication)
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
-    func applicationDidBecomeActive(application: UIApplication)
-    func applicationWillResignActive(application: UIApplication)
-    func applicationDidReceiveMemoryWarning(application: UIApplication)
-    func applicationWillTerminate(application: UIApplication)
-    func applicationSignificantTimeChange(application: UIApplication)
-    func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus)
+    func applicationDidEnterBackground(application: UIApplication?)
+    func applicationWillEnterForeground(application: UIApplication?)
+    func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
+    func applicationDidBecomeActive(application: UIApplication?)
+    func applicationWillResignActive(application: UIApplication?)
+    func applicationDidReceiveMemoryWarning(application: UIApplication?)
+    func applicationWillTerminate(application: UIApplication?)
+    func applicationSignificantTimeChange(application: UIApplication?)
+    func applicationBackgroundRefreshDidChange(application: UIApplication?, refreshStatus: UIBackgroundRefreshStatus)
 }
 
 public extension iOSLifecycle {
-    func applicationDidEnterBackground(application: UIApplication) { }
-    func applicationWillEnterForeground(application: UIApplication) { }
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) { }
-    func applicationDidBecomeActive(application: UIApplication) { }
-    func applicationWillResignActive(application: UIApplication) { }
-    func applicationDidReceiveMemoryWarning(application: UIApplication) { }
-    func applicationWillTerminate(application: UIApplication) { }
-    func applicationSignificantTimeChange(application: UIApplication) { }
-    func applicationBackgroundRefreshDidChange(application: UIApplication, refreshStatus: UIBackgroundRefreshStatus) { }
+    func applicationDidEnterBackground(application: UIApplication?) { }
+    func applicationWillEnterForeground(application: UIApplication?) { }
+    func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) { }
+    func applicationDidBecomeActive(application: UIApplication?) { }
+    func applicationWillResignActive(application: UIApplication?) { }
+    func applicationDidReceiveMemoryWarning(application: UIApplication?) { }
+    func applicationWillTerminate(application: UIApplication?) { }
+    func applicationSignificantTimeChange(application: UIApplication?) { }
+    func applicationBackgroundRefreshDidChange(application: UIApplication?, refreshStatus: UIBackgroundRefreshStatus) { }
 }
 
 class iOSLifecycleMonitor: PlatformPlugin {
     let type = PluginType.utility
     var analytics: Analytics?
     
-    private var application: UIApplication
+    private var application: UIApplication? = nil
     private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,
                                                            UIApplication.willEnterForegroundNotification,
                                                            UIApplication.didFinishLaunchingNotification,
@@ -50,7 +50,10 @@ class iOSLifecycleMonitor: PlatformPlugin {
                                                            UIApplication.backgroundRefreshStatusDidChangeNotification]
 
     required init() {
-        application = UIApplication.shared
+        // App extensions can't use UIAppication.shared.
+        if !isAppExtension {
+            application = UIApplication.safeShared
+        }
         setupListeners()
     }
     
@@ -154,10 +157,15 @@ class iOSLifecycleMonitor: PlatformPlugin {
     }
     
     func backgroundRefreshDidChange(notification: NSNotification) {
-        analytics?.apply { (ext) in
-            if let validExt = ext as? iOSLifecycle {
-                validExt.applicationBackgroundRefreshDidChange(application: application,
-                                                               refreshStatus: application.backgroundRefreshStatus)
+        // Not only would we not get this in an App Extension, but it would
+        // be useless since we couldn't provide the application object or
+        // the refreshStatus value.
+        if !isAppExtension, let application = UIApplication.safeShared {
+            analytics?.apply { (ext) in
+                if let validExt = ext as? iOSLifecycle {
+                    validExt.applicationBackgroundRefreshDidChange(application: application,
+                                                                   refreshStatus: application.backgroundRefreshStatus)
+                }
             }
         }
     }
@@ -166,11 +174,11 @@ class iOSLifecycleMonitor: PlatformPlugin {
 // MARK: - Segment Destination Extension
 
 extension SegmentDestination: iOSLifecycle {
-    public func applicationWillEnterForeground(application: UIApplication) {
+    public func applicationWillEnterForeground(application: UIApplication?) {
         enterForeground()
     }
     
-    public func applicationDidEnterBackground(application: UIApplication) {
+    public func applicationDidEnterBackground(application: UIApplication?) {
         enterBackground()
     }
 }
@@ -180,15 +188,31 @@ extension SegmentDestination.UploadTaskInfo {
         self.url = url
         self.task = task
         
-        let taskIdentifier = UIApplication.shared.beginBackgroundTask { [self] in
-            self.task.suspend()
-            self.cleanup?()
+        if let application = UIApplication.safeShared {
+            let taskIdentifier = application.beginBackgroundTask { [self] in
+                self.task.suspend()
+                self.cleanup?()
+            }
+            self.taskID = taskIdentifier.rawValue
+            
+            self.cleanup = { [self] in
+                application.endBackgroundTask(UIBackgroundTaskIdentifier(rawValue: self.taskID))
+            }
         }
-        self.taskID = taskIdentifier.rawValue
-        
-        self.cleanup = { [self] in
-            UIApplication.shared.endBackgroundTask(UIBackgroundTaskIdentifier(rawValue: self.taskID))
+    }
+}
+
+extension UIApplication {
+    static var safeShared: UIApplication? {
+        // UIApplication.shared is not available in app extensions.
+        if !isAppExtension {
+            // getting it like this allows us to avoid the compiler error that would
+            // be generated even though we're guarding against app extensions.
+            // there's no preprocessor macro or @available macro to help us here unfortunately
+            // so this is the best i could do.
+            return UIApplication.value(forKeyPath: "sharedApplication") as? UIApplication
         }
+        return nil
     }
 }
 
