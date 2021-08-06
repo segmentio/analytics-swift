@@ -13,6 +13,13 @@ internal var isUnitTesting: Bool = {
     return value
 }()
 
+internal var isAppExtension: Bool = {
+    if Bundle.main.bundlePath.hasSuffix(".appex") {
+        return true
+    }
+    return false
+}()
+
 internal func exceptionFailure(_ message: String) {
     if isUnitTesting {
         assertionFailure(message)
