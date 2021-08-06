@@ -209,7 +209,7 @@ extension DestinationPlugin {
         // This will process plugins (think destination middleware) that are tied
         // to this destination.
         
-        var result: E? = incomingEvent
+        var result: E? = nil
         
         // For destination plugins, we will always have some kind of `settings`,
         // and if we don't, it means this destination hasn't been setup on app.segment.com,
