@@ -203,7 +203,10 @@ extension SegmentDestination.UploadTaskInfo {
 
 extension UIApplication {
     static var safeShared: UIApplication? {
-        // UIApplication.shared is not available in app extensions.
+        // UIApplication.shared is not available in app extensions so try to get
+        // it in a way that's safe for both.
+        
+        // if we are NOT an app extension, we need to get UIApplication.shared
         if !isAppExtension {
             // getting it like this allows us to avoid the compiler error that would
             // be generated even though we're guarding against app extensions.
@@ -211,6 +214,8 @@ extension UIApplication {
             // so this is the best i could do.
             return UIApplication.value(forKeyPath: "sharedApplication") as? UIApplication
         }
+        // if we ARE an app extension, send back nil since we have no way to get the
+        // application instance.
         return nil
     }
 }
