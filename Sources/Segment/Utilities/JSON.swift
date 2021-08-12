@@ -269,6 +269,21 @@ extension JSON {
 
 // MARK: - Mapping
 
+extension JSON {
+    /// Maps keys supplied, in the format of ["Old": "New"].  Gives an optional value transformer that can be used to transform values based on the final key name.
+    /// - Parameters:
+    ///   - keys: A dictionary containing key mappings, in the format of ["Old": "New"].
+    ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
+    public func mapKeys(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
+        guard let dict = self.dictionaryValue else { return self }
+        let mapped = try dict.mapKeys(keys, valueTransform: valueTransform)
+        let result = try JSON(mapped)
+        return result
+    }
+}
+
+// MARK: - Helpers
+
 extension Dictionary where Key == String, Value == Any {
     internal func mapKeys(_ keys: [String: String], valueTransform: ((_ key: Key, _ value: Value) -> Any)? = nil) throws -> [Key: Value] {
         let mapped = Dictionary(uniqueKeysWithValues: self.map { key, value -> (Key, Value) in
@@ -318,21 +333,6 @@ extension Dictionary where Key == String, Value == Any {
     }
 }
 
-extension JSON {
-    /// Maps keys supplied, in the format of ["Old": "New"].  Gives an optional value transformer that can be used to transform values based on the final key name.
-    /// - Parameters:
-    ///   - keys: A dictionary containing key mappings, in the format of ["Old": "New"].
-    ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
-    public func mapKeys(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
-        guard let dict = self.dictionaryValue else { return self }
-        let mapped = try dict.mapKeys(keys, valueTransform: valueTransform)
-        let result = try JSON(mapped)
-        return result
-    }
-}
-
-
-// MARK: - Helpers
 
 fileprivate extension NSNumber {
     static let trueValue = NSNumber(value: true)
