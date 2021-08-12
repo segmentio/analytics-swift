@@ -130,4 +130,51 @@ class JSONTests: XCTestCase {
         
         XCTAssertTrue(fetchedTraits?.email == "test@test.com")
     }
+    
+    func testKeyMapping() {
+        let keys = ["Key1": "AKey1", "Key2": "AKey2"]
+        let dict: [String: Any] = ["Key1": 1, "Key2": 2, "Key3": 3, "Key4": ["Key1": 1]]
+        
+        let json = try! JSON(dict)
+        
+        let output = try! json.mapKeys(keys).dictionaryValue
+        
+        XCTAssertTrue(output!["AKey1"] as! Int == 1)
+        XCTAssertTrue(output!["AKey2"] as! Int == 2)
+        XCTAssertTrue(output!["Key3"] as! Int == 3)
+        
+        let subDict = output!["Key4"] as! [String: Any]
+        XCTAssertTrue(subDict["AKey1"] as! Int == 1)
+    }
+    
+    func testKeyMappingWithValueTransform() {
+        let keys = ["Key1": "AKey1", "Key2": "AKey2"]
+        let dict: [String: Any] = ["Key1": 1, "Key2": 2, "Key3": 3, "Key4": ["Key1": 1], "Key5": [1, 2, ["Key1": 1]]]
+        
+        let json = try! JSON(dict)
+        
+        let output = try! json.mapKeys(keys, valueTransform: { key, value in
+            var newValue = value
+            if let v = newValue as? Int {
+                if v == 1 {
+                    newValue = 11
+                }
+            }
+            print("value = \(value.self)")
+            return newValue
+        }).dictionaryValue
+        
+        XCTAssertTrue(output!["AKey1"] as! Int == 11)
+        XCTAssertTrue(output!["AKey2"] as! Int == 2)
+        XCTAssertTrue(output!["Key3"] as! Int == 3)
+        
+        let subDict = output!["Key4"] as! [String: Any]
+        XCTAssertTrue(subDict["AKey1"] as! Int == 11)
+        
+        let subArray = output!["Key5"] as! [Any]
+        let subArrayDict = subArray[2] as! [String: Any]
+        XCTAssertTrue(subArray[0] as! Int == 1)
+        XCTAssertTrue(subArray[1] as! Int == 2)
+        XCTAssertTrue(subArrayDict["AKey1"] as! Int == 11)
+    }
 }
