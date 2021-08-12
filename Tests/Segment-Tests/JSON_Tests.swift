@@ -170,5 +170,11 @@ class JSONTests: XCTestCase {
         
         let subDict = output!["Key4"] as! [String: Any]
         XCTAssertTrue(subDict["AKey1"] as! Int == 11)
+        
+        let subArray = output!["Key5"] as! [Any]
+        let subArrayDict = subArray[2] as! [String: Any]
+        XCTAssertTrue(subArray[0] as! Int == 1)
+        XCTAssertTrue(subArray[1] as! Int == 2)
+        XCTAssertTrue(subArrayDict["AKey1"] as! Int == 11)
     }
 }
