@@ -7,10 +7,9 @@
 
 import Foundation
 
+// MARK: - Typed Event Signatures
+
 extension Analytics {
-    
-    // MARK: - Track
-    
     // make a note in the docs on this that we removed the old "options" property
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
@@ -34,13 +33,6 @@ extension Analytics {
     public func track(name: String) {
         track(name: name, properties: nil as TrackEvent?)
     }
-    
-    // MARK: - Identify
-    
-    // make a note in the docs on this that we removed the old "options" property
-    // and they need to write a middleware/enrichment now.
-    // the objc version should accomodate them if it's really needed.
-    
     
     /// Associate a user with their unique ID and record traits about them.
     /// - Parameters:
@@ -89,11 +81,6 @@ extension Analytics {
         process(incomingEvent: event)
     }
     
-    // MARK: - Screen
-    
-    // make a note in the docs on this that we removed the old "options" property
-    // and they need to write a middleware/enrichment now.
-    // the objc version should accomodate them if it's really needed.
     public func screen<P: Codable>(screenTitle: String, category: String? = nil, properties: P?) {
         do {
             if let properties = properties {
@@ -113,11 +100,6 @@ extension Analytics {
         screen(screenTitle: screenTitle, category: category, properties: nil as ScreenEvent?)
     }
 
-    // MARK: - Group
-    
-    // make a note in the docs on this that we removed the old "options" property
-    // and they need to write a middleware/enrichment now.
-    // the objc version should accomodate them if it's really needed.
     public func group<T: Codable>(groupId: String, traits: T?) {
         do {
             if let traits = traits {
@@ -137,12 +119,102 @@ extension Analytics {
         group(groupId: groupId, traits: nil as GroupEvent?)
     }
     
-    // MARK: - Alias
     public func alias(newId: String) {
-//        let userInfo: UserInfo? = store.currentState()
-        
         let event = AliasEvent(newId: newId)
         store.dispatch(action: UserInfo.SetUserIdAction(userId: newId))
         process(incomingEvent: event)
+    }
+}
+
+// MARK: - Untyped Event Signatures
+
+extension Analytics {
+    /// Associate a user with their unique ID and record traits about them.
+    /// - Parameters:
+    ///   - userId: A database ID (or email address) for this user. If you don't have a userId
+    ///     but want to record traits, you should pass nil. For more information on how we
+    ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
+    ///   - properties: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
+    public func track(name: String, properties: [String: Any]?) {
+        var props: JSON? = nil
+        if let properties = properties {
+            do {
+                props = try JSON(properties)
+            } catch {
+                exceptionFailure("\(error)")
+            }
+        }
+        let event = TrackEvent(event: name, properties: props)
+        process(incomingEvent: event)
+    }
+    
+    /// Associate a user with their unique ID and record traits about them.
+    /// - Parameters:
+    ///   - userId: A database ID (or email address) for this user. If you don't have a userId
+    ///     but want to record traits, you should pass nil. For more information on how we
+    ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
+    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
+    public func identify(userId: String, traits: [String: AnyHashable]?) {
+        do {
+            if let traits = traits {
+                let traits = try JSON(traits as Any)
+                let event = IdentifyEvent(userId: userId, traits: traits)
+                process(incomingEvent: event)
+            } else {
+                let event = IdentifyEvent(userId: userId, traits: nil)
+                process(incomingEvent: event)
+            }
+
+        } catch {
+            exceptionFailure("Could not parse traits.")
+        }
+    }
+    
+    /// Associate a user with traits about them.
+    /// - Parameters:
+    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
+    public func identify(traits: [String: AnyHashable]) {
+        do {
+            let traits = try JSON(traits as Any)
+            let event = IdentifyEvent(userId: nil, traits: traits)
+            process(event: event)
+        } catch {
+            exceptionFailure("Could not parse traits.")
+        }
+    }
+    
+    /// Track a screen change with a title, category and other properties.
+    /// - Parameters:
+    ///   - screenTitle: The title of the screen being tracked.
+    ///   - category: A category to the type of screen if it applies.
+    ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
+    public func screen(screenTitle: String, category: String? = nil, properties: [String: AnyHashable]?) {
+        var event = ScreenEvent(screenTitle: screenTitle, category: category, properties: nil)
+        if let properties = properties {
+            do {
+                let jsonProperties = try JSON(properties)
+                event = ScreenEvent(screenTitle: screenTitle, category: category, properties: jsonProperties)
+            } catch {
+                exceptionFailure("Could not parse properties.")
+            }
+        }
+        process(event: event)
+    }
+    
+    /// Associate a user with a group such as a company, organization, project, etc.
+    /// - Parameters:
+    ///   - groupId: A unique identifier for the group identification in your system.
+    ///   - traits: Traits of the group you may be interested in such as email, phone or name.
+    public func group(groupId: String, traits: [String: AnyHashable]?) {
+        var event = GroupEvent(groupId: groupId)
+        if let traits = traits {
+            do {
+                let jsonTraits = try JSON(traits)
+                event = GroupEvent(groupId: groupId, traits: jsonTraits)
+            } catch {
+                exceptionFailure("Could not parse traits.")
+            }
+        }
+        process(event: event)
     }
 }
