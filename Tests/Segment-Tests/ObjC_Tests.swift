@@ -5,6 +5,8 @@
 //  Created by Brandon Sneed on 8/13/21.
 //
 
+#if !os(Linux)
+
 import XCTest
 @testable import Segment
 
@@ -57,3 +59,5 @@ class ObjC_Tests: XCTestCase {
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
     }
 }
+
+#endif
