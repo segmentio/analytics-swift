@@ -22,7 +22,9 @@
     config.trackApplicationLifecycleEvents = TRUE;
     
     SEGAnalytics *analytics = [[SEGAnalytics alloc] initWithConfiguration: config];
-    [analytics track:@"test" properties:@{@"email": @"blah@blah.com"}];
+    
+    [analytics track:@"test"];
+    [analytics track:@"testProps" properties:@{@"email": @"blah@blah.com"}];
     
     return YES;
 }

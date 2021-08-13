@@ -114,6 +114,11 @@ jobs:
       - run:
         # build for ios simulator
           command: |
+            cd Examples/apps/ObjCExample
+            xcodebuild -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator
+      - run:
+        # build for ios simulator
+          command: |
             cd Examples/apps/SegmentUIKitExample
             xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
       - run:
