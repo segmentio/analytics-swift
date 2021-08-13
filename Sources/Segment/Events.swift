@@ -135,7 +135,7 @@ extension Analytics {
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     ///   - properties: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func track(name: String, properties: [String: Any]?) {
+    public func track(name: String, properties: [String: Any]? = nil) {
         var props: JSON? = nil
         if let properties = properties {
             do {
@@ -154,7 +154,7 @@ extension Analytics {
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func identify(userId: String, traits: [String: AnyHashable]?) {
+    public func identify(userId: String, traits: [String: AnyHashable]? = nil) {
         do {
             if let traits = traits {
                 let traits = try JSON(traits as Any)
@@ -170,25 +170,12 @@ extension Analytics {
         }
     }
     
-    /// Associate a user with traits about them.
-    /// - Parameters:
-    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func identify(traits: [String: AnyHashable]) {
-        do {
-            let traits = try JSON(traits as Any)
-            let event = IdentifyEvent(userId: nil, traits: traits)
-            process(event: event)
-        } catch {
-            exceptionFailure("Could not parse traits.")
-        }
-    }
-    
     /// Track a screen change with a title, category and other properties.
     /// - Parameters:
     ///   - screenTitle: The title of the screen being tracked.
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
-    public func screen(screenTitle: String, category: String? = nil, properties: [String: AnyHashable]?) {
+    public func screen(screenTitle: String, category: String? = nil, properties: [String: AnyHashable]? = nil) {
         var event = ScreenEvent(screenTitle: screenTitle, category: category, properties: nil)
         if let properties = properties {
             do {
