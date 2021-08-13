@@ -41,6 +41,7 @@
 		46E382E72654429A00BA2502 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E62654429A00BA2502 /* Utils.swift */; };
 		46F7485D26C718710042798E /* ObjCAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485B26C718710042798E /* ObjCAnalytics.swift */; };
 		46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485C26C718710042798E /* ObjCConfiguration.swift */; };
+		46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485F26C720F60042798E /* ObjC_Tests.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */; };
 		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
@@ -123,6 +124,7 @@
 		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		46F7485B26C718710042798E /* ObjCAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCAnalytics.swift; sourceTree = "<group>"; };
 		46F7485C26C718710042798E /* ObjCConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCConfiguration.swift; sourceTree = "<group>"; };
+		46F7485F26C720F60042798E /* ObjC_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjC_Tests.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
+				46F7485F26C720F60042798E /* ObjC_Tests.swift */,
 			);
 			name = "Segment-Tests";
 			path = "Tests/Segment-Tests";
@@ -505,6 +508,7 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_30 /* Analytics_Tests.swift in Sources */,
+				46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
 				4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */,
 				46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */,

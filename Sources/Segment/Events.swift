@@ -48,6 +48,7 @@ extension Analytics {
                 let event = IdentifyEvent(userId: userId, traits: jsonTraits)
                 process(incomingEvent: event)
             } else {
+                store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: nil))
                 let event = IdentifyEvent(userId: userId, traits: nil)
                 process(incomingEvent: event)
             }
@@ -158,9 +159,11 @@ extension Analytics {
         do {
             if let traits = traits {
                 let traits = try JSON(traits as Any)
+                store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: traits))
                 let event = IdentifyEvent(userId: userId, traits: traits)
                 process(incomingEvent: event)
             } else {
+                store.dispatch(action: UserInfo.SetUserIdAndTraitsAction(userId: userId, traits: nil))
                 let event = IdentifyEvent(userId: userId, traits: nil)
                 process(incomingEvent: event)
             }
