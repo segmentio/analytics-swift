@@ -57,14 +57,6 @@ extension ObjCAnalytics {
         analytics.identify(userId: userId, traits: traits)
     }
     
-    /// Associate the current user with traits about them.
-    /// - Parameters:
-    ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    @objc(identify:)
-    public func identify(traits: [String: AnyHashable]) {
-        analytics.identify(traits: traits)
-    }
-    
     /// Track a screen change with a title, category and other properties.
     /// - Parameters:
     ///   - screenTitle: The title of the screen being tracked.
@@ -94,7 +86,7 @@ extension ObjCAnalytics {
     /// Associate a user with a group such as a company, organization, project, etc.
     /// - Parameters:
     ///   - groupId: A unique identifier for the group identification in your system.
-    @objc(group:traits:)
+    @objc(group:)
     public func group(groupId: String) {
         group(groupId: groupId, traits: nil)
     }
