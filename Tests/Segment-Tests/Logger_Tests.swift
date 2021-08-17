@@ -24,12 +24,12 @@ final class Logger_Tests: XCTestCase {
     }
 
     class LoggerMockPlugin: Logger {
-        var logClosure: ((LogKind, String) -> Void)?
+        var logClosure: ((LogFilterKind, String) -> Void)?
         var closure: (() -> Void)?
         
-        override func log(destination: LoggingType.LogDestination, message: String, logKind: LogKind, function: String, line: Int) {
-            super.log(destination: .log, message: message, logKind: logKind, function: function, line: line)
-            logClosure?(logKind, message)
+        override func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
+            super.log(logMessage, destination: destination)
+            logClosure?(logMessage.kind, logMessage.message)
         }
         
         override func flush() {
