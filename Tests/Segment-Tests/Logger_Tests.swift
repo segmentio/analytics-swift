@@ -10,14 +10,26 @@ import XCTest
 @testable import Segment
 
 final class Logger_Tests: XCTestCase {
+    
+    var analytics: Analytics?
+    let mockLogger = LoggerMockPlugin()
+    
+    override func setUp() {
+        analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        analytics?.add(plugin: mockLogger)
+    }
+    
+    override func tearDown() {
+        analytics = nil
+    }
 
-    class LoggerMock: Logger {
-        var logClosure: ((LogType, String) -> Void)?
+    class LoggerMockPlugin: Logger {
+        var logClosure: ((LogKind, String) -> Void)?
         var closure: (() -> Void)?
         
-        override func log(type: LogType, message: String, event: RawEvent?) {
-            super.log(type: type, message: message, event: event)
-            logClosure?(type, message)
+        override func log(destination: LoggingType.LogDestination, message: String, logKind: LogKind, function: String, line: Int) {
+            super.log(destination: .log, message: message, logKind: logKind, function: function, line: line)
+            logClosure?(logKind, message)
         }
         
         override func flush() {
@@ -27,20 +39,45 @@ final class Logger_Tests: XCTestCase {
     }
 
     func testLogging() {
-        
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
-        
+                
+        // Arrange
         let expectation = XCTestExpectation(description: "Called")
         
-        let mockLogger = LoggerMock()
-        mockLogger.logClosure = { (type, message) in
+        // Assert
+        mockLogger.logClosure = { (kind, message) in
             expectation.fulfill()
             
-            XCTAssertEqual(type, .info, "Type not correctly passed")
+            XCTAssertEqual(kind, .debug, "Type not correctly passed")
             XCTAssertEqual(message, "Something Other Than Awesome", "Message not correctly passed")
         }
-        analytics.add(plugin: mockLogger)
-        analytics.log(message: "Something Other Than Awesome")
+        
+        // Act
+        analytics?.log(message: "Something Other Than Awesome")
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testTargetSuccess() {
+        
+        // Arrange
+        let expectation = XCTestExpectation(description: "Called")
+        
+        struct LogConsoleTarget: LogTarget {
+            var successClosure: ((String) -> Void)
+            
+            func parseLog(_ log: LogMessage) {
+                print("[Segment Tests - \(log.function ?? ""):\(String(log.line ?? 0))] \(log.message)")
+                successClosure(log.message)
+            }
+        }
+        
+        let logConsoleTarget = LogConsoleTarget(successClosure: { (logMessage: String) in
+            expectation.fulfill()
+        })
+        let loggingType = LoggingType(types: [.log])
+        analytics?.add(logConsoleTarget, type: loggingType)
+        
+        // Act
+        analytics?.log(message: "Should hit our proper target")
         wait(for: [expectation], timeout: 1.0)
     }
 }
