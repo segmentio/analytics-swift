@@ -65,7 +65,7 @@ final class Logger_Tests: XCTestCase {
             var successClosure: ((String) -> Void)
             
             func parseLog(_ log: LogMessage) {
-                print("[Segment Tests - \(log.function ?? ""):\(String(log.line ?? 0))] \(log.message)")
+                print("[Segment Tests - \(log.function ?? ""):\(String(log.line ?? 0))] \(log.message)\n")
                 successClosure(log.message)
             }
         }
@@ -73,12 +73,34 @@ final class Logger_Tests: XCTestCase {
         let logConsoleTarget = LogConsoleTarget(successClosure: { (logMessage: String) in
             expectation.fulfill()
         })
-        let loggingType = LoggingType(types: [.log])
-        analytics?.add(logConsoleTarget, type: loggingType)
+        let loggingType = LoggingType.log
+        analytics?.add(target: logConsoleTarget, type: loggingType)
         
         // Act
         analytics?.log(message: "Should hit our proper target")
         wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testTargetFailure() {
+        
+        // Arrange        
+        struct LogConsoleTarget: LogTarget {
+            var successClosure: ((String) -> Void)
+            
+            func parseLog(_ log: LogMessage) {
+                print("[Segment Tests - \(log.function ?? ""):\(String(log.line ?? 0))] \(log.message)\n")
+                successClosure(log.message)
+            }
+        }
+        
+        let logConsoleTarget = LogConsoleTarget(successClosure: { (logMessage: String) in
+            XCTFail("Should not hit this since it was registered for history")
+        })
+        let loggingType = LoggingType.history
+        analytics?.add(target: logConsoleTarget, type: loggingType)
+        
+        // Act
+        analytics?.log(message: "Should hit our proper target")
     }
 }
 

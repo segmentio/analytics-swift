@@ -41,8 +41,14 @@ internal class Logger: UtilityPlugin {
 
 // MARK: - Types
 public protocol LogTarget {
+        
     func parseLog(_ log: LogMessage)
-    
+    func flush()
+}
+
+extension LogTarget {
+    // Make flush optional with an empty implementation.
+    func flush() { }
 }
 
 public enum LogKind: Int {
@@ -59,6 +65,10 @@ public struct LoggingType: Hashable {
         case metric
         case history
     }
+    
+    static let log = LoggingType(types: [.log])
+    static let metric = LoggingType(types: [.metric])
+    static let history = LoggingType(types: [.history])
     
     public init(types: [LogDestination]) {
         self.allTypes = types
@@ -94,7 +104,11 @@ extension Analytics {
     }
     
     public func metric(_ type: String, name: String, value: Double, tags: [String]? = nil) {
-        
+        apply { plugin in
+            if let loggerPlugin = plugin as? Logger {
+//                loggerPlugin.log(destination: .metric, message: message, logKind: filterKind, function: function, line: line)
+            }
+        }
     }
     
     public func history(event: RawEvent, sender: AnyObject, function: String = #function) {
@@ -104,33 +118,19 @@ extension Analytics {
 
 extension Analytics {
     
-    public func add(_ target: LogTarget, type: LoggingType) {
+    /// Add a logging target to the system. These `targets` can handle logs in various ways. Consider
+    /// sending logs to the console, the OS and a web service. Three targets can handle these scenarios.
+    /// - Parameters:
+    ///   - target: A `LogTarget` that has logic to parse and handle log messages.
+    ///   - type: The type consists of `log`, `metric` or `history`. These correspond to the
+    ///   public API on Analytics.
+    public func add(target: LogTarget, type: LoggingType) {
         apply { (potentialLogger) in
             if let logger = potentialLogger as? Logger {
                 logger.loggingMediator[type] = target
             }
         }
     }
-    
-    /// Log a generic message to the system with a possible log type. If a type is not supplied the system
-    /// will use the current default setting (.info).
-    /// - Parameters:
-    ///   - message: The message to be stored in the logging system.
-    ///   - event: The event associated with the log (optional).
-    ///   - type: The filter type for the message. If nil, defaults to logger setting.
-//    public func log(message: String, event: RawEvent? = nil, type: LogType? = nil) {
-//        apply { (potentialLogger) in
-//
-//            if let logger = potentialLogger as? Logger {
-//
-//                var loggingType = logger.filterType
-//                if let type = type {
-//                    loggingType = type
-//                }
-//                logger.log(type: loggingType, message: message, event: event)
-//            }
-//        }
-//    }
     
     public func logFlush() {
         apply { (potentialLogger) in
