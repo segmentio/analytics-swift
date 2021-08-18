@@ -447,8 +447,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:flurry/FlurrySwiftPackage.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.2.1;
+				kind = exactVersion;
+				version = 11.2.1;
 			};
 		};
 		469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {

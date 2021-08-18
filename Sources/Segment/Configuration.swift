@@ -22,7 +22,6 @@ public class Configuration {
     internal struct Values {
         var writeKey: String
         var application: Any? = nil
-        var trackInAppPurchases: Bool = false
         var trackApplicationLifecycleEvents: Bool = true
         var trackDeeplinks: Bool = true
         var flushAt: Int = 20
@@ -44,8 +43,8 @@ public class Configuration {
 
 public extension Configuration {
     @discardableResult
-    func trackInAppPurchases(_ enabled: Bool) -> Configuration {
-        values.trackInAppPurchases = enabled
+    func application(_ value: Any?) -> Configuration {
+        values.application = value
         return self
     }
     
