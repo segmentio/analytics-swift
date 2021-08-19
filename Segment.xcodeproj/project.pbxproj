@@ -31,7 +31,6 @@
 		46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */; };
 		46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46210835260BBEE400EBC4A8 /* DeviceToken.swift */; };
 		4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */; };
-		465879B72686554400180335 /* EventsObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B62686554400180335 /* EventsObjC.swift */; };
 		465879BA2686560C00180335 /* watchOSDelegation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B82686560C00180335 /* watchOSDelegation.swift */; };
 		465879BB2686560C00180335 /* watchOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */; };
 		4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4663C728267A799100ADDD1A /* QueueTimer.swift */; };
@@ -40,6 +39,9 @@
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
 		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
 		46E382E72654429A00BA2502 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E62654429A00BA2502 /* Utils.swift */; };
+		46F7485D26C718710042798E /* ObjCAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485B26C718710042798E /* ObjCAnalytics.swift */; };
+		46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485C26C718710042798E /* ObjCConfiguration.swift */; };
+		46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485F26C720F60042798E /* ObjC_Tests.swift */; };
 		46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */; };
 		46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */; };
 		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
@@ -112,7 +114,6 @@
 		46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPath_Tests.swift; sourceTree = "<group>"; };
 		46210835260BBEE400EBC4A8 /* DeviceToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceToken.swift; sourceTree = "<group>"; };
 		4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient_Tests.swift; sourceTree = "<group>"; };
-		465879B62686554400180335 /* EventsObjC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsObjC.swift; sourceTree = "<group>"; };
 		465879B82686560C00180335 /* watchOSDelegation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = watchOSDelegation.swift; sourceTree = "<group>"; };
 		465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		4663C728267A799100ADDD1A /* QueueTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTimer.swift; sourceTree = "<group>"; };
@@ -121,6 +122,9 @@
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
 		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		46F7485B26C718710042798E /* ObjCAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCAnalytics.swift; sourceTree = "<group>"; };
+		46F7485C26C718710042798E /* ObjCConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCConfiguration.swift; sourceTree = "<group>"; };
+		46F7485F26C720F60042798E /* ObjC_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjC_Tests.swift; sourceTree = "<group>"; };
 		46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4C9B25A3F41C003A7362 /* LinuxLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxLifecycleMonitor.swift; sourceTree = "<group>"; };
 		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
@@ -197,7 +201,8 @@
 		465879B52686554400180335 /* ObjC */ = {
 			isa = PBXGroup;
 			children = (
-				465879B62686554400180335 /* EventsObjC.swift */,
+				46F7485B26C718710042798E /* ObjCAnalytics.swift */,
+				46F7485C26C718710042798E /* ObjCConfiguration.swift */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -307,6 +312,7 @@
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
+				46F7485F26C720F60042798E /* ObjC_Tests.swift */,
 			);
 			name = "Segment-Tests";
 			path = "Tests/Segment-Tests";
@@ -467,6 +473,7 @@
 				46E382E72654429A00BA2502 /* Utils.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
+				46F7485D26C718710042798E /* ObjCAnalytics.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
@@ -474,10 +481,10 @@
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
-				465879B72686554400180335 /* EventsObjC.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
+				46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				4602276C261E7BF900A9E913 /* iOSDelegation.swift in Sources */,
@@ -501,6 +508,7 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_30 /* Analytics_Tests.swift in Sources */,
+				46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
 				4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */,
 				46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */,
@@ -845,7 +853,7 @@
 			repositoryURL = "git@github.com:segmentio/Sovran-Swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.0.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

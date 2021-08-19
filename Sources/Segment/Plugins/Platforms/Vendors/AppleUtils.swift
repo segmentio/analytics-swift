@@ -76,6 +76,10 @@ internal class iOSVendorSystem: VendorSystem {
         return connectionStatus()
     }
     
+    override var requiredPlugins: [PlatformPlugin] {
+        return [iOSLifecycleMonitor(), DeviceToken()]
+    }
+    
     private func deviceModel() -> String {
         var name: [Int32] = [CTL_HW, HW_MACHINE]
         var size: Int = 2
@@ -157,6 +161,10 @@ internal class watchOSVendorSystem: VendorSystem {
         return ConnectionStatus.unknown
     }
     
+    override var requiredPlugins: [PlatformPlugin] {
+        return [watchOSLifecycleMonitor()]
+    }
+    
     private func deviceModel() -> String {
         var name: [Int32] = [CTL_HW, HW_MACHINE]
         var size: Int = 2
@@ -225,6 +233,10 @@ internal class MacOSVendorSystem: VendorSystem {
     
     override var connection: ConnectionStatus {
         return connectionStatus()
+    }
+    
+    override var requiredPlugins: [PlatformPlugin] {
+        return [macOSLifecycleMonitor(), DeviceToken()]
     }
     
     private func deviceModel() -> String {

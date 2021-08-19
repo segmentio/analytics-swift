@@ -104,6 +104,7 @@ extension Analytics {
     }
     
     internal func checkSettings() {
+        #if DEBUG
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...
             // but we should make it work similarly.
@@ -116,6 +117,7 @@ extension Analytics {
             }
             return
         }
+        #endif
         
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)

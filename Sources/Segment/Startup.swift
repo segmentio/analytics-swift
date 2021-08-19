@@ -38,23 +38,27 @@ extension Analytics: Subscriber {
     internal func platformPlugins() -> [PlatformPlugin]? {
         var plugins = [PlatformPlugin]()
         
+        // add context plugin as well as it's platform specific internally.
+        // this must come first.
+        plugins.append(Context())
+        
+        plugins += VendorSystem.current.requiredPlugins
+
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents {
-            // add context plugin as well as it's platform specific internally.
-            // this must come first.
-            plugins.append(Context())
-            
             #if os(iOS) || os(tvOS)
-            plugins += [iOSLifecycleMonitor(), iOSLifecycleEvents(), DeviceToken()]
+            plugins.append(iOSLifecycleEvents())
             #endif
             #if os(watchOS)
-            plugins += [watchOSLifecycleMonitor(), watchOSLifecycleEvents()]
+            plugins.append(watchOSLifecycleEvents())
             #endif
             #if os(macOS)
-            plugins += [macOSLifecycleMonitor(), DeviceToken()]
+            // placeholder - need to build this
+            //plugins.append(macOSLifecycleEvents())
             #endif
             #if os(Linux)
-            plugins.append(LinuxLifecycleMonitor())
+            // placeholder - not sure what this is yet
+            //plugins.append(LinuxLifecycleMonitor())
             #endif
         }
         

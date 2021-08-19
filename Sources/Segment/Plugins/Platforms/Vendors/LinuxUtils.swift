@@ -49,6 +49,10 @@ class LinuxVendorSystem: VendorSystem {
     override var connection: ConnectionStatus {
         return ConnectionStatus.unknown
     }
+    
+    override var requiredPlugins: [PlatformPlugin] {
+        return []
+    }
 }
 
 #endif
