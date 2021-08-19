@@ -127,13 +127,21 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(context)
         XCTAssertNotNil(context?["screen"], "screen missing!")
         XCTAssertNotNil(context?["network"], "network missing!")
-        XCTAssertNotNil(context?["app"], "app missing!")
-        XCTAssertNotNil(context?["locale"], "locale missing!")
         XCTAssertNotNil(context?["os"], "os missing!")
         XCTAssertNotNil(context?["timezone"], "timezone missing!")
-        XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
         XCTAssertNotNil(context?["library"], "library missing!")
         XCTAssertNotNil(context?["device"], "device missing!")
+
+        // this key not present on watchOS (doesn't have webkit)
+        #if !os(watchOS)
+        XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
+        #endif
+        
+        // these keys not present on linux
+        #if !os(Linux)
+        XCTAssertNotNil(context?["app"], "app missing!")
+        XCTAssertNotNil(context?["locale"], "locale missing!")
+        #endif
     }
     
     func testDeviceToken() {
