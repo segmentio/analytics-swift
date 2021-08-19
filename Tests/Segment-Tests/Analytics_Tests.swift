@@ -111,6 +111,31 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
     }
     
+    func testContext() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "token check")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let context = trackEvent?.context?.dictionaryValue
+        // Verify that context isn't empty here.
+        // We need to verify the values but will do that in separate platform specific tests.
+        XCTAssertNotNil(context)
+        XCTAssertNotNil(context?["screen"])
+        XCTAssertNotNil(context?["network"])
+        XCTAssertNotNil(context?["app"])
+        XCTAssertNotNil(context?["locale"])
+        XCTAssertNotNil(context?["os"])
+        XCTAssertNotNil(context?["timezone"])
+        XCTAssertNotNil(context?["userAgent"])
+        XCTAssertNotNil(context?["library"])
+        XCTAssertNotNil(context?["device"])
+    }
+    
     func testDeviceToken() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
