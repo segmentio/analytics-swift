@@ -111,6 +111,39 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
     }
     
+    func testContext() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "token check")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let context = trackEvent?.context?.dictionaryValue
+        // Verify that context isn't empty here.
+        // We need to verify the values but will do that in separate platform specific tests.
+        XCTAssertNotNil(context)
+        XCTAssertNotNil(context?["screen"], "screen missing!")
+        XCTAssertNotNil(context?["network"], "network missing!")
+        XCTAssertNotNil(context?["os"], "os missing!")
+        XCTAssertNotNil(context?["timezone"], "timezone missing!")
+        XCTAssertNotNil(context?["library"], "library missing!")
+        XCTAssertNotNil(context?["device"], "device missing!")
+
+        // this key not present on watchOS (doesn't have webkit)
+        #if !os(watchOS)
+        XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
+        #endif
+        
+        // these keys not present on linux
+        #if !os(Linux)
+        XCTAssertNotNil(context?["app"], "app missing!")
+        XCTAssertNotNil(context?["locale"], "locale missing!")
+        #endif
+    }
+    
     func testDeviceToken() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
