@@ -125,15 +125,15 @@ final class Analytics_Tests: XCTestCase {
         // Verify that context isn't empty here.
         // We need to verify the values but will do that in separate platform specific tests.
         XCTAssertNotNil(context)
-        XCTAssertNotNil(context?["screen"])
-        XCTAssertNotNil(context?["network"])
-        XCTAssertNotNil(context?["app"])
-        XCTAssertNotNil(context?["locale"])
-        XCTAssertNotNil(context?["os"])
-        XCTAssertNotNil(context?["timezone"])
-        XCTAssertNotNil(context?["userAgent"])
-        XCTAssertNotNil(context?["library"])
-        XCTAssertNotNil(context?["device"])
+        XCTAssertNotNil(context?["screen"], "screen missing!")
+        XCTAssertNotNil(context?["network"], "network missing!")
+        XCTAssertNotNil(context?["app"], "app missing!")
+        XCTAssertNotNil(context?["locale"], "locale missing!")
+        XCTAssertNotNil(context?["os"], "os missing!")
+        XCTAssertNotNil(context?["timezone"], "timezone missing!")
+        XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
+        XCTAssertNotNil(context?["library"], "library missing!")
+        XCTAssertNotNil(context?["device"], "device missing!")
     }
     
     func testDeviceToken() {
