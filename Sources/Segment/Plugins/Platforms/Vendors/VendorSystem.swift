@@ -68,6 +68,8 @@ internal class VendorSystem {
     static var current: VendorSystem {
         #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         return iOSVendorSystem()
+        #elseif os(macOS)
+        return MacOSVendorSystem()
         #elseif os(watchOS)
         return watchOSVendorSystem()
         #elseif os(Linux)
