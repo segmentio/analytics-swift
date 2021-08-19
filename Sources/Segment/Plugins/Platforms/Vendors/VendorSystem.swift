@@ -65,7 +65,11 @@ internal class VendorSystem {
         return ConnectionStatus.unknown
     }
     
-    static var current: VendorSystem {
+    var requiredPlugins: [PlatformPlugin] {
+        return []
+    }
+    
+    static var current: VendorSystem = {
         #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         return iOSVendorSystem()
         #elseif os(macOS)
@@ -77,5 +81,5 @@ internal class VendorSystem {
         #else
         return VendorSystem()
         #endif
-    }
+    }()
 }
