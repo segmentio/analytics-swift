@@ -7,34 +7,11 @@
 
 import Foundation
 
-internal class Logger: UtilityPlugin {
-    public var filterKind = LogFilterKind.debug
-    
-    let type = PluginType.utility
-    var analytics: Analytics?
-    
-    fileprivate var loggingMediator = [LoggingType: LogTarget]()
-    
-    required init() { }
-    
-    internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
-        
-        for (logType, target) in loggingMediator {
-            if logType.contains(destination) {
-                target.parseLog(logMessage)
-            }
-        }
-    }
-    
-    func flush() {
-        for (_, target) in loggingMediator {
-            target.flush()
-        }
-    }
+// MARK: - Logging Types
 
-}
-
-// MARK: - Types
+/// The foundation for building out a special logger. If logs need to be directed to a certain area, this is the
+/// interface to start off with. For instance a console logger, a networking logger or offline storage logger
+/// would all start off with LogTarget.
 public protocol LogTarget {
     
     /// Implement this method to process logging messages. This is where the logic for the target will be
@@ -48,19 +25,17 @@ public protocol LogTarget {
     func flush()
 }
 
-extension LogTarget {
-    // Make flush optional with an empty implementation.
-    func flush() { }
-}
-
+/// Used for analytics.log() types. This lets the system know what to filter on and how to set priorities.
 public enum LogFilterKind: Int {
     case error = 0  // Not Verbose (fail cases | non-recoverable errors)
     case warning    // Semi-verbose (deprecations | potential issues)
     case debug      // Verbose (everything of interest)
 }
 
+/// The Segment logging system has three types of logs: log, metric and history. When adding a target that
+/// responds to logs, it is possible to adhere to 1 to many. In other words, a LoggingType can be .log &
+/// .history. This is used to tell which targets logs are directed to.
 public struct LoggingType: Hashable {
-    private let allTypes: [LogDestination]
     
     public enum LogDestination {
         case log
@@ -68,19 +43,34 @@ public struct LoggingType: Hashable {
         case history
     }
     
+    /// Convenience .log logging type
     static let log = LoggingType(types: [.log])
+    /// Convenience .metric logging type
     static let metric = LoggingType(types: [.metric])
+    /// Convenience .history logging type
     static let history = LoggingType(types: [.history])
     
+    
+    /// Designated initializer for LoggingType. Add all the destinations this LoggingType should support.
+    /// - Parameter types: The LoggingDestination(s) that this LoggingType will support.
     public init(types: [LogDestination]) {
+        // TODO: Failable scenario if types empty
         self.allTypes = types
     }
     
-    public func contains(_ type: LogDestination) -> Bool {
-        return allTypes.contains(type)
+    // - Private Properties and Methods
+    private let allTypes: [LogDestination]
+    
+    /// Convience method to find if the LoggingType supports a particular destination.
+    /// - Parameter destination: The particular destination being tested for conformance.
+    /// - Returns: If the destination exists in this LoggingType `true` or `false` will be returned.
+    fileprivate func contains(_ destination: LogDestination) -> Bool {
+        return allTypes.contains(destination)
     }
 }
 
+
+/// The interface to the message being returned to `LogTarget` -> `parseLog()`.
 public protocol LogMessage {
     var kind: LogFilterKind { get }
     var message: String { get }
@@ -91,8 +81,16 @@ public protocol LogMessage {
 
 
 // MARK: - Public Logging API
+
 extension Analytics {
     
+    /// The public logging method for capturing all general types of log messages related to Segment.
+    /// - Parameters:
+    ///   - message: The main message of the log to be captured.
+    ///   - kind: Usually .error, .warning or .debug, in order of serverity. This helps filter logs based on
+    ///   this added metadata.
+    ///   - function: The name of the function the log came from. This will be captured automatically.
+    ///   - line: The line number in the function the log came from. This will be captured automatically.
     public func log(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
         apply { plugin in
             if let loggerPlugin = plugin as? Logger {
@@ -110,6 +108,13 @@ extension Analytics {
         }
     }
     
+    /// The public logging method for capturing metrics related to Segment or other libraries.
+    /// - Parameters:
+    ///   - type: Metric type, usually .counter or .gauge. Select the one that makes sense for the metric.
+    ///   - name: The title of the metric to track.
+    ///   - value: The value associated with the metric. This would be an incrementing counter or time
+    ///   or pressure gauge.
+    ///   - tags: Any tags that should be associated with the metric. Any extra metadata that may help.
     public func metric(_ type: String, name: String, value: Double, tags: [String]? = nil) {
         apply { plugin in
             if let loggerPlugin = plugin as? Logger {
@@ -123,6 +128,14 @@ extension Analytics {
         }
     }
     
+    /// Used to track the history of events as the event data travels through the Segment Event Timeline. As
+    /// plugins manipulate the data at the `before`, `enrichment`, `destination`,
+    /// `destination timeline`, and `after` states, an event can be tracked. Starting with the first one
+    /// - Parameters:
+    ///   - event: The timeline event that is to be processed.
+    ///   - sender: Where the event came from.
+    ///   - function: The name of the function the log came from. This will be captured automatically.
+    ///   - line: The line number in the function the log came from. This will be captured automatically.
     public func history(event: RawEvent, sender: AnyObject, function: String = #function, line: Int = #line) {
         apply { plugin in
             if let loggerPlugin = plugin as? Logger {
@@ -162,7 +175,38 @@ extension Analytics {
     }
 }
 
-struct LogFactory {
+// MARK: - Plugin Implementation
+
+internal class Logger: UtilityPlugin {
+    public var filterKind = LogFilterKind.debug
+    
+    let type = PluginType.utility
+    var analytics: Analytics?
+    
+    fileprivate var loggingMediator = [LoggingType: LogTarget]()
+    
+    required init() { }
+    
+    internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
+        
+        for (logType, target) in loggingMediator {
+            if logType.contains(destination) {
+                target.parseLog(logMessage)
+            }
+        }
+    }
+    
+    func flush() {
+        for (_, target) in loggingMediator {
+            target.flush()
+        }
+    }
+
+}
+
+// MARK: - Internal Types
+
+fileprivate struct LogFactory {
     static func buildLog(destination: LoggingType.LogDestination,
                          title: String,
                          message: String,
@@ -181,8 +225,8 @@ struct LogFactory {
                 return MetricLog(title: title, message: message, event: event, function: function, line: line)
             case .history:
                 return HistoryLog(message: message, event: event, function: function, line: line, sender: sender)
-            default:
-                throw NSError(domain: "Could not parse log", code: 2001, userInfo: nil)
+//            default:
+//                throw NSError(domain: "Could not parse log", code: 2001, userInfo: nil)
         }
     }
     
@@ -211,4 +255,9 @@ struct LogFactory {
         var line: Int?
         var sender: Any?
     }
+}
+
+public extension LogTarget {
+    // Make flush optional with an empty implementation.
+    func flush() { }
 }
