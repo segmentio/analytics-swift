@@ -107,7 +107,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
             analytics?.track(name: "Saved to Keychain")
         } catch {
             //handle error and optionally track it
-            print("Unable to save userId to keychain.")
+            analytics?.log(message: "Unable to save userId to keychain.", kind: .error)
         }
     }
     
@@ -140,7 +140,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         //handle error
-        print(error)
+        analytics?.log(message: error, king: .error)
     }
 }
 

@@ -143,7 +143,7 @@ struct KeychainItem {
         do {
             try KeychainItem(service: "co.alancharles.SegmentExtensionsExample", account: "userIdentifier").deleteItem()
         } catch {
-            print("Unable to delete userIdentifier from keychain")
+            analytics?.log(message: "Unable to delete userIdentifier from keychain", kind: .error)
         }
     }
 }

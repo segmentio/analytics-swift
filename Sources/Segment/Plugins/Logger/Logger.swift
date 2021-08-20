@@ -1,8 +1,8 @@
 //
 //  Logger.swift
-//  Segment
+//  Logger
 //
-//  Created by Cody Garvin on 12/14/20.
+//  Created by Cody Garvin on 8/19/21.
 //
 
 import Foundation
@@ -30,6 +30,17 @@ public enum LogFilterKind: Int {
     case error = 0  // Not Verbose (fail cases | non-recoverable errors)
     case warning    // Semi-verbose (deprecations | potential issues)
     case debug      // Verbose (everything of interest)
+    
+    func toString() -> String {
+        switch (self) {
+            case .error:
+                return "ERROR"
+            case .warning:
+                return "Warning"
+            case .debug:
+                return "Debug"
+        }
+    }
 }
 
 /// The Segment logging system has three types of logs: log, metric and history. When adding a target that
@@ -64,7 +75,7 @@ public struct LoggingType: Hashable {
     /// Convience method to find if the LoggingType supports a particular destination.
     /// - Parameter destination: The particular destination being tested for conformance.
     /// - Returns: If the destination exists in this LoggingType `true` or `false` will be returned.
-    fileprivate func contains(_ destination: LogDestination) -> Bool {
+    internal func contains(_ destination: LogDestination) -> Bool {
         return allTypes.contains(destination)
     }
 }
@@ -161,7 +172,7 @@ extension Analytics {
     public func add(target: LogTarget, type: LoggingType) {
         apply { (potentialLogger) in
             if let logger = potentialLogger as? Logger {
-                logger.loggingMediator[type] = target
+                logger.loggingMediator[type] = target // THIS IS A BUG, can't add more than one target to the same type set.
             }
         }
     }
@@ -173,91 +184,4 @@ extension Analytics {
             }
         }
     }
-}
-
-// MARK: - Plugin Implementation
-
-internal class Logger: UtilityPlugin {
-    public var filterKind = LogFilterKind.debug
-    
-    let type = PluginType.utility
-    var analytics: Analytics?
-    
-    fileprivate var loggingMediator = [LoggingType: LogTarget]()
-    
-    required init() { }
-    
-    internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
-        
-        for (logType, target) in loggingMediator {
-            if logType.contains(destination) {
-                target.parseLog(logMessage)
-            }
-        }
-    }
-    
-    func flush() {
-        for (_, target) in loggingMediator {
-            target.flush()
-        }
-    }
-
-}
-
-// MARK: - Internal Types
-
-fileprivate struct LogFactory {
-    static func buildLog(destination: LoggingType.LogDestination,
-                         title: String,
-                         message: String,
-                         kind: LogFilterKind = .debug,
-                         function: String? = nil,
-                         line: Int? = nil,
-                         event: RawEvent? = nil,
-                         sender: Any? = nil,
-                         value: Double? = nil,
-                         tags: [String]? = nil) throws -> LogMessage {
-        
-        switch destination {
-            case .log:
-                return GenericLog(kind: kind, message: message, function: function, line: line)
-            case .metric:
-                return MetricLog(title: title, message: message, event: event, function: function, line: line)
-            case .history:
-                return HistoryLog(message: message, event: event, function: function, line: line, sender: sender)
-//            default:
-//                throw NSError(domain: "Could not parse log", code: 2001, userInfo: nil)
-        }
-    }
-    
-    fileprivate struct GenericLog: LogMessage {
-        var kind: LogFilterKind
-        var message: String
-        var event: RawEvent? = nil
-        var function: String?
-        var line: Int?
-    }
-    
-    fileprivate struct MetricLog: LogMessage {
-        var title: String
-        var kind: LogFilterKind = .debug
-        var message: String
-        var event: RawEvent?
-        var function: String? = nil
-        var line: Int? = nil
-    }
-    
-    fileprivate struct HistoryLog: LogMessage {
-        var kind: LogFilterKind = .debug
-        var message: String
-        var event: RawEvent?
-        var function: String?
-        var line: Int?
-        var sender: Any?
-    }
-}
-
-public extension LogTarget {
-    // Make flush optional with an empty implementation.
-    func flush() { }
 }
