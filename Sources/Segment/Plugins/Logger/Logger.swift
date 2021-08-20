@@ -169,10 +169,14 @@ extension Analytics {
     ///   - target: A `LogTarget` that has logic to parse and handle log messages.
     ///   - type: The type consists of `log`, `metric` or `history`. These correspond to the
     ///   public API on Analytics.
-    public func add(target: LogTarget, type: LoggingType) {
+    public func add(target: LogTarget, type: LoggingType) throws {
         apply { (potentialLogger) in
             if let logger = potentialLogger as? Logger {
-                logger.loggingMediator[type] = target // THIS IS A BUG, can't add more than one target to the same type set.
+                do {
+                    try logger.add(target: target, for: type)
+                } catch {
+                    log(message: "Could not add target: \(error.localizedDescription)", kind: .error)
+                }
             }
         }
     }

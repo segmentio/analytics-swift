@@ -15,7 +15,7 @@ internal class Logger: UtilityPlugin {
     
     let type = PluginType.utility
     
-    var loggingMediator = [LoggingType: LogTarget]()
+    fileprivate var loggingMediator = [LoggingType: LogTarget]()
     
     required init() { }
     
