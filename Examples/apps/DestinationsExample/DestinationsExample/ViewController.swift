@@ -40,7 +40,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var propertiesStepper: UIStepper?
     @IBOutlet weak var eventField: UITextField?
     
-    var analytics = UIApplication.shared.delegate?.analytics
+    var analytics: Analytics? {
+        return UIApplication.shared.delegate?.analytics
+    }
     
     private var keysFields = [UITextField]()
     private var propertiesFields = [UITextField]()
