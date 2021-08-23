@@ -11,7 +11,9 @@ import Segment
 
 
 class InterfaceController: WKInterfaceController {
-    var analytics = WKExtension.shared().delegate?.analytics
+    var analytics: Analytics? {
+        return WKExtension.shared().delegate?.analytics
+    }
     
     override func awake(withContext context: Any?) {
         // Configure interface objects here.
