@@ -88,6 +88,8 @@ public protocol LogMessage {
     var event: RawEvent? { get }
     var function: String? { get }
     var line: Int? { get }
+    var logType: LoggingType.LogDestination { get }
+    var dateTime: Date { get }
 }
 
 

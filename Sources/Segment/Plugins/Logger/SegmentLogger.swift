@@ -21,7 +21,7 @@ internal class Logger: UtilityPlugin {
     
     func configure(analytics: Analytics) {
         self.analytics = analytics
-        try? add(target: ConsoleTarget(), for: LoggingType.log)
+        try? add(target: SystemTarget(), for: LoggingType.log)
     }
     
     internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
@@ -85,6 +85,8 @@ internal struct LogFactory {
         var event: RawEvent? = nil
         var function: String?
         var line: Int?
+        var logType: LoggingType.LogDestination = .log
+        var dateTime = Date()
     }
     
     fileprivate struct MetricLog: LogMessage {
@@ -94,6 +96,8 @@ internal struct LogFactory {
         var event: RawEvent?
         var function: String? = nil
         var line: Int? = nil
+        var logType: LoggingType.LogDestination = .metric
+        var dateTime = Date()
     }
     
     fileprivate struct HistoryLog: LogMessage {
@@ -103,6 +107,8 @@ internal struct LogFactory {
         var function: String?
         var line: Int?
         var sender: Any?
+        var logType: LoggingType.LogDestination = .history
+        var dateTime = Date()
     }
 }
 
