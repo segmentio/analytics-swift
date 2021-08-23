@@ -45,7 +45,7 @@ private struct AppsFlyerSettings: Codable {
 }
 
 @objc
-class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications, iOSLifecycle  {
+class AppsFlyerDestination: UIResponder, DestinationPlugin  {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "AppsFlyer"
@@ -55,7 +55,6 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
     fileprivate var settings: AppsFlyerSettings? = nil
     
     public func update(settings: Settings) {
-        
         guard let settings: AppsFlyerSettings = settings.integrationSettings(forPlugin: self) else { return }
         self.settings = settings
         
@@ -70,18 +69,6 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
         
         if trackAttributionData ?? false {
             AppsFlyerLib.shared().delegate = self
-        }
-        
-        func applicationDidBecomeActive(application: UIApplication) {
-            AppsFlyerLib.shared().start()
-        }
-        
-        func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) {
-            AppsFlyerLib.shared().handleOpen(url, options: options)
-        }
-        
-        func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
-            AppsFlyerLib.shared().handlePushNotification(userInfo)
         }
     }
     
@@ -136,6 +123,20 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
         }
         
         return event
+    }
+}
+
+extension AppsFlyerDestination: RemoteNotifications, iOSLifecycle {
+    func applicationDidBecomeActive(application: UIApplication?) {
+        AppsFlyerLib.shared().start()
+    }
+    
+    func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) {
+        AppsFlyerLib.shared().handleOpen(url, options: options)
+    }
+    
+    func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
+        AppsFlyerLib.shared().handlePushNotification(userInfo)
     }
 }
 
