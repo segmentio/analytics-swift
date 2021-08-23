@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import Segment
 
 class ViewController: UIViewController {
-    var analytics = UIApplication.shared.delegate?.analytics
+    var analytics: Analytics? {
+        return UIApplication.shared.delegate?.analytics
+    }
     
     var usage: TimeInterval = 0
     var timer: Timer? = nil
