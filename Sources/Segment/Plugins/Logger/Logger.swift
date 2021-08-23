@@ -106,6 +106,10 @@ extension Analytics {
     ///   - line: The line number in the function the log came from. This will be captured automatically.
     public func log(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
         apply { plugin in
+            // Check if we should send off the event
+            if Logger.loggingEnabled == false {
+                return
+            }
             if let loggerPlugin = plugin as? Logger {
                 var filterKind = loggerPlugin.filterKind
                 if let logKind = kind {
@@ -115,7 +119,7 @@ extension Analytics {
                     let log = try LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
                     loggerPlugin.log(log, destination: .log)
                 } catch {
-                    // TODO: LOG TO PRIVATE SEGMENT LOG
+                    segmentLog(message: "Could not build log: \(error.localizedDescription)", kind: .error)
                 }
             }
         }
@@ -130,12 +134,17 @@ extension Analytics {
     ///   - tags: Any tags that should be associated with the metric. Any extra metadata that may help.
     public func metric(_ type: String, name: String, value: Double, tags: [String]? = nil) {
         apply { plugin in
+            // Check if we should send off the event
+            if Logger.loggingEnabled == false {
+                return
+            }
+            
             if let loggerPlugin = plugin as? Logger {
                 do {
                     let log = try LogFactory.buildLog(destination: .metric, title: type, message: name, value: value, tags: tags)
                     loggerPlugin.log(log, destination: .metric)
                 } catch {
-                    // TODO: LOG TO PRIVATE SEGMENT LOG
+                    segmentLog(message: "Could not build metric: \(error.localizedDescription)", kind: .error)
                 }
             }
         }
@@ -151,12 +160,17 @@ extension Analytics {
     ///   - line: The line number in the function the log came from. This will be captured automatically.
     public func history(event: RawEvent, sender: AnyObject, function: String = #function, line: Int = #line) {
         apply { plugin in
+            // Check if we should send off the event
+            if Logger.loggingEnabled == false {
+                return
+            }
+            
             if let loggerPlugin = plugin as? Logger {
                 do {
                     let log = try LogFactory.buildLog(destination: .history, title: event.toString(), message: "", function: function, line: line, event: event, sender: sender)
                     loggerPlugin.log(log, destination: .metric)
                 } catch {
-                    // TODO: LOG TO PRIVATE SEGMENT LOG
+                    segmentLog(message: "Could not build history: \(error.localizedDescription)", kind: .error)
                 }
             }
         }

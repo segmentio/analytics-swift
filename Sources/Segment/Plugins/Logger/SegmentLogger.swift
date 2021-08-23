@@ -16,12 +16,22 @@ internal class Logger: UtilityPlugin {
     let type = PluginType.utility
     
     fileprivate var loggingMediator = [LoggingType: LogTarget]()
+    internal static var loggingEnabled = true
     
     required init() { }
     
     func configure(analytics: Analytics) {
         self.analytics = analytics
         try? add(target: SystemTarget(), for: LoggingType.log)
+    }
+    
+    func update(settings: Settings) {
+        // Check for the server-side flag
+        if let settingsDictionary = settings.plan?.dictionaryValue,
+           let enabled = settingsDictionary["logging_enabled"] as? Bool {
+            Logger.loggingEnabled = enabled
+        }
+        
     }
     
     internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
@@ -74,8 +84,6 @@ internal struct LogFactory {
                 return MetricLog(title: title, message: message, event: event, function: function, line: line)
             case .history:
                 return HistoryLog(message: message, event: event, function: function, line: line, sender: sender)
-//            default:
-//                throw NSError(domain: "Could not parse log", code: 2001, userInfo: nil)
         }
     }
     
