@@ -137,7 +137,7 @@ class JSONTests: XCTestCase {
         
         let json = try! JSON(dict)
         
-        let output = try! json.mapKeys(keys).dictionaryValue
+        let output = try! json.mapTransform(keys).dictionaryValue
         
         XCTAssertTrue(output!["AKey1"] as! Int == 1)
         XCTAssertTrue(output!["AKey2"] as! Int == 2)
@@ -153,7 +153,7 @@ class JSONTests: XCTestCase {
         
         let json = try! JSON(dict)
         
-        let output = try! json.mapKeys(keys, valueTransform: { key, value in
+        let output = try! json.mapTransform(keys, valueTransform: { key, value in
             var newValue = value
             if let v = newValue as? Int {
                 if v == 1 {
