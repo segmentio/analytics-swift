@@ -32,7 +32,7 @@ extension ObjCAnalytics {
     
 
     @objc(track:properties:)
-    public func track(name: String, properties: [String: AnyHashable]?) {
+    public func track(name: String, properties: [String: Any]?) {
         analytics.track(name: name, properties: properties)
     }
 
@@ -53,7 +53,7 @@ extension ObjCAnalytics {
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     @objc(identify:traits:)
-    public func identify(userId: String, traits: [String: AnyHashable]?) {
+    public func identify(userId: String, traits: [String: Any]?) {
         analytics.identify(userId: userId, traits: traits)
     }
     
@@ -79,7 +79,7 @@ extension ObjCAnalytics {
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
     @objc(screen:category:properties:)
-    public func screen(screenTitle: String, category: String?, properties: [String: AnyHashable]?) {
+    public func screen(screenTitle: String, category: String?, properties: [String: Any]?) {
         analytics.screen(screenTitle: screenTitle, category: category, properties: properties)
     }
 
@@ -96,7 +96,7 @@ extension ObjCAnalytics {
     ///   - groupId: A unique identifier for the group identification in your system.
     ///   - traits: Traits of the group you may be interested in such as email, phone or name.
     @objc(group:traits:)
-    public func group(groupId: String, traits: [String: AnyHashable]?) {
+    public func group(groupId: String, traits: [String: Any]?) {
         analytics.group(groupId: groupId, traits: traits)
     }
 }
