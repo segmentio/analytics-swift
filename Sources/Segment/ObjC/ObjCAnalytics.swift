@@ -32,7 +32,7 @@ extension ObjCAnalytics {
     
 
     @objc(track:properties:)
-    public func track(name: String, properties: [String: Any]?) {
+    public func track(name: String, properties: [String: AnyHashable]?) {
         analytics.track(name: name, properties: properties)
     }
 
