@@ -52,7 +52,7 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
     private var sessionID: TimeInterval?
     private let fireTime = TimeInterval(300)
     
-    func update(settings: Settings) {
+    func update(settings: Settings, type: UpdateType) {
         if settings.isDestinationEnabled(key: key) {
             active = true
         } else {

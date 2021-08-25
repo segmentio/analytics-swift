@@ -59,7 +59,7 @@ public class SegmentDestination: DestinationPlugin {
         }
     }
     
-    public func update(settings: Settings) {
+    public func update(settings: Settings, type: UpdateType) {
         let segmentInfo = settings.integrationSettings(forKey: self.key)
         apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
         apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String

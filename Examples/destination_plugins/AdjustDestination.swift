@@ -55,7 +55,10 @@ class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
     
     internal var settings: AdjustSettings? = nil
     
-    public func update(settings: Settings) {
+    public func update(settings: Settings, type: UpdateType) {
+        // we've already set up this singleton SDK, can't do it again, so skip.
+        guard type == .initial else { return }
+        
         guard let settings: AdjustSettings = settings.integrationSettings(forPlugin: self) else { return }
         self.settings = settings
         

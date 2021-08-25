@@ -301,18 +301,19 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, UserActivities, Remo
         analytics?.track(name: "AppsFlyer Loaded")
     }
     
-    public func update(settings: Settings) {
-                
-        guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else {return}
-        self.settings = settings
+    public func update(settings: Settings, type: UpdateType) {
+        if type == .initial {
+            // AppsFlyerLib is a singleton, we only want to set it up once.
+            guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else {return}
+            self.settings = settings
+        
+            AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey
+            AppsFlyerLib.shared().appleAppID = settings.appleAppID
+            AppsFlyerLib.shared().isDebug = true
+            AppsFlyerLib.shared().deepLinkDelegate = self
+        }
     
-       
-        AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey
-        AppsFlyerLib.shared().appleAppID = settings.appleAppID
-        AppsFlyerLib.shared().isDebug = true
-        AppsFlyerLib.shared().deepLinkDelegate = self
-    
-	// additional update logic
+        // additional update logic
   }
 
 // ...

@@ -56,7 +56,7 @@ internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
         if let settings = plugin.analytics?.settings() {
-            plugin.update(settings: settings)
+            plugin.update(settings: settings, type: .initial)
         }
     }
     
@@ -139,7 +139,7 @@ extension Plugin {
         return event
     }
     
-    public func update(settings: Settings) {
+    public func update(settings: Settings, type: UpdateType) {
         // do nothing by default, user can override.
     }
 
