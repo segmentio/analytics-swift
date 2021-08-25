@@ -23,12 +23,17 @@ public enum PluginType: Int, CaseIterable {
     case utility
 }
 
+public enum UpdateType {
+    case initial
+    case refresh
+}
+
 public protocol Plugin: AnyObject {
     var type: PluginType { get }
     var analytics: Analytics? { get set }
     
     func configure(analytics: Analytics)
-    func update(settings: Settings)
+    func update(settings: Settings, type: UpdateType)
     func execute<T: RawEvent>(event: T?) -> T?
     func shutdown()
 }

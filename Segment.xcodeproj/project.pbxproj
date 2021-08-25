@@ -121,6 +121,16 @@
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
+		46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
+		46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
+		46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixpanelDestination.swift; sourceTree = "<group>"; };
+		46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsFlyerDestination.swift; sourceTree = "<group>"; };
+		46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDestination.swift; sourceTree = "<group>"; };
+		46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSession.swift; sourceTree = "<group>"; };
+		46D98E4426D6FEF300E7A86A /* UIKitScreenTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitScreenTracking.swift; sourceTree = "<group>"; };
+		46D98E4526D6FEF300E7A86A /* ConsentTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
+		46D98E4626D6FEF300E7A86A /* IDFACollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDFACollection.swift; sourceTree = "<group>"; };
+		46D98E4726D6FEF300E7A86A /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		46F7485B26C718710042798E /* ObjCAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCAnalytics.swift; sourceTree = "<group>"; };
 		46F7485C26C718710042798E /* ObjCConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCConfiguration.swift; sourceTree = "<group>"; };
@@ -215,6 +225,41 @@
 				46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */,
 			);
 			path = Vendors;
+			sourceTree = "<group>";
+		};
+		46D98E3B26D6FED300E7A86A /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E3C26D6FEF300E7A86A /* destination_plugins */,
+				46D98E4326D6FEF300E7A86A /* other_plugins */,
+			);
+			name = Examples;
+			sourceTree = "<group>";
+		};
+		46D98E3C26D6FEF300E7A86A /* destination_plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */,
+				46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */,
+				46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */,
+				46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */,
+				46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */,
+				46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */,
+			);
+			name = destination_plugins;
+			path = Examples/destination_plugins;
+			sourceTree = "<group>";
+		};
+		46D98E4326D6FEF300E7A86A /* other_plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E4426D6FEF300E7A86A /* UIKitScreenTracking.swift */,
+				46D98E4526D6FEF300E7A86A /* ConsentTracking.swift */,
+				46D98E4626D6FEF300E7A86A /* IDFACollection.swift */,
+				46D98E4726D6FEF300E7A86A /* ConsoleLogger.swift */,
+			);
+			name = other_plugins;
+			path = Examples/other_plugins;
 			sourceTree = "<group>";
 		};
 		96208624256DC23F00314F8D /* Frameworks */ = {
@@ -330,6 +375,7 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				46D98E3B26D6FED300E7A86A /* Examples */,
 				OBJ_7 /* Sources */,
 				OBJ_10 /* Tests */,
 				OBJ_6 /* Package.swift */,

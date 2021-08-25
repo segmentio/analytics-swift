@@ -47,7 +47,9 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
     private var mixpanel: MixpanelInstance? = nil
     private var settings: [String: Any]? = nil
     
-    func update(settings: Settings) {
+    func update(settings: Settings, type: UpdateType) {
+        // we've already set up this singleton SDK, can't do it again, so skip.
+        guard type == .initial else { return }
         
         // If we have a mixpanel instance, dump all the data first
         mixpanel?.flush()

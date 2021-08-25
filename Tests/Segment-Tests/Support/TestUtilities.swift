@@ -82,7 +82,7 @@ class MyDestination: DestinationPlugin {
         self.trackCompletion = trackCompletion
     }
     
-    func update(settings: Settings) {
+    func update(settings: Settings, type: UpdateType) {
         //
     }
     
