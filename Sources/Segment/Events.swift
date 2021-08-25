@@ -155,7 +155,7 @@ extension Analytics {
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func identify(userId: String, traits: [String: AnyHashable]? = nil) {
+    public func identify(userId: String, traits: [String: Any]? = nil) {
         do {
             if let traits = traits {
                 let traits = try JSON(traits as Any)
@@ -178,7 +178,7 @@ extension Analytics {
     ///   - screenTitle: The title of the screen being tracked.
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
-    public func screen(screenTitle: String, category: String? = nil, properties: [String: AnyHashable]? = nil) {
+    public func screen(screenTitle: String, category: String? = nil, properties: [String: Any]? = nil) {
         var event = ScreenEvent(screenTitle: screenTitle, category: category, properties: nil)
         if let properties = properties {
             do {
@@ -195,7 +195,7 @@ extension Analytics {
     /// - Parameters:
     ///   - groupId: A unique identifier for the group identification in your system.
     ///   - traits: Traits of the group you may be interested in such as email, phone or name.
-    public func group(groupId: String, traits: [String: AnyHashable]?) {
+    public func group(groupId: String, traits: [String: Any]?) {
         var event = GroupEvent(groupId: groupId)
         if let traits = traits {
             do {
