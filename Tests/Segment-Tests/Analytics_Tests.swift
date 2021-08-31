@@ -241,13 +241,13 @@ final class Analytics_Tests: XCTestCase {
         
         waitUntilStarted(analytics: analytics)
         
-        analytics.screen(screenTitle: "screen1", category: "category1")
+        analytics.screen(title: "screen1", category: "category1")
         
         let screen1Event: ScreenEvent? = outputReader.lastEvent as? ScreenEvent
         XCTAssertTrue(screen1Event?.name == "screen1")
         XCTAssertTrue(screen1Event?.category == "category1")
         
-        analytics.screen(screenTitle: "screen2", category: "category2", properties: MyTraits(email: "blah@blah.com"))
+        analytics.screen(title: "screen2", category: "category2", properties: MyTraits(email: "blah@blah.com"))
         
         let screen2Event: ScreenEvent? = outputReader.lastEvent as? ScreenEvent
         XCTAssertTrue(screen2Event?.name == "screen2")

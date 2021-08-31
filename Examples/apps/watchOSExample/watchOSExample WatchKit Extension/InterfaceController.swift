@@ -21,7 +21,7 @@ class InterfaceController: WKInterfaceController {
     
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
-        analytics?.screen(screenTitle: "Main Screen")
+        analytics?.screen(title: "Main Screen")
     }
     
     override func didDeactivate() {

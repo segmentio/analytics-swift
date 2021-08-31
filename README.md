@@ -43,14 +43,14 @@ The Analytics client will typically be set up at application launch time, such a
 Typically the following call may be all that's required.
 
 ```swift
-Analytics(configuration: Configuration("SEGMENT_API_KEY"))
+Analytics(configuration: Configuration("<YOUR_WRITE_KEY>"))
 ```
 
 ### Configuration Options
 When creating a new client, you can configure it in various ways.  Some examples are listed below.
 
 ```swift
-let config = Configuration(writeKey: "8XpdAWa7qJVBJMK8V4FfXQOrnvCzu3Ie")
+let config = Configuration(writeKey: "<YOUR_WRITE_KEY>")
 	.flushAt(3)
 	.trackApplicationLifecycleEvents(true)
 	.flushInterval(10)
@@ -126,20 +126,20 @@ The screen call lets you record whenever a user sees a screen in your mobile app
 
 Method signatures:
 ```swift
-func screen(screenTitle: String, category: String? = nil)
-func screen<P: Codable>(screenTitle: String, category: String? = nil, properties: P?)
+func screen(title: String, category: String? = nil)
+func screen<P: Codable>(title: String, category: String? = nil, properties: P?)
 ```
 
 Example Usage:
 ```swift
-analytics.screen(screenTitle: "SomeScreen")
+analytics.screen(title: "SomeScreen")
 ```
 
 You can enable automatic screen tracking by using the [example plugin](https://github.com/segmentio/analytics-example-plugins/blob/main/plugins/swift/UIKitScreenTracking.swift).
 
 Once the plugin has been added to your project add it to your Analytics instance:
 ```swift
-analytics.add(plugin: UIKitScreenTracking(name: "ScreenTracking", analytics: analytics))
+analytics.add(plugin: UIKitScreenTracking()
 ```
 
 ### group
@@ -167,46 +167,48 @@ analytics.group("user-123", MyTraits(
 ```
 
 ### add
-add API allows you to add a plugin to the analytics timeline
+Add API allows you to add a plugin to the analytics timeline.  It will return the plugin instance in
+case you wish to store it for access later.
 
 Method signature:
 ```swift
-@discardableResult func add(plugin: Plugin) -> String
+@discardableResult func add(plugin: Plugin) -> Plugin
 ```
 
 Example Usage:
 ```swift
-analytics.add(plugin: UIKitScreenTracking(name: "ScreenTracking"))
+analytics.add(plugin: UIKitScreenTracking())
 ```
 
 ### find
-find a registered plugin from the analytics timeline
+Find a registered plugin from the analytics timeline.  It will return the first plugin
+of the specified type.
 
 Method signature:
 ```swift
-func find(pluginName: String) -> Plugin?
+func find<T: Plugin>(pluginType: T.Type) -> T?
 ```
 
 Example Usage:
 ```swift
-let plugin = analytics.find("SomePlugin")
+let plugin = analytics.find(pluginType: SomePlugin.self)
 ```
 
 ### remove
-remove a registered plugin from the analytics timeline
+Remove a registered plugin from the analytics timeline.
 
 Method signature:
 ```swift
-func remove(pluginName: String)
+func remove(plugin: Plugin)
 ```
 
 Example Usage:
 ```swift
-analytics.remove("SomePlugin")
+analytics.remove(plugin: somePlugin)
 ```
 
 ### flush
-flushes the current queue of events
+Flushes the current queue of events.
 
 Example Usage:
 ```swift
@@ -232,11 +234,9 @@ For example if you wanted to add something to the context object of any event pa
 ```swift
 class SomePlugin: Plugin {
 	let type: PluginType = .enrichment
-	let name: String
 	let analytics: Analytics
 
-	init(name: String) {
-		self.name = name
+	init() { 
 	}
 	
 	override fun execute(event: BaseEvent): BaseEvent? {
@@ -256,11 +256,9 @@ For example if you only wanted to act on `track` & `identify` events
 ```swift
 class SomePlugin: EventPlugin {
 	let type: PluginType = .enrichment
-	let name: String
 	let analytics: Analytics
 
-	init(name: String) {
-		self.name = name
+	init() {
 	}
 
 	func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -291,26 +289,26 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, UserActivities, Remo
     
     let timeline: Timeline = Timeline()
     let type: PluginType = .destination
-    let name: String
+    let key: String = "AppsFlyer"
     var analytics: Analytics?
     
     internal var settings: AppsFlyerSettings? = nil
     
-     required init(name: String) {
-        self.name = name
-        analytics?.track(name: "AppsFlyer Loaded")
+    init() {
     }
     
     public func update(settings: Settings, type: UpdateType) {
         if type == .initial {
             // AppsFlyerLib is a singleton, we only want to set it up once.
-            guard let settings: AppsFlyerSettings = settings.integrationSettings(name: "AppsFlyer") else {return}
+            guard let settings: AppsFlyerSettings = settings.integrationSettings(key: self.name) else {return}
             self.settings = settings
         
             AppsFlyerLib.shared().appsFlyerDevKey = settings.appsFlyerDevKey
             AppsFlyerLib.shared().appleAppID = settings.appleAppID
             AppsFlyerLib.shared().isDebug = true
             AppsFlyerLib.shared().deepLinkDelegate = self
+
+			analytics?.track(name: "AppsFlyer Loaded")
         }
     
         // additional update logic
@@ -323,7 +321,7 @@ analytics.track("AppsFlyer Event")
 ```
 
 ### Advanced concepts
-- `update(settings:)`
+- `update(settings:type:)`
 Use this function to react to any settings updates. This will be implicitly called when settings are updated.
 - OS Lifecycle hooks
 Plugins can also hook into lifecycle events by conforming to the platform appropriate protocol. These functions will get called implicitly as the lifecycle events are processed.

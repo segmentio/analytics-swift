@@ -61,8 +61,8 @@ extension ObjCAnalytics {
     /// - Parameters:
     ///   - screenTitle: The title of the screen being tracked.
     @objc(screen:)
-    public func screen(screenTitle: String) {
-        screen(screenTitle: screenTitle, category: nil, properties: nil)
+    public func screen(title: String) {
+        screen(title: title, category: nil, properties: nil)
     }
     
     /// Track a screen change with a title, category and other properties.
@@ -70,8 +70,8 @@ extension ObjCAnalytics {
     ///   - screenTitle: The title of the screen being tracked.
     ///   - category: A category to the type of screen if it applies.
     @objc(screen:category:)
-    public func screen(screenTitle: String, category: String?) {
-        analytics.screen(screenTitle: screenTitle, category: category, properties: nil)
+    public func screen(title: String, category: String?) {
+        analytics.screen(title: title, category: category, properties: nil)
     }
     /// Track a screen change with a title, category and other properties.
     /// - Parameters:
@@ -79,8 +79,8 @@ extension ObjCAnalytics {
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
     @objc(screen:category:properties:)
-    public func screen(screenTitle: String, category: String?, properties: [String: Any]?) {
-        analytics.screen(screenTitle: screenTitle, category: category, properties: properties)
+    public func screen(title: String, category: String?, properties: [String: Any]?) {
+        analytics.screen(title: title, category: category, properties: properties)
     }
 
     /// Associate a user with a group such as a company, organization, project, etc.

@@ -77,7 +77,7 @@ class UIKitScreenTracking: UtilityPlugin {
                 controller.seg__trackScreen(name: name)
             } else if let name = name {
                 // if we have a name, call screen
-                self.analytics?.screen(screenTitle: name)
+                self.analytics?.screen(title: name)
             }
         }
     }
