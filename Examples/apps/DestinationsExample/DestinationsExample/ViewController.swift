@@ -97,7 +97,7 @@ class ViewController: UIViewController {
     
     func screenEvent() {
         guard let eventFieldText = eventField?.text else { return }
-        analytics?.screen(screenTitle: eventFieldText, properties: valuesEntered())
+        analytics?.screen(title: eventFieldText, properties: valuesEntered())
     }
     
     func groupEvent() {
