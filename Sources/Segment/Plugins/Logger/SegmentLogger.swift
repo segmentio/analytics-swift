@@ -59,8 +59,9 @@ internal class Logger: UtilityPlugin {
         for (_, target) in loggingMediator {
             target.flush()
         }
+        
+        // TODO: Clean up history container here
     }
-
 }
 
 // MARK: - Internal Types
