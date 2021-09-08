@@ -304,7 +304,8 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testFlush() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey"))
         
         waitUntilStarted(analytics: analytics)
         
