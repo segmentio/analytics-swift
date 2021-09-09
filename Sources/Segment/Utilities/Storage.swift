@@ -252,7 +252,9 @@ extension Storage {
                 }
                 // write the data
                 fileHandle?.write(jsonData)
-                try? fileHandle?.synchronize()
+                if #available(tvOS 13, *) {
+                    try? fileHandle?.synchronize()
+                }
             } else {
                 assert(false, "Storage: Unable to convert event to json!")
             }
