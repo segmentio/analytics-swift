@@ -283,7 +283,9 @@ extension Storage {
             if let endData = endData {
                 fileHandle?.seekToEndOfFile()
                 fileHandle?.write(endData)
-                try? fileHandle?.synchronize()
+                if #available(tvOS 13, *) {
+                    try? fileHandle?.synchronize()
+                }
                 fileHandle?.closeFile()
                 fileHandle = nil
             } else {
