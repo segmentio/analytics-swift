@@ -15,6 +15,8 @@ internal class Storage: Subscriber {
     let userDefaults: UserDefaults?
     static let MAXFILESIZE = 475000     // Server accepts max 500k per batch
     
+    private var fileHandle: FileHandle? = nil
+    
     init(store: Store, writeKey: String) {
         self.store = store
         self.writeKey = writeKey
@@ -241,23 +243,18 @@ extension Storage {
         }
         
         syncQueue.sync {
-            do {
-                let jsonString = event.toString()
-                if let jsonData = jsonString.data(using: .utf8) {
-                    let handle = try FileHandle(forWritingTo: storeFile)
-                    handle.seekToEndOfFile()
-                    // prepare for the next entry
-                    if newFile == false {
-                        handle.write(",".data(using: .utf8)!)
-                    }
-                    // write the data
-                    handle.write(jsonData)
-                    handle.closeFile()
-                } else {
-                    assert(false, "Storage: Unable to convert event to json!")
+            let jsonString = event.toString()
+            if let jsonData = jsonString.data(using: .utf8) {
+                fileHandle?.seekToEndOfFile()
+                // prepare for the next entry
+                if newFile == false {
+                    fileHandle?.write(",".data(using: .utf8)!)
                 }
-            } catch {
-                assert(false, "Storage: failed to write event to \(storeFile), error: \(error)")
+                // write the data
+                fileHandle?.write(jsonData)
+                try? fileHandle?.synchronize()
+            } else {
+                assert(false, "Storage: Unable to convert event to json!")
             }
         }
     }
@@ -266,7 +263,8 @@ extension Storage {
         syncQueue.sync {
             let contents = "{ \"batch\": ["
             do {
-                try contents.write(toFile: file.path, atomically: true, encoding: .utf8)
+                FileManager.default.createFile(atPath: file.path, contents: contents.data(using: .utf8))
+                fileHandle = try FileHandle(forWritingTo: file)
             } catch {
                 assert(false, "Storage: failed to write \(file), error: \(error)")
             }
@@ -275,23 +273,25 @@ extension Storage {
     
     func finish(file: URL) {
         syncQueue.sync {
-            let tempFile = file.appendingPathExtension(Storage.tempExtension)
-            try? FileManager.default.copyItem(at: file, to: tempFile)
-            
             let sentAt = Date().iso8601()
 
             // write it to the existing file
             let fileEnding = "],\"sentAt\":\"\(sentAt)\"}"
             let endData = fileEnding.data(using: .utf8)
-            if let endData = endData, let handle = try? FileHandle(forWritingTo: tempFile) {
-                handle.seekToEndOfFile()
-                handle.write(endData)
-                handle.closeFile()
+            if let endData = endData {
+                fileHandle?.seekToEndOfFile()
+                fileHandle?.write(endData)
+                try? fileHandle?.synchronize()
+                fileHandle?.closeFile()
+                fileHandle = nil
             } else {
                 // something is wrong with this file, maybe delete it?
                 //assert(false, "Storage: event storage \(file) is messed up!")
             }
-            
+
+            let tempFile = file.appendingPathExtension(Storage.tempExtension)
+            try? FileManager.default.copyItem(at: file, to: tempFile)
+
             let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
             userDefaults?.set(currentFile, forKey: Constants.events.rawValue)
         }
