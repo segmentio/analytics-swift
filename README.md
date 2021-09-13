@@ -25,8 +25,14 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
 4. **Query your data in SQL**. Slice, dice, and analyze your data in detail with Segment SQL. We'll transform and load your customer behavioral data directly from your apps into Amazon Redshift, Google BigQuery, or Postgres. Save weeks of engineering time by not having to invent your own data warehouse and ETL pipeline.
 
    For example, you can capture data on any app:
-    ```kotlin
-    analytics.track('Order Completed', Properties(price = 99.84))
+    ```swift
+    struct TrackProperties: Codable {
+        let price: Double
+    }
+
+    // ...
+
+    analytics.track(name: "Order Completed", properties: TrackProperties(price: 99.84))
     ```
    Then, query the resulting data in SQL:
     ```sql
