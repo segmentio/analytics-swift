@@ -143,6 +143,7 @@
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
+		9679DD6226EFF00800A6933C /* ExampleDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDestination.swift; sourceTree = "<group>"; };
 		967C40D9258D472C008EB0B6 /* Logger_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger_Tests.swift; sourceTree = "<group>"; };
 		967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics_Tests.swift; sourceTree = "<group>"; };
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
@@ -239,12 +240,13 @@
 		46D98E3C26D6FEF300E7A86A /* destination_plugins */ = {
 			isa = PBXGroup;
 			children = (
-				46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */,
 				46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */,
-				46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */,
-				46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */,
-				46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */,
 				46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */,
+				46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */,
+				9679DD6226EFF00800A6933C /* ExampleDestination.swift */,
+				46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */,
+				46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */,
+				46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */,
 			);
 			name = destination_plugins;
 			path = Examples/destination_plugins;

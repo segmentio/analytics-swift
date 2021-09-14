@@ -39,7 +39,7 @@ import Segment
 import FlurryAnalytics
 
 /**
- An implmentation of the Flurry Analytics device mode destination as a plugin.
+ An implementation of the Flurry Analytics device mode destination as a plugin.
  */
 
 private struct FlurrySettings: Codable {
