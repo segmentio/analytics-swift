@@ -73,9 +73,9 @@ class MyDestination: DestinationPlugin {
     let type: PluginType
     let key: String
     var analytics: Analytics?
-    let trackCompletion: (() -> Void)?
+    let trackCompletion: (() -> Bool)?
     
-    init(trackCompletion: (() -> Void)? = nil) {
+    init(trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
         self.type = .destination
         self.timeline = Timeline()
@@ -87,10 +87,13 @@ class MyDestination: DestinationPlugin {
     }
     
     func track(event: TrackEvent) -> TrackEvent? {
+        var returnEvent: TrackEvent? = event
         if let completion = trackCompletion {
-            completion()
+            if !completion() {
+                returnEvent = nil
+            }
         }
-        return event
+        return returnEvent
     }
 }
 

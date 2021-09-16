@@ -72,7 +72,13 @@ internal class Mediator {
         
         plugins.forEach { (plugin) in
             if let r = result {
-                result = plugin.execute(event: r)
+                // Drop the event return because we don't care about the
+                // final result.
+                if plugin is DestinationPlugin {
+                    _ = plugin.execute(event: r)
+                } else {
+                    result = plugin.execute(event: r)
+                }
             }
         }
         
