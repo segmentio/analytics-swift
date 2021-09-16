@@ -35,17 +35,17 @@
 // SOFTWARE.
 
 import Foundation
-import Mixpanel
 import Segment
+import Mixpanel
 
 class MixpanelDestination: DestinationPlugin, RemoteNotifications {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "Mixpanel"
-    var analytics: Analytics?
+    var analytics: Analytics? = nil
     
     private var mixpanel: MixpanelInstance? = nil
-    private var settings: [String: Any]? = nil
+    private var mixpanelSettings: MixpanelSettings? = nil
     
     func update(settings: Settings, type: UpdateType) {
         // we've already set up this singleton SDK, can't do it again, so skip.
@@ -55,20 +55,23 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
         mixpanel?.flush()
         
         // TODO: Update the proper types
-        if let mixPanelSettings = settings.integrationSettings(forKey: key),
-           let token = mixPanelSettings["token"] as? String {
-            self.settings = mixPanelSettings
-            mixpanel = Mixpanel.initialize(token: token)
-            
-            // Check for EU endpoint
-            if let euEndPointEnabled = self.settings?["enableEuropeanUnionEndpoint"] as? Bool {
-                if euEndPointEnabled {
-                    mixpanel?.serverURL = "api-eu.mixpanel.com"
-                }
-            }
-        } else {
+        guard let tempSettings: MixpanelSettings = settings.integrationSettings(forPlugin: self) else {
             mixpanel = nil
             analytics?.log(message: "Could not load Mixpanel settings")
+            return
+        }
+        
+        mixpanelSettings = tempSettings
+        
+        // Initialize mixpanel
+        if let token = mixpanelSettings?.token {
+            mixpanel = Mixpanel.initialize(token: token)
+        }
+        
+        // Change the endpoint if euro one is set
+        if let euEndpointEnabled = mixpanelSettings?.enableEuropeanUnionEndpoint,
+           euEndpointEnabled {
+            mixpanel?.serverURL = "api-eu.mixpanel.com"
         }
     }
     
@@ -79,48 +82,46 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
             analytics?.log(message: "Mixpanel identify \(eventUserID)")
         }
         
-        let keyMap = ["$first_name": "firstName",
-                      "$last_name": "lastName",
-                      "$created": "createdAt",
-                      "$last_seen": "lastSeen",
-                      "$email": "email",
-                      "$name": "name",
-                      "$username": "username",
-                      "$phone": "phone"]
-        
-        guard let traits = event.traits?.dictionaryValue as? Properties else {
+        guard let traits = try? event.traits?.dictionaryValue?.mapTransform(MixpanelDestination.keyMap,
+                                                                            valueTransform: nil) as? Properties else {
             return event
         }
         
         if setAllTraitsByDefault() {
-            let mappedTraits = mapTraits(traits, keyMap: keyMap)
             
             // Register the mapped traits
-            mixpanel?.registerSuperProperties(mappedTraits)
-            analytics?.log(message: "Mixpanel registerSuperProperties \(mappedTraits)")
+            mixpanel?.registerSuperProperties(traits)
+            analytics?.log(message: "Mixpanel registerSuperProperties \(traits)")
             
             // Mixpanel also has a people API that works separately so we set hte traits for it as well.
             if peopleEnabled() {
-                mixpanel?.people.set(properties: mappedTraits)
-                analytics?.log(message: "Mixpanel people set \(mappedTraits)")
+                mixpanel?.people.set(properties: traits)
+                analytics?.log(message: "Mixpanel people set \(traits)")
             }
         }
         
-        if let superProperties = settings?["superProperties"] as? [String] {
-            var superPropertyTraits = [String: MixpanelType]()
+        if let superProperties = mixpanelSettings?.superProperties {
+            var superPropertyTraits = [String: Any]()
             for superProperty in superProperties {
                 superPropertyTraits[superProperty] = traits[superProperty]
             }
-            let mappedSuperProperties = mapTraits(superPropertyTraits, keyMap: keyMap)
+            guard let mappedSuperProperties = try? superPropertyTraits.mapTransform(MixpanelDestination.keyMap,
+                                                                                    valueTransform: nil) as? [String: MixpanelType] else {
+                return event
+            }
+            
             mixpanel?.registerSuperProperties(mappedSuperProperties)
             analytics?.log(message: "Mixpanel registerSuperProperties \(mappedSuperProperties)")
             
-            if peopleEnabled(), let peopleProperties = settings?["peopleProperties"] as? [String] {
-                var peoplePropertyTraits = [String: MixpanelType]()
+            if peopleEnabled(), let peopleProperties = mixpanelSettings?.peopleProperties {
+                var peoplePropertyTraits = [String: Any]()
                 for peopleProperty in peopleProperties {
                     peoplePropertyTraits[peopleProperty] = traits[peopleProperty]
                 }
-                let mappedPeopleProperties = mapTraits(peoplePropertyTraits, keyMap: keyMap)
+                guard let mappedPeopleProperties = try? peoplePropertyTraits.mapTransform(MixpanelDestination.keyMap,
+                                                                                          valueTransform: nil) as? [String: MixpanelType] else {
+                    return event
+                }
                 mixpanel?.people.set(properties: mappedPeopleProperties)
                 analytics?.log(message: "Mixpanel people set \(mappedSuperProperties)")
             }
@@ -135,7 +136,7 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
     }
     
     func screen(event: ScreenEvent) -> ScreenEvent? {
-        if settings?["consolidatedPageCalls"] as? Bool ?? false,
+        if mixpanelSettings?.consolidatedPageCalls ?? false,
            var payloadProps = event.properties?.dictionaryValue {
             
             let eventName = "Loaded a Screen"
@@ -144,7 +145,7 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
             }
             mixpanelTrack(eventName, properties: payloadProps)
             analytics?.log(message: "Mixpanel track \(eventName) properties \(payloadProps)")
-        } else if settings?["trackAllPages"] as? Bool ?? false {
+        } else if mixpanelSettings?.trackAllPages ?? false {
             
             var finalEventName = "Viewed Screen"
             if let eventName = event.name {
@@ -153,11 +154,11 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
             
             mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
             analytics?.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
-        } else if settings?["trackNamedPages"] as? Bool ?? false, let eventName = event.name {
+        } else if mixpanelSettings?.trackNamedPages ?? false, let eventName = event.name {
             let finalEventName = "Viewed \(eventName) Screen"
             mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
             analytics?.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
-        } else if settings?["trackCategorizedPages"] as? Bool ?? false, let category = event.category {
+        } else if mixpanelSettings?.trackCategorizedPages ?? false, let category = event.category {
             let finalEventName = "Viewed \(category) Screen"
             mixpanelTrack(finalEventName, properties: event.properties?.dictionaryValue)
             analytics?.log(message: "Mixpanel track \(finalEventName) properties \(String(describing: event.properties?.dictionaryValue))")
@@ -169,7 +170,7 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
     func group(event: GroupEvent) -> GroupEvent? {
         
         guard let groupID = event.groupId, !groupID.isEmpty,
-              let groupIdentifierProperties = settings?["groupIdentifierTraits"] as? [String] else {
+              let groupIdentifierProperties = mixpanelSettings?.groupIdentifierTraits else {
             return event
         }
         
@@ -272,7 +273,7 @@ extension MixpanelDestination {
     
     private func eventShouldIncrement(event: String) -> Bool {
         var shouldIncrement = false
-        if let propertyIncrements = settings?["eventIncrements"] as? [String] {
+        if let propertyIncrements = mixpanelSettings?.eventIncrements {
             for increment in propertyIncrements {
                 if event.lowercased() == increment.lowercased() {
                     shouldIncrement = true
@@ -285,7 +286,7 @@ extension MixpanelDestination {
     }
     
     private func incrementProperties(_ properties: [String: Any]) {
-        if let propertyIncrements = settings?["propIncrements"] as? [String] {
+        if let propertyIncrements = mixpanelSettings?.propIncrements {
             for propString in propertyIncrements {
                 for property in properties.keys {
                     if propString.lowercased() == property.lowercased(),
@@ -300,7 +301,7 @@ extension MixpanelDestination {
     
     private func peopleEnabled() -> Bool {
         var enabled = false
-        if let peopleEnabled = settings?["people"] as? Bool {
+        if let peopleEnabled = mixpanelSettings?.people {
             enabled = peopleEnabled
         }
         
@@ -309,21 +310,38 @@ extension MixpanelDestination {
     
     private func setAllTraitsByDefault() -> Bool {
         var traitsByDefault = false
-        if let setAllTraitsByDefault = settings?["setAllTraitsByDefault"] as? Bool {
+        if let setAllTraitsByDefault = mixpanelSettings?.setAllTraitsByDefault {
             traitsByDefault = setAllTraitsByDefault
         }
         
         return traitsByDefault
     }
+}
+
+private struct MixpanelSettings: Codable {
+    let token: String
+    let enableEuropeanUnionEndpoint: Bool
+    let consolidatedPageCalls: Bool
+    let trackAllPages: Bool
+    let trackNamedPages: Bool
+    let trackCategorizedPages: Bool
+    let people: Bool
+    let setAllTraitsByDefault: Bool
+    let superProperties: [String]?
+    let peopleProperties: [String]?
+    let groupIdentifierTraits: [String]?
+    let eventIncrements: [String]?
+    let propIncrements: [String]?
+}
+
+private extension MixpanelDestination {
     
-    private func mapTraits(_ traits: [String: MixpanelType], keyMap: [String: MixpanelType]) -> Properties {
-        var returnMap = traits
-        for (key, value) in traits {
-            if keyMap.keys.contains(key), let newKey = keyMap[key] as? String {
-                returnMap.removeValue(forKey: key)
-                returnMap[newKey] = value
-            }
-        }
-        return returnMap
-    }
+    static let keyMap = ["$first_name": "firstName",
+                         "$last_name": "lastName",
+                         "$created": "createdAt",
+                         "$last_seen": "lastSeen",
+                         "$email": "email",
+                         "$name": "name",
+                         "$username": "username",
+                         "$phone": "phone"]
 }

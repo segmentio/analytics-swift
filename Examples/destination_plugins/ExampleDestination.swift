@@ -35,40 +35,16 @@
 
 import Foundation
 import Segment
-//import ExampleModule // TODO: Imort partner SDK module here
+//import ExampleModule // TODO: Import partner SDK module here
 
 /**
  An implementation of the Example Analytics device mode destination as a plugin.
  */
 
-// Example of what settings may look like.
-private struct ExampleSettings: Codable {
-    let apiKey: String
-    let configB: Int?
-    let configC: Bool?
-}
-
-// Rules for converting keys and values to the proper formats that bridge
-// from Segment to the Partner SDK. These are only examples.
-private struct ExampleKeys {
-    
-    static var eventNameMap = ["ADD_TO_CART": "Product Added",
-                               "PRODUCT_TAPPED": "Product Tapped"]
-    
-    static var eventValueConversion: ((_ key: String, _ value: Any) -> Any) = { (key, value) in
-        if let valueString = value as? String {
-            return valueString
-                .replacingOccurrences(of: "-", with: "_")
-                .replacingOccurrences(of: " ", with: "_")
-        } else {
-            return value
-        }
-    }
-}
-
 class ExampleDestination: DestinationPlugin {
     let timeline = Timeline()
     let type = PluginType.destination
+    // TODO: Fill this out with your settings key that matches your destination in the Segment App
     let key = "Example"
     var analytics: Analytics? = nil
     
@@ -102,7 +78,8 @@ class ExampleDestination: DestinationPlugin {
         var returnEvent = event
         
         // !!!: Sample of how to convert property keys
-        if let mappedProperties = try? event.properties?.mapTransform(ExampleKeys.eventNameMap, valueTransform: ExampleKeys.eventValueConversion) {
+        if let mappedProperties = try? event.properties?.mapTransform(ExampleDestination.eventNameMap,
+                                                                      valueTransform: ExampleDestination.eventValueConversion) {
             returnEvent.properties = mappedProperties
         }
                 
@@ -142,5 +119,30 @@ class ExampleDestination: DestinationPlugin {
     
     func reset() {
         // TODO: Do something with resetting partner SDK
+    }
+}
+
+// Example of what settings may look like.
+private struct ExampleSettings: Codable {
+    let apiKey: String
+    let configB: Int?
+    let configC: Bool?
+}
+
+// Rules for converting keys and values to the proper formats that bridge
+// from Segment to the Partner SDK. These are only examples.
+private extension ExampleDestination {
+    
+    static var eventNameMap = ["ADD_TO_CART": "Product Added",
+                               "PRODUCT_TAPPED": "Product Tapped"]
+    
+    static var eventValueConversion: ((_ key: String, _ value: Any) -> Any) = { (key, value) in
+        if let valueString = value as? String {
+            return valueString
+                .replacingOccurrences(of: "-", with: "_")
+                .replacingOccurrences(of: " ", with: "_")
+        } else {
+            return value
+        }
     }
 }

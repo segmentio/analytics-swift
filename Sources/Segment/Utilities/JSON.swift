@@ -285,7 +285,7 @@ extension JSON {
 // MARK: - Helpers
 
 extension Dictionary where Key == String, Value == Any {
-    internal func mapTransform(_ keys: [String: String], valueTransform: ((_ key: Key, _ value: Value) -> Any)? = nil) throws -> [Key: Value] {
+    public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: Key, _ value: Value) -> Any)? = nil) throws -> [Key: Value] {
         let mapped = Dictionary(uniqueKeysWithValues: self.map { key, value -> (Key, Value) in
             var newKey = key
             var newValue = value

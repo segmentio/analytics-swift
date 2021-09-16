@@ -57,6 +57,7 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
             expectation.fulfill()
+            return true
         }
 
         var settings = Settings(writeKey: "test")
@@ -87,6 +88,7 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
             expectation.fulfill()
+            return true
         }
 
         let configuration = Configuration(writeKey: "test")
