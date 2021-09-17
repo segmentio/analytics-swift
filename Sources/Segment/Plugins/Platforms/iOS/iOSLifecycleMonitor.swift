@@ -10,6 +10,8 @@
 import Foundation
 import UIKit
 
+// NOTE: These method signatures are marked optional as application extensions may not have
+// a UIApplication object available.  See `safeShared` below.
 public protocol iOSLifecycle {
     func applicationDidEnterBackground(application: UIApplication?)
     func applicationWillEnterForeground(application: UIApplication?)

@@ -12,6 +12,7 @@
 		4663C73C267A926C00ADDD1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4663C73B267A926C00ADDD1A /* Assets.xcassets */; };
 		4663C73F267A926C00ADDD1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4663C73D267A926C00ADDD1A /* Main.storyboard */; };
 		4663C749267A92E100ADDD1A /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 4663C748267A92E100ADDD1A /* Segment */; };
+		46E73DA926F53C570021042C /* NotificationTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E73DA826F53C570021042C /* NotificationTracking.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		4663C73E267A926C00ADDD1A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4663C740267A926C00ADDD1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4663C741267A926C00ADDD1A /* MacExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacExample.entitlements; sourceTree = "<group>"; };
+		46E73DA826F53C570021042C /* NotificationTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationTracking.swift; path = ../../other_plugins/NotificationTracking.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 		4663C72B267A926B00ADDD1A = {
 			isa = PBXGroup;
 			children = (
+				46E73DA726F53C3C0021042C /* Plugins */,
 				4663C736267A926B00ADDD1A /* MacExample */,
 				4663C735267A926B00ADDD1A /* Products */,
 				4663C747267A92E100ADDD1A /* Frameworks */,
@@ -71,6 +74,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		46E73DA726F53C3C0021042C /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46E73DA826F53C570021042C /* NotificationTracking.swift */,
+			);
+			name = Plugins;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,6 +158,7 @@
 			files = (
 				4663C73A267A926B00ADDD1A /* ViewController.swift in Sources */,
 				4663C738267A926B00ADDD1A /* AppDelegate.swift in Sources */,
+				46E73DA926F53C570021042C /* NotificationTracking.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
