@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Analytics.main.add(plugin: ConsentTracking())
         Analytics.main.add(plugin: IDFACollection())
         Analytics.main.add(plugin: UIKitScreenTracking())
+        Analytics.main.add(plugin: NotificationTracking())
 
         Analytics.support.add(plugin: ConsoleLogger(name: "support"))
         Analytics.support.add(plugin: ConsentTracking())

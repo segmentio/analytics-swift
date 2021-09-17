@@ -19,6 +19,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
         
         analytics = Analytics(configuration: configuration)
         analytics?.add(plugin: ConsoleLogger(name: "consoleLogger"))
+        analytics?.add(plugin: NotificationTracking())
     }
 
     func applicationDidBecomeActive() {

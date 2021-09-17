@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .flushInterval(10)
         
         analytics = Analytics(configuration: configuration)
-
+        //analytics?.add(plugin: NotificationTracking())
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

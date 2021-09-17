@@ -19,6 +19,7 @@
 		469ECD672684F9090028BE9A /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469ECD662684F9090028BE9A /* ComplicationController.swift */; };
 		469ECD692684F90A0028BE9A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 469ECD682684F90A0028BE9A /* Assets.xcassets */; };
 		469ECD7B2684FD710028BE9A /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 469ECD7A2684FD710028BE9A /* Segment */; };
+		46E73DA626F5389E0021042C /* NotificationTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E73DA526F5389E0021042C /* NotificationTracking.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		469ECD682684F90A0028BE9A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		469ECD6A2684F90A0028BE9A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		469ECD6B2684F90A0028BE9A /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		46E73DA526F5389E0021042C /* NotificationTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationTracking.swift; path = ../../other_plugins/NotificationTracking.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 		469ECD412684F9080028BE9A = {
 			isa = PBXGroup;
 			children = (
+				46E73DA426F538940021042C /* Plugins */,
 				469ECD502684F9080028BE9A /* watchOSExample WatchKit App */,
 				469ECD5F2684F9090028BE9A /* watchOSExample WatchKit Extension */,
 				469ECD492684F9080028BE9A /* Products */,
@@ -144,6 +147,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		46E73DA426F538940021042C /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46E73DA526F5389E0021042C /* NotificationTracking.swift */,
+			);
+			name = Plugins;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,6 +290,7 @@
 				465879B4268641B900180335 /* SomeScreenController.swift in Sources */,
 				469ECD672684F9090028BE9A /* ComplicationController.swift in Sources */,
 				469ECD632684F9090028BE9A /* ExtensionDelegate.swift in Sources */,
+				46E73DA626F5389E0021042C /* NotificationTracking.swift in Sources */,
 				465879B22685058800180335 /* ConsoleLogger.swift in Sources */,
 				469ECD612684F9090028BE9A /* InterfaceController.swift in Sources */,
 			);
