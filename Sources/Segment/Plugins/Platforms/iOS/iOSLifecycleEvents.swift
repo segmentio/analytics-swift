@@ -18,7 +18,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     let type = PluginType.before
     var analytics: Analytics?
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
@@ -55,7 +55,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         UserDefaults.standard.setValue(currentBuild, forKey: Self.buildKey)
     }
     
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(application: UIApplication?) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
@@ -70,7 +70,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         ])
     }
     
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(application: UIApplication?) {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
