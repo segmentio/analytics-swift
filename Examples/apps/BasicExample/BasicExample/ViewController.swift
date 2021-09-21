@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import Segment
 
 class ViewController: UIViewController {
-    var analytics = UIApplication.shared.delegate?.analytics
+    var analytics: Analytics? {
+        return UIApplication.shared.delegate?.analytics
+    }
     
     var usage: TimeInterval = 0
     var timer: Timer? = nil
@@ -38,7 +41,7 @@ class ViewController: UIViewController {
     
     @IBAction func screenTapped(_ sender: Any) {
         let props = ScreenProperties(appUsage: usage)
-        analytics?.screen(screenTitle: "Main Screen", category: "Best", properties: props)
+        analytics?.screen(title: "Main Screen", category: "Best", properties: props)
     }
     
     @IBAction func identifyTapped(_ sender: Any) {

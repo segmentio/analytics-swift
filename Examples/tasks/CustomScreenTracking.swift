@@ -36,12 +36,12 @@ import Segment
 class QueryAlertController: UIAlertController {
     // we already conform to UIKitScreenTrackable so override
     override func seg__trackScreen(name: String?) {
-        Analytics.main.screen(screenTitle: "Query", category: "Action Sheet")
+        Analytics.main.screen(title: "Query", category: "Action Sheet")
     }
 }
 
 extension UIAlertController: UIKitScreenTrackable {
     func seg__trackScreen(name: String?) {
-        Analytics.main.screen(screenTitle: "Basic Alert", category: "Alert")
+        Analytics.main.screen(title: "Basic Alert", category: "Alert")
     }
 }

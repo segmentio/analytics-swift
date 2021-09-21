@@ -77,7 +77,7 @@ class UIKitScreenTracking: UtilityPlugin {
                 controller.seg__trackScreen(name: name)
             } else if let name = name {
                 // if we have a name, call screen
-                self.analytics?.screen(screenTitle: name)
+                self.analytics?.screen(title: name)
             }
         }
     }
@@ -122,7 +122,7 @@ extension UIViewController {
         guard let top = Self.seg__visibleViewController(activeController()) else { return }
         
         var name = String(describing: top.self.classForCoder).replacingOccurrences(of: "ViewController", with: "")
-        analytics?.log(message: name)
+        analytics?.log(message: "Auto-tracking Screen: \(name)")
         // name could've been just "ViewController"...
         if name.count == 0 {
             name = top.title ?? "Unknown"

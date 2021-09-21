@@ -39,7 +39,7 @@ import Segment
 import FlurryAnalytics
 
 /**
- An implmentation of the Flurry Analytics device mode destination as a plugin.
+ An implementation of the Flurry Analytics device mode destination as a plugin.
  */
 
 private struct FlurrySettings: Codable {
@@ -57,7 +57,10 @@ class FlurryDestination: DestinationPlugin {
     
     var screenTracksEvents = false
     
-    func update(settings: Settings) {
+    func update(settings: Settings, type: UpdateType) {
+        // we've already set up this singleton SDK, can't do it again, so skip.
+        guard type == .initial else { return }
+        
         guard let flurrySettings: FlurrySettings = settings.integrationSettings(forPlugin: self) else { return }
         
         let builder = FlurrySessionBuilder()

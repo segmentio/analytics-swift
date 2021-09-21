@@ -56,7 +56,7 @@ internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
         if let settings = plugin.analytics?.settings() {
-            plugin.update(settings: settings)
+            plugin.update(settings: settings, type: .initial)
         }
     }
     
@@ -72,7 +72,13 @@ internal class Mediator {
         
         plugins.forEach { (plugin) in
             if let r = result {
-                result = plugin.execute(event: r)
+                // Drop the event return because we don't care about the
+                // final result.
+                if plugin is DestinationPlugin {
+                    _ = plugin.execute(event: r)
+                } else {
+                    result = plugin.execute(event: r)
+                }
             }
         }
         
@@ -139,7 +145,7 @@ extension Plugin {
         return event
     }
     
-    public func update(settings: Settings) {
+    public func update(settings: Settings, type: UpdateType) {
         // do nothing by default, user can override.
     }
 

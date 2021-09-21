@@ -59,6 +59,7 @@
 		96C33A9C25880A5E00F3D538 /* SegmentLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLogger.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
+		96DBF37B26F39B5500724B0B /* Timeline_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
 		A31A16342576B7AF00C9CDDF /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16332576B7AF00C9CDDF /* Types.swift */; };
@@ -123,6 +124,16 @@
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
+		46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
+		46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
+		46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixpanelDestination.swift; sourceTree = "<group>"; };
+		46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsFlyerDestination.swift; sourceTree = "<group>"; };
+		46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDestination.swift; sourceTree = "<group>"; };
+		46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSession.swift; sourceTree = "<group>"; };
+		46D98E4426D6FEF300E7A86A /* UIKitScreenTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitScreenTracking.swift; sourceTree = "<group>"; };
+		46D98E4526D6FEF300E7A86A /* ConsentTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
+		46D98E4626D6FEF300E7A86A /* IDFACollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDFACollection.swift; sourceTree = "<group>"; };
+		46D98E4726D6FEF300E7A86A /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		46E382E62654429A00BA2502 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		46F7485B26C718710042798E /* ObjCAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCAnalytics.swift; sourceTree = "<group>"; };
 		46F7485C26C718710042798E /* ObjCConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCConfiguration.swift; sourceTree = "<group>"; };
@@ -137,6 +148,7 @@
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		96259F8226CEF526008AE301 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		96259F8526CF1D45008AE301 /* ConsoleTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleTarget.swift; sourceTree = "<group>"; };
+		9679DD6226EFF00800A6933C /* ExampleDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDestination.swift; sourceTree = "<group>"; };
 		967C40D9258D472C008EB0B6 /* Logger_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger_Tests.swift; sourceTree = "<group>"; };
 		967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics_Tests.swift; sourceTree = "<group>"; };
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
@@ -145,6 +157,7 @@
 		96C33A9B25880A5E00F3D538 /* SegmentLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLogger.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline_Tests.swift; sourceTree = "<group>"; };
 		A31A16252576B6F200C9CDDF /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		A31A162E2576B73F00C9CDDF /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		A31A16332576B7AF00C9CDDF /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
@@ -219,6 +232,42 @@
 				46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */,
 			);
 			path = Vendors;
+			sourceTree = "<group>";
+		};
+		46D98E3B26D6FED300E7A86A /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E3C26D6FEF300E7A86A /* destination_plugins */,
+				46D98E4326D6FEF300E7A86A /* other_plugins */,
+			);
+			name = Examples;
+			sourceTree = "<group>";
+		};
+		46D98E3C26D6FEF300E7A86A /* destination_plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */,
+				46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */,
+				46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */,
+				9679DD6226EFF00800A6933C /* ExampleDestination.swift */,
+				46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */,
+				46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */,
+				46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */,
+			);
+			name = destination_plugins;
+			path = Examples/destination_plugins;
+			sourceTree = "<group>";
+		};
+		46D98E4326D6FEF300E7A86A /* other_plugins */ = {
+			isa = PBXGroup;
+			children = (
+				46D98E4426D6FEF300E7A86A /* UIKitScreenTracking.swift */,
+				46D98E4526D6FEF300E7A86A /* ConsentTracking.swift */,
+				46D98E4626D6FEF300E7A86A /* IDFACollection.swift */,
+				46D98E4726D6FEF300E7A86A /* ConsoleLogger.swift */,
+			);
+			name = other_plugins;
+			path = Examples/other_plugins;
 			sourceTree = "<group>";
 		};
 		96208624256DC23F00314F8D /* Frameworks */ = {
@@ -317,16 +366,17 @@
 		OBJ_11 /* Segment-Tests */ = {
 			isa = PBXGroup;
 			children = (
-				4621082D2609206D00EBC4A8 /* Support */,
-				OBJ_13 /* XCTestManifests.swift */,
-				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
-				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
-				46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */,
-				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
+				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
+				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
+				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				46F7485F26C720F60042798E /* ObjC_Tests.swift */,
+				46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */,
+				96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */,
+				OBJ_13 /* XCTestManifests.swift */,
+				4621082D2609206D00EBC4A8 /* Support */,
 			);
 			name = "Segment-Tests";
 			path = "Tests/Segment-Tests";
@@ -344,6 +394,7 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				46D98E3B26D6FED300E7A86A /* Examples */,
 				OBJ_7 /* Sources */,
 				OBJ_10 /* Tests */,
 				OBJ_6 /* Package.swift */,
@@ -523,6 +574,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				96DBF37B26F39B5500724B0B /* Timeline_Tests.swift in Sources */,
 				OBJ_30 /* Analytics_Tests.swift in Sources */,
 				46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,

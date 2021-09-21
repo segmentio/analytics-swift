@@ -13,12 +13,13 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
     
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
-        let configuration = Configuration(writeKey: "lAtKCqFrmtnhIVV7LDPTrgoCbL0ujlBe")
+        let configuration = Configuration(writeKey: "WRITE KEY")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
         
         analytics = Analytics(configuration: configuration)
         analytics?.add(plugin: ConsoleLogger(name: "consoleLogger"))
+        analytics?.add(plugin: NotificationTracking())
     }
 
     func applicationDidBecomeActive() {

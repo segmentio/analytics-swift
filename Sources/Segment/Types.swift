@@ -91,14 +91,14 @@ public struct ScreenEvent: RawEvent {
     public var category: String?
     public var properties: JSON?
     
-    public init(screenTitle: String? = nil, category: String?, properties: JSON? = nil) {
-        self.name = screenTitle
+    public init(title: String? = nil, category: String?, properties: JSON? = nil) {
+        self.name = title
         self.category = category
         self.properties = properties
     }
     
     public init(existing: ScreenEvent) {
-        self.init(screenTitle: existing.name, category: existing.category, properties: existing.properties)
+        self.init(title: existing.name, category: existing.category, properties: existing.properties)
         applyRawEventData(event: existing)
     }
 }

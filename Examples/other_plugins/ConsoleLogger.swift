@@ -62,8 +62,7 @@ class ConsoleLogger: Plugin {
     // we also want to know when settings are retrieved or changed.
     func update(settings: Settings) {
         let json = settings.prettyPrint()
-        analytics?.log(message: "settings updated on instance: \(name)")
-        analytics?.log(message: "\(json)\n")
+        analytics?.log(message: "settings updated on instance: \(name)\nPayload: \(json)")
     }
     
 }

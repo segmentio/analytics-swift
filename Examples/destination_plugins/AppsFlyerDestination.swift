@@ -45,7 +45,7 @@ private struct AppsFlyerSettings: Codable {
 }
 
 @objc
-class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications, iOSLifecycle  {
+class AppsFlyerDestination: UIResponder, DestinationPlugin  {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "AppsFlyer"
@@ -54,7 +54,9 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
     
     fileprivate var settings: AppsFlyerSettings? = nil
     
-    public func update(settings: Settings) {
+    public func update(settings: Settings, type: UpdateType) {
+        // we've already set up this singleton SDK, can't do it again, so skip.
+        guard type == .initial else { return }
         
         guard let settings: AppsFlyerSettings = settings.integrationSettings(forPlugin: self) else { return }
         self.settings = settings
@@ -70,18 +72,6 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
         
         if trackAttributionData ?? false {
             AppsFlyerLib.shared().delegate = self
-        }
-        
-        func applicationDidBecomeActive(application: UIApplication) {
-            AppsFlyerLib.shared().start()
-        }
-        
-        func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) {
-            AppsFlyerLib.shared().handleOpen(url, options: options)
-        }
-        
-        func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
-            AppsFlyerLib.shared().handlePushNotification(userInfo)
         }
     }
     
@@ -136,6 +126,20 @@ class AppsFlyerDestination: UIResponder, DestinationPlugin, RemoteNotifications,
         }
         
         return event
+    }
+}
+
+extension AppsFlyerDestination: RemoteNotifications, iOSLifecycle {
+    func applicationDidBecomeActive(application: UIApplication?) {
+        AppsFlyerLib.shared().start()
+    }
+    
+    func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) {
+        AppsFlyerLib.shared().handleOpen(url, options: options)
+    }
+    
+    func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
+        AppsFlyerLib.shared().handlePushNotification(userInfo)
     }
 }
 
@@ -250,7 +254,7 @@ extension AppsFlyerDestination: AppsFlyerLibDelegate {
 extension AppsFlyerDestination: DeepLinkDelegate, UIApplicationDelegate {
     
     func didResolveDeepLink(_ result: DeepLinkResult) {
-        analytics?.log(message: result)
+        analytics?.log(message: "AppsFlyer Deeplink Result: \(result)")
         switch result.status {
         case .notFound:
             analytics?.log(message: "AppsFlyer: Deep link not found")

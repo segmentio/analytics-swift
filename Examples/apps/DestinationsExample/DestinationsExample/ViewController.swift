@@ -40,7 +40,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var propertiesStepper: UIStepper?
     @IBOutlet weak var eventField: UITextField?
     
-    var analytics = UIApplication.shared.delegate?.analytics
+    var analytics: Analytics? {
+        return UIApplication.shared.delegate?.analytics
+    }
     
     private var keysFields = [UITextField]()
     private var propertiesFields = [UITextField]()
@@ -95,7 +97,7 @@ class ViewController: UIViewController {
     
     func screenEvent() {
         guard let eventFieldText = eventField?.text else { return }
-        analytics?.screen(screenTitle: eventFieldText, properties: valuesEntered())
+        analytics?.screen(title: eventFieldText, properties: valuesEntered())
     }
     
     func groupEvent() {

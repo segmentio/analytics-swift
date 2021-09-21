@@ -86,19 +86,19 @@ extension Settings: Equatable {
 }
 
 extension Analytics {
-    internal func update(settings: Settings) {
+    internal func update(settings: Settings, type: UpdateType) {
         apply { (plugin) in
             // tell all top level plugins to update.
-            update(plugin: plugin, settings: settings)
+            update(plugin: plugin, settings: settings, type: type)
         }
     }
     
-    internal func update(plugin: Plugin, settings: Settings) {
-        plugin.update(settings: settings)
+    internal func update(plugin: Plugin, settings: Settings, type: UpdateType) {
+        plugin.update(settings: settings, type: type)
         // if it's a destination, tell it's plugins to update as well.
         if let dest = plugin as? DestinationPlugin {
             dest.apply { (subPlugin) in
-                subPlugin.update(settings: settings)
+                subPlugin.update(settings: settings, type: type)
             }
         }
     }
@@ -121,6 +121,10 @@ extension Analytics {
         
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)
+        let systemState: System? = store.currentState()
+        let hasSettings = (systemState?.settings?.integrations != nil && systemState?.settings?.plan != nil)
+        let updateType = (hasSettings ? UpdateType.refresh : UpdateType.initial)
+        
         // stop things; queue in case our settings have changed.
         store.dispatch(action: System.ToggleRunningAction(running: false))
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
@@ -130,7 +134,7 @@ extension Analytics {
                     // this will cause them to be cached.
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
                     // let plugins know we just received some settings..
-                    self.update(settings: s)
+                    self.update(settings: s, type: updateType)
                 }
             }
             // we're good to go back to a running state.

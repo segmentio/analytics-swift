@@ -57,6 +57,7 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
             expectation.fulfill()
+            return true
         }
 
         var settings = Settings(writeKey: "test")
@@ -87,6 +88,7 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
             expectation.fulfill()
+            return true
         }
 
         let configuration = Configuration(writeKey: "test")
@@ -241,13 +243,13 @@ final class Analytics_Tests: XCTestCase {
         
         waitUntilStarted(analytics: analytics)
         
-        analytics.screen(screenTitle: "screen1", category: "category1")
+        analytics.screen(title: "screen1", category: "category1")
         
         let screen1Event: ScreenEvent? = outputReader.lastEvent as? ScreenEvent
         XCTAssertTrue(screen1Event?.name == "screen1")
         XCTAssertTrue(screen1Event?.category == "category1")
         
-        analytics.screen(screenTitle: "screen2", category: "category2", properties: MyTraits(email: "blah@blah.com"))
+        analytics.screen(title: "screen2", category: "category2", properties: MyTraits(email: "blah@blah.com"))
         
         let screen2Event: ScreenEvent? = outputReader.lastEvent as? ScreenEvent
         XCTAssertTrue(screen2Event?.name == "screen2")
@@ -304,7 +306,8 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testFlush() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey"))
         
         waitUntilStarted(analytics: analytics)
         

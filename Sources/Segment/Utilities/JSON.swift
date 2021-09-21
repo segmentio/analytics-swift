@@ -274,9 +274,9 @@ extension JSON {
     /// - Parameters:
     ///   - keys: A dictionary containing key mappings, in the format of ["Old": "New"].
     ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
-    public func mapKeys(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
+    public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
         guard let dict = self.dictionaryValue else { return self }
-        let mapped = try dict.mapKeys(keys, valueTransform: valueTransform)
+        let mapped = try dict.mapTransform(keys, valueTransform: valueTransform)
         let result = try JSON(mapped)
         return result
     }
@@ -285,7 +285,7 @@ extension JSON {
 // MARK: - Helpers
 
 extension Dictionary where Key == String, Value == Any {
-    internal func mapKeys(_ keys: [String: String], valueTransform: ((_ key: Key, _ value: Value) -> Any)? = nil) throws -> [Key: Value] {
+    public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: Key, _ value: Value) -> Any)? = nil) throws -> [Key: Value] {
         let mapped = Dictionary(uniqueKeysWithValues: self.map { key, value -> (Key, Value) in
             var newKey = key
             var newValue = value
@@ -299,7 +299,7 @@ extension Dictionary where Key == String, Value == Any {
             }
             // is this value a dictionary?
             if let dictValue = value as? [Key: Value] {
-                if let r = try? dictValue.mapKeys(keys, valueTransform: valueTransform) {
+                if let r = try? dictValue.mapTransform(keys, valueTransform: valueTransform) {
                     // if so, lets recurse...
                     newValue = r
                 }
@@ -309,7 +309,7 @@ extension Dictionary where Key == String, Value == Any {
                 newValue = arrayValue.map { item -> Value in
                     var newValue = item
                     if let dictValue = item as? [Key: Value] {
-                        if let r = try? dictValue.mapKeys(keys, valueTransform: valueTransform) {
+                        if let r = try? dictValue.mapTransform(keys, valueTransform: valueTransform) {
                             newValue = r
                         }
                     }
@@ -318,7 +318,7 @@ extension Dictionary where Key == String, Value == Any {
             }
             
             if !(newValue is [Key: Value]), let transform = valueTransform {
-                // it's not a dictionary apply our transform.
+                // it's not a dictionary so apply our transform.
                 
                 // note: if it's an array, we've processed any dictionaries inside
                 // already, but this gives the opportunity to apply a transform to the other

@@ -6,9 +6,12 @@
 //
 
 import Cocoa
+import Segment
 
 class ViewController: NSViewController {
-    var analytics = NSApplication.shared.delegate?.analytics
+    var analytics: Analytics? {
+        return NSApplication.shared.delegate?.analytics
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
