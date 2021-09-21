@@ -34,15 +34,9 @@
 // *** To Implement Deep Linking functionality reference: https://support.appsflyer.com/hc/en-us/articles/208874366 ****
 
 import Foundation
+import UIKit
 import Segment
 import AppsFlyerLib
-import  UIKit
-
-private struct AppsFlyerSettings: Codable {
-    let appsFlyerDevKey: String
-    let appleAppID: String
-    let trackAttributionData: Bool?
-}
 
 @objc
 class AppsFlyerDestination: UIResponder, DestinationPlugin  {
@@ -346,3 +340,9 @@ extension AppsFlyerDestination: DeepLinkDelegate, UIApplicationDelegate {
 //        return nil
 //    }
 //}
+
+private struct AppsFlyerSettings: Codable {
+    let appsFlyerDevKey: String
+    let appleAppID: String
+    let trackAttributionData: Bool?
+}
