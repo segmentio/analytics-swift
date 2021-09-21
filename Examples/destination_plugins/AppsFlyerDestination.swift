@@ -254,7 +254,7 @@ extension AppsFlyerDestination: AppsFlyerLibDelegate {
 extension AppsFlyerDestination: DeepLinkDelegate, UIApplicationDelegate {
     
     func didResolveDeepLink(_ result: DeepLinkResult) {
-        print(result)
+        analytics?.log(message: "AppsFlyer Deeplink Result: \(result)")
         switch result.status {
         case .notFound:
             analytics?.log(message: "AppsFlyer: Deep link not found")

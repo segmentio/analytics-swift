@@ -53,8 +53,8 @@ class ConsoleLogger: Plugin {
     // we want to log every event, so lets override `execute`.
     func execute<T: RawEvent>(event: T?) -> T? {
         if let json = event?.prettyPrint() {
-            print("event received on instance: \(name)")
-            print("\(json)\n")
+            analytics?.log(message: "event received on instance: \(name)")
+            analytics?.log(message: "\(json)\n")
         }
         return event
     }
@@ -62,8 +62,7 @@ class ConsoleLogger: Plugin {
     // we also want to know when settings are retrieved or changed.
     func update(settings: Settings) {
         let json = settings.prettyPrint()
-        print("settings updated on instance: \(name)")
-        print("\(json)\n")
+        analytics?.log(message: "settings updated on instance: \(name)\nPayload: \(json)")
     }
     
 }
