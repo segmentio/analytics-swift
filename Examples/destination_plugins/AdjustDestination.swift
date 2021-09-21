@@ -36,16 +36,6 @@ import Foundation
 import Segment
 import Adjust
 
-internal struct AdjustSettings: Codable {
-    let appToken: String
-    let setEnvironmentProduction: Bool?
-    let setEventBufferingEnabled: Bool?
-    let trackAttributionData: Bool?
-    let setDelay: Bool?
-    let customEvents: JSON?
-    let delayTime: Double?
-}
-
 @objc
 class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
     let timeline = Timeline()
@@ -53,7 +43,7 @@ class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
     let key = "Adjust"
     var analytics: Analytics? = nil
     
-    internal var settings: AdjustSettings? = nil
+    private var settings: AdjustSettings? = nil
     
     public func update(settings: Settings, type: UpdateType) {
         // we've already set up this singleton SDK, can't do it again, so skip.
@@ -184,4 +174,14 @@ extension AdjustDestination {
         }
         return result
     }
+}
+
+private struct AdjustSettings: Codable {
+    let appToken: String
+    let setEnvironmentProduction: Bool?
+    let setEventBufferingEnabled: Bool?
+    let trackAttributionData: Bool?
+    let setDelay: Bool?
+    let customEvents: JSON?
+    let delayTime: Double?
 }

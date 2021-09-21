@@ -43,10 +43,6 @@ import FirebaseAnalytics
  An implmentation of the Firebase Analytics device mode destination as a plugin.
  */
 
-struct FirebaseSettings: Codable {
-    let deepLinkURLScheme: String?
-}
-
 class FirebaseDestination: DestinationPlugin {
     let timeline = Timeline()
     let type = PluginType.destination
@@ -124,21 +120,7 @@ extension FirebaseDestination {
     // Maps Segment spec to Firebase constant
     func formatFirebaseEventNames(_ eventName: String) -> String {
         
-        let mappedValues = ["Product Clicked": FirebaseAnalytics.AnalyticsEventSelectContent,
-                            "Product Viewed": FirebaseAnalytics.AnalyticsEventViewItem,
-                            "Product Added": FirebaseAnalytics.AnalyticsEventAddToCart,
-                            "Product Removed": FirebaseAnalytics.AnalyticsEventRemoveFromCart,
-                            "Checkout Started": FirebaseAnalytics.AnalyticsEventBeginCheckout,
-                            "Promotion Viewed": FirebaseAnalytics.AnalyticsEventPresentOffer,
-                            "Payment Info Entered": FirebaseAnalytics.AnalyticsEventAddPaymentInfo,
-                            "Order Completed": FirebaseAnalytics.AnalyticsEventPurchase,
-                            "Order Refunded": FirebaseAnalytics.AnalyticsEventRefund,
-                            "Product List Viewed": FirebaseAnalytics.AnalyticsEventViewItemList,
-                            "Product Added to Wishlist": FirebaseAnalytics.AnalyticsEventAddToWishlist,
-                            "Product Shared": FirebaseAnalytics.AnalyticsEventShare,
-                            "Cart Shared": FirebaseAnalytics.AnalyticsEventShare,
-                            "Products Searched": FirebaseAnalytics.AnalyticsEventSearch]
-        if let mappedEvent = mappedValues[eventName] {
+        if let mappedEvent = FirebaseDestination.mappedValues[eventName] {
             return mappedEvent
         } else {
             return (try? formatFirebaseName(eventName)) ?? eventName
@@ -162,24 +144,10 @@ extension FirebaseDestination {
     
     func returnMappedFirebaseParameters(_ properties: [String: Any]) -> [String: Any] {
         
-        let mappedKeys = ["products": FirebaseAnalytics.AnalyticsParameterItems,
-                          "category": FirebaseAnalytics.AnalyticsParameterItemCategory,
-                          "product_id": FirebaseAnalytics.AnalyticsParameterItemID,
-                          "name": FirebaseAnalytics.AnalyticsParameterItemName,
-                          "brand": FirebaseAnalytics.AnalyticsParameterItemBrand,
-                          "price": FirebaseAnalytics.AnalyticsParameterPrice,
-                          "quantity": FirebaseAnalytics.AnalyticsParameterQuantity,
-                          "query": FirebaseAnalytics.AnalyticsParameterSearchTerm,
-                          "shipping": FirebaseAnalytics.AnalyticsParameterShipping,
-                          "tax": FirebaseAnalytics.AnalyticsParameterTax,
-                          "total": FirebaseAnalytics.AnalyticsParameterValue,
-                          "revenue": FirebaseAnalytics.AnalyticsParameterValue,
-                          "order_id": FirebaseAnalytics.AnalyticsParameterTransactionID,
-                          "currency": FirebaseAnalytics.AnalyticsParameterCurrency]
         
         var mappedValues = properties
         
-        for (key, firebaseKey) in mappedKeys {
+        for (key, firebaseKey) in FirebaseDestination.mappedKeys {
             if var data = properties[key] {
                 
                 mappedValues.removeValue(forKey: key)
@@ -220,3 +188,41 @@ extension FirebaseDestination {
     }
 }
 
+
+private struct FirebaseSettings: Codable {
+    let deepLinkURLScheme: String?
+}
+
+private extension FirebaseDestination {
+    
+    static let mappedValues = ["Product Clicked": FirebaseAnalytics.AnalyticsEventSelectContent,
+                               "Product Viewed": FirebaseAnalytics.AnalyticsEventViewItem,
+                               "Product Added": FirebaseAnalytics.AnalyticsEventAddToCart,
+                               "Product Removed": FirebaseAnalytics.AnalyticsEventRemoveFromCart,
+                               "Checkout Started": FirebaseAnalytics.AnalyticsEventBeginCheckout,
+                               "Promotion Viewed": FirebaseAnalytics.AnalyticsEventPresentOffer,
+                               "Payment Info Entered": FirebaseAnalytics.AnalyticsEventAddPaymentInfo,
+                               "Order Completed": FirebaseAnalytics.AnalyticsEventPurchase,
+                               "Order Refunded": FirebaseAnalytics.AnalyticsEventRefund,
+                               "Product List Viewed": FirebaseAnalytics.AnalyticsEventViewItemList,
+                               "Product Added to Wishlist": FirebaseAnalytics.AnalyticsEventAddToWishlist,
+                               "Product Shared": FirebaseAnalytics.AnalyticsEventShare,
+                               "Cart Shared": FirebaseAnalytics.AnalyticsEventShare,
+                               "Products Searched": FirebaseAnalytics.AnalyticsEventSearch]
+    
+    static let mappedKeys = ["products": FirebaseAnalytics.AnalyticsParameterItems,
+                             "category": FirebaseAnalytics.AnalyticsParameterItemCategory,
+                             "product_id": FirebaseAnalytics.AnalyticsParameterItemID,
+                             "name": FirebaseAnalytics.AnalyticsParameterItemName,
+                             "brand": FirebaseAnalytics.AnalyticsParameterItemBrand,
+                             "price": FirebaseAnalytics.AnalyticsParameterPrice,
+                             "quantity": FirebaseAnalytics.AnalyticsParameterQuantity,
+                             "query": FirebaseAnalytics.AnalyticsParameterSearchTerm,
+                             "shipping": FirebaseAnalytics.AnalyticsParameterShipping,
+                             "tax": FirebaseAnalytics.AnalyticsParameterTax,
+                             "total": FirebaseAnalytics.AnalyticsParameterValue,
+                             "revenue": FirebaseAnalytics.AnalyticsParameterValue,
+                             "order_id": FirebaseAnalytics.AnalyticsParameterTransactionID,
+                             "currency": FirebaseAnalytics.AnalyticsParameterCurrency]
+    
+}

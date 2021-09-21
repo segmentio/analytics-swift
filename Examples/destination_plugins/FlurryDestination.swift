@@ -42,13 +42,6 @@ import FlurryAnalytics
  An implementation of the Flurry Analytics device mode destination as a plugin.
  */
 
-private struct FlurrySettings: Codable {
-    let apiKey: String
-    let sessionContinueSeconds: Int?
-    let screenTracksEvents: Bool?
-}
-
-
 class FlurryDestination: DestinationPlugin {
     let timeline = Timeline()
     let type = PluginType.destination
@@ -126,3 +119,8 @@ extension FlurryDestination {
     }
 }
 
+private struct FlurrySettings: Codable {
+    let apiKey: String
+    let sessionContinueSeconds: Int?
+    let screenTracksEvents: Bool?
+}
