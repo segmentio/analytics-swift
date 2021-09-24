@@ -38,8 +38,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add the Firebase destination plugin
         analytics?.add(plugin: FirebaseDestination())
         
-        //Add the AppsFlyer destination plugin
+        // Add the AppsFlyer destination plugin
         analytics?.add(plugin: AppsFlyerDestination())
+        
+        // Add the Comscore destination plugin
+        analytics?.add(plugin: ComscoreDestination())
         
         return true
     }
