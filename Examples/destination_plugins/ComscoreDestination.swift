@@ -107,35 +107,18 @@ class ComscoreDestination: DestinationPlugin {
     
     func screen(event: ScreenEvent) -> ScreenEvent? {
         
-        if let _ = event.properties?.dictionaryValue {
-            // TODO: Do something with properties if they exist
-        }
-
-        // TODO: Do something with name, category & properties in partner SDK
-        
-        return event
-    }
-    
-    func group(event: GroupEvent) -> GroupEvent? {
-        
-        if let _ = event.traits?.dictionaryValue {
-            // TODO: Do something with traits if they exist
+        if let eventName = event.name {
+            let viewLabels = ["name": eventName]
+            SCORAnalytics.notifyViewEvent(withLabels: viewLabels)
+            analytics?.log(message: "SCORAnalytics.notifyViewEvent(withLabels: \(viewLabels)", kind: .debug)
         }
         
-        // TODO: Do something with groupId & traits in partner SDK
-        
         return event
     }
     
-    func alias(event: AliasEvent) -> AliasEvent? {
-        
-        // TODO: Do something with previousId & userId in partner SDK
-        
-        return event
-    }
-    
-    func reset() {
-        // TODO: Do something with resetting partner SDK
+    func flush() {
+        SCORAnalytics.flushOfflineCache()
+        analytics?.log(message: "SCORAnalytics.flushOfflineCache()", kind: .debug)
     }
 }
 
