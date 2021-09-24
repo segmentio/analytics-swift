@@ -129,11 +129,15 @@ extension ViewController {
             captureView.alpha = 0.0
             
             let nextKeyField = UITextField()
+            nextKeyField.autocorrectionType = .no
+            nextKeyField.autocapitalizationType = .none
             nextKeyField.placeholder = "Key..."
             nextKeyField.borderStyle = .roundedRect
             keysFields.append(nextKeyField)
             
             let nextField = UITextField()
+            nextField.autocorrectionType = .no
+            nextField.autocapitalizationType = .none
             nextField.placeholder = "Value..."
             nextField.borderStyle = .roundedRect
             propertiesFields.append(nextField)
