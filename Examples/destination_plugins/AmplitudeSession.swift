@@ -42,7 +42,7 @@ import Foundation
 import Segment
 
 class AmplitudeSession: EventPlugin, iOSLifecycle {
-    var key = "Amplitude"
+    var key = "Actions Amplitude"
     var type = PluginType.enrichment
     var analytics: Analytics?
     
