@@ -140,36 +140,55 @@ private extension ComscoreDestination {
     static let partnerId = "23243060"
     
     static let adPropertiesMap = [
+        "adClassificationType": "ns_st_ct",
         "assetId": "ns_st_ami",
         "asset_id": "ns_st_ami",
-        "title": "ns_st_amt",
-        "publisher": "ns_st_pu"
-    ]
-    static let contentPropertiesMap = [
-        "title": "ns_st_ep",
-        "season": "ns_st_sn",
-        "episode": "ns_st_en",
-        "genre": "ns_st_ge",
-        "program": "ns_st_pr",
-        "channel": "ns_st_st",
+        "c3": "c3",
+        "c4": "c4",
+        "c6": "c6",
         "publisher": "ns_st_pu",
-        "fullEpisode": "ns_st_ce",
-        "full_episode": "ns_st_ce",
-        "podId": "ns_st_pn",
-        "pod_id": "ns_st_pn"
-    ]
-    static let contentIdMap = [
-        "assetId": "ns_st_ci",
-        "asset_id": "ns_st_ci"
-    ]
-    static let playbackPropertiesMap = [
-        "videoPlayer": "ns_st_mp",
-        "video_player": "ns_st_mp",
-        "sound": "ns_st_vo"
+        "title": "ns_st_amt",
+        "totalLength": "ns_st_cl",
+        "total_length": "ns_st_cl",
+        "type": "ns_st_ad",
     ]
     
-    static var eventNameMap = ["ADD_TO_CART": "Product Added",
-                               "PRODUCT_TAPPED": "Product Tapped"]
+    static let contentPropertiesMap = [
+        "assetId": "ns_st_ci",
+        "asset_id": "ns_st_ci",
+        "channel": "ns_st_st",
+        "contentClassificationType": "ns_st_ct",
+        "c3": "c3",
+        "c4": "c4",
+        "c6": "c6",
+        "digitalAirdate": "ns_st_ddt",
+        "episode": "ns_st_en",
+        "fullEpisode": "ns_st_ce",
+        "full_episode": "ns_st_ce",
+        "genre": "ns_st_ge",
+        "podId": "ns_st_pn",
+        "pod_id": "ns_st_pn",
+        "program": "ns_st_pr",
+        "publisher": "ns_st_pu",
+        "season": "ns_st_sn",
+        "title": "ns_st_ep",
+        "totalLength": "ns_st_cl",
+        "total_length": "ns_st_cl",
+        "tvAirdate": "ns_st_tdt",
+    ]
+    
+    static let playbackPropertiesMap = [
+        "bitrate": "ns_st_br",
+        "full_screen": "ns_st_ws",
+        "fullScreen": "ns_st_ws",
+        "fullscreen": "ns_st_ws",
+        "sound": "ns_st_vo",
+        "videoPlayer": "ns_st_mp",
+        "video_player": "ns_st_mp",
+        "c3": "c3",
+        "c4": "c4",
+        "c6": "c6"
+    ]
     
     func convertToStringFormatFrom(data: Dictionary<String, Any>) -> Dictionary<String, String> {
         var returnDictionary = [String: String]()
@@ -437,84 +456,91 @@ private extension ComscoreDestination {
     
     func mappedPlaybackProperties(event: TrackEvent, properties: JSON) -> Dictionary<String, String>? {
         // Pull out the values for the event out of the enrichment plugin
-        guard let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0") else {
-            return nil
-        }
+        let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0")
         
         var bps = "*null"
         var fullscreen = "norm"
-        let convertedProperties = properties.dictionaryValue
         if let tempProperties = properties.dictionaryValue {
             bps = convertFromKBPSToBPS(source: tempProperties, key: "bitrate")
             fullscreen = returnFullScreenStatus(source: tempProperties, key: "full_screen")
         }
-        let returnMap = ["ns_st_mp" : "\(convertedProperties?["video_player"] ?? "*null")",
-                         "ns_st_vo" : "\(convertedProperties?["sound"] ?? "*null")",
-                         "ns_st_br" : bps,
-                         "ns_st_ws" : fullscreen,
-                         "c3" : "\(options["c3"] ?? "*null")",
-                         "c4" : "\(options["c4"] ?? "*null")",
-                         "c6" : "\(options["c6"] ?? "*null")"]
+                
+        let returnMap = try? properties.mapTransform(Self.playbackPropertiesMap) { key, value in
+            switch key {
+                case "c3", "c4", "c6":
+                    return "\(options?[key] ?? "*null")"
+                case "ns_st_br":
+                    return bps
+                case "ns_st_ws":
+                    return fullscreen
+                default:
+                    return value
+            }
+        }
         
-        return returnMap
+        return returnMap?.dictionaryValue as? [String: String]
     }
     
     func mappedContentProperties(event: TrackEvent, properties: JSON) -> Dictionary<String, String>? {
         // Pull out the values for the event out of the enrichment plugin
-        guard let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0") else {
-            return nil
-        }
+        let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0")
         
         var totalLength = "0"
-        let convertedProperties = properties.dictionaryValue
         if let tempProperties = properties.dictionaryValue {
             totalLength = convertFromSecondsToMilliseconds(source: tempProperties, key: "total_length")
         }
-        let returnMap = ["ns_st_ci" : "\(convertedProperties?["asset_id"] ?? "0")",
-                         "ns_st_ep" : "\(convertedProperties?["title"] ?? "*null")",
-                         "ns_st_sn" : "\(convertedProperties?["season"] ?? "*null")",
-                         "ns_st_en" : "\(convertedProperties?["episode"] ?? "*null")",
-                         "ns_st_ge" : "\(convertedProperties?["genre"] ?? "*null")",
-                         "ns_st_pr" : "\(convertedProperties?["program"] ?? "*null")",
-                         "ns_st_pn" : "\(convertedProperties?["pod_id"] ?? "*null")",
-                         "ns_st_ce" : "\(convertedProperties?["full_episode"] ?? "*null")",
-                         "ns_st_cl" : totalLength,
-                         "ns_st_pu" : "\(convertedProperties?["publisher"] ?? "*null")",
-                         "ns_st_st" : "\(convertedProperties?["channel"] ?? "*null")",
-                         "ns_st_ddt" : "\(options["digitalAirdate"] ?? "*null")",
-                         "ns_st_tdt" : "\(options["tvAirdate"] ?? "*null")",
-                         "c3" : "\(options["c3"] ?? "*null")",
-                         "c4" : "\(options["c4"] ?? "*null")",
-                         "c6" : "\(options["c6"] ?? "*null")",
-                         "ns_st_ct" : "\(options["contentClassificationType"] ?? "vc00")"]
+        let digitalAirdate = "\(options?["digitalAirdate"] ?? "*null")"
+        let tvAirdate = "\(options?["tvAirdate"] ?? "*null")"
+        let contentClassification = "\(options?["contentClassificationType"] ?? "vc00")"
         
-        return returnMap
+        let returnMap = try? properties.mapTransform(Self.contentPropertiesMap, valueTransform: { key, value in
+            switch key {
+                case "c3", "c4", "c6":
+                    return "\(options?[key] ?? "*null")"
+                case "ns_st_ddt":
+                    return digitalAirdate
+                case "ns_st_tdt":
+                    return tvAirdate
+                case "ns_st_ct":
+                    return contentClassification
+                case "ns_st_cl":
+                    return totalLength
+                default:
+                    return value
+            }
+        })
+        
+        return returnMap?.dictionaryValue as? [String: String]
     }
     
     func mappedAdProperties(event: TrackEvent, properties: JSON) -> Dictionary<String, String>? {
         // Pull out the values for the event out of the enrichment plugin
-        guard let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0") else {
-            return nil
-        }
+        let options = comscoreEnrichment?.fetchAndRemoveMetricsFor(key: event.messageId ?? "0")
         
         var adType = "1"
         var totalLength = "0"
-        let convertedProperties = properties.dictionaryValue
         if let tempProperties = properties.dictionaryValue {
             adType = defaultAdType(source: tempProperties, key: "type")
             totalLength = convertFromSecondsToMilliseconds(source: tempProperties, key: "total_length")
         }
-        let returnMap = ["ns_st_ami" : "\(convertedProperties?["asset_id"] ?? "*null")",
-                         "ns_st_ad" : adType,
-                         "ns_st_cl" : totalLength,
-                         "ns_st_amt" : "\(convertedProperties?["title"] ?? "*null")",
-                         "ns_st_pu" : "\(convertedProperties?["publisher"] ?? "*null")",
-                         "c3" : "\(options["c3"] ?? "*null")",
-                         "c4" : "\(options["c4"] ?? "*null")",
-                         "c6" : "\(options["c6"] ?? "*null")",
-                         "ns_st_ct" : "\(options["contentClassificationType"] ?? "vc00")"]
+        let adClassification = "\(options?["adClassificationType"] ?? "va00")"
         
-        return returnMap
+        let returnMap = try? properties.mapTransform(Self.adPropertiesMap, valueTransform: { key, value in
+            switch key {
+                case "c3", "c4", "c6":
+                    return "\(options?[key] ?? "*null")"
+                case "ns_st_ct":
+                    return adClassification
+                case "ns_st_ad":
+                    return adType
+                case "ns_st_cl":
+                    return totalLength
+                default:
+                    return value
+            }
+        })
+        
+        return returnMap?.dictionaryValue as? [String: String]
     }
 
     
@@ -523,6 +549,9 @@ private extension ComscoreDestination {
         var returnValue = "*null"
         if let kbps = source[key] as? Int {
             returnValue = "\(kbps * 1000)"
+        } else if let kbps = source[key] as? String,
+                  let kbpsValue = Int(kbps) {
+            returnValue = "\(kbpsValue * 1000)"
         }
         
         return returnValue
@@ -533,6 +562,9 @@ private extension ComscoreDestination {
         var returnValue = "0"
         if let seconds = source[key] as? Int {
             returnValue = "\(seconds * 1000)"
+        } else if let seconds = source[key] as? String,
+                  let secondsValue = Int(seconds) {
+            returnValue = "\(secondsValue * 1000)"
         }
         
         return returnValue
