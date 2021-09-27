@@ -118,12 +118,12 @@ class AmplitudeSession: EventPlugin, iOSLifecycle {
         return returnEvent
     }
     
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(application: UIApplication?) {
         startTimer()
         analytics?.log(message: "Amplitude Session ID: \(sessionID ?? -1)")
     }
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(application: UIApplication?) {
         stopTimer()
     }
 }
