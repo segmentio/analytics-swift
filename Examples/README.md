@@ -1,8 +1,19 @@
-The files contained within this directory are NOT SUPPORTED by Segment.  
-They are here merely as an example, and for your convenience should you 
+Note: The files contained within this directory are NOT SUPPORTED by Segment.
+They are here merely as an example, and for your convenience should you
 find it useful.
 
---- 
+# How this folder is structured
+
+- [apps](apps)
+  Example projects which showcase analytics instrumentation on different platforms/languages
+
+- [Destination Plugins](destination_plugins)
+  A collection of Sample Destination plugins, and how to include them in your own projects
+
+- [Other Plugins](other_plugins) & [Task Plugins](tasks)
+  A collection of plugins to help solve common use-cases 
+
+---
 MIT License
 
 Copyright (c) 2021 Segment
