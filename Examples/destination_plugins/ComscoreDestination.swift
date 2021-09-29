@@ -263,6 +263,7 @@ private extension ComscoreDestination {
 
     
     // MARK: - Playback methods
+    // MARK: -
     
     func videoPlaybackStarted(event: TrackEvent, properties: JSON) {
         streamAnalytics = SCORStreamingAnalytics()
