@@ -74,7 +74,7 @@ final class Logger_Tests: XCTestCase {
             expectation.fulfill()
         })
         let loggingType = LoggingType.log
-        analytics?.add(target: logConsoleTarget, type: loggingType)
+        try? analytics?.add(target: logConsoleTarget, type: loggingType)
         
         // Act
         analytics?.log(message: "Should hit our proper target")
@@ -97,7 +97,7 @@ final class Logger_Tests: XCTestCase {
             XCTFail("Should not hit this since it was registered for history")
         })
         let loggingType = LoggingType.history
-        analytics?.add(target: logConsoleTarget, type: loggingType)
+        try? analytics?.add(target: logConsoleTarget, type: loggingType)
         
         // Act
         analytics?.log(message: "Should hit our proper target")
