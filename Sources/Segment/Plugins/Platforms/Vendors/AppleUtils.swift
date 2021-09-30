@@ -65,7 +65,11 @@ internal class iOSVendorSystem: VendorSystem {
     
     override var userAgent: String? {
         #if !os(tvOS)
-        return WKWebView().value(forKey: "userAgent") as? String
+        var userAgent: String?
+        DispatchQueue.main.sync {
+          userAgent = WKWebView().value(forKey: "userAgent") as? String
+        }
+        return userAgent
         #else
         // webkit isn't on tvos
         return "unknown"
@@ -228,7 +232,11 @@ internal class MacOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        return WKWebView().value(forKey: "userAgent") as? String
+        var userAgent: String?
+        DispatchQueue.main.sync {
+          userAgent = WKWebView().value(forKey: "userAgent") as? String
+        }
+        return userAgent
     }
     
     override var connection: ConnectionStatus {
