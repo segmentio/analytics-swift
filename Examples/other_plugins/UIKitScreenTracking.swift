@@ -122,7 +122,7 @@ extension UIViewController {
         guard let top = Self.seg__visibleViewController(activeController()) else { return }
         
         var name = String(describing: top.self.classForCoder).replacingOccurrences(of: "ViewController", with: "")
-        analytics?.log(message: "Auto-tracking Screen: \(name)")
+        print("Auto-tracking Screen: \(name)")
         // name could've been just "ViewController"...
         if name.count == 0 {
             name = top.title ?? "Unknown"
