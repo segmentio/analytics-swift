@@ -22,7 +22,11 @@ internal class Logger: UtilityPlugin {
     
     func configure(analytics: Analytics) {
         self.analytics = analytics
+        #if !os(Linux)
         try? add(target: SystemTarget(), for: LoggingType.log)
+        #else
+        try? add(target: ConsoleTarget(), for: LoggingType.log)
+        #endif
     }
     
     func update(settings: Settings) {
