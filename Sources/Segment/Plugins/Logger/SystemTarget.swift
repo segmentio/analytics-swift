@@ -5,6 +5,8 @@
 //  Created by Cody Garvin on 8/20/21.
 //
 
+#if !os(Linux)
+
 import Foundation
 import os.log
 
@@ -50,3 +52,5 @@ class SystemTarget: LogTarget {
         return osLogType
     }
 }
+
+#endif
