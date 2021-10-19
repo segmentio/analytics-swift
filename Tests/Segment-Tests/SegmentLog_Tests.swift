@@ -257,8 +257,8 @@ final class SegmentLog_Tests: XCTestCase {
             func parseLog(_ log: LogMessage) {}
         }
         let expectation = XCTestExpectation(description: "Called")
-        mockLogger.logClosure = { (kind, message) in
-            XCTAssertEqual(message.message, "Could not add target: The operation couldn’t be completed. (Target already exists error 2002.)", "Error message is incorrect")
+        mockLogger.logClosure = { (kind, logMessage) in
+            XCTAssertTrue(logMessage.message.contains("Could not add target"))
             expectation.fulfill()
         }
         
