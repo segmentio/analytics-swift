@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "Sovran",
-        "repositoryURL": "https://github.com/segmentio/Sovran-Swift.git",
+        "repositoryURL": "git@github.com:segmentio/Sovran-Swift.git",
         "state": {
           "branch": null,
           "revision": "be79aad4393d36959f422c2b40566b84ee1170f7",
