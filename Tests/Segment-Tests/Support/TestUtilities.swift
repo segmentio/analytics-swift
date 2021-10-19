@@ -39,7 +39,7 @@ class GooberPlugin: EventPlugin {
         let endingTime = Date()
         let finalTime = endingTime.timeIntervalSince(beginningTime)
         
-        newEvent.addMetric(.gauge, name: "Gauge Test", value: finalTime, tags: ["timing", "function_length"], timestamp: Date())
+        Analytics.segmentMetric(.gauge, name: "Gauge Test", value: finalTime, tags: ["timing", "function_length"])
         
         return newEvent
         //return nil

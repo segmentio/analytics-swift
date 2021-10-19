@@ -1,6 +1,6 @@
 //
-//  Logger.swift
-//  Logger
+//  LogTarget.swift
+//  LogTarget
 //
 //  Created by Cody Garvin on 8/19/21.
 //
@@ -80,16 +80,39 @@ public struct LoggingType: Hashable {
     }
 }
 
-
 /// The interface to the message being returned to `LogTarget` -> `parseLog()`.
 public protocol LogMessage {
     var kind: LogFilterKind { get }
+    var title: String? { get }
     var message: String { get }
     var event: RawEvent? { get }
     var function: String? { get }
     var line: Int? { get }
     var logType: LoggingType.LogDestination { get }
     var dateTime: Date { get }
+}
+
+
+public enum MetricType: Int {
+    case counter = 0    // Not Verbose
+    case gauge          // Semi-verbose
+    
+    func toString() -> String {
+        var typeString = "Gauge"
+        if self == .counter {
+            typeString = "Counter"
+        }
+        return typeString
+    }
+    
+    static func fromString(_ string: String) -> Self {
+        var returnType = Self.counter
+        if string == "Gauge" {
+            returnType = .gauge
+        }
+        
+        return returnType
+    }
 }
 
 
@@ -107,20 +130,17 @@ extension Analytics {
     public func log(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
         apply { plugin in
             // Check if we should send off the event
-            if Logger.loggingEnabled == false {
+            if SegmentLog.loggingEnabled == false {
                 return
             }
-            if let loggerPlugin = plugin as? Logger {
+            if let loggerPlugin = plugin as? SegmentLog {
                 var filterKind = loggerPlugin.filterKind
                 if let logKind = kind {
                     filterKind = logKind
                 }
-                do {
-                    let log = try LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
-                    loggerPlugin.log(log, destination: .log)
-                } catch {
-                    segmentLog(message: "Could not build log: \(error.localizedDescription)", kind: .error)
-                }
+                
+                let log = LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
+                loggerPlugin.log(log, destination: .log)
             }
         }
     }
@@ -132,20 +152,17 @@ extension Analytics {
     ///   - value: The value associated with the metric. This would be an incrementing counter or time
     ///   or pressure gauge.
     ///   - tags: Any tags that should be associated with the metric. Any extra metadata that may help.
-    public func metric(_ type: String, name: String, value: Double, tags: [String]? = nil) {
+    public func metric(_ type: MetricType, name: String, value: Double, tags: [String]? = nil) {
         apply { plugin in
             // Check if we should send off the event
-            if Logger.loggingEnabled == false {
+            if SegmentLog.loggingEnabled == false {
                 return
             }
             
-            if let loggerPlugin = plugin as? Logger {
-                do {
-                    let log = try LogFactory.buildLog(destination: .metric, title: type, message: name, value: value, tags: tags)
-                    loggerPlugin.log(log, destination: .metric)
-                } catch {
-                    segmentLog(message: "Could not build metric: \(error.localizedDescription)", kind: .error)
-                }
+            if let loggerPlugin = plugin as? SegmentLog {
+                
+                let log = LogFactory.buildLog(destination: .metric, title: type.toString(), message: name, value: value, tags: tags)
+                loggerPlugin.log(log, destination: .metric)
             }
         }
     }
@@ -161,17 +178,13 @@ extension Analytics {
     public func history(event: RawEvent, sender: AnyObject, function: String = #function, line: Int = #line) {
         apply { plugin in
             // Check if we should send off the event
-            if Logger.loggingEnabled == false {
+            if SegmentLog.loggingEnabled == false {
                 return
             }
             
-            if let loggerPlugin = plugin as? Logger {
-                do {
-                    let log = try LogFactory.buildLog(destination: .history, title: event.toString(), message: "", function: function, line: line, event: event, sender: sender)
-                    loggerPlugin.log(log, destination: .metric)
-                } catch {
-                    segmentLog(message: "Could not build history: \(error.localizedDescription)", kind: .error)
-                }
+            if let loggerPlugin = plugin as? SegmentLog {
+                let log = LogFactory.buildLog(destination: .history, title: event.toString(), message: "", function: function, line: line, event: event, sender: sender)
+                loggerPlugin.log(log, destination: .metric)
             }
         }
     }
@@ -185,13 +198,13 @@ extension Analytics {
     ///   - target: A `LogTarget` that has logic to parse and handle log messages.
     ///   - type: The type consists of `log`, `metric` or `history`. These correspond to the
     ///   public API on Analytics.
-    public func add(target: LogTarget, type: LoggingType) throws {
+    public func add(target: LogTarget, type: LoggingType) {
         apply { (potentialLogger) in
-            if let logger = potentialLogger as? Logger {
+            if let logger = potentialLogger as? SegmentLog {
                 do {
                     try logger.add(target: target, for: type)
                 } catch {
-                    log(message: "Could not add target: \(error.localizedDescription)", kind: .error)
+                    Self.segmentLog(message: "Could not add target: \(error.localizedDescription)", kind: .error)
                 }
             }
         }
@@ -199,7 +212,7 @@ extension Analytics {
     
     public func logFlush() {
         apply { (potentialLogger) in
-            if let logger = potentialLogger as? Logger {
+            if let logger = potentialLogger as? SegmentLog {
                 logger.flush()
             }
         }
