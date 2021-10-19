@@ -39,8 +39,6 @@ jobs:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
     # Workarounds for Xcode/SPM failing to get packages
-    - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-    - run: rm ~/.ssh/id_rsa || true
     - run: |
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
@@ -54,8 +52,6 @@ jobs:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
     # Workarounds for Xcode/SPM failing to get packages
-    - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-    - run: rm ~/.ssh/id_rsa || true
     - run: |
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
@@ -69,8 +65,6 @@ jobs:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
     # Workarounds for Xcode/SPM failing to get packages
-    - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-    - run: rm ~/.ssh/id_rsa || true
     - run: |
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
@@ -84,8 +78,6 @@ jobs:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
     # Workarounds for Xcode/SPM failing to get packages
-    - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-    - run: rm ~/.ssh/id_rsa || true
     - run: |
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     - name: build for ios simulator
