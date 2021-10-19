@@ -1,5 +1,5 @@
 //
-//  Logger.swift
+//  SegmentLog.swift
 //  Segment
 //
 //  Created by Cody Garvin on 12/14/20.
@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Plugin Implementation
 
-internal class Logger: UtilityPlugin {
+internal class SegmentLog: UtilityPlugin {
     public var filterKind = LogFilterKind.debug
     var analytics: Analytics?
     
@@ -18,10 +18,15 @@ internal class Logger: UtilityPlugin {
     fileprivate var loggingMediator = [LoggingType: LogTarget]()
     internal static var loggingEnabled = true
     
+    // For internal use only. Note: This will contain the last created instance
+    // of analytics when used in a multi-analytics environment.
+    internal static var sharedAnalytics: Analytics?
+    
     required init() { }
     
     func configure(analytics: Analytics) {
         self.analytics = analytics
+        SegmentLog.sharedAnalytics = analytics
         #if !os(Linux)
         try? add(target: SystemTarget(), for: LoggingType.log)
         #else
@@ -33,9 +38,8 @@ internal class Logger: UtilityPlugin {
         // Check for the server-side flag
         if let settingsDictionary = settings.plan?.dictionaryValue,
            let enabled = settingsDictionary["logging_enabled"] as? Bool {
-            Logger.loggingEnabled = enabled
+            SegmentLog.loggingEnabled = enabled
         }
-        
     }
     
     internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
@@ -80,13 +84,13 @@ internal struct LogFactory {
                          event: RawEvent? = nil,
                          sender: Any? = nil,
                          value: Double? = nil,
-                         tags: [String]? = nil) throws -> LogMessage {
+                         tags: [String]? = nil) -> LogMessage {
         
         switch destination {
             case .log:
                 return GenericLog(kind: kind, message: message, function: function, line: line)
             case .metric:
-                return MetricLog(title: title, message: message, event: event, function: function, line: line)
+                return MetricLog(title: title, message: message, value: value ?? 1, event: event, function: function, line: line)
             case .history:
                 return HistoryLog(message: message, event: event, function: function, line: line, sender: sender)
         }
@@ -94,6 +98,7 @@ internal struct LogFactory {
     
     fileprivate struct GenericLog: LogMessage {
         var kind: LogFilterKind
+        var title: String?
         var message: String
         var event: RawEvent? = nil
         var function: String?
@@ -103,9 +108,10 @@ internal struct LogFactory {
     }
     
     fileprivate struct MetricLog: LogMessage {
-        var title: String
+        var title: String?
         var kind: LogFilterKind = .debug
         var message: String
+        var value: Double
         var event: RawEvent?
         var function: String? = nil
         var line: Int? = nil
@@ -115,6 +121,7 @@ internal struct LogFactory {
     
     fileprivate struct HistoryLog: LogMessage {
         var kind: LogFilterKind = .debug
+        var title: String?
         var message: String
         var event: RawEvent?
         var function: String?
@@ -138,19 +145,16 @@ internal extension Analytics {
     ///   this added metadata.
     ///   - function: The name of the function the log came from. This will be captured automatically.
     ///   - line: The line number in the function the log came from. This will be captured automatically.
-    func segmentLog(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
-        apply { plugin in
-            if let loggerPlugin = plugin as? Logger {
+    static func segmentLog(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
+        SegmentLog.sharedAnalytics?.apply { plugin in
+            if let loggerPlugin = plugin as? SegmentLog {
                 var filterKind = loggerPlugin.filterKind
                 if let logKind = kind {
                     filterKind = logKind
                 }
-                do {
-                    let log = try LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
-                    loggerPlugin.log(log, destination: .log)
-                } catch {
-                    // TODO: LOG TO PRIVATE SEGMENT LOG
-                }
+                
+                let log = LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
+                loggerPlugin.log(log, destination: .log)
             }
         }
     }
@@ -160,17 +164,14 @@ internal extension Analytics {
     ///   - type: Metric type, usually .counter or .gauge. Select the one that makes sense for the metric.
     ///   - name: The title of the metric to track.
     ///   - value: The value associated with the metric. This would be an incrementing counter or time
-    ///   or pressure gauge.
+    ///   or pressure gauge. Defaults to 1 if not specified.
     ///   - tags: Any tags that should be associated with the metric. Any extra metadata that may help.
-    func segmentMetric(_ type: String, name: String, value: Double, tags: [String]? = nil) {
-        apply { plugin in
-            if let loggerPlugin = plugin as? Logger {
-                do {
-                    let log = try LogFactory.buildLog(destination: .metric, title: type, message: name, value: value, tags: tags)
-                    loggerPlugin.log(log, destination: .metric)
-                } catch {
-                    // TODO: LOG TO PRIVATE SEGMENT LOG
-                }
+    static func segmentMetric(_ type: MetricType, name: String, value: Double, tags: [String]? = nil) {
+        SegmentLog.sharedAnalytics?.apply { plugin in
+            
+            if let loggerPlugin = plugin as? SegmentLog {
+                let log = LogFactory.buildLog(destination: .metric, title: type.toString(), message: name, value: value, tags: tags)
+                loggerPlugin.log(log, destination: .metric)
             }
         }
     }
