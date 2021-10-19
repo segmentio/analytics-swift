@@ -45,7 +45,7 @@ jobs:
         sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
     # Xcodebuild will automatically build so no need to call it out specifically.
-    - run: xcodebuild -disableAutomaticPackageResolution -scmProvider system -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
+    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
 
   build_and_test_tvos:
     runs-on: macos-11
@@ -59,7 +59,7 @@ jobs:
         sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
     # Xcodebuild will automatically build so no need to call it out specifically.
-    - run: xcodebuild -disableAutomaticPackageResolution -scmProvider system -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+    - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
   build_and_test_watchos:
     runs-on: macos-11
@@ -73,7 +73,7 @@ jobs:
         sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
         for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
     # Xcodebuild will automatically build so no need to call it out specifically.
-    - run: xcodebuild -disableAutomaticPackageResolution -scmProvider system -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
+    - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
     
   build_examples:
     runs-on: macos-11
@@ -89,20 +89,20 @@ jobs:
     - name: build for ios simulator
       run: |
           cd Examples/apps/BasicExample
-          xcodebuild -disableAutomaticPackageResolution -scmProvider system -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator
+          xcodebuild -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator
     - name: build for ios simulator
       run: |
           cd Examples/apps/DestinationsExample
-          xcodebuild -disableAutomaticPackageResolution -scmProvider system -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
+          xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
     - name: build for ios simulator
       run: |
           cd Examples/apps/ObjCExample
-          xcodebuild -disableAutomaticPackageResolution -scmProvider system -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator
+          xcodebuild -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator
     - name: build for ios simulator
       run: |
           cd Examples/apps/SegmentUIKitExample
-          xcodebuild -disableAutomaticPackageResolution -scmProvider system -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
+          xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
     - name: build for mac catalyst
       run: |
           cd Examples/apps/SegmentUIKitExample
-          xcodebuild -disableAutomaticPackageResolution -scmProvider system -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
+          xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
