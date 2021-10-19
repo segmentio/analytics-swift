@@ -267,19 +267,154 @@ extension JSON {
     }
 }
 
-// MARK: - Mapping
+// MARK: - Mutation
 
 extension JSON {
     /// Maps keys supplied, in the format of ["Old": "New"].  Gives an optional value transformer that can be used to transform values based on the final key name.
     /// - Parameters:
     ///   - keys: A dictionary containing key mappings, in the format of ["Old": "New"].
     ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
+    ///
+    /// - Returns: A new JSON object with the specified changes.
     public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
         guard let dict = self.dictionaryValue else { return self }
         let mapped = try dict.mapTransform(keys, valueTransform: valueTransform)
         let result = try JSON(mapped)
         return result
     }
+    
+    /// Adds a new value to an array and returns a new JSON object.  Function will throw if value cannot be serialized.
+    /// - Parameters:
+    ///   - value: Value to add to the JSON array.
+    ///
+    /// - Returns: A new JSON array with the supplied value added.
+    public func add(value: Any) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .array:
+            var newArray = [Any]()
+            if let existing = arrayValue {
+                newArray.append(contentsOf: existing)
+            }
+            newArray.append(value)
+            result = try JSON(newArray)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+    }
+    
+    /// Adds a new key, value pair to and returns a new JSON object.  Function will throw if value cannot be serialized.
+    /// - Parameters:
+    ///   - value: Value to add to the JSON array.
+    ///   - forKey: The key name of the given value.
+    ///
+    /// - Returns: A new JSON object with the supplied Key/Value added.
+    public func add(value: Any, forKey key: String) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .object:
+            var newObject = [String: Any]()
+            if let existing = dictionaryValue {
+                newObject = existing
+            }
+            newObject[key] = value
+            result = try JSON(newObject)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+    }
+    
+    /// Removes the key and associated value pair from this JSON object.
+    /// - Parameters:
+    ///   - key: The key of the value to be removed.
+    ///
+    /// - Returns: A new JSON object with the specified key and it's associated value removed.
+    public func remove(key: String) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .object:
+            var newObject = [String: Any]()
+            if let existing = dictionaryValue {
+                newObject = existing
+            }
+            newObject.removeValue(forKey: key)
+            result = try JSON(newObject)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+
+    }
+    
+    /// Create a filtered JSON array with the given closure.
+    /// - Parameters:
+    ///   - isIncluded: Closure to determine eligibility for being added.
+    ///
+    /// - Returns: A new JSON object containing items allowed by the closure.
+    public func filter(isIncluded: (Any) -> Bool) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .array:
+            if let existing = arrayValue {
+                let newArray = existing.filter(isIncluded)
+                result = try? JSON(newArray)
+            }
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+
+    }
+    
+    /// Create a filtered JSON object with the given closure.
+    /// - Parameters:
+    ///   - isIncluded: Closure to determine eligibility for being added.
+    ///
+    /// - Returns: A new JSON object
+    public func filter(isIncluded: (String, Any) -> Bool) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .object:
+            if let existing = dictionaryValue {
+                let newObject = existing.filter(isIncluded)
+                result = try JSON(newObject)
+            }
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+    }
+    
+    
+    subscript(index: Int) -> JSON? {
+        get {
+            switch self {
+            case .array(let value):
+                if index < value.count {
+                    let v = value[index]
+                    return v
+                }
+            default:
+                break
+            }
+            return nil
+        }
+    }
+    
+    subscript(key: String) -> JSON? {
+        get {
+            switch self {
+            case .object(let value):
+                return value[key]
+            default:
+                break
+            }
+            return nil
+        }
+    }
+
 }
 
 // MARK: - Helpers

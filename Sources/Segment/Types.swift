@@ -9,16 +9,10 @@ import Foundation
 import Sovran
 
 
-// MARK: - Event Parameter Types
-
-typealias Integrations = Codable
-typealias Properties = Codable
-typealias Traits = Codable
-
-
 // MARK: - Event Types
 
 public protocol RawEvent: Codable {
+    
     var type: String? { get set }
     var anonymousId: String? { get set }
     var messageId: String? { get set }
@@ -149,11 +143,61 @@ public struct AliasEvent: RawEvent {
     }
 }
 
+// MARK: - RawEvent conveniences
+
+private struct IntegrationConstants {
+    static let allIntegrationsKey = "All"
+}
+
+extension RawEvent {
+    mutating func disableAllIntegrations(exceptKeys: [String]? = nil) {
+        guard let existing = integrations?.dictionaryValue else {
+            // this shouldn't happen, might oughta log it.
+            
+            return
+        }
+        var new = [String: Any]()
+        new[IntegrationConstants.allIntegrationsKey] = false
+        if let exceptKeys = exceptKeys {
+            for key in exceptKeys {
+                if let value = existing[key] {
+                    new[key] = value
+                }
+            }
+        }
+        do {
+            integrations = try JSON(new)
+        } catch {
+            // this shouldn't happen, log it.
+        }
+    }
+    
+    func enableAllIntegrations(exceptKeys: [String]? = nil) {
+        
+    }
+    
+    func disableIntegration(key: String) {
+        
+    }
+    
+    func enableIntegration(key: String) {
+        
+    }
+    
+    func setIntegrationValue(_ value: Any?, forKeyPath: String) {
+        
+    }
+    
+    func setContextValue(_ value: Any?, forKeyPath: String) {
+        
+    }
+}
+
 
 // MARK: - RawEvent data helpers
 
 extension RawEvent {
-    public mutating func applyRawEventData(event: RawEvent?) {
+    internal mutating func applyRawEventData(event: RawEvent?) {
         if let e = event {
             anonymousId = e.anonymousId
             messageId = e.messageId

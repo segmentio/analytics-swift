@@ -86,6 +86,10 @@ extension Settings: Equatable {
 }
 
 extension Analytics {
+    public func manuallyEnableDestination(plugin: DestinationPlugin) {
+        self.store.dispatch(action: System.AddIntegrationAction(key: plugin.key))
+    }
+    
     internal func update(settings: Settings, type: UpdateType) {
         apply { (plugin) in
             // tell all top level plugins to update.

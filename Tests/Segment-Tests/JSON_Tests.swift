@@ -177,4 +177,64 @@ class JSONTests: XCTestCase {
         XCTAssertTrue(subArray[1] as! Int == 2)
         XCTAssertTrue(subArrayDict["AKey1"] as! Int == 11)
     }
+    
+    func testAddRemoveValues() {
+        struct NotCodable {
+            let x = 1
+        }
+        
+        let array = [1, 2, 3, 4]
+        let dict = ["hello": true, "goodbye": false]
+        let notCodable = NotCodable()
+        
+        var json: JSON? = nil
+        
+        // does a simple add to array work?
+        json = try? JSON(array)
+        XCTAssertNotNil(json)
+        do {
+            json = try json?.add(value: 5)
+            let v = json?[4]
+            XCTAssertNotNil(v)
+            XCTAssertTrue(v?.intValue == 5)
+            XCTAssertThrowsError(try json?.add(value:notCodable))
+        } catch {
+            XCTFail()
+        }
+        
+        // does a simple add key/value work?
+        json = try? JSON(dict)
+        XCTAssertNotNil(json)
+        do {
+            json = try json?.add(value: true, forKey: "howdy")
+            let v = json?["howdy"]
+            XCTAssertNotNil(v)
+            XCTAssertTrue(v?.boolValue == true)
+            XCTAssertThrowsError(try json?.add(value:notCodable, forKey:"issaFail"))
+        } catch {
+            XCTFail()
+        }
+        
+        // try to remove a key
+        json = try? JSON(dict)
+        XCTAssertNotNil(json)
+        do {
+            json = try json?.remove(key: "goodbye")
+            XCTAssertNotNil(json)
+            XCTAssertNil(json?["goodbye"])
+        } catch {
+            XCTFail()
+        }
+        
+        // Merchant: if we add/remove, do we not bleed?!
+        json = try? JSON(true)
+        XCTAssertNotNil(json)
+        // it's not a JSON array, throw
+        XCTAssertThrowsError(try json?.add(value: 1))
+        // it's not a JSON object, throw
+        XCTAssertThrowsError(try json?.add(value: 1, forKey: "shakespeare"))
+        // it's not a JSON object, throw
+        XCTAssertThrowsError(try json?.remove(key: "merchant"))
+    }
+    
 }
