@@ -38,6 +38,8 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     # Workarounds for Xcode/SPM failing to get packages
     - run: |
         sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
