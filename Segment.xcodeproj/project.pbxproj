@@ -49,17 +49,18 @@
 		46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
-		96259F8326CEF526008AE301 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96259F8226CEF526008AE301 /* Logger.swift */; };
+		96259F8326CEF526008AE301 /* LogTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96259F8226CEF526008AE301 /* LogTarget.swift */; };
 		96259F8626CF1D45008AE301 /* ConsoleTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96259F8526CF1D45008AE301 /* ConsoleTarget.swift */; };
 		96469AF82706225900AC5772 /* SystemTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96469AF72706225900AC5772 /* SystemTarget.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
-		967C40DA258D472C008EB0B6 /* Logger_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40D9258D472C008EB0B6 /* Logger_Tests.swift */; };
+		967C40DA258D472C008EB0B6 /* SegmentLog_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40D9258D472C008EB0B6 /* SegmentLog_Tests.swift */; };
 		967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */; };
 		9692724E25A4E5B7009B5298 /* Startup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692724D25A4E5B7009B5298 /* Startup.swift */; };
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
-		96C33A9C25880A5E00F3D538 /* SegmentLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLogger.swift */; };
+		96C33A9C25880A5E00F3D538 /* SegmentLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLog.swift */; };
 		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
+		96C95B16271DE22700C3EB9A /* LogTarget_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */; };
 		96DBF37B26F39B5500724B0B /* Timeline_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
@@ -147,18 +148,19 @@
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
-		96259F8226CEF526008AE301 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		96259F8226CEF526008AE301 /* LogTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogTarget.swift; sourceTree = "<group>"; };
 		96259F8526CF1D45008AE301 /* ConsoleTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleTarget.swift; sourceTree = "<group>"; };
 		96469AF72706225900AC5772 /* SystemTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemTarget.swift; sourceTree = "<group>"; };
 		9679DD6226EFF00800A6933C /* ExampleDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDestination.swift; sourceTree = "<group>"; };
-		967C40D9258D472C008EB0B6 /* Logger_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger_Tests.swift; sourceTree = "<group>"; };
+		967C40D9258D472C008EB0B6 /* SegmentLog_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLog_Tests.swift; sourceTree = "<group>"; };
 		967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metrics_Tests.swift; sourceTree = "<group>"; };
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9692724D25A4E5B7009B5298 /* Startup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Startup.swift; sourceTree = "<group>"; };
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
-		96C33A9B25880A5E00F3D538 /* SegmentLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLogger.swift; sourceTree = "<group>"; };
+		96C33A9B25880A5E00F3D538 /* SegmentLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLog.swift; sourceTree = "<group>"; };
 		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogTarget_Tests.swift; sourceTree = "<group>"; };
 		96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline_Tests.swift; sourceTree = "<group>"; };
 		A31A16252576B6F200C9CDDF /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		A31A162E2576B73F00C9CDDF /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
@@ -297,8 +299,8 @@
 		96259F8426CEF534008AE301 /* Logger */ = {
 			isa = PBXGroup;
 			children = (
-				96259F8226CEF526008AE301 /* Logger.swift */,
-				96C33A9B25880A5E00F3D538 /* SegmentLogger.swift */,
+				96259F8226CEF526008AE301 /* LogTarget.swift */,
+				96C33A9B25880A5E00F3D538 /* SegmentLog.swift */,
 				96259F8526CF1D45008AE301 /* ConsoleTarget.swift */,
 				96469AF72706225900AC5772 /* SystemTarget.swift */,
 			);
@@ -373,13 +375,14 @@
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
 				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
 				46210810260538BE00EBC4A8 /* KeyPath_Tests.swift */,
-				967C40D9258D472C008EB0B6 /* Logger_Tests.swift */,
+				96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */,
 				967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */,
 				46F7485F26C720F60042798E /* ObjC_Tests.swift */,
+				967C40D9258D472C008EB0B6 /* SegmentLog_Tests.swift */,
 				46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */,
+				4621082D2609206D00EBC4A8 /* Support */,
 				96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */,
 				OBJ_13 /* XCTestManifests.swift */,
-				4621082D2609206D00EBC4A8 /* Support */,
 			);
 			name = "Segment-Tests";
 			path = "Tests/Segment-Tests";
@@ -554,13 +557,13 @@
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
-				96259F8326CEF526008AE301 /* Logger.swift in Sources */,
+				96259F8326CEF526008AE301 /* LogTarget.swift in Sources */,
 				46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				4602276C261E7BF900A9E913 /* iOSDelegation.swift in Sources */,
 				46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */,
-				96C33A9C25880A5E00F3D538 /* SegmentLogger.swift in Sources */,
+				96C33A9C25880A5E00F3D538 /* SegmentLog.swift in Sources */,
 				46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
@@ -585,10 +588,11 @@
 				4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */,
 				46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */,
 				967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */,
+				96C95B16271DE22700C3EB9A /* LogTarget_Tests.swift in Sources */,
 				A31A16512576C47400C9CDDF /* JSON_Tests.swift in Sources */,
 				46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */,
 				46FE4CFB25A6C671003A7362 /* TestUtilities.swift in Sources */,
-				967C40DA258D472C008EB0B6 /* Logger_Tests.swift in Sources */,
+				967C40DA258D472C008EB0B6 /* SegmentLog_Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -690,7 +694,7 @@
 					"@loader_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -716,7 +720,7 @@
 					"@loader_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
