@@ -58,7 +58,6 @@
 		9692724E25A4E5B7009B5298 /* Startup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692724D25A4E5B7009B5298 /* Startup.swift */; };
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
 		96C33A9C25880A5E00F3D538 /* SegmentLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLog.swift */; };
-		96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AAB25892D6D00F3D538 /* Metrics.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
 		96C95B16271DE22700C3EB9A /* LogTarget_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */; };
 		96DBF37B26F39B5500724B0B /* Timeline_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */; };
@@ -158,7 +157,6 @@
 		9692724D25A4E5B7009B5298 /* Startup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Startup.swift; sourceTree = "<group>"; };
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* SegmentLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLog.swift; sourceTree = "<group>"; };
-		96C33AAB25892D6D00F3D538 /* Metrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metrics.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogTarget_Tests.swift; sourceTree = "<group>"; };
 		96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline_Tests.swift; sourceTree = "<group>"; };
@@ -287,7 +285,6 @@
 			children = (
 				96259F8426CEF534008AE301 /* Logger */,
 				969A533D25B0D510009227D9 /* Platforms */,
-				96C33AAB25892D6D00F3D538 /* Metrics.swift */,
 				46A018C125E5857D00F9CCD8 /* Context.swift */,
 				9692726725A583A6009B5298 /* SegmentDestination.swift */,
 				46210835260BBEE400EBC4A8 /* DeviceToken.swift */,
@@ -571,7 +568,6 @@
 				A31A16CA25794D9700C9CDDF /* Plugins.swift in Sources */,
 				46A018C225E5857D00F9CCD8 /* Context.swift in Sources */,
 				96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */,
-				96C33AAC25892D6D00F3D538 /* Metrics.swift in Sources */,
 				46031D65266E7C10009BA540 /* StartupQueue.swift in Sources */,
 				465879BB2686560C00180335 /* watchOSLifecycleMonitor.swift in Sources */,
 			);
