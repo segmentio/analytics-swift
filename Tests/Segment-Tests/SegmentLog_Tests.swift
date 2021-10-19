@@ -226,7 +226,7 @@ final class SegmentLog_Tests: XCTestCase {
         mockLogger.logClosure = { (kind, message) in
             expectation.fulfill()
             XCTAssertEqual(message.message, "Metric of 5", "Message name not correctly passed")
-            XCTAssertEqual(message.title, "Counter", "Type of metricnot correctly passed")
+            XCTAssertEqual(message.title, "Counter", "Type of metric not correctly passed")
         }
         
         // Act
@@ -242,7 +242,7 @@ final class SegmentLog_Tests: XCTestCase {
         mockLogger.logClosure = { (kind, message) in
             expectation.fulfill()
             XCTAssertEqual(message.message, "Metric of 5", "Message name not correctly passed")
-            XCTAssertEqual(message.title, "Gauge", "Type of metricnot correctly passed")
+            XCTAssertEqual(message.title, "Gauge", "Type of metric not correctly passed")
         }
         
         // Act
@@ -258,8 +258,8 @@ final class SegmentLog_Tests: XCTestCase {
         }
         let expectation = XCTestExpectation(description: "Called")
         mockLogger.logClosure = { (kind, message) in
-            expectation.fulfill()
             XCTAssertEqual(message.message, "Could not add target: The operation couldn’t be completed. (Target already exists error 2002.)", "Error message is incorrect")
+            expectation.fulfill()
         }
         
         // Arrange
