@@ -38,13 +38,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-    # Workarounds for Xcode/SPM failing to get packages
-    - run: |
-        sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
-    # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
 
   build_and_test_tvos:
@@ -54,11 +47,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    # Workarounds for Xcode/SPM failing to get packages
-    - run: |
-        sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
-    # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
   build_and_test_watchos:
@@ -68,11 +56,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    # Workarounds for Xcode/SPM failing to get packages
-    - run: |
-        sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
-    # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
     
   build_examples:
@@ -82,10 +65,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    # Workarounds for Xcode/SPM failing to get packages
-    - run: |
-        sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
-        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
     - name: build for ios simulator
       run: |
           cd Examples/apps/BasicExample
