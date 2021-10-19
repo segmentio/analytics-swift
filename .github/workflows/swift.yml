@@ -41,8 +41,8 @@ jobs:
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
-    - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
-    - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+    - run: |
+        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
 
@@ -56,8 +56,8 @@ jobs:
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
-    - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
-    - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+    - run: |
+        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
@@ -71,8 +71,8 @@ jobs:
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
-    - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
-    - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+    - run: |
+        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     # Xcodebuild will automatically build so no need to call it out specifically.
     - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
     
@@ -86,8 +86,8 @@ jobs:
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
-    - run: for ip in $(dig @8.8.8.8 bitbucket.org +short); do ssh-keyscan bitbucket.org,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true 
-    - run: for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts || true
+    - run: |
+        for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
     - name: build for ios simulator
       run: |
           cd Examples/apps/BasicExample
