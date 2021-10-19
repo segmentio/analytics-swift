@@ -465,7 +465,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:flurry/FlurrySwiftPackage.git";
+			repositoryURL = "https://github.com/flurry/FlurrySwiftPackage.git";
 			requirement = {
 				kind = exactVersion;
 				version = 11.2.1;
@@ -481,7 +481,7 @@
 		};
 		96469A9C2702862100AC5772 /* XCRemoteSwiftPackageReference "intercom-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:intercom/intercom-ios.git";
+			repositoryURL = "https://github.com/intercom/intercom-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 9.0.0;
@@ -489,7 +489,7 @@
 		};
 		965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:mixpanel/mixpanel-swift.git";
+			repositoryURL = "https://github.com/mixpanel/mixpanel-swift.git";
 			requirement = {
 				kind = exactVersion;
 				version = 2.9.3;
@@ -505,7 +505,7 @@
 		};
 		96DBF37E26FA984900724B0B /* XCRemoteSwiftPackageReference "Comscore-Swift-Package-Manager" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:comScore/Comscore-Swift-Package-Manager.git";
+			repositoryURL = "https://github.com/comScore/Comscore-Swift-Package-Manager.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 6.0.0;
