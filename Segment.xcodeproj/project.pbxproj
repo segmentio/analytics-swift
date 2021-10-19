@@ -922,7 +922,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		462107F02603DA4D00EBC4A8 /* XCRemoteSwiftPackageReference "Sovran-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:segmentio/Sovran-Swift.git";
+			repositoryURL = "https://github.com/segmentio/Sovran-Swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.2;
