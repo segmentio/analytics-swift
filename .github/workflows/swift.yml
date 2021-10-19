@@ -14,9 +14,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: Build
       run: swift build
     - name: Run tests
@@ -29,9 +26,6 @@ jobs:
       with:
         swift-version: "5.4"
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: Build
       run: swift build
     - name: Run tests
@@ -44,9 +38,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
@@ -62,9 +53,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
@@ -80,9 +68,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
@@ -98,9 +83,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     # Workarounds for Xcode/SPM failing to get packages
     - run: sudo defaults write com.apple.dt.Xcode IDEPackageSupportUseBuiltinSCM YES
     - run: rm ~/.ssh/id_rsa || true
