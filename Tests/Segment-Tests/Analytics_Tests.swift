@@ -110,7 +110,7 @@ final class Analytics_Tests: XCTestCase {
         let anonId = analytics.anonymousId
         
         XCTAssertTrue(anonId != "")
-        XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
+        XCTAssertTrue(anonId.count == 0) // it's a UUID y0.
     }
     
     func testContext() {
