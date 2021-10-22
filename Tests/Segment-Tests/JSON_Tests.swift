@@ -10,7 +10,8 @@ import XCTest
 
 struct Personal: Codable {
     let preferences: [String]
-    let birthday: Date
+    let birthday: Date?
+    let type: String?
 }
 
 class JSONTests: XCTestCase {
@@ -36,6 +37,19 @@ class JSONTests: XCTestCase {
         } catch {
             print(error)
             XCTFail()
+        }
+    }
+    
+    func testJSONNil() throws {
+        let traits = try JSON(["type": NSNull(), "preferences": ["bwack"]])
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        
+        do {
+            let json = try encoder.encode(traits)
+            XCTAssertNotNil(json)
+            let decoded = try JSONDecoder().decode(Personal.self, from: json)
+            XCTAssertNil(decoded.type, "Type should be nil")
         }
     }
     
