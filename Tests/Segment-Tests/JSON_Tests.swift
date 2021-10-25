@@ -14,6 +14,18 @@ struct Personal: Codable {
     let type: String?
 }
 
+struct TestStruct: Codable {
+    let str: String
+    let bool: Bool
+    let float: Float
+    let int: Int
+    let uint: UInt
+    let double: Double
+    let decimal: Decimal
+    let array: JSON?
+    let dict: JSON?
+}
+
 class JSONTests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -72,19 +84,52 @@ class JSONTests: XCTestCase {
         }
     }
     
-    func testTypesFromJSON() throws {
-        struct TestStruct: Codable {
-            let str: String
-            let bool: Bool
-            let float: Float
-            let int: Int
-            let uint: UInt
-            let double: Double
-            let decimal: Decimal
-            let array: JSON?
-            let dict: JSON?
-        }
+    func testJSONMutation() throws {
+        let test = TestStruct(
+            str: "hello",
+            bool: true,
+            float: 3.14,
+            int: -42,
+            uint: 42,
+            double: 1.234,
+            decimal: 333.9999,
+            array: try JSON(["1", "2"]),
+            dict: try JSON(["1": 1, "2": 2])
+        )
         
+        let wrapper: [String: Any] = [
+            "name": "Brandon",
+            "someValue": 42,
+            "test": try JSON(with: test)
+        ]
+        
+        var jsonObject = try JSON(wrapper)
+        XCTAssertNotNil(jsonObject)
+        
+        // wrapping a JSON object with another results in a no-op.
+        let jsonObject2 = try JSON(jsonObject)
+        XCTAssertNotNil(jsonObject2)
+        
+        let structValue: TestStruct? = jsonObject[keyPath: "test"]
+        XCTAssertEqual(structValue!.str, "hello")
+
+        let intValue: Int? = jsonObject[keyPath: "test.dict.1"]
+        XCTAssertEqual(intValue, 1)
+        
+        jsonObject[keyPath: "structSet.object"] = test
+        jsonObject[keyPath: "codys.brain.melted"] = true
+        
+        XCTAssertTrue(jsonObject[keyPath: "structSet.object.str"] == "hello")
+        XCTAssertTrue(jsonObject[keyPath: "codys.brain.melted"] == true)
+        
+        let dubz: Double? = jsonObject.value(forKeyPath: "structSet.object.double")
+        XCTAssertEqual(dubz, 1.234)
+        
+        jsonObject.setValue(47, forKeyPath: "test.uint")
+        XCTAssertEqual(jsonObject[keyPath: "test.uint"], 47)
+    }
+    
+    func testTypesFromJSON() throws {
         let test = TestStruct(
             str: "hello",
             bool: true,
