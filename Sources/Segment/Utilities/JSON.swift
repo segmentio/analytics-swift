@@ -277,6 +277,7 @@ extension JSON {
     ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
     ///
     /// - Returns: A new JSON object with the specified changes.
+    /// - Throws: This method will throw if transformation or JSON cannot be properly completed.
     public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
         guard let dict = self.dictionaryValue else { return self }
         let mapped = try dict.mapTransform(keys, valueTransform: valueTransform)
@@ -289,6 +290,7 @@ extension JSON {
     ///   - value: Value to add to the JSON array.
     ///
     /// - Returns: A new JSON array with the supplied value added.
+    /// - Throws: This method throws when a value is added and unable to be serialized.
     public func add(value: Any) throws -> JSON? {
         var result: JSON? = nil
         switch self {
@@ -311,6 +313,7 @@ extension JSON {
     ///   - forKey: The key name of the given value.
     ///
     /// - Returns: A new JSON object with the supplied Key/Value added.
+    /// - Throws: This method throws when a value is added and unable to be serialized.
     public func add(value: Any, forKey key: String) throws -> JSON? {
         var result: JSON? = nil
         switch self {
@@ -332,6 +335,7 @@ extension JSON {
     ///   - key: The key of the value to be removed.
     ///
     /// - Returns: A new JSON object with the specified key and it's associated value removed.
+    /// - Throws: This method throws when after modification, it is unable to be serialized.
     public func remove(key: String) throws -> JSON? {
         var result: JSON? = nil
         switch self {
