@@ -45,7 +45,7 @@ public struct KeyPath {
         remaining = components
     }
     
-    internal static var handlers: [KeyPathHandler] = [PathHandler(), IfHandler(), BasicHandler()]
+    internal static var handlers: [KeyPathHandler] = [BasicHandler(), PathHandler(), IfHandler()]
     static func register(_ handler: KeyPathHandler) { handlers.insert(handler, at: 0) }
     static func handlerFor(keyPath: KeyPath, input: Any?) -> KeyPathHandler? {
         guard let input = input as? [String: Any] else { return nil }
@@ -78,11 +78,15 @@ extension Dictionary where Key: StringProtocol, Value: Any {
         return result
     }
     
-    internal mutating func setValue(_ value: Any, keyPath: KeyPath) {
+    internal mutating func setValue(_ value: Any?, keyPath: KeyPath) {
         guard let key = keyPath.current as? Key else { return }
         
         if keyPath.remaining.isEmpty {
-            self[key] = (value as! Value)
+            if value.flattened() != nil {
+                self[key] = (value as! Value)
+            } else {
+                self.removeValue(forKey: key)
+            }
         } else {
             if var nestedDict = self[key] as? [String: Any] {
                 nestedDict[keyPath: KeyPath(keyPath.remainingPath)] = value
