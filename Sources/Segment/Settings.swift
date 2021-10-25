@@ -86,6 +86,10 @@ extension Settings: Equatable {
 }
 
 extension Analytics {
+    /// Manually enable a destination plugin.  This is useful when a given DestinationPlugin doesn't have any Segment tie-ins at all.
+    /// This will allow the destination to be processed in the same way within this library.
+    /// - Parameters:
+    ///   - plugin: The destination plugin to enable.
     public func manuallyEnableDestination(plugin: DestinationPlugin) {
         self.store.dispatch(action: System.AddIntegrationAction(key: plugin.key))
     }
