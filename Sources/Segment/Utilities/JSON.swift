@@ -62,7 +62,8 @@ public enum JSON: Equatable {
             self = .array(try array.map(JSON.init))
         case let object as [String: Any]:
             self = .object(try object.mapValues(JSON.init))
-        
+        case let json as JSON:
+            self = json
         // we don't work with whatever is being supplied
         default:
             throw JSONError.nonJSONType(type: "\(value.self)")
@@ -267,19 +268,188 @@ extension JSON {
     }
 }
 
-// MARK: - Mapping
+// MARK: - Mutation
 
 extension JSON {
     /// Maps keys supplied, in the format of ["Old": "New"].  Gives an optional value transformer that can be used to transform values based on the final key name.
     /// - Parameters:
     ///   - keys: A dictionary containing key mappings, in the format of ["Old": "New"].
     ///   - valueTransform: An optional value transform closure.  Key represents the new key name.
+    ///
+    /// - Returns: A new JSON object with the specified changes.
+    /// - Throws: This method will throw if transformation or JSON cannot be properly completed.
     public func mapTransform(_ keys: [String: String], valueTransform: ((_ key: String, _ value: Any) -> Any)? = nil) throws -> JSON {
         guard let dict = self.dictionaryValue else { return self }
         let mapped = try dict.mapTransform(keys, valueTransform: valueTransform)
         let result = try JSON(mapped)
         return result
     }
+    
+    /// Adds a new value to an array and returns a new JSON object.  Function will throw if value cannot be serialized.
+    /// - Parameters:
+    ///   - value: Value to add to the JSON array.
+    ///
+    /// - Returns: A new JSON array with the supplied value added.
+    /// - Throws: This method throws when a value is added and unable to be serialized.
+    public func add(value: Any) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .array:
+            var newArray = [Any]()
+            if let existing = arrayValue {
+                newArray.append(contentsOf: existing)
+            }
+            newArray.append(value)
+            result = try JSON(newArray)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+    }
+    
+    /// Adds a new key, value pair to and returns a new JSON object.  Function will throw if value cannot be serialized.
+    /// - Parameters:
+    ///   - value: Value to add to the JSON array.
+    ///   - forKey: The key name of the given value.
+    ///
+    /// - Returns: A new JSON object with the supplied Key/Value added.
+    /// - Throws: This method throws when a value is added and unable to be serialized.
+    public func add(value: Any, forKey key: String) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .object:
+            var newObject = [String: Any]()
+            if let existing = dictionaryValue {
+                newObject = existing
+            }
+            newObject[key] = value
+            result = try JSON(newObject)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+    }
+    
+    /// Removes the key and associated value pair from this JSON object.
+    /// - Parameters:
+    ///   - key: The key of the value to be removed.
+    ///
+    /// - Returns: A new JSON object with the specified key and it's associated value removed.
+    /// - Throws: This method throws when after modification, it is unable to be serialized.
+    public func remove(key: String) throws -> JSON? {
+        var result: JSON? = nil
+        switch self {
+        case .object:
+            var newObject = [String: Any]()
+            if let existing = dictionaryValue {
+                newObject = existing
+            }
+            newObject.removeValue(forKey: key)
+            result = try JSON(newObject)
+        default:
+            throw "This JSON object is not an array type."
+        }
+        return result
+
+    }
+        
+    /// Directly access a specific index in the JSON array.
+    public subscript(index: Int) -> JSON? {
+        get {
+            switch self {
+            case .array(let value):
+                if index < value.count {
+                    let v = value[index]
+                    return v
+                }
+            default:
+                break
+            }
+            return nil
+        }
+    }
+    
+    /// Directly access a key within the JSON object.
+    public subscript(key: String) -> JSON? {
+        get {
+            switch self {
+            case .object(let value):
+                return value[key]
+            default:
+                break
+            }
+            return nil
+        }
+    }
+
+    /// Directly access or set a value within the JSON object using a key path.
+    public subscript<T: Codable>(keyPath keyPath: KeyPath) -> T? {
+        get {
+            var result: T? = nil
+            switch self {
+            case .object:
+                var value: Any? = nil
+                if let dict = dictionaryValue {
+                    value = dict[keyPath: keyPath]
+                    if let v = value as? [String: Any] {
+                        if let jsonData = try? JSONSerialization.data(withJSONObject: v) {
+                            do {
+                                result = try JSONDecoder().decode(T.self, from: jsonData)
+                            } catch {
+                                Analytics.segmentLog(message: "Unable to decode object to a Codable: \(error)", kind: .error)
+                            }
+                        }
+                        if result == nil {
+                            result = v as? T
+                        }
+                    } else {
+                        result = value as? T
+                    }
+                }
+            default:
+                break
+            }
+            return result
+        }
+        
+        set(newValue) {
+            switch self {
+            case .object:
+                if var dict: [String: Any] = dictionaryValue {
+                    var json: JSON? = try? JSON(newValue as Any)
+                    if json == nil {
+                        json = try? JSON(with: newValue)
+                    }
+                    
+                    if let json = json {
+                        dict[keyPath: keyPath] = json
+                        if let newSelf = try? JSON(dict) {
+                            self = newSelf
+                        }
+                    }
+                }
+            default:
+                break
+            }
+        }
+    }
+    
+    /// Directly access a value within the JSON object using a key path.
+    /// - Parameters:
+    ///   - forKeyPath: The keypath within the object to retrieve.  eg: `context.device.ip`
+    ///
+    /// - Returns: The value as typed, or nil.
+    public func value<T: Codable>(forKeyPath keyPath: KeyPath) -> T? {
+        return self[keyPath: keyPath]
+    }
+    
+    /// Directly access a value within the JSON object using a key path.
+    /// - Parameters:
+    ///   - forKeyPath: The keypath within the object to set.  eg: `context.device.ip`
+    public mutating func setValue<T: Codable>(_ value: T?, forKeyPath keyPath: KeyPath) {
+        self[keyPath: keyPath] = value
+    }
+
 }
 
 // MARK: - Helpers

@@ -91,3 +91,4 @@ iOSInjectionProject/
 .DS_Store
 Package.resolved
 *.xcuserdatad
+/.swiftpm/xcode/xcshareddata

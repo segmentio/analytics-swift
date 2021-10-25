@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import Segment
+@testable import Segment
 
 class KeyPath_Tests: XCTestCase {
     let baseDictionary: [String: Any] = [
@@ -102,9 +102,22 @@ class KeyPath_Tests: XCTestCase {
         dict[keyPath: "booya.skibbidy.shazam"] = "bad-movie"
         let shazam = dict[keyPath: "booya.skibbidy.shazam"] as? String
         XCTAssertTrue(shazam == "bad-movie")
-        
     }
-    
+
+    func testNilHandling() throws {
+        var dict = baseDictionary
+        
+        // test that nil removes a deep object
+        dict[keyPath: "data.characters.Gyro"] = nil
+        let shouldBeNil = dict[keyPath: "data.characters.Gyro"]
+        XCTAssertNil(shouldBeNil)
+        
+        // test that nil removes a higher level object
+        dict[keyPath: "data.characters"] = nil
+        let shouldAlsoBeNil = dict[keyPath: "booya.characters"]
+        XCTAssertNil(shouldAlsoBeNil)
+    }
+
     func testIfExistsThenElseHandler() {
         var dict = [String: Any]()
         let keys = mapping.keys
@@ -189,8 +202,24 @@ class KeyPath_Tests: XCTestCase {
         XCTAssertTrue(dict["user_id"] as? String == "brandon")
     }
     
+    // useful for once-in-awhile checking, but doesn't need to be run as part of
+    // the overall test suite.
+    /*func testDictDeconstructionSpeed() {
+        let dict = baseDictionary
+        // test regular dictionary crap
+        measure {
+            for _ in 0..<100 {
+                let data = dict["data"] as? [String: Any]
+                let characters = data?["characters"] as? [String: Any]
+                let gyro = characters?["Gyro"] as? String
+                XCTAssertTrue(gyro == "Leather")
+            }
+        }
+    }
+    
     func testKeyPathSpeed() {
         let dict = baseDictionary
+        // test keypath stuff
         measure {
             for _ in 0..<100 {
                 let gyro = dict[keyPath: "data.characters.Gyro"] as? String
@@ -198,5 +227,17 @@ class KeyPath_Tests: XCTestCase {
             }
         }
     }
-    
+
+    func testJSONKeyPathSpeed() throws {
+        let dict = baseDictionary
+        let json = try JSON(dict)
+        // test json keypath stuff
+        measure {
+            for _ in 0..<100 {
+                let gyro: String? = json[keyPath: "data.characters.Gyro"]
+                XCTAssertTrue(gyro == "Leather")
+            }
+        }
+    }*/
+
 }
