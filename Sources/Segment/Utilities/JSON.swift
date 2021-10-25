@@ -62,7 +62,8 @@ public enum JSON: Equatable {
             self = .array(try array.map(JSON.init))
         case let object as [String: Any]:
             self = .object(try object.mapValues(JSON.init))
-        
+        case let json as JSON:
+            self = json
         // we don't work with whatever is being supplied
         default:
             throw JSONError.nonJSONType(type: "\(value.self)")
@@ -347,48 +348,9 @@ extension JSON {
         return result
 
     }
-    
-    /// Create a filtered JSON array with the given closure.
-    /// - Parameters:
-    ///   - isIncluded: Closure to determine eligibility for being added.
-    ///
-    /// - Returns: A new JSON object containing items allowed by the closure.
-    public func filter(isIncluded: (Any) -> Bool) throws -> JSON? {
-        var result: JSON? = nil
-        switch self {
-        case .array:
-            if let existing = arrayValue {
-                let newArray = existing.filter(isIncluded)
-                result = try? JSON(newArray)
-            }
-        default:
-            throw "This JSON object is not an array type."
-        }
-        return result
-
-    }
-    
-    /// Create a filtered JSON object with the given closure.
-    /// - Parameters:
-    ///   - isIncluded: Closure to determine eligibility for being added.
-    ///
-    /// - Returns: A new JSON object
-    public func filter(isIncluded: (String, Any) -> Bool) throws -> JSON? {
-        var result: JSON? = nil
-        switch self {
-        case .object:
-            if let existing = dictionaryValue {
-                let newObject = existing.filter(isIncluded)
-                result = try JSON(newObject)
-            }
-        default:
-            throw "This JSON object is not an array type."
-        }
-        return result
-    }
-    
-    
-    subscript(index: Int) -> JSON? {
+        
+    /// Directly access a specific index in the JSON array.
+    public subscript(index: Int) -> JSON? {
         get {
             switch self {
             case .array(let value):
@@ -403,7 +365,8 @@ extension JSON {
         }
     }
     
-    subscript(key: String) -> JSON? {
+    /// Directly access a key within the JSON object.
+    public subscript(key: String) -> JSON? {
         get {
             switch self {
             case .object(let value):
@@ -413,6 +376,74 @@ extension JSON {
             }
             return nil
         }
+    }
+
+    /// Directly access or set a value within the JSON object using a key path.
+    public subscript<T: Codable>(keyPath keyPath: KeyPath) -> T? {
+        get {
+            var result: T? = nil
+            switch self {
+            case .object:
+                var value: Any? = nil
+                if let dict = dictionaryValue {
+                    value = dict[keyPath: keyPath]
+                    if let v = value as? [String: Any] {
+                        if let jsonData = try? JSONSerialization.data(withJSONObject: v) {
+                            do {
+                                result = try JSONDecoder().decode(T.self, from: jsonData)
+                            } catch {
+                                Analytics.segmentLog(message: "Unable to decode object to a Codable: \(error)", kind: .error)
+                            }
+                        }
+                        if result == nil {
+                            result = v as? T
+                        }
+                    } else {
+                        result = value as? T
+                    }
+                }
+            default:
+                break
+            }
+            return result
+        }
+        
+        set(newValue) {
+            switch self {
+            case .object:
+                if var dict: [String: Any] = dictionaryValue {
+                    var json: JSON? = try? JSON(newValue as Any)
+                    if json == nil {
+                        json = try? JSON(with: newValue)
+                    }
+                    
+                    if let json = json {
+                        dict[keyPath: keyPath] = json
+                        if let newSelf = try? JSON(dict) {
+                            self = newSelf
+                        }
+                    }
+                }
+            default:
+                break
+            }
+        }
+    }
+    
+    /// Directly access a value within the JSON object using a key path.
+    /// - Parameters:
+    ///   - forKeyPath: The keypath within the object to retrieve.  eg: `context.device.ip`
+    ///
+    /// - Returns: The value as typed, or nil.
+    public func value<T: Codable>(forKeyPath keyPath: KeyPath) -> T? {
+        return self[keyPath: keyPath]
+    }
+    
+    /// Directly access a value within the JSON object using a key path.
+    /// - Parameters:
+    ///   - forKeyPath: The keypath within the object to set.  eg: `context.device.ip`
+    public mutating func setValue<T: Codable>(_ value: T?, forKeyPath keyPath: KeyPath) {
+        self[keyPath: keyPath] = value
     }
 
 }
