@@ -43,3 +43,17 @@ internal func exceptionFailure(_ message: String) {
     assertionFailure(message)
     #endif
 }
+
+internal protocol Flattenable {
+    func flattened() -> Any?
+}
+
+extension Optional: Flattenable {
+    internal func flattened() -> Any? {
+        switch self {
+        case .some(let x as Flattenable): return x.flattened()
+        case .some(let x): return x
+        case .none: return nil
+        }
+    }
+}
