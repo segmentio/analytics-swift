@@ -45,7 +45,7 @@ public struct KeyPath {
         remaining = components
     }
     
-    internal static var handlers: [KeyPathHandler] = [BasicHandler(), PathHandler(), IfHandler()]
+    internal static var handlers: [KeyPathHandler] = [PathHandler(), IfHandler(), BasicHandler()]
     static func register(_ handler: KeyPathHandler) { handlers.insert(handler, at: 0) }
     static func handlerFor(keyPath: KeyPath, input: Any?) -> KeyPathHandler? {
         guard let input = input as? [String: Any] else { return nil }
