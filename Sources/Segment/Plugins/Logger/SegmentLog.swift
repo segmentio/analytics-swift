@@ -20,15 +20,32 @@ internal class SegmentLog: UtilityPlugin {
     
     // For internal use only. Note: This will contain the last created instance
     // of analytics when used in a multi-analytics environment.
-    internal static var sharedAnalytics: Analytics?
+    internal static var sharedAnalytics: Analytics? = nil
+    
+    #if DEBUG
+    internal static var globalLogger: SegmentLog {
+        get {
+            let logger = SegmentLog()
+            logger.addTargets()
+            return logger
+        }
+    }
+    #endif
     
     required init() { }
     
     func configure(analytics: Analytics) {
         self.analytics = analytics
         SegmentLog.sharedAnalytics = analytics
+        addTargets()
+    }
+    
+    internal func addTargets() {
         #if !os(Linux)
         try? add(target: SystemTarget(), for: LoggingType.log)
+        #if DEBUG
+        try? add(target: ConsoleTarget(), for: LoggingType.log)
+        #endif
         #else
         try? add(target: ConsoleTarget(), for: LoggingType.log)
         #endif
@@ -146,16 +163,23 @@ internal extension Analytics {
     ///   - function: The name of the function the log came from. This will be captured automatically.
     ///   - line: The line number in the function the log came from. This will be captured automatically.
     static func segmentLog(message: String, kind: LogFilterKind? = nil, function: String = #function, line: Int = #line) {
-        SegmentLog.sharedAnalytics?.apply { plugin in
-            if let loggerPlugin = plugin as? SegmentLog {
-                var filterKind = loggerPlugin.filterKind
-                if let logKind = kind {
-                    filterKind = logKind
+        if let shared = SegmentLog.sharedAnalytics {
+            shared.apply { plugin in
+                if let loggerPlugin = plugin as? SegmentLog {
+                    var filterKind = loggerPlugin.filterKind
+                    if let logKind = kind {
+                        filterKind = logKind
+                    }
+                    
+                    let log = LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
+                    loggerPlugin.log(log, destination: .log)
                 }
-                
-                let log = LogFactory.buildLog(destination: .log, title: "", message: message, kind: filterKind, function: function, line: line)
-                loggerPlugin.log(log, destination: .log)
             }
+        } else {
+            #if DEBUG
+            let log = LogFactory.buildLog(destination: .log, title: "", message: message, kind: .debug, function: function, line: line)
+            SegmentLog.globalLogger.log(log, destination: .log)
+            #endif
         }
     }
     
