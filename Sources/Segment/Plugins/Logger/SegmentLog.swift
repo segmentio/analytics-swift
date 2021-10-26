@@ -16,7 +16,9 @@ internal class SegmentLog: UtilityPlugin {
     let type = PluginType.utility
     
     fileprivate var loggingMediator = [LoggingType: LogTarget]()
-    internal static var loggingEnabled = true
+    
+    // Default to no, enable to see local logs
+    internal static var loggingEnabled = false
     
     // For internal use only. Note: This will contain the last created instance
     // of analytics when used in a multi-analytics environment.

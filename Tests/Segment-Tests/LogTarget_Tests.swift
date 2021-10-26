@@ -32,11 +32,16 @@ final class LogTarget_Tests: XCTestCase {
     override func setUp() {
         analytics = Analytics(configuration: Configuration(writeKey: "test"))
         analytics?.add(plugin: mockLogger)
+        
+        // Enable logging for all tests
+        SegmentLog.loggingEnabled = true
     }
     
     override func tearDown() {
         analytics = nil
-        SegmentLog.loggingEnabled = true
+        
+        // Reset to default state the system should be in from start
+        SegmentLog.loggingEnabled = false
     }
 
     func testMetric() {
@@ -142,6 +147,20 @@ final class LogTarget_Tests: XCTestCase {
         analytics?.history(event: TrackEvent(event: "Tester", properties: nil), sender: self)
     }
 
-
+    func testLoggingDisabledByDefault() {
+        SegmentLog.loggingEnabled = false
+        XCTAssertFalse(SegmentLog.loggingEnabled, "Logging should not default to enabled")
+    }
+    
+    func testLoggingEnabledFromAnalytics() {
+        SegmentLog.loggingEnabled = false
+        
+        Analytics.debugLogsEnabled = true
+        XCTAssertTrue(SegmentLog.loggingEnabled, "Logging should change to enabled")
+        
+        Analytics.debugLogsEnabled = false
+        XCTAssertFalse(SegmentLog.loggingEnabled, "Logging should reset to disabled")
+    }
+    
 }
 

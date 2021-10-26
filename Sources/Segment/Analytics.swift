@@ -16,7 +16,11 @@ public class Analytics {
     internal var storage: Storage
     
     /// Enabled/disables debug logging to trace your data going through the SDK.
-    public var debugLogsEnabled = false
+    public static var debugLogsEnabled = false {
+        didSet {
+            SegmentLog.loggingEnabled = debugLogsEnabled
+        }
+    }
     
     public var timeline: Timeline
     
