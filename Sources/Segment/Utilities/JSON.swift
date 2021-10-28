@@ -7,19 +7,6 @@
 
 import Foundation
 
-// MARK: - JSONError Definition
-struct JSONError: Error {
-    let message: String
-
-    init(_ message: String) {
-        self.message = message
-    }
-
-    public var localizedDescription: String {
-        return message
-    }
-}
-
 // MARK: - JSON Definition
 
 public enum JSON: Equatable {
@@ -32,6 +19,7 @@ public enum JSON: Equatable {
     
     private enum JSONError: Error {
         case unknown
+        case error(message: String)
         case nonJSONType(type: String)
     }
     
@@ -314,7 +302,7 @@ extension JSON {
             newArray.append(value)
             result = try JSON(newArray)
         default:
-            throw JSONError("This JSON object is not an array type.")
+            throw JSONError.error(message: "This JSON object is not an array type.")
         }
         return result
     }
@@ -337,7 +325,7 @@ extension JSON {
             newObject[key] = value
             result = try JSON(newObject)
         default:
-            throw JSONError("This JSON object is not an array type.")
+            throw JSONError.error(message: "This JSON object is not an array type.")
         }
         return result
     }
@@ -359,7 +347,7 @@ extension JSON {
             newObject.removeValue(forKey: key)
             result = try JSON(newObject)
         default:
-            throw JSONError("This JSON object is not an array type.")
+            throw JSONError.error(message: "This JSON object is not an array type.")
         }
         return result
 
