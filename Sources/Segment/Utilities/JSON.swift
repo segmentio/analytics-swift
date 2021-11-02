@@ -21,6 +21,7 @@ public enum JSON: Equatable {
     private enum JSONError: Error {
         case unknown
         case nonJSONType(type: String)
+        case incorrectType
     }
     
     public init(_ object: [String: Any]) throws {
@@ -302,7 +303,7 @@ extension JSON {
             newArray.append(value)
             result = try JSON(newArray)
         default:
-            throw "This JSON object is not an array type."
+            throw JSONError.incorrectType
         }
         return result
     }
@@ -325,7 +326,7 @@ extension JSON {
             newObject[key] = value
             result = try JSON(newObject)
         default:
-            throw "This JSON object is not an array type."
+            throw JSONError.incorrectType
         }
         return result
     }
@@ -347,7 +348,7 @@ extension JSON {
             newObject.removeValue(forKey: key)
             result = try JSON(newObject)
         default:
-            throw "This JSON object is not an array type."
+            throw JSONError.incorrectType
         }
         return result
 
