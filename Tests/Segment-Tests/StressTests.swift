@@ -17,7 +17,8 @@ class StressTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+    /* re-enable when network is mocked */
+    /*
     func testStorageStress() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -75,7 +76,7 @@ class StressTests: XCTestCase {
         while (ready) {
             RunLoop.main.run(until: Date.distantPast)
         }
-    }
+    }*/
 
 
 }
