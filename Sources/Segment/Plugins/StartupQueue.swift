@@ -21,6 +21,7 @@ internal class StartupQueue: Plugin, Subscriber {
         }
     }
     
+    let syncQueue = DispatchQueue(label: "startupQueue.segment.com")
     var queuedEvents = [RawEvent]()
     
     required init() { }
@@ -28,11 +29,13 @@ internal class StartupQueue: Plugin, Subscriber {
     func execute<T: RawEvent>(event: T?) -> T? {
         if running == false, let e = event  {
             // timeline hasn't started, so queue it up.
-            if queuedEvents.count >= Self.maxSize {
-                // if we've exceeded the max queue size start dropping events
-                queuedEvents.removeFirst()
+            syncQueue.sync {
+                if queuedEvents.count >= Self.maxSize {
+                    // if we've exceeded the max queue size start dropping events
+                    queuedEvents.removeFirst()
+                }
+                queuedEvents.append(e)
             }
-            queuedEvents.append(e)
             return nil
         }
         // the timeline has started, so let the event pass.
@@ -50,9 +53,11 @@ extension StartupQueue {
     
     internal func replayEvents() {
         // replay the queued events to the instance of Analytics we're working with.
-        for event in queuedEvents {
-            analytics?.process(event: event)
+        syncQueue.sync {
+            for event in queuedEvents {
+                analytics?.process(event: event)
+            }
+            queuedEvents.removeAll()
         }
-        queuedEvents.removeAll()
     }
 }
