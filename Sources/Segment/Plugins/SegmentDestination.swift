@@ -42,6 +42,7 @@ public class SegmentDestination: DestinationPlugin {
     
     private var httpClient: HTTPClient?
     private var uploads = [UploadTaskInfo]()
+    private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?
     
     private var apiKey: String? = nil
@@ -162,25 +163,33 @@ extension SegmentDestination {
         // lets go through and get rid of any tasks that aren't running.
         // either they were suspended because a background task took too
         // long, or the os orphaned it due to device constraints (like a watch).
-        let before = uploads.count
-        var newPending = uploads
-        newPending.removeAll { uploadInfo in
-            let shouldRemove = uploadInfo.task.state != .running
-            if shouldRemove, let cleanup = uploadInfo.cleanup {
-                cleanup()
+        uploadsQueue.sync {
+            let before = uploads.count
+            var newPending = uploads
+            newPending.removeAll { uploadInfo in
+                let shouldRemove = uploadInfo.task.state != .running
+                if shouldRemove, let cleanup = uploadInfo.cleanup {
+                    cleanup()
+                }
+                return shouldRemove
             }
-            return shouldRemove
+            uploads = newPending
+            let after = uploads.count
+            analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
         }
-        uploads = newPending
-        let after = uploads.count
-        analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
     }
     
     internal var pendingUploads: Int {
-        return uploads.count
+        var uploadsCount = 0
+        uploadsQueue.sync {
+            uploadsCount = uploads.count
+        }
+        return uploadsCount
     }
     
     internal func add(uploadTask: UploadTaskInfo) {
-        uploads.append(uploadTask)
+        uploadsQueue.sync {
+            uploads.append(uploadTask)
+        }
     }
 }

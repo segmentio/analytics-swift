@@ -110,5 +110,5 @@ class StorageTests: XCTestCase {
         XCTAssertTrue(fileURL.lastPathComponent == "1-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
-
+    
 }
