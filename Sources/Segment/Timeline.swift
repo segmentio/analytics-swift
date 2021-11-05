@@ -222,7 +222,7 @@ extension DestinationPlugin {
             hasSettings = settings.hasIntegrationSettings(forPlugin: self)
         }
         
-        return (hasSettings && customerDisabled == false)
+        return (hasSettings == true && customerDisabled == false)
     }
 
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
