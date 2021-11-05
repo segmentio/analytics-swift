@@ -12,7 +12,6 @@ import Sovran
 
 struct System: State {
     let configuration: Configuration
-    let integrations: JSON?
     let settings: Settings?
     let running: Bool
     
@@ -21,60 +20,34 @@ struct System: State {
         
         func reduce(state: System) -> System {
             let result = System(configuration: state.configuration,
-                                integrations: state.integrations,
                                 settings: settings,
                                 running: state.running)
             return result
         }
     }
-    
-    struct AddIntegrationAction: Action {
-        let key: String
         
-        func reduce(state: System) -> System {
-            // we need to set any destination plugins to false in the
-            // integrations payload.  this prevents them from being sent
-            // by segment.com once an event reaches segment.
-            if var integrations = state.integrations?.dictionaryValue {
-                integrations[key] = false
-                if let jsonIntegrations = try? JSON(integrations) {
-                    let result = System(configuration: state.configuration,
-                                        integrations: jsonIntegrations,
-                                        settings: state.settings,
-                                        running: state.running)
-                    return result
-                }
-            }
-            return state
-        }
-    }
-    
-    struct RemoveIntegrationAction: Action {
-        let key: String
-        
-        func reduce(state: System) -> System {
-            if var integrations = state.integrations?.dictionaryValue {
-                integrations.removeValue(forKey: key)
-                if let jsonIntegrations = try? JSON(integrations) {
-                    let result = System(configuration: state.configuration,
-                                        integrations: jsonIntegrations,
-                                        settings: state.settings,
-                                        running: state.running)
-                    return result
-                }
-            }
-            return state
-        }
-    }
-    
     struct ToggleRunningAction: Action {
         let running: Bool
         
         func reduce(state: System) -> System {
             return System(configuration: state.configuration,
-                          integrations: state.integrations,
                           settings: state.settings,
                           running: running)
+        }
+    }
+    
+    struct AddDestinationToSettingsAction: Action {
+        let key: String
+        
+        func reduce(state: System) -> System {
+            var settings = state.settings
+            if var integrations = settings?.integrations?.dictionaryValue {
+                integrations[key] = true
+                settings?.integrations = try? JSON(integrations)
+            }
+            return System(configuration: state.configuration,
+                          settings: settings,
+                          running: state.running)
         }
     }
 }
@@ -139,8 +112,7 @@ extension System {
                 settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
-        let integrationDictionary = try! JSON([String: Any]())
-        return System(configuration: configuration, integrations: integrationDictionary, settings: settings, running: false)
+        return System(configuration: configuration, settings: settings, running: false)
     }
 }
 

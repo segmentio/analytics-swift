@@ -75,15 +75,21 @@ class MyDestination: DestinationPlugin {
     var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
     
-    init(trackCompletion: (() -> Bool)? = nil) {
+    let disabled: Bool
+    
+    init(disabled: Bool = false, trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
         self.type = .destination
         self.timeline = Timeline()
         self.trackCompletion = trackCompletion
+        self.disabled = disabled
     }
     
     func update(settings: Settings, type: UpdateType) {
-        //
+        if disabled == false {
+            // add ourselves to the settings
+            analytics?.manuallyEnableDestination(plugin: self)
+        }
     }
     
     func track(event: TrackEvent) -> TrackEvent? {

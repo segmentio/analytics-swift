@@ -277,14 +277,13 @@ extension RawEvent {
     internal func applyRawEventData(store: Store) -> Self {
         var result: Self = self
         
-        guard let system: System = store.currentState() else { return self }
         guard let userInfo: UserInfo = store.currentState() else { return self }
         
         result.anonymousId = userInfo.anonymousId
         result.userId = userInfo.userId
         result.messageId = UUID().uuidString
         result.timestamp = Date().iso8601()
-        result.integrations = system.integrations
+        result.integrations = try? JSON([String: Any]())
         
         return result
     }

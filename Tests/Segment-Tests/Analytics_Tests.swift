@@ -86,7 +86,7 @@ final class Analytics_Tests: XCTestCase {
         UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
         
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
-        let myDestination = MyDestination {
+        let myDestination = MyDestination(disabled: true) {
             expectation.fulfill()
             return true
         }

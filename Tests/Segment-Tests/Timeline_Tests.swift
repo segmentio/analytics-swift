@@ -26,17 +26,7 @@ class Timeline_Tests: XCTestCase {
             return true
         }
 
-        // Do this to force enable the destination
-        var settings = Settings(writeKey: "test")
-        if let existing = settings.integrations?.dictionaryValue {
-            var newIntegrations = existing
-            newIntegrations[firstDestination.key] = true
-            settings.integrations = try! JSON(newIntegrations)
-        }
         let configuration = Configuration(writeKey: "test")
-        configuration.defaultSettings(settings)
-
-        
         let analytics = Analytics(configuration: configuration)
 
         analytics.add(plugin: firstDestination)

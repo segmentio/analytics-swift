@@ -68,12 +68,9 @@ public struct Settings: Codable {
         return integrationSettings(forKey: plugin.key)
     }
     
-    public func isDestinationEnabled(key: String) -> Bool {
+    public func hasIntegrationSettings(forPlugin plugin: DestinationPlugin) -> Bool {
         guard let settings = integrations?.dictionaryValue else { return false }
-        if settings.keys.contains(key) {
-            return true
-        }
-        return false
+        return (settings[plugin.key] != nil)
     }
 }
 
@@ -85,15 +82,7 @@ extension Settings: Equatable {
     }
 }
 
-extension Analytics {
-    /// Manually enable a destination plugin.  This is useful when a given DestinationPlugin doesn't have any Segment tie-ins at all.
-    /// This will allow the destination to be processed in the same way within this library.
-    /// - Parameters:
-    ///   - plugin: The destination plugin to enable.
-    public func manuallyEnableDestination(plugin: DestinationPlugin) {
-        self.store.dispatch(action: System.AddIntegrationAction(key: plugin.key))
-    }
-    
+extension Analytics {     
     internal func update(settings: Settings, type: UpdateType) {
         apply { (plugin) in
             // tell all top level plugins to update.
