@@ -69,8 +69,12 @@ public struct Settings: Codable {
     }
     
     public func hasIntegrationSettings(forPlugin plugin: DestinationPlugin) -> Bool {
+        return hasIntegrationSettings(key: plugin.key)
+    }
+
+    public func hasIntegrationSettings(key: String) -> Bool {
         guard let settings = integrations?.dictionaryValue else { return false }
-        return (settings[plugin.key] != nil)
+        return (settings[key] != nil)
     }
 }
 
