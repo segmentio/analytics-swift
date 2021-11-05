@@ -47,7 +47,10 @@ public class Analytics {
         _ = timeline.process(incomingEvent: event)
     }
     
-    internal func process(event: RawEvent) {
+    /// Process a raw event through the system.  Useful when one needs to queue and replay events at a later time.
+    /// - Parameters:
+    ///   - event: An event conforming to RawEvent that will be processed.
+    public func process(event: RawEvent) {
         switch event {
         case let e as TrackEvent:
             timeline.process(incomingEvent: e)
