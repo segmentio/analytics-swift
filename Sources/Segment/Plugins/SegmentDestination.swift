@@ -147,8 +147,8 @@ extension SegmentDestination {
         guard let plugins = analytics?.timeline.plugins[.destination]?.plugins as? [DestinationPlugin] else { return event }
         guard let customerValues = event.integrations?.dictionaryValue else { return event }
         
-        // take the customer values first.
-        var merged = customerValues
+        var merged = [String: Any]()
+        
         // compare settings to loaded plugins
         for plugin in plugins {
             let hasSettings = integrationSettings.hasIntegrationSettings(forPlugin: plugin)
@@ -159,7 +159,15 @@ extension SegmentDestination {
             }
         }
         
-        return event
+        // apply customer values; the customer is always right!
+        for (key, value) in customerValues {
+            merged[key] = value
+        }
+        
+        var modified = event
+        modified.integrations = try? JSON(merged)
+        
+        return modified
     }
 }
 

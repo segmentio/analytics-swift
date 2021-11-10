@@ -211,9 +211,9 @@ extension DestinationPlugin {
         return result
     }
     
-    internal func isDestinationEnabled(integrations: JSON?) -> Bool {
+    internal func isDestinationEnabled(event: RawEvent) -> Bool {
         var customerDisabled = false
-        if let disabled: Bool = integrations?.value(forKeyPath: KeyPath(self.key)), disabled == false {
+        if let disabled: Bool = event.integrations?.value(forKeyPath: KeyPath(self.key)), disabled == false {
             customerDisabled = true
         }
         
@@ -231,7 +231,7 @@ extension DestinationPlugin {
         
         var result: E? = nil
         
-        if isDestinationEnabled(integrations: incomingEvent.integrations) {
+        if isDestinationEnabled(event: incomingEvent) {
             // apply .before and .enrichment types first ...
             let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)
             let enrichmentResult = timeline.applyPlugins(type: .enrichment, event: beforeResult)
