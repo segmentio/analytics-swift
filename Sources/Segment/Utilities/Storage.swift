@@ -239,6 +239,8 @@ extension Storage {
         if fm.fileExists(atPath: storeFile.path) == false {
             start(file: storeFile)
             newFile = true
+        } else if fileHandle == nil {
+            fileHandle = try? FileHandle(forWritingTo: file)
         }
         
         // Verify file size isn't too large
