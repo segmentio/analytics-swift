@@ -70,29 +70,13 @@ public class SegmentDestination: DestinationPlugin {
     }
     
     // MARK: - Event Handling Methods
-    public func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        queueEvent(event: event)
-        return event
-    }
-    
-    public func track(event: TrackEvent) -> TrackEvent? {
-        queueEvent(event: event)
-        return event
-    }
-    
-    public func screen(event: ScreenEvent) -> ScreenEvent? {
-        queueEvent(event: event)
-        return event
-    }
-    
-    public func alias(event: AliasEvent) -> AliasEvent? {
-        queueEvent(event: event)
-        return event
-    }
-    
-    public func group(event: GroupEvent) -> GroupEvent? {
-        queueEvent(event: event)
-        return event
+    public func execute<T: RawEvent>(event: T?) -> T? {
+        let result: T? = event
+        if let r = result {
+            let modified = configureCloudDestinations(event: r)
+            queueEvent(event: modified)
+        }
+        return result
     }
     
     // MARK: - Abstracted Lifecycle Methods
@@ -153,6 +137,37 @@ public class SegmentDestination: DestinationPlugin {
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
         }
+    }
+}
+
+// MARK: - Utility methods
+extension SegmentDestination {
+    internal func configureCloudDestinations<T: RawEvent>(event: T) -> T {
+        guard let integrationSettings = analytics?.settings() else { return event }
+        guard let plugins = analytics?.timeline.plugins[.destination]?.plugins as? [DestinationPlugin] else { return event }
+        guard let customerValues = event.integrations?.dictionaryValue else { return event }
+        
+        var merged = [String: Any]()
+        
+        // compare settings to loaded plugins
+        for plugin in plugins {
+            let hasSettings = integrationSettings.hasIntegrationSettings(forPlugin: plugin)
+            if hasSettings {
+                // we have a device mode plugin installed.
+                // tell segment not to send it via cloud mode.
+                merged[plugin.key] = false
+            }
+        }
+        
+        // apply customer values; the customer is always right!
+        for (key, value) in customerValues {
+            merged[key] = value
+        }
+        
+        var modified = event
+        modified.integrations = try? JSON(merged)
+        
+        return modified
     }
 }
 

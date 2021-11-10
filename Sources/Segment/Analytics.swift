@@ -24,6 +24,9 @@ public class Analytics {
     
     public var timeline: Timeline
     
+    /// Initialize this instance of Analytics with a given configuration setup.
+    /// - Parameters:
+    ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
         self.configuration = configuration
         
@@ -44,6 +47,9 @@ public class Analytics {
         _ = timeline.process(incomingEvent: event)
     }
     
+    /// Process a raw event through the system.  Useful when one needs to queue and replay events at a later time.
+    /// - Parameters:
+    ///   - event: An event conforming to RawEvent that will be processed.
     public func process(event: RawEvent) {
         switch event {
         case let e as TrackEvent:
@@ -65,6 +71,7 @@ public class Analytics {
 // MARK: - System Modifiers
 
 extension Analytics {
+    /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
             return userInfo.anonymousId
@@ -72,6 +79,7 @@ extension Analytics {
         return ""
     }
     
+    /// Returns the userId that was specified in the last identify call.
     public var userId: String? {
         if let userInfo: UserInfo = store.currentState() {
             return userInfo.userId
@@ -79,6 +87,7 @@ extension Analytics {
         return nil
     }
     
+    /// Returns the traits that were specified in the last identify call.
     public func traits<T: Codable>() -> T? {
         if let userInfo: UserInfo = store.currentState() {
             return userInfo.traits?.codableValue()
@@ -86,6 +95,8 @@ extension Analytics {
         return nil
     }
     
+    /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
+    /// be sent to each plugin present in the system.
     public func flush() {
         apply { plugin in
             if let p = plugin as? EventPlugin {
@@ -94,6 +105,8 @@ extension Analytics {
         }
     }
     
+    /// Resets this instance of Analytics to a clean slate.  Traits, UserID's, anonymousId, etc are all cleared or reset.  This
+    /// command will also be sent to each plugin present in the system.
     public func reset() {
         store.dispatch(action: UserInfo.ResetAction())
         apply { plugin in
@@ -103,6 +116,22 @@ extension Analytics {
         }
     }
     
+    /// Retrieve the version of this library in use.
+    /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
+    public func version() -> String {
+        return Analytics.version()
+    }
+    
+    /// Retrieve the version of this library in use.
+    /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
+    public static func version() -> String {
+        return __segment_version
+    }
+}
+
+extension Analytics {
+    /// Manually retrieve the settings that were supplied from Segment.com.
+    /// - Returns: A Settings object containing integration settings, tracking plan, etc.
     public func settings() -> Settings? {
         var settings: Settings?
         if let system: System = store.currentState() {
@@ -111,11 +140,12 @@ extension Analytics {
         return settings
     }
     
-    public func version() -> String {
-        return Analytics.version()
+    /// Manually enable a destination plugin.  This is useful when a given DestinationPlugin doesn't have any Segment tie-ins at all.
+    /// This will allow the destination to be processed in the same way within this library.
+    /// - Parameters:
+    ///   - plugin: The destination plugin to enable.
+    public func manuallyEnableDestination(plugin: DestinationPlugin) {
+        self.store.dispatch(action: System.AddDestinationToSettingsAction(key: plugin.key))
     }
-    
-    public static func version() -> String {
-        return __segment_version
-    }
+
 }

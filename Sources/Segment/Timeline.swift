@@ -210,6 +210,20 @@ extension DestinationPlugin {
         }
         return result
     }
+    
+    internal func isDestinationEnabled(event: RawEvent) -> Bool {
+        var customerDisabled = false
+        if let disabled: Bool = event.integrations?.value(forKeyPath: KeyPath(self.key)), disabled == false {
+            customerDisabled = true
+        }
+        
+        var hasSettings = false
+        if let settings = analytics?.settings() {
+            hasSettings = settings.hasIntegrationSettings(forPlugin: self)
+        }
+        
+        return (hasSettings == true && customerDisabled == false)
+    }
 
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // This will process plugins (think destination middleware) that are tied
@@ -217,11 +231,7 @@ extension DestinationPlugin {
         
         var result: E? = nil
         
-        // For destination plugins, we will always have some kind of `settings`,
-        // and if we don't, it means this destination hasn't been setup on app.segment.com,
-        // which in turn ALSO means that we shouldn't be sending events to it.
-
-        if let enabled = analytics?.settings()?.isDestinationEnabled(key: self.key), enabled == true {
+        if isDestinationEnabled(event: incomingEvent) {
             // apply .before and .enrichment types first ...
             let beforeResult = timeline.applyPlugins(type: .before, event: incomingEvent)
             let enrichmentResult = timeline.applyPlugins(type: .enrichment, event: beforeResult)
