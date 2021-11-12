@@ -18,7 +18,7 @@ final class SegmentLog_Tests: XCTestCase {
         var logClosure: ((LogFilterKind, LogMessage) -> Void)?
         var closure: (() -> Void)?
         
-        override func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
+        override func log(_ logMessage: LogMessage, destination: LoggingType.Filter) {
             super.log(logMessage, destination: destination)
             logClosure?(logMessage.kind, logMessage)
         }
@@ -129,6 +129,7 @@ final class SegmentLog_Tests: XCTestCase {
         analytics?.add(target: logConsoleTarget, type: loggingType)
         
         // Act
+        Analytics.debugLogsEnabled = true
         analytics?.log(message: "Should hit our proper target")
         wait(for: [expectation], timeout: 1.0)
     }
@@ -159,14 +160,6 @@ final class SegmentLog_Tests: XCTestCase {
         // Arrange
         let expectation = XCTestExpectation(description: "Called")
         
-        struct LogConsoleTarget: LogTarget {
-            var successClosure: ((String) -> Void)
-            
-            func parseLog(_ log: LogMessage) {
-                XCTFail("Log should not be called when logging is disabled")
-            }
-        }
-        
         // Arrange
         mockLogger.closure = {
             expectation.fulfill()
@@ -181,14 +174,6 @@ final class SegmentLog_Tests: XCTestCase {
     func testLogFlush() {
         // Arrange
         let expectation = XCTestExpectation(description: "Called")
-        
-        struct LogConsoleTarget: LogTarget {
-            var successClosure: ((String) -> Void)
-            
-            func parseLog(_ log: LogMessage) {
-                XCTFail("Log should not be called when logging is disabled")
-            }
-        }
         
         // Arrange
         mockLogger.closure = {
@@ -258,7 +243,8 @@ final class SegmentLog_Tests: XCTestCase {
         }
         let expectation = XCTestExpectation(description: "Called")
         mockLogger.logClosure = { (kind, logMessage) in
-            XCTAssertTrue(logMessage.message.contains("Could not add target"))
+            XCTAssertTrue(logMessage.message.contains("LogTarget type already exists for type.") ||
+                          logMessage.message.contains("Could not add target"))
             expectation.fulfill()
         }
         
@@ -275,6 +261,5 @@ final class SegmentLog_Tests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
 
     }
-
 }
 

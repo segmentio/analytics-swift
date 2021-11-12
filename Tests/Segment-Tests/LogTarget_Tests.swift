@@ -18,7 +18,7 @@ final class LogTarget_Tests: XCTestCase {
         var logClosure: ((LogFilterKind, LogMessage) -> Void)?
         var closure: (() -> Void)?
         
-        override func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
+        override func log(_ logMessage: LogMessage, destination: LoggingType.Filter) {
             super.log(logMessage, destination: destination)
             logClosure?(logMessage.kind, logMessage)
         }
@@ -53,11 +53,28 @@ final class LogTarget_Tests: XCTestCase {
         mockLogger.logClosure = { (kind, message) in
             expectation.fulfill()
             XCTAssertEqual(message.message, "Metric of 5", "Message name not correctly passed")
-            XCTAssertEqual(message.title, "Counter", "Type of metricnot correctly passed")
+            XCTAssertEqual(message.title, "Counter", "Type of metric not correctly passed")
         }
         
         // Act
         analytics?.metric(MetricType.fromString("Counter"), name: "Metric of 5", value: 5, tags: ["Test"])
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testMetricGauge() {
+               
+        // Arrange
+        let expectation = XCTestExpectation(description: "Called")
+                
+        // Assert
+        mockLogger.logClosure = { (kind, message) in
+            expectation.fulfill()
+            XCTAssertEqual(message.message, "Gauge of 23782", "Message name not correctly passed")
+            XCTAssertEqual(message.title, "Gauge", "Type of metric not correctly passed")
+        }
+        
+        // Act
+        analytics?.metric(MetricType.gauge, name: "Gauge of 23782", value: 23232, tags: ["Test"])
         wait(for: [expectation], timeout: 1.0)
     }
     
@@ -98,7 +115,7 @@ final class LogTarget_Tests: XCTestCase {
         analytics?.add(target: logConsoleTarget, type: loggingType)
         
         // Act
-        analytics?.log(message: "Should hit our proper target")
+        analytics?.log(message: "Should NOT hit our proper target")
     }
 
     func testMetricDisabled() {

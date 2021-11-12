@@ -15,7 +15,7 @@ internal class SegmentLog: UtilityPlugin {
     
     let type = PluginType.utility
     
-    fileprivate var loggingMediator = [LoggingType: LogTarget]()
+    fileprivate var loggingMediator = [LoggingType: [LogTarget]]()
     
     // Default to no, enable to see local logs
     internal static var loggingEnabled = false
@@ -61,11 +61,13 @@ internal class SegmentLog: UtilityPlugin {
         }
     }
     
-    internal func log(_ logMessage: LogMessage, destination: LoggingType.LogDestination) {
+    internal func log(_ logMessage: LogMessage, destination: LoggingType.Filter) {
         
-        for (logType, target) in loggingMediator {
+        for (logType, targets) in loggingMediator {
             if logType.contains(destination) {
-                target.parseLog(logMessage)
+                for target in targets {
+                    target.parseLog(logMessage)
+                }
             }
         }
     }
@@ -73,18 +75,27 @@ internal class SegmentLog: UtilityPlugin {
     internal func add(target: LogTarget, for loggingType: LoggingType) throws {
         
         // Verify the target does not exist, if it does bail out
-        let filtered = loggingMediator.filter { (type: LoggingType, existingTarget: LogTarget) in
-            Swift.type(of: existingTarget) == Swift.type(of: target)
+        for (_, targets) in loggingMediator {
+            for existingTarget in targets {
+                if Swift.type(of: existingTarget) == Swift.type(of: target) {
+                    Analytics.segmentLog(message: "LogTarget type already exists for type.", kind: .warning)
+                    throw NSError(domain: "LogTarget already exists", code: 2002, userInfo: nil)
+                }
+            }
         }
-        if filtered.isEmpty == false { throw NSError(domain: "Target already exists", code: 2002, userInfo: nil) }
         
         // Finally add the target
-        loggingMediator[loggingType] = target
+        if loggingMediator[loggingType] == nil {
+            loggingMediator[loggingType] = [LogTarget]()
+        }
+        loggingMediator[loggingType]?.append(target)
     }
     
     internal func flush() {
-        for (_, target) in loggingMediator {
-            target.flush()
+        for (_, targets) in loggingMediator {
+            for target in targets {
+                target.flush()
+            }
         }
         
         // TODO: Clean up history container here
@@ -94,7 +105,7 @@ internal class SegmentLog: UtilityPlugin {
 // MARK: - Internal Types
 
 internal struct LogFactory {
-    static func buildLog(destination: LoggingType.LogDestination,
+    static func buildLog(destination: LoggingType.Filter,
                          title: String,
                          message: String,
                          kind: LogFilterKind = .debug,
@@ -122,7 +133,7 @@ internal struct LogFactory {
         var event: RawEvent? = nil
         var function: String?
         var line: Int?
-        var logType: LoggingType.LogDestination = .log
+        var logType: LoggingType.Filter = .log
         var dateTime = Date()
     }
     
@@ -134,7 +145,7 @@ internal struct LogFactory {
         var event: RawEvent?
         var function: String? = nil
         var line: Int? = nil
-        var logType: LoggingType.LogDestination = .metric
+        var logType: LoggingType.Filter = .metric
         var dateTime = Date()
     }
     
@@ -146,7 +157,7 @@ internal struct LogFactory {
         var function: String?
         var line: Int?
         var sender: Any?
-        var logType: LoggingType.LogDestination = .history
+        var logType: LoggingType.Filter = .history
         var dateTime = Date()
     }
 }

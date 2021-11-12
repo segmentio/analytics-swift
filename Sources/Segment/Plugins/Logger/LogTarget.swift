@@ -44,11 +44,11 @@ public enum LogFilterKind: Int {
 }
 
 /// The Segment logging system has three types of logs: log, metric and history. When adding a target that
-/// responds to logs, it is possible to adhere to 1 to many. In other words, a LoggingType can be .log &
+/// responds to logs, it is possible to adhere 1 to many. In other words, a LoggingType can be .log &
 /// .history. This is used to tell which targets logs are directed to.
 public struct LoggingType: Hashable {
     
-    public enum LogDestination {
+    public enum Filter {
         case log
         case metric
         case history
@@ -64,18 +64,18 @@ public struct LoggingType: Hashable {
     
     /// Designated initializer for LoggingType. Add all the destinations this LoggingType should support.
     /// - Parameter types: The LoggingDestination(s) that this LoggingType will support.
-    public init(types: [LogDestination]) {
+    public init(types: [Filter]) {
         // TODO: Failable scenario if types empty
         self.allTypes = types
     }
     
     // - Private Properties and Methods
-    private let allTypes: [LogDestination]
+    private let allTypes: [Filter]
     
     /// Convience method to find if the LoggingType supports a particular destination.
     /// - Parameter destination: The particular destination being tested for conformance.
     /// - Returns: If the destination exists in this LoggingType `true` or `false` will be returned.
-    internal func contains(_ destination: LogDestination) -> Bool {
+    internal func contains(_ destination: Filter) -> Bool {
         return allTypes.contains(destination)
     }
 }
@@ -88,7 +88,7 @@ public protocol LogMessage {
     var event: RawEvent? { get }
     var function: String? { get }
     var line: Int? { get }
-    var logType: LoggingType.LogDestination { get }
+    var logType: LoggingType.Filter { get }
     var dateTime: Date { get }
 }
 
