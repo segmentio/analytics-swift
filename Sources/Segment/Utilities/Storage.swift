@@ -133,9 +133,6 @@ internal class Storage: Subscriber {
         syncQueue.sync {
             // remove the temp file.
             try? FileManager.default.removeItem(atPath: file.path)
-            // remove the unfinished event storage file.
-            let actualFile = file.deletingPathExtension()
-            try? FileManager.default.removeItem(atPath: actualFile.path)
         }
     }
 
@@ -308,7 +305,7 @@ extension Storage {
 
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
         do {
-            try FileManager.default.copyItem(at: file, to: tempFile)
+            try FileManager.default.moveItem(at: file, to: tempFile)
         } catch {
             Analytics.segmentLog(message: "Unable to rename to temp: \(file), Error: \(error)", kind: .error)
         }
