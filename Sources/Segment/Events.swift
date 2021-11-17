@@ -188,7 +188,7 @@ extension Analytics {
                 exceptionFailure("Could not parse properties.")
             }
         }
-        process(event: event)
+        process(incomingEvent: event)
     }
     
     /// Associate a user with a group such as a company, organization, project, etc.
