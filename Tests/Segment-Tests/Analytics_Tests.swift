@@ -320,7 +320,7 @@ final class Analytics_Tests: XCTestCase {
         
         let newBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
         // 1 new temp file
-        XCTAssertTrue(newBatchCount == currentBatchCount + 1)
+        XCTAssertTrue(newBatchCount == currentBatchCount + 1, "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
     }
     
     func testVersion() {
