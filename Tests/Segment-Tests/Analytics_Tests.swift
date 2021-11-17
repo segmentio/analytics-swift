@@ -319,8 +319,8 @@ final class Analytics_Tests: XCTestCase {
         analytics.track(name: "test")
         
         let newBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
-        // 1 new temp file, and 1 new finished file.
-        XCTAssertTrue(newBatchCount == currentBatchCount + 2)
+        // 1 new temp file
+        XCTAssertTrue(newBatchCount == currentBatchCount + 1, "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
     }
     
     func testVersion() {
