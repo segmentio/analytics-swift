@@ -182,7 +182,7 @@ extension Storage {
     }
     
     private func eventStorageDirectory() -> URL {
-        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let urls = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
         let docURL = urls[0]
         let segmentURL = docURL.appendingPathComponent("segment/\(writeKey)/")
         // try to create it, will fail if already exists, nbd.
