@@ -205,6 +205,6 @@ extension Analytics {
                 exceptionFailure("Could not parse traits.")
             }
         }
-        process(event: event)
+        process(incomingEvent: event)
     }
 }
