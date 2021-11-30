@@ -99,6 +99,14 @@ extension ObjCAnalytics {
     public func group(groupId: String, traits: [String: Any]?) {
         analytics.group(groupId: groupId, traits: traits)
     }
+    
+    @objc(alias:)
+    /// The alias method is used to merge two user identities, effectively connecting two sets of user data
+    /// as one. This is an advanced method, but it is required to manage user identities successfully in some of our destinations.
+    /// - Parameter newId: The new id replacing the old user id.
+    public func alias(newId: String) {
+        analytics.alias(newId: newId)
+    }
 }
 
 // MARK: - ObjC Peripheral Functionality
