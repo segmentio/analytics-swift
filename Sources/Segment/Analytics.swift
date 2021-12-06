@@ -163,7 +163,7 @@ extension Analytics {
             queuedEvents = segmentDest.eventCount != 0
         }
         
-        result = (hasFiles && pendingUploads && queuedEvents)
+        result = (hasFiles || pendingUploads || queuedEvents)
         return result
     }
 }
