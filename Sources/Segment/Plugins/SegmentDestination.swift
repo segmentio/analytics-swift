@@ -48,7 +48,7 @@ public class SegmentDestination: DestinationPlugin {
     private var apiKey: String? = nil
     private var apiHost: String? = nil
     
-    @Atomic private var eventCount: Int = 0
+    @Atomic internal var eventCount: Int = 0
     internal var flushTimer: QueueTimer? = nil
     
     internal func initialSetup() {

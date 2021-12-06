@@ -157,11 +157,13 @@ extension Analytics {
         
         let hasFiles = storage.eventFiles(includeUnfinished: true).count > 0
         var pendingUploads = false
+        var queuedEvents = false
         if let segmentDest = self.find(pluginType: SegmentDestination.self) {
             pendingUploads = segmentDest.pendingUploads != 0
+            queuedEvents = segmentDest.eventCount != 0
         }
         
-        result = (hasFiles && pendingUploads)
+        result = (hasFiles && pendingUploads && queuedEvents)
         return result
     }
 }
