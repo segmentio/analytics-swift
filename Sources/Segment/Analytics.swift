@@ -162,8 +162,10 @@ extension Analytics {
             }
         }
 
-        if storage.read(Storage.Constants.events)?.count > 0 {
-            return true
+        if let files = storage.read(Storage.Constants.events) {
+            if files.count > 0 {
+                return true
+            }
         }
             
         return false
