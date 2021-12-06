@@ -153,7 +153,15 @@ extension Analytics {
 extension Analytics {
     /// Determine if there are any events that have yet to be sent to Segment
     public var hasUnsentEvents: Bool {
-        let result = storage.eventFiles(includeUnfinished: true).count > 0
+        var result = true
+        
+        let hasFiles = storage.eventFiles(includeUnfinished: true).count > 0
+        var pendingUploads = false
+        if let segmentDest = self.find(pluginType: SegmentDestination.self) {
+            pendingUploads = segmentDest.pendingUploads != 0
+        }
+        
+        result = (hasFiles && pendingUploads)
         return result
     }
 }
