@@ -98,7 +98,6 @@ public class SegmentDestination: DestinationPlugin {
         storage.write(.events, value: event)
         eventCount += 1
         if eventCount >= analytics.configuration.values.flushAt {
-            eventCount = 0
             flush()
         }
     }
@@ -111,6 +110,7 @@ public class SegmentDestination: DestinationPlugin {
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
+        eventCount = 0
         cleanupUploads()
         
         analytics.log(message: "Uploads in-progress: \(pendingUploads)")
