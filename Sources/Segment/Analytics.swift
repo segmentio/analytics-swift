@@ -149,3 +149,10 @@ extension Analytics {
     }
 
 }
+
+extension Analytics {
+    /// Determine if there are any events that have yet to be sent to Segment
+    var pendingEvents: Bool {
+        return storage.eventFiles(includeUnfinished: true).count > 0
+    }
+}
