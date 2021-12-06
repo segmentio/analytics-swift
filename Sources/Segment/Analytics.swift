@@ -170,4 +170,8 @@ extension Analytics {
             
         return false
     }
+    
+    public var pendingUploads: [URL]? {
+        return storage.read(Storage.Constants.events)
+    }
 }
