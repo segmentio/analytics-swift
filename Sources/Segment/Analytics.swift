@@ -162,7 +162,7 @@ extension Analytics {
             }
         }
 
-        if storage.eventFiles(includeUnfinished: true).count > 0 {
+        if storage.read(Storage.Constants.events)?.count > 0 {
             return true
         }
             
