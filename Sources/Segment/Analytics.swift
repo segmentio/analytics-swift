@@ -171,7 +171,20 @@ extension Analytics {
         return false
     }
     
+    /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
         return storage.read(Storage.Constants.events)
+    }
+    
+    /// Wait until the Analytics object has completed startup.
+    /// This method is primarily useful for command line utilities where
+    /// it's desirable to wait until the system is up and running
+    /// before executing commands.
+    func waitUntilStarted() {
+        if let startupQueue = find(pluginType: StartupQueue.self) {
+            while startupQueue.running != true {
+                RunLoop.main.run(until: Date.distantPast)
+            }
+        }
     }
 }
