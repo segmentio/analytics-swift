@@ -8,7 +8,7 @@
 import Foundation
 import Sovran
 
-internal class StartupQueue: Plugin, Subscriber {
+public class StartupQueue: Plugin, Subscriber {
     static let maxSize = 1000
 
     @Atomic var running: Bool = false
