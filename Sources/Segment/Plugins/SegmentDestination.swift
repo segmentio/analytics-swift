@@ -123,6 +123,7 @@ public class SegmentDestination: DestinationPlugin {
                     switch result {
                         case .success(_):
                             storage.remove(file: url)
+                        self.cleanupUploads()
                         default:
                             analytics.logFlush()
                     }
