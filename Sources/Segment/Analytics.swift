@@ -179,8 +179,9 @@ extension Analytics {
     /// Wait until the Analytics object has completed startup.
     /// This method is primarily useful for command line utilities where
     /// it's desirable to wait until the system is up and running
-    /// before executing commands.
-    func waitUntilStarted() {
+    /// before executing commands.  GUI apps could potentially use this via
+    /// a background thread if needed.
+    public func waitUntilStarted() {
         if let startupQueue = find(pluginType: StartupQueue.self) {
             while startupQueue.running != true {
                 RunLoop.main.run(until: Date.distantPast)
