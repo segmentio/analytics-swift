@@ -11,7 +11,7 @@ import Sovran
 public class StartupQueue: Plugin, Subscriber {
     static let maxSize = 1000
 
-    @Atomic var running: Bool = false
+    @Atomic public var running: Bool = false
     
     public let type: PluginType = .before
     
