@@ -13,9 +13,9 @@ public class StartupQueue: Plugin, Subscriber {
 
     @Atomic var running: Bool = false
     
-    let type: PluginType = .before
+    public let type: PluginType = .before
     
-    var analytics: Analytics? = nil {
+    public var analytics: Analytics? = nil {
         didSet {
             analytics?.store.subscribe(self, handler: runningUpdate)
         }
@@ -26,7 +26,7 @@ public class StartupQueue: Plugin, Subscriber {
     
     required init() { }
     
-    func execute<T: RawEvent>(event: T?) -> T? {
+    public func execute<T: RawEvent>(event: T?) -> T? {
         if running == false, let e = event  {
             // timeline hasn't started, so queue it up.
             syncQueue.sync {
