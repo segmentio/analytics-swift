@@ -22,8 +22,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
@@ -40,8 +38,6 @@ jobs:
       with:
         swift-version: "5.4"
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
@@ -58,8 +54,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/cache@v2
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
@@ -80,8 +74,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/cache@v2
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
@@ -101,8 +93,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/cache@v2
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
@@ -122,8 +112,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/cache@v2
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData
@@ -159,8 +147,6 @@ jobs:
       with:
         xcode-version: '13.0'
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
     - uses: actions/cache@v2
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData
