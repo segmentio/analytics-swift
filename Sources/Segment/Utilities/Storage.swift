@@ -183,9 +183,9 @@ extension Storage {
     
     private func eventStorageDirectory() -> URL {
         #if os(tvOS)
-        let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
-        #else
         let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
+        #else
+        let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
         #endif
         
         let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
