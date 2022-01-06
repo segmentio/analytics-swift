@@ -13,6 +13,7 @@ final class Analytics_Tests: XCTestCase {
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
+        // test ci
     }
     
     func testPluginConfigure() {
