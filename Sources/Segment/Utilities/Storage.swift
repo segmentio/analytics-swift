@@ -182,7 +182,7 @@ extension Storage {
     }
     
     private func eventStorageDirectory() -> URL {
-        #if os(tvOS)
+        #if os(tvOS) || os(macOS)
         let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
         #else
         let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
