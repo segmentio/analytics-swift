@@ -168,10 +168,11 @@ extension HTTPClient {
         configuration.allowsCellularAccess = true
         configuration.timeoutIntervalForResource = 30
         configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
         configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
                                                "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let session = URLSession.init(configuration: configuration, delegate: nil, delegateQueue: nil)
+        let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         return session
     }
 }
