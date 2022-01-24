@@ -128,6 +128,10 @@ public class SegmentDestination: DestinationPlugin {
                     }
                     
                     analytics.log(message: "Processed: \(url.lastPathComponent)")
+                    // the upload we have here has just finished.
+                    // make sure it gets removed and it's cleanup() called rather
+                    // than waiting on the next flush to come around.
+                    self.cleanupUploads()
                 }
                 // we have a legit upload in progress now, so add it to our list.
                 if let upload = uploadTask {
