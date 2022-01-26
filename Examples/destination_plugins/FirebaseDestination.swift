@@ -4,14 +4,12 @@
 //
 //  Created by Cody Garvin on 6/3/21.
 //
-
 // NOTE: You can see this plugin in use in the DestinationsExample application.
 //
 // This plugin is NOT SUPPORTED by Segment.  It is here merely as an example,
 // and for your convenience should you find it useful.
 //
 // Firebase SPM package can be found here: https://github.com/firebase/firebase-ios-sdk
-
 // MIT License
 //
 // Copyright (c) 2021 Segment
@@ -33,10 +31,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
 import Foundation
 import Segment
-import FirebaseCore
+import Firebase
 import FirebaseAnalytics
 
 /**
@@ -114,7 +111,6 @@ class FirebaseDestination: DestinationPlugin {
 }
 
 // MARK: - Support methods
-
 extension FirebaseDestination {
     
     // Maps Segment spec to Firebase constant
