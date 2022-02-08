@@ -36,7 +36,7 @@
 
 import Foundation
 import Segment
-import FirebaseCore
+import Firebase
 import FirebaseAnalytics
 
 /**
