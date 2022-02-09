@@ -28,7 +28,7 @@ jobs:
     - name: Build
       run: swift build
     - name: Run tests
-      run: swift test
+      run: swift test --enable-code-coverage
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
 
@@ -46,7 +46,7 @@ jobs:
     - name: Build
       run: swift build
     - name: Run tests
-      run: swift test --enable-test-discovery
+      run: swift test --enable-test-discovery --enable-code-coverage
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
 
@@ -67,7 +67,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
+    - run: xcodebuild test -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES build test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
 
@@ -88,7 +88,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+    - run: xcodebuild test -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV' -enableCodeCoverage YES build test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       
@@ -109,7 +109,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
+    - run: xcodebuild test -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm' -enableCodeCoverage YES build test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
 
@@ -130,22 +130,32 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+        
     - name: build for ios simulator
       run: |
           cd Examples/apps/BasicExample
-          xcodebuild -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator
+          xcodebuild test -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator -enableCodeCoverage YES build test
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2 
+
     - name: build for ios simulator
       run: |
           cd Examples/apps/ObjCExample
-          xcodebuild -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator
+          xcodebuild test -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator -enableCodeCoverage YES build test
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2 
+
     - name: build for ios simulator
       run: |
           cd Examples/apps/SegmentUIKitExample
-          xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
+          xcodebuild test -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator -enableCodeCoverage YES build test
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2 
+
     - name: build for mac catalyst
       run: |
           cd Examples/apps/SegmentUIKitExample
-          xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
+          xcodebuild test -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst' -enableCodeCoverage YES build test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2          
   
@@ -169,6 +179,6 @@ jobs:
     - name: build for ios simulator
       run: |
           cd Examples/apps/DestinationsExample
-          xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
+          xcodebuild test -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator -enableCodeCoverage YES build test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
