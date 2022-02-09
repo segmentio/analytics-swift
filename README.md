@@ -1,4 +1,7 @@
 # Analytics-Swift
+![](https://github.com/segmentio/analytics-swift/actions/workflows/swift.yml/badge.svg)
+![](https://img.shields.io/github/license/segmentio/analytics-swift)
+[![codecov](https://codecov.io/gh/segmentio/analytics-swift/branch/main/graph/badge.svg?token=59Y47DSEPZ)](https://codecov.io/gh/segmentio/analytics-swift)
 
 NOTE: This project is currently in the Beta phase and is covered by Segment's [First Access & Beta Preview Terms](https://segment.com/legal/first-access-beta-preview/).  We encourage you
 to try out this new library. Please provide feedback via Github issues/PRs, and feel free to submit pull requests.
