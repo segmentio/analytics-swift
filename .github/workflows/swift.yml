@@ -29,6 +29,8 @@ jobs:
       run: swift build
     - name: Run tests
       run: swift test
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
 
   build_and_test_spm_linux:
     needs: cancel_previous
@@ -45,6 +47,8 @@ jobs:
       run: swift build
     - name: Run tests
       run: swift test --enable-test-discovery
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
 
   build_and_test_ios:
     needs: cancel_previous
@@ -64,7 +68,8 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
-
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
 
   build_and_test_tvos:
     needs: cancel_previous
@@ -84,7 +89,9 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
-
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      
   build_and_test_watchos:
     needs: cancel_previous
     runs-on: macos-11
@@ -103,7 +110,9 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm'
-    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+
   build_and_test_examples:
     needs: cancel_previous
     runs-on: macos-11
@@ -137,7 +146,8 @@ jobs:
       run: |
           cd Examples/apps/SegmentUIKitExample
           xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
-          
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2          
   
   build_and_test_dest_examples:
     needs: cancel_previous
@@ -160,3 +170,5 @@ jobs:
       run: |
           cd Examples/apps/DestinationsExample
           xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
