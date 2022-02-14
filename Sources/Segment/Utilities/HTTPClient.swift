@@ -65,7 +65,7 @@ public class HTTPClient {
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
     func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
-        guard let uploadURL = segmentURL(for: apiHost, path: "/batch") else {
+        guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }

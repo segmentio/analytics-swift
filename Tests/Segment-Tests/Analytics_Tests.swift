@@ -339,4 +339,51 @@ final class Analytics_Tests: XCTestCase {
         
         XCTAssertEqual(eventVersion, analyticsVersion)
     }
+    
+    class AnyDestination: DestinationPlugin {
+        var timeline: Timeline
+        let type: PluginType
+        let key: String
+        var analytics: Analytics?
+        
+        init(key: String) {
+            self.key = key
+            self.type = .destination
+            self.timeline = Timeline()
+        }
+    }
+
+    func testDestinationMetadata() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let mixpanel = AnyDestination(key: "Mixpanel")
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        analytics.add(plugin: mixpanel)
+        analytics.add(plugin: DestinationMetadataPlugin())
+        var settings = Settings(writeKey: "123")
+        let integrations = try? JSON([
+            "Segment.io": JSON([
+                "unbundledIntegrations":
+                    [
+                        "Customer.io",
+                        "Mixpanel",
+                        "Amplitude"
+                    ]
+                ]),
+            "Mixpanel": JSON(["someKey": "someVal"])
+        ])
+        settings.integrations = integrations
+        analytics.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
+        
+        waitUntilStarted(analytics: analytics)
+
+        
+        analytics.track(name: "sampleEvent")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let metadata = trackEvent?._metadata
+        
+        XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
+        XCTAssertEqual(metadata?.unbundled, ["Customer.io", "Amplitude"])
+    }
 }
