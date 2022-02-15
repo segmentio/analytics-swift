@@ -1,6 +1,7 @@
 import XCTest
 @testable import Segment
 
+#if os(iOS)
 final class iOSLifecycle_Tests: XCTestCase {
     
     func testInstallEventCreation() {
@@ -64,3 +65,5 @@ final class iOSLifecycle_Tests: XCTestCase {
         XCTAssertTrue(trackEvent?.type == "track")
     }
 }
+
+#endif
