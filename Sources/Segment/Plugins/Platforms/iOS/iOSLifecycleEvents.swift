@@ -29,7 +29,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
-        if previousBuild != nil {
+        if previousBuild == nil {
             analytics?.track(name: "Application Installed", properties: [
                 "version": currentVersion ?? "",
                 "build": currentBuild ?? ""
