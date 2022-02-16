@@ -36,7 +36,6 @@ public class SegmentDestination: DestinationPlugin {
         let task: URLSessionDataTask
         // set/used via an extension in iOSLifecycleMonitor.swift
         typealias CleanupClosure = () -> Void
-        var taskID: Int = 0
         var cleanup: CleanupClosure? = nil
     }
     
