@@ -12,8 +12,13 @@
 		46871696270E16080028B595 /* ConsentTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871690270E16080028B595 /* ConsentTracking.swift */; };
 		46871697270E16080028B595 /* IDFACollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871691270E16080028B595 /* IDFACollection.swift */; };
 		46871698270E16080028B595 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871692270E16080028B595 /* ConsoleLogger.swift */; };
+		4694D2F627B58C9600D110C0 /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */; };
+		4694D2F927B58E5E00D110C0 /* ComScore in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2F827B58E5E00D110C0 /* ComScore */; };
+		4694D2FC27B5902100D110C0 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2FB27B5902100D110C0 /* Mixpanel */; };
+		4694D2FF27B5914200D110C0 /* Intercom in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2FE27B5914200D110C0 /* Intercom */; };
+		4694D30127B592E500D110C0 /* FacebookAppEventsDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4694D30027B592E500D110C0 /* FacebookAppEventsDestination.swift */; };
+		4694D30327B5979100D110C0 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D30227B5979100D110C0 /* FacebookCore */; };
 		469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 469EC8CF266066130068F9E3 /* SystemConfiguration.framework */; };
-		469EC8E0266828860068F9E3 /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */; };
 		469F7B08266011690038E773 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B07266011690038E773 /* AppDelegate.swift */; };
 		469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B09266011690038E773 /* SceneDelegate.swift */; };
 		469F7B0C266011690038E773 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B0B266011690038E773 /* ViewController.swift */; };
@@ -25,17 +30,14 @@
 		469F7B23266013100038E773 /* Adjust in Frameworks */ = {isa = PBXBuildFile; productRef = 469F7B22266013100038E773 /* Adjust */; };
 		469F7B25266013320038E773 /* AdjustDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B24266013320038E773 /* AdjustDestination.swift */; };
 		96469A9B270279A600AC5772 /* IntercomDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96469A9A270279A600AC5772 /* IntercomDestination.swift */; };
-		96469A9E2702862100AC5772 /* Intercom in Frameworks */ = {isa = PBXBuildFile; productRef = 96469A9D2702862100AC5772 /* Intercom */; };
 		965DC0FA2668077400DDF9C7 /* MixpanelDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F82668077400DDF9C7 /* MixpanelDestination.swift */; };
 		965DC0FB2668077400DDF9C7 /* AmplitudeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */; };
-		965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 965DC0FD2668079400DDF9C7 /* Mixpanel */; };
 		965DC1212669942800DDF9C7 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 965DC1202669942800DDF9C7 /* FirebaseAnalytics */; };
 		965DC1232669947F00DDF9C7 /* FirebaseDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 965DC1222669947F00DDF9C7 /* FirebaseDestination.swift */; };
 		965DC1262671656C00DDF9C7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 965DC1252671656C00DDF9C7 /* GoogleService-Info.plist */; };
 		9697C1F52679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 9697C1F42679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png */; };
 		96D8F16F26EFFA09007F8B28 /* ExampleDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D8F16E26EFFA09007F8B28 /* ExampleDestination.swift */; };
 		96DBF37D26FA943300724B0B /* ComscoreDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37C26FA943300724B0B /* ComscoreDestination.swift */; };
-		96DBF38026FA984A00724B0B /* ComScore in Frameworks */ = {isa = PBXBuildFile; productRef = 96DBF37F26FA984A00724B0B /* ComScore */; };
 		BA384C9826824F3700AFEA1B /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = BA384C9726824F3700AFEA1B /* AppsFlyerLib */; };
 		BA384C9A2682973300AFEA1B /* AppsFlyerDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA384C992682973300AFEA1B /* AppsFlyerDestination.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +48,7 @@
 		46871690270E16080028B595 /* ConsentTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
 		46871691270E16080028B595 /* IDFACollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IDFACollection.swift; sourceTree = "<group>"; };
 		46871692270E16080028B595 /* ConsoleLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
+		4694D30027B592E500D110C0 /* FacebookAppEventsDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookAppEventsDestination.swift; sourceTree = "<group>"; };
 		469EC8CF266066130068F9E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		469EC8E1266828AF0068F9E3 /* DestinationsExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DestinationsExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		469F7B04266011690038E773 /* DestinationsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DestinationsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,13 +79,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA384C9826824F3700AFEA1B /* AppsFlyerLib in Frameworks */,
-				469EC8E0266828860068F9E3 /* FlurryAnalyticsSPM in Frameworks */,
+				4694D30327B5979100D110C0 /* FacebookCore in Frameworks */,
 				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
-				96DBF38026FA984A00724B0B /* ComScore in Frameworks */,
+				4694D2F627B58C9600D110C0 /* FlurryAnalyticsSPM in Frameworks */,
 				965DC1212669942800DDF9C7 /* FirebaseAnalytics in Frameworks */,
+				4694D2F927B58E5E00D110C0 /* ComScore in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
-				965DC0FE2668079400DDF9C7 /* Mixpanel in Frameworks */,
-				96469A9E2702862100AC5772 /* Intercom in Frameworks */,
+				4694D2FC27B5902100D110C0 /* Mixpanel in Frameworks */,
+				4694D2FF27B5914200D110C0 /* Intercom in Frameworks */,
 				469F7B23266013100038E773 /* Adjust in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -154,6 +158,7 @@
 				469F7B24266013320038E773 /* AdjustDestination.swift */,
 				965DC0F92668077400DDF9C7 /* AmplitudeSession.swift */,
 				96DBF37C26FA943300724B0B /* ComscoreDestination.swift */,
+				4694D30027B592E500D110C0 /* FacebookAppEventsDestination.swift */,
 				96D8F16E26EFFA09007F8B28 /* ExampleDestination.swift */,
 				965DC1222669947F00DDF9C7 /* FirebaseDestination.swift */,
 				469F7B1F266012CB0038E773 /* FlurryDestination.swift */,
@@ -192,12 +197,13 @@
 			packageProductDependencies = (
 				469F7B1C266011D70038E773 /* Segment */,
 				469F7B22266013100038E773 /* Adjust */,
-				965DC0FD2668079400DDF9C7 /* Mixpanel */,
-				469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */,
 				965DC1202669942800DDF9C7 /* FirebaseAnalytics */,
 				BA384C9726824F3700AFEA1B /* AppsFlyerLib */,
-				96DBF37F26FA984A00724B0B /* ComScore */,
-				96469A9D2702862100AC5772 /* Intercom */,
+				4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */,
+				4694D2F827B58E5E00D110C0 /* ComScore */,
+				4694D2FB27B5902100D110C0 /* Mixpanel */,
+				4694D2FE27B5914200D110C0 /* Intercom */,
+				4694D30227B5979100D110C0 /* FacebookCore */,
 			);
 			productName = DestinationsExample;
 			productReference = 469F7B04266011690038E773 /* DestinationsExample.app */;
@@ -228,12 +234,13 @@
 			mainGroup = 469F7AFB266011690038E773;
 			packageReferences = (
 				469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */,
-				965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
-				469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
 				965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				BA384C9626824F3700AFEA1B /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
-				96DBF37E26FA984900724B0B /* XCRemoteSwiftPackageReference "Comscore-Swift-Package-Manager" */,
-				96469A9C2702862100AC5772 /* XCRemoteSwiftPackageReference "intercom-ios" */,
+				4694D2F327B4500700D110C0 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
+				4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
+				4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */,
+				4694D2FA27B5902100D110C0 /* XCRemoteSwiftPackageReference "mixpanel-swift" */,
+				4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */,
 			);
 			productRefGroup = 469F7B05266011690038E773 /* Products */;
 			projectDirPath = "";
@@ -277,6 +284,7 @@
 				46871694270E16080028B595 /* NotificationTracking.swift in Sources */,
 				469F7B25266013320038E773 /* AdjustDestination.swift in Sources */,
 				469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */,
+				4694D30127B592E500D110C0 /* FacebookAppEventsDestination.swift in Sources */,
 				965DC1232669947F00DDF9C7 /* FirebaseDestination.swift in Sources */,
 				46871695270E16080028B595 /* UIKitScreenTracking.swift in Sources */,
 				46871696270E16080028B595 /* ConsentTracking.swift in Sources */,
@@ -492,69 +500,97 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
+		4694D2F327B4500700D110C0 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:flurry/FlurrySwiftPackage.git";
+			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
 			requirement = {
-				kind = exactVersion;
-				version = 11.2.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.0.0;
+			};
+		};
+		4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/flurry/FlurrySwiftPackage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+		4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/comscore/comscore-swift-package-manager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.9.0;
+			};
+		};
+		4694D2FA27B5902100D110C0 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mixpanel/mixpanel-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.3;
+			};
+		};
+		4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/intercom/intercom-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.1.2;
 			};
 		};
 		469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adjust/ios_sdk.git";
 			requirement = {
-				kind = exactVersion;
-				version = 4.29.6;
-			};
-		};
-		96469A9C2702862100AC5772 /* XCRemoteSwiftPackageReference "intercom-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:intercom/intercom-ios.git";
-			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
-		965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:mixpanel/mixpanel-swift.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.9.3;
+				minimumVersion = 4.29.6;
 			};
 		};
 		965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
-				kind = exactVersion;
-				version = 8.1.0;
-			};
-		};
-		96DBF37E26FA984900724B0B /* XCRemoteSwiftPackageReference "Comscore-Swift-Package-Manager" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:comScore/Comscore-Swift-Package-Manager.git";
-			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
+				minimumVersion = 8.1.0;
 			};
 		};
 		BA384C9626824F3700AFEA1B /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
 			requirement = {
-				kind = exactVersion;
-				version = 6.3.2;
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.3.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		469EC8DF266828860068F9E3 /* FlurryAnalyticsSPM */ = {
+		4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 469EC8DE266828860068F9E3 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
+			package = 4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
 			productName = FlurryAnalyticsSPM;
+		};
+		4694D2F827B58E5E00D110C0 /* ComScore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */;
+			productName = ComScore;
+		};
+		4694D2FB27B5902100D110C0 /* Mixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4694D2FA27B5902100D110C0 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
+			productName = Mixpanel;
+		};
+		4694D2FE27B5914200D110C0 /* Intercom */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */;
+			productName = Intercom;
+		};
+		4694D30227B5979100D110C0 /* FacebookCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4694D2F327B4500700D110C0 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
+			productName = FacebookCore;
 		};
 		469F7B1C266011D70038E773 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -565,25 +601,10 @@
 			package = 469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */;
 			productName = Adjust;
 		};
-		96469A9D2702862100AC5772 /* Intercom */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 96469A9C2702862100AC5772 /* XCRemoteSwiftPackageReference "intercom-ios" */;
-			productName = Intercom;
-		};
-		965DC0FD2668079400DDF9C7 /* Mixpanel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 965DC0FC2668079400DDF9C7 /* XCRemoteSwiftPackageReference "mixpanel-swift" */;
-			productName = Mixpanel;
-		};
 		965DC1202669942800DDF9C7 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 965DC11F2669942800DDF9C7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
-		};
-		96DBF37F26FA984A00724B0B /* ComScore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 96DBF37E26FA984900724B0B /* XCRemoteSwiftPackageReference "Comscore-Swift-Package-Manager" */;
-			productName = ComScore;
 		};
 		BA384C9726824F3700AFEA1B /* AppsFlyerLib */ = {
 			isa = XCSwiftPackageProductDependency;
