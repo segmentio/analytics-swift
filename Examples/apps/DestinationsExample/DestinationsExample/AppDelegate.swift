@@ -44,6 +44,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add the Comscore destination plugin
         analytics?.add(plugin: ComscoreDestination())
         
+        // Add the Facebook App Events plugin
+        analytics?.add(plugin: FacebookAppEventsDestination())
+        
         return true
     }
     
