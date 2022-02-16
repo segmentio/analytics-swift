@@ -195,7 +195,6 @@ extension SegmentDestination.UploadTaskInfo {
                 task.cancel()
                 application.endBackgroundTask(taskIdentifier)
             }
-            self.taskID = taskIdentifier.rawValue
             
             self.cleanup = {
                 application.endBackgroundTask(taskIdentifier)

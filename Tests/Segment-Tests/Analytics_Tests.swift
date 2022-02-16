@@ -100,8 +100,9 @@ final class Analytics_Tests: XCTestCase {
         
         analytics.track(name: "testDestinationEnabled")
         
-        XCTExpectFailure()
-        wait(for: [expectation], timeout: 1.0)
+        XCTExpectFailure {
+            wait(for: [expectation], timeout: 1.0)
+        }
     }
     #endif
     
