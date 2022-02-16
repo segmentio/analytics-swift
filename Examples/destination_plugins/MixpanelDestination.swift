@@ -203,11 +203,6 @@ class MixpanelDestination: DestinationPlugin, RemoteNotifications {
         return event
     }
     
-    func registeredForRemoteNotifications(deviceToken: Data) {
-        mixpanel?.people.addPushDeviceToken(deviceToken)
-        analytics?.log(message: "Mixpanel people addPushDeviceToken \(deviceToken.toString())")
-    }
-    
     func reset() {
         flush()
         
