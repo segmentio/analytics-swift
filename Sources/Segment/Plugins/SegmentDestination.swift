@@ -211,3 +211,11 @@ extension SegmentDestination {
         }
     }
 }
+
+// MARK: Versioning
+
+extension SegmentDestination: VersionedPlugin {
+    public static func version() -> String {
+        return __segment_version
+    }
+}
