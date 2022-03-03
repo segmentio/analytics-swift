@@ -48,6 +48,7 @@
 		46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CDF25A53FAD003A7362 /* Storage.swift */; };
 		46FE4CFB25A6C671003A7362 /* TestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CFA25A6C671003A7362 /* TestUtilities.swift */; };
 		46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */; };
+		759D6CD127B48ABB00AB900A /* DestinationMetadataPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
 		96259F8326CEF526008AE301 /* LogTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96259F8226CEF526008AE301 /* LogTarget.swift */; };
@@ -147,6 +148,7 @@
 		46FE4CDF25A53FAD003A7362 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		46FE4CFA25A6C671003A7362 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
 		46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage_Tests.swift; sourceTree = "<group>"; };
+		759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationMetadataPlugin.swift; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
@@ -293,6 +295,7 @@
 				9692726725A583A6009B5298 /* SegmentDestination.swift */,
 				46210835260BBEE400EBC4A8 /* DeviceToken.swift */,
 				46031D64266E7C10009BA540 /* StartupQueue.swift */,
+				759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */,
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
 				96259F8326CEF526008AE301 /* LogTarget.swift in Sources */,
 				46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */,
+				759D6CD127B48ABB00AB900A /* DestinationMetadataPlugin.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				4602276C261E7BF900A9E913 /* iOSDelegation.swift in Sources */,

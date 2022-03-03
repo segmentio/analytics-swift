@@ -8,11 +8,17 @@
 import Foundation
 import Sovran
 
+// MARK: - Supplementary Types
+
+public struct DestinationMetadata: Codable {
+    var bundled: [String] = []
+    var unbundled: [String] = []
+    var bundledIds: [String] = []
+}
 
 // MARK: - Event Types
 
 public protocol RawEvent: Codable {
-    
     var type: String? { get set }
     var anonymousId: String? { get set }
     var messageId: String? { get set }
@@ -22,6 +28,7 @@ public protocol RawEvent: Codable {
     var context: JSON? { get set }
     var integrations: JSON? { get set }
     var metrics: [JSON]? { get set }
+    var _metadata: DestinationMetadata? { get set }
 }
 
 public struct TrackEvent: RawEvent {
@@ -33,6 +40,7 @@ public struct TrackEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
+    public var _metadata: DestinationMetadata? = nil
     
     public var event: String
     public var properties: JSON?
@@ -57,8 +65,10 @@ public struct IdentifyEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
+    public var _metadata: DestinationMetadata? = nil
     
     public var traits: JSON?
+    
     
     public init(userId: String? = nil, traits: JSON? = nil) {
         self.userId = userId
@@ -80,6 +90,7 @@ public struct ScreenEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
+    public var _metadata: DestinationMetadata? = nil
     
     public var name: String?
     public var category: String?
@@ -106,6 +117,7 @@ public struct GroupEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
+    public var _metadata: DestinationMetadata? = nil
     
     public var groupId: String?
     public var traits: JSON?
@@ -129,6 +141,7 @@ public struct AliasEvent: RawEvent {
     public var context: JSON? = nil
     public var integrations: JSON? = nil
     public var metrics: [JSON]? = nil
+    public var _metadata: DestinationMetadata? = nil
     
     public var userId: String?
     public var previousId: String?
@@ -271,6 +284,7 @@ extension RawEvent {
             timestamp = e.timestamp
             context = e.context
             integrations = e.integrations
+            _metadata = e._metadata
         }
     }
 
@@ -284,6 +298,7 @@ extension RawEvent {
         result.messageId = UUID().uuidString
         result.timestamp = Date().iso8601()
         result.integrations = try? JSON([String: Any]())
+        result._metadata = DestinationMetadata()
         
         return result
     }

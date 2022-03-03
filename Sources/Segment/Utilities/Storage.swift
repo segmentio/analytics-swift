@@ -294,7 +294,7 @@ extension Storage {
         let sentAt = Date().iso8601()
 
         // write it to the existing file
-        let fileEnding = "],\"sentAt\":\"\(sentAt)\"}"
+        let fileEnding = "],\"sentAt\":\"\(sentAt)\",\"writeKey\":\"\(writeKey)\"}"
         let endData = fileEnding.data(using: .utf8)
         if let endData = endData {
             fileHandle.seekToEndOfFile()
