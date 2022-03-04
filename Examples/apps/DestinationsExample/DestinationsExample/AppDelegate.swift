@@ -7,6 +7,11 @@
 
 import UIKit
 import Segment
+import SegmentAmplitude
+import SegmentAppsFlyer
+import SegmentFacebook
+import SegmentFirebase
+import SegmentMixpanel
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
