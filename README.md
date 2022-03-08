@@ -2,9 +2,6 @@
 ![](https://github.com/segmentio/analytics-swift/actions/workflows/swift.yml/badge.svg)
 ![](https://img.shields.io/github/license/segmentio/analytics-swift)
 
-NOTE: This project is currently in the Beta phase and is covered by Segment's [First Access & Beta Preview Terms](https://segment.com/legal/first-access-beta-preview/).  We encourage you
-to try out this new library. Please provide feedback via Github issues/PRs, and feel free to submit pull requests.
-
 The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS/macOS/Linux/iPadOS). Analytics helps you measure your users, product, and business. It unlocks insights into your app's funnel, core business metrics, and whether you have product-market fit.
 
 ## How to get started
