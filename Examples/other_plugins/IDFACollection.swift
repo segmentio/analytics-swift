@@ -79,8 +79,9 @@ extension IDFACollection: iOSLifecycle {
         let status = ATTrackingManager.trackingAuthorizationStatus
         if status == .notDetermined && !alreadyAsked {
             // we don't know, so should ask the user.
-            askForPermission()
             alreadyAsked = true
+            askForPermission()
+           
         }
     }
 }
