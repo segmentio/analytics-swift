@@ -18,7 +18,18 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     let type = PluginType.before
     var analytics: Analytics?
     
+    /// Since application:didFinishLaunchingWithOptions is not automatically called with Scenes / SwiftUI,
+    /// this gets around by using a flag in user defaults to check for big events like application updating,
+    /// being installed or even opening.
+    @Atomic
+    private var didFinishLaunching = false
+    
     func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        
+        // Make sure we aren't double calling application:didFinishLaunchingWithOptions
+        // by resetting the check at the start
+        didFinishLaunching = true
+        
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
@@ -76,6 +87,19 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         }
         
         analytics?.track(name: "Application Backgrounded")
+    }
+    
+    func applicationDidBecomeActive(application: UIApplication?) {
+        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
+            return
+        }
+        
+        // Lets check if we skipped application:didFinishLaunchingWithOptions,
+        // if so, lets call it.
+        if didFinishLaunching == false {
+            // Call application did finish launching
+            self.application(nil, didFinishLaunchingWithOptions: nil)
+        }
     }
 }
 
