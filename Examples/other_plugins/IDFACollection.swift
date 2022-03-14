@@ -81,7 +81,6 @@ extension IDFACollection: iOSLifecycle {
             // we don't know, so should ask the user.
             alreadyAsked = true
             askForPermission()
-           
         }
     }
 }
