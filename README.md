@@ -39,6 +39,16 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
     order by price desc
     ```
 
+## Supported Device Mode Destinations
+
+| Partner | Package |
+| --- | --- |
+| Amplitude | https://github.com/segment-integrations/analytics-swift-amplitude |
+| AppsFlyer | https://github.com/segment-integrations/analytics-swift-appsflyer |
+| Facebook | https://github.com/segment-integrations/analytics-swift-facebook-app-events |
+| Firebase | https://github.com/segment-integrations/analytics-swift-firebase |
+| Mixpanel | https://github.com/segment-integrations/analytics-swift-mixpanel |
+
 ## Documentation
 
 You can find usage documentation at [https://segment.com/docs/sources/mobile/swift-ios/](https://segment.com/docs/sources/mobile/swift-ios/).
