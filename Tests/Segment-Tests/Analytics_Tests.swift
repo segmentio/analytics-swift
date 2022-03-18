@@ -358,9 +358,13 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let mixpanel = AnyDestination(key: "Mixpanel")
         let outputReader = OutputReaderPlugin()
-        analytics.add(plugin: outputReader)
+        
+        // we want the output reader on the segment plugin
+        // cuz that's the only place the metadata is getting added.
+        let segmentDest = analytics.find(pluginType: SegmentDestination.self)
+        segmentDest?.add(plugin: outputReader)
+
         analytics.add(plugin: mixpanel)
-        analytics.add(plugin: DestinationMetadataPlugin())
         var settings = Settings(writeKey: "123")
         let integrations = try? JSON([
             "Segment.io": JSON([
