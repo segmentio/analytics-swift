@@ -72,7 +72,8 @@ public class SegmentDestination: DestinationPlugin {
     
     // MARK: - Event Handling Methods
     public func execute<T: RawEvent>(event: T?) -> T? {
-        let result: T? = event
+        guard let event = event else { return nil }
+        let result = process(incomingEvent: event)
         if let r = result {
             queueEvent(event: r)
         }
