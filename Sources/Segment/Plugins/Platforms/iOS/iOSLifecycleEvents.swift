@@ -74,7 +74,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
-        analytics?.track(name: "Application Foregrounded", properties: [
+        analytics?.track(name: "Application Opened", properties: [
             "from_background": true,
             "version": currentVersion ?? "",
             "build": currentBuild ?? ""
