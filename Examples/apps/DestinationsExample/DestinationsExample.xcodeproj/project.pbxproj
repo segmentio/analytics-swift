@@ -496,8 +496,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/segment-integrations/analytics-swift-appsflyer";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.3;
+				branch = migs647/testold;
+				kind = branch;
 			};
 		};
 		468DE06927D28CB200F2D94B /* XCRemoteSwiftPackageReference "analytics-swift-facebook-app-events" */ = {
