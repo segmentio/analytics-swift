@@ -36,7 +36,7 @@
 
 import Foundation
 import Segment
-import FlurryAnalytics
+import Flurry
 
 /**
  An implementation of the Flurry Analytics device mode destination as a plugin.
