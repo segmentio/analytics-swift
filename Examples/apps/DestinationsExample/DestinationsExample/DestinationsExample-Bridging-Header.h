@@ -8,6 +8,4 @@
 #ifndef DestinationsExample_Bridging_Header_h
 #define DestinationsExample_Bridging_Header_h
 
-#import "Flurry.h"
-
 #endif /* DestinationsExample_Bridging_Header_h */
