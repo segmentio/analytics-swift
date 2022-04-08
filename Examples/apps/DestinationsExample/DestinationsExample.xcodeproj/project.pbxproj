@@ -17,9 +17,6 @@
 		468DE06B27D28CB200F2D94B /* SegmentFacebook in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE06A27D28CB200F2D94B /* SegmentFacebook */; };
 		468DE06E27D28D1300F2D94B /* SegmentFirebase in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE06D27D28D1300F2D94B /* SegmentFirebase */; };
 		468DE07127D28D4700F2D94B /* SegmentMixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE07027D28D4700F2D94B /* SegmentMixpanel */; };
-		4694D2F627B58C9600D110C0 /* FlurryAnalyticsSPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */; };
-		4694D2F927B58E5E00D110C0 /* ComScore in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2F827B58E5E00D110C0 /* ComScore */; };
-		4694D2FF27B5914200D110C0 /* Intercom in Frameworks */ = {isa = PBXBuildFile; productRef = 4694D2FE27B5914200D110C0 /* Intercom */; };
 		469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 469EC8CF266066130068F9E3 /* SystemConfiguration.framework */; };
 		469F7B08266011690038E773 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B07266011690038E773 /* AppDelegate.swift */; };
 		469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B09266011690038E773 /* SceneDelegate.swift */; };
@@ -28,14 +25,8 @@
 		469F7B112660116A0038E773 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 469F7B102660116A0038E773 /* Assets.xcassets */; };
 		469F7B142660116A0038E773 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 469F7B122660116A0038E773 /* LaunchScreen.storyboard */; };
 		469F7B1D266011D70038E773 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 469F7B1C266011D70038E773 /* Segment */; };
-		469F7B20266012CB0038E773 /* FlurryDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B1F266012CB0038E773 /* FlurryDestination.swift */; };
-		469F7B23266013100038E773 /* Adjust in Frameworks */ = {isa = PBXBuildFile; productRef = 469F7B22266013100038E773 /* Adjust */; };
-		469F7B25266013320038E773 /* AdjustDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7B24266013320038E773 /* AdjustDestination.swift */; };
-		96469A9B270279A600AC5772 /* IntercomDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96469A9A270279A600AC5772 /* IntercomDestination.swift */; };
 		965DC1262671656C00DDF9C7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 965DC1252671656C00DDF9C7 /* GoogleService-Info.plist */; };
 		9697C1F52679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 9697C1F42679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png */; };
-		96D8F16F26EFFA09007F8B28 /* ExampleDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96D8F16E26EFFA09007F8B28 /* ExampleDestination.swift */; };
-		96DBF37D26FA943300724B0B /* ComscoreDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37C26FA943300724B0B /* ComscoreDestination.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,13 +45,8 @@
 		469F7B102660116A0038E773 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		469F7B132660116A0038E773 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		469F7B152660116A0038E773 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		469F7B1F266012CB0038E773 /* FlurryDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
-		469F7B24266013320038E773 /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
-		96469A9A270279A600AC5772 /* IntercomDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntercomDestination.swift; sourceTree = "<group>"; };
 		965DC1252671656C00DDF9C7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9697C1F42679156C00B87EC1 /* Segment_Logo_Avatar_Grey-1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Segment_Logo_Avatar_Grey-1024.png"; sourceTree = "<group>"; };
-		96D8F16E26EFFA09007F8B28 /* ExampleDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExampleDestination.swift; sourceTree = "<group>"; };
-		96DBF37C26FA943300724B0B /* ComscoreDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComscoreDestination.swift; sourceTree = "<group>"; };
 		BA384C9D2686609000AFEA1B /* DestinationsExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DestinationsExample.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -73,13 +59,9 @@
 				468DE06E27D28D1300F2D94B /* SegmentFirebase in Frameworks */,
 				469EC8D0266066130068F9E3 /* SystemConfiguration.framework in Frameworks */,
 				468DE06827D28C7E00F2D94B /* SegmentAppsFlyer in Frameworks */,
-				4694D2F627B58C9600D110C0 /* FlurryAnalyticsSPM in Frameworks */,
 				468DE07127D28D4700F2D94B /* SegmentMixpanel in Frameworks */,
-				4694D2F927B58E5E00D110C0 /* ComScore in Frameworks */,
 				469F7B1D266011D70038E773 /* Segment in Frameworks */,
 				468DE06527D28C6500F2D94B /* SegmentAmplitude in Frameworks */,
-				4694D2FF27B5914200D110C0 /* Intercom in Frameworks */,
-				469F7B23266013100038E773 /* Adjust in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +103,6 @@
 			children = (
 				BA384C9D2686609000AFEA1B /* DestinationsExample.entitlements */,
 				4687168C270E16080028B595 /* other_plugins */,
-				469F7B1E266012CB0038E773 /* destination_plugins */,
 				469F7B07266011690038E773 /* AppDelegate.swift */,
 				469F7B09266011690038E773 /* SceneDelegate.swift */,
 				469F7B0B266011690038E773 /* ViewController.swift */,
@@ -141,19 +122,6 @@
 				469EC8CF266066130068F9E3 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		469F7B1E266012CB0038E773 /* destination_plugins */ = {
-			isa = PBXGroup;
-			children = (
-				469F7B24266013320038E773 /* AdjustDestination.swift */,
-				96DBF37C26FA943300724B0B /* ComscoreDestination.swift */,
-				96D8F16E26EFFA09007F8B28 /* ExampleDestination.swift */,
-				469F7B1F266012CB0038E773 /* FlurryDestination.swift */,
-				96469A9A270279A600AC5772 /* IntercomDestination.swift */,
-			);
-			name = destination_plugins;
-			path = ../../../destination_plugins;
 			sourceTree = "<group>";
 		};
 		965DC1242671655700DDF9C7 /* Resources */ = {
@@ -183,10 +151,6 @@
 			name = DestinationsExample;
 			packageProductDependencies = (
 				469F7B1C266011D70038E773 /* Segment */,
-				469F7B22266013100038E773 /* Adjust */,
-				4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */,
-				4694D2F827B58E5E00D110C0 /* ComScore */,
-				4694D2FE27B5914200D110C0 /* Intercom */,
 				468DE06427D28C6500F2D94B /* SegmentAmplitude */,
 				468DE06727D28C7E00F2D94B /* SegmentAppsFlyer */,
 				468DE06A27D28CB200F2D94B /* SegmentFacebook */,
@@ -221,10 +185,6 @@
 			);
 			mainGroup = 469F7AFB266011690038E773;
 			packageReferences = (
-				469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */,
-				4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */,
-				4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */,
-				4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */,
 				468DE06327D28C6500F2D94B /* XCRemoteSwiftPackageReference "analytics-swift-amplitude" */,
 				468DE06627D28C7E00F2D94B /* XCRemoteSwiftPackageReference "analytics-swift-appsflyer" */,
 				468DE06927D28CB200F2D94B /* XCRemoteSwiftPackageReference "analytics-swift-facebook-app-events" */,
@@ -261,14 +221,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				46871698270E16080028B595 /* ConsoleLogger.swift in Sources */,
-				469F7B20266012CB0038E773 /* FlurryDestination.swift in Sources */,
 				469F7B0C266011690038E773 /* ViewController.swift in Sources */,
-				96469A9B270279A600AC5772 /* IntercomDestination.swift in Sources */,
-				96D8F16F26EFFA09007F8B28 /* ExampleDestination.swift in Sources */,
-				96DBF37D26FA943300724B0B /* ComscoreDestination.swift in Sources */,
 				469F7B08266011690038E773 /* AppDelegate.swift in Sources */,
 				46871694270E16080028B595 /* NotificationTracking.swift in Sources */,
-				469F7B25266013320038E773 /* AdjustDestination.swift in Sources */,
 				469F7B0A266011690038E773 /* SceneDelegate.swift in Sources */,
 				46871695270E16080028B595 /* UIKitScreenTracking.swift in Sources */,
 				46871696270E16080028B595 /* ConsentTracking.swift in Sources */,
@@ -524,38 +479,6 @@
 				minimumVersion = 1.1.3;
 			};
 		};
-		4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/flurry/FlurrySwiftPackage";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
-			};
-		};
-		4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/comscore/comscore-swift-package-manager";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.9.0;
-			};
-		};
-		4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/intercom/intercom-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.1.2;
-			};
-		};
-		469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/adjust/ios_sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.29.6;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -584,29 +507,9 @@
 			package = 468DE06F27D28D4700F2D94B /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */;
 			productName = SegmentMixpanel;
 		};
-		4694D2F527B58C9600D110C0 /* FlurryAnalyticsSPM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4694D2F427B58C9500D110C0 /* XCRemoteSwiftPackageReference "FlurrySwiftPackage" */;
-			productName = FlurryAnalyticsSPM;
-		};
-		4694D2F827B58E5E00D110C0 /* ComScore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4694D2F727B58E5E00D110C0 /* XCRemoteSwiftPackageReference "comscore-swift-package-manager" */;
-			productName = ComScore;
-		};
-		4694D2FE27B5914200D110C0 /* Intercom */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4694D2FD27B5914200D110C0 /* XCRemoteSwiftPackageReference "intercom-ios" */;
-			productName = Intercom;
-		};
 		469F7B1C266011D70038E773 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
-		};
-		469F7B22266013100038E773 /* Adjust */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 469F7B21266013100038E773 /* XCRemoteSwiftPackageReference "ios_sdk" */;
-			productName = Adjust;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
