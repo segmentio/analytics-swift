@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.5.3
       with:
@@ -52,7 +52,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
@@ -72,7 +72,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
@@ -91,7 +91,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
@@ -110,7 +110,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
@@ -145,7 +145,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '13.3'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
