@@ -13,6 +13,7 @@
 		4602278C261F860100A9E913 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4602278A261F860100A9E913 /* Main.storyboard */; };
 		4602278E261F860300A9E913 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4602278D261F860300A9E913 /* Assets.xcassets */; };
 		46022791261F860300A9E913 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4602278F261F860300A9E913 /* LaunchScreen.storyboard */; };
+		463B27772805F4ED0090B83E /* CellularCarrier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463B27762805F4ED0090B83E /* CellularCarrier.swift */; };
 		46E3834C26582D9E00BA2502 /* UIKitScreenTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3834826582D9E00BA2502 /* UIKitScreenTracking.swift */; };
 		46E3834D26582D9E00BA2502 /* ConsentTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3834926582D9E00BA2502 /* ConsentTracking.swift */; };
 		46E3834E26582D9E00BA2502 /* IDFACollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3834A26582D9E00BA2502 /* IDFACollection.swift */; };
@@ -33,6 +34,7 @@
 		46022790261F860300A9E913 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		46022792261F860300A9E913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		460227BC2620C02B00A9E913 /* SegmentUIKitExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SegmentUIKitExample-Bridging-Header.h"; sourceTree = "<group>"; };
+		463B27762805F4ED0090B83E /* CellularCarrier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CellularCarrier.swift; sourceTree = "<group>"; };
 		469F7AFA265D8D890038E773 /* SegmentUIKitExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SegmentUIKitExample.entitlements; sourceTree = "<group>"; };
 		46E3834826582D9E00BA2502 /* UIKitScreenTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKitScreenTracking.swift; sourceTree = "<group>"; };
 		46E3834926582D9E00BA2502 /* ConsentTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				46E3834826582D9E00BA2502 /* UIKitScreenTracking.swift */,
+				463B27762805F4ED0090B83E /* CellularCarrier.swift */,
 				46E73DA226F531320021042C /* NotificationTracking.swift */,
 				46E3834926582D9E00BA2502 /* ConsentTracking.swift */,
 				46E3834A26582D9E00BA2502 /* IDFACollection.swift */,
@@ -206,6 +209,7 @@
 				46E73DA326F531320021042C /* NotificationTracking.swift in Sources */,
 				46022787261F860100A9E913 /* SceneDelegate.swift in Sources */,
 				46E3834D26582D9E00BA2502 /* ConsentTracking.swift in Sources */,
+				463B27772805F4ED0090B83E /* CellularCarrier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
