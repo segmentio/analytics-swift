@@ -71,7 +71,7 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
-        analytics?.track(name: "Application Opened", properties: [
+        analytics?.track(name: "Application Unhidden", properties: [
             "from_background": true,
             "version": currentVersion ?? "",
             "build": currentBuild ?? ""
@@ -83,7 +83,7 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
             return
         }
         
-        analytics?.track(name: "Application Backgrounded")
+        analytics?.track(name: "Application Hidden")
     }
     func applicationDidResignActive() {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
