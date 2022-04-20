@@ -92,3 +92,6 @@ iOSInjectionProject/
 Package.resolved
 *.xcuserdatad
 /.swiftpm/xcode/xcshareddata
+
+# XCFramework
+Segment-Package_XCFramework

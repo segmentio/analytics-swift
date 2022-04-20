@@ -49,7 +49,7 @@ fi
 
 # check that we're on the `main` branch
 branch=$(git rev-parse --abbrev-ref HEAD)
-if [ $branch != 'main' ] 
+if [ $branch != 'main' ]
 then
 	echo "The 'main' must be the current branch to make a release."
 	echo "You are currently on: $branch"
@@ -68,7 +68,7 @@ version=$(sed "s/[' \"]//g" <<< "$version")
 echo "Analytics-Swift current version: $version"
 
 # no args, so give usage.
-if [ $# -eq 0 ] 
+if [ $# -eq 0 ]
 then
 	echo "Release automation script"
 	echo ""
@@ -87,7 +87,7 @@ case $? in
 	2) op='<';;
 esac
 
-if [ $op != '>' ] 
+if [ $op != '>' ]
 then
 	echo "New version must be greater than previous version ($version)."
 	exit 1
@@ -95,7 +95,7 @@ fi
 
 read -r -p "Are you sure you want to release $newVersion? [y/N] " response
 case "$response" in
-	[yY][eE][sS]|[yY]) 
+	[yY][eE][sS]|[yY])
 		;;
 	*)
 		exit 1
@@ -123,4 +123,8 @@ gh release create $newVersion -F $tempFile -t "Version $newVersion"
 # remove the tempfile.
 rm $tempFile
 
+# build up the xcframework to upload to github
+./build.sh
 
+# upload the release
+gh release upload $version Segment.xcframework.zip

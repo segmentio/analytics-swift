@@ -10,18 +10,22 @@ FRAMEWORK_FOLDER_NAME="${PROJECT_NAME}_XCFramework"
 FRAMEWORK_NAME="Segment"
 
 #xcframework path
-FRAMEWORK_PATH="${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}/${FRAMEWORK_NAME}.xcframework"
+FRAMEWORK_PATH="${FRAMEWORK_FOLDER_NAME}/${FRAMEWORK_NAME}.xcframework"
 
 # set path for iOS simulator archive
-SIMULATOR_ARCHIVE_PATH="${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
+SIMULATOR_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
 
 # set path for iOS device archive
-IOS_DEVICE_ARCHIVE_PATH="${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
+IOS_DEVICE_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
 
-rm -rf "${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}"
+# clean up old releases
+zip -r Segment.xcframework.zip
+echo "Deleted the xcframework"
+
+rm -rf "${FRAMEWORK_FOLDER_NAME}"
 echo "Deleted ${FRAMEWORK_FOLDER_NAME}"
 
-mkdir "${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}"
+mkdir "${FRAMEWORK_FOLDER_NAME}"
 echo "Created ${FRAMEWORK_FOLDER_NAME}"
 
 echo "Archiving ${FRAMEWORK_NAME}"
@@ -34,4 +38,7 @@ xcodebuild archive -scheme ${PROJECT_NAME} -destination="iOS" -archivePath "${IO
 xcodebuild -create-xcframework -framework ${SIMULATOR_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework -framework ${IOS_DEVICE_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework -output "${FRAMEWORK_PATH}"
 rm -rf "${SIMULATOR_ARCHIVE_PATH}"
 rm -rf "${IOS_DEVICE_ARCHIVE_PATH}"
-open "${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}"
+
+zip -r Segment.xcframework.zip "${FRAMEWORK_FOLDER_NAME}/Segment.xcframework"
+
+open "${FRAMEWORK_FOLDER_NAME}"
