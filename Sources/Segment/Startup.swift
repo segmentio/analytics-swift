@@ -53,8 +53,7 @@ extension Analytics: Subscriber {
             plugins.append(watchOSLifecycleEvents())
             #endif
             #if os(macOS)
-            // placeholder - need to build this
-            //plugins.append(macOSLifecycleEvents())
+            plugins.append(macOSLifecycleEvents())
             #endif
             #if os(Linux)
             // placeholder - not sure what this is yet
