@@ -63,7 +63,7 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
         UserDefaults.standard.setValue(currentBuild, forKey: Self.buildKey)
     }
     
-    func applicationWillUnHide() {
+    func applicationDidUnhide() {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
@@ -104,6 +104,14 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
             // Call application did finish launching
             self.application(didFinishLaunchingWithOptions: nil)
         }
+    }
+    
+    func applicationWillTerminate() {
+        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
+            return
+        }
+        
+        analytics?.track(name: "Application Terminated")
     }
     
 //    func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
