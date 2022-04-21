@@ -59,6 +59,7 @@
 		967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */; };
 		9692724E25A4E5B7009B5298 /* Startup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692724D25A4E5B7009B5298 /* Startup.swift */; };
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
+		96A9624E2810C6B80011DE54 /* macOSLifecycleEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A9624D2810C6B80011DE54 /* macOSLifecycleEvents.swift */; };
 		96A9668927BC137F00078F8B /* iOSLifecycle_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A9668827BC137F00078F8B /* iOSLifecycle_Tests.swift */; };
 		96C33A9C25880A5E00F3D538 /* SegmentLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLog.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
@@ -161,6 +162,7 @@
 		967C40ED259A7311008EB0B6 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		9692724D25A4E5B7009B5298 /* Startup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Startup.swift; sourceTree = "<group>"; };
 		9692726725A583A6009B5298 /* SegmentDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentDestination.swift; sourceTree = "<group>"; };
+		96A9624D2810C6B80011DE54 /* macOSLifecycleEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSLifecycleEvents.swift; sourceTree = "<group>"; };
 		96A9668827BC137F00078F8B /* iOSLifecycle_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycle_Tests.swift; sourceTree = "<group>"; };
 		96C33A9B25880A5E00F3D538 /* SegmentLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentLog.swift; sourceTree = "<group>"; };
 		96C33AB0258961F500F3D538 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 			isa = PBXGroup;
 			children = (
 				46FE4C9625A3F35E003A7362 /* macOSLifecycleMonitor.swift */,
+				96A9624D2810C6B80011DE54 /* macOSLifecycleEvents.swift */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
@@ -544,6 +547,7 @@
 				46FE4CE025A53FAD003A7362 /* Storage.swift in Sources */,
 				465879BA2686560C00180335 /* watchOSDelegation.swift in Sources */,
 				46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */,
+				96A9624E2810C6B80011DE54 /* macOSLifecycleEvents.swift in Sources */,
 				4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
