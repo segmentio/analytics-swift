@@ -19,7 +19,7 @@ SIMULATOR_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
 IOS_DEVICE_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
 
 # clean up old releases
-zip -r Segment.xcframework.zip
+rm -rf Segment.xcframework.zip
 echo "Deleted the xcframework"
 
 rm -rf "${FRAMEWORK_FOLDER_NAME}"
