@@ -76,6 +76,10 @@ final class Analytics_Tests: XCTestCase {
         
         analytics.track(name: "testDestinationEnabled")
         
+        let dest = analytics.find(key: myDestination.key)
+        XCTAssertNotNil(dest)
+        XCTAssertTrue(dest is MyDestination)
+        
         wait(for: [expectation], timeout: 1.0)
     }
     
