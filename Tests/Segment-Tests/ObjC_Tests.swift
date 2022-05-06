@@ -27,6 +27,12 @@ class ObjC_Tests: XCTestCase {
      
      */
 
+    func testWrapping() {
+        let a = Analytics(configuration: Configuration(writeKey: "WRITE_KEY"))
+        let objc = ObjCAnalytics(wrapping: a)
+        
+        XCTAssertTrue(objc.analytics === a)
+    }
     
     func testNonTrivialConfiguration() {
         let config = ObjCConfiguration(writeKey: "WRITE_KEY")

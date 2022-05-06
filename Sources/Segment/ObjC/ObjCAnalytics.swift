@@ -13,11 +13,19 @@ import Foundation
 
 @objc(SEGAnalytics)
 public class ObjCAnalytics: NSObject {
-    internal let analytics: Analytics
+    /// The underlying Analytics object we're working with
+    public let analytics: Analytics
     
     @objc
     public init(configuration: ObjCConfiguration) {
         self.analytics = Analytics(configuration: configuration.configuration)
+    }
+    
+    /// Get a workable ObjC instance by wrapping a Swift instance
+    /// Useful when you want additional flexibility or to share
+    /// a single instance between ObjC<>Swift.
+    public init(wrapping analytics: Analytics) {
+        self.analytics = analytics
     }
 }
 
