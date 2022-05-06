@@ -159,4 +159,8 @@ extension Analytics {
     public func find<T: Plugin>(pluginType: T.Type) -> T? {
         return timeline.find(pluginType: pluginType)
     }
+    
+    public func find(key: String) -> DestinationPlugin? {
+        return timeline.find(key: key)
+    }
 }
