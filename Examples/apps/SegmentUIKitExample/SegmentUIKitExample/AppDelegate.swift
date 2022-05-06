@@ -18,7 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Analytics.main.add(plugin: IDFACollection())
         Analytics.main.add(plugin: UIKitScreenTracking())
         Analytics.main.add(plugin: NotificationTracking())
+        
+#if os(iOS) && !targetEnvironment(macCatalyst)
         Analytics.main.add(plugin: CellularCarrier())
+#endif
 
         Analytics.support.add(plugin: ConsoleLogger(name: "support"))
         Analytics.support.add(plugin: ConsentTracking())
