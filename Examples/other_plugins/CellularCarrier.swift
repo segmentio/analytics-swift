@@ -32,6 +32,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#if os(iOS) && !targetEnvironment(macCatalyst)
+
 import Foundation
 import Segment
 import CoreTelephony
@@ -123,3 +125,4 @@ class PrimaryCellularCarrier: Plugin {
     }()
 }
 
+#endif
