@@ -135,11 +135,7 @@ extension ObjCAnalytics {
     
     @objc
     public func traits() -> [String: Any]? {
-        var traits: [String: Any]? = nil
-        if let userInfo: UserInfo = analytics.store.currentState() {
-            traits = userInfo.traits?.dictionaryValue
-        }
-        return traits
+        return analytics.traits()
     }
     
     @objc
