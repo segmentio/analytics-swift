@@ -47,14 +47,11 @@ import AppTrackingTransparency
 class IDFACollection: Plugin {
     let type = PluginType.enrichment
     var analytics: Analytics? = nil
+    @Atomic private var alreadyAsked = false
     
     func execute<T: RawEvent>(event: T?) -> T? {
         let status = ATTrackingManager.trackingAuthorizationStatus
-        if status == .notDetermined {
-            // we don't know, so should ask the user.
-            askForPermission()
-        }
-        
+
         let trackingStatus = statusToString(status)
         var idfa = fallbackValue
         var adTrackingEnabled = false
@@ -74,6 +71,17 @@ class IDFACollection: Plugin {
         }
 
         return workingEvent
+    }
+}
+
+extension IDFACollection: iOSLifecycle {
+    func applicationDidBecomeActive(application: UIApplication?) {
+        let status = ATTrackingManager.trackingAuthorizationStatus
+        if status == .notDetermined && !alreadyAsked {
+            // we don't know, so should ask the user.
+            alreadyAsked = true
+            askForPermission()
+        }
     }
 }
 

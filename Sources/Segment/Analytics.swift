@@ -95,6 +95,14 @@ extension Analytics {
         return nil
     }
     
+    /// Returns the traits that were specified in the last identify call, as a dictionary.
+    public func traits() -> [String: Any]? {
+        if let userInfo: UserInfo = store.currentState() {
+            return userInfo.traits?.dictionaryValue
+        }
+        return nil
+    }
+    
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
     /// be sent to each plugin present in the system.
     public func flush() {

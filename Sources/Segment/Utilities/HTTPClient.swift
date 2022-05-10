@@ -65,7 +65,7 @@ public class HTTPClient {
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
     func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
-        guard let uploadURL = segmentURL(for: apiHost, path: "/batch") else {
+        guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
@@ -168,10 +168,11 @@ extension HTTPClient {
         configuration.allowsCellularAccess = true
         configuration.timeoutIntervalForResource = 30
         configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
         configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
                                                "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let session = URLSession.init(configuration: configuration, delegate: nil, delegateQueue: nil)
+        let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         return session
     }
 }

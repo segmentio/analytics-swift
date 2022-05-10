@@ -135,6 +135,17 @@ extension Timeline {
         }
         return found.first as? T
     }
+    
+    internal func find(key: String) -> DestinationPlugin? {
+        var found = [Plugin]()
+        if let mediator = plugins[.destination] {
+            found.append(contentsOf: mediator.plugins.filter{ plugin in
+                guard let p = plugin as? DestinationPlugin else { return false }
+                return p.key == key
+            })
+        }
+        return found.first as? DestinationPlugin
+    }
 }
 
 // MARK: - Plugin Timeline Execution

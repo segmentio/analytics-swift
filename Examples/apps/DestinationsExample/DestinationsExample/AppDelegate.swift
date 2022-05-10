@@ -7,6 +7,11 @@
 
 import UIKit
 import Segment
+import SegmentAmplitude
+import SegmentAppsFlyer
+import SegmentFacebook
+import SegmentFirebase
+import SegmentMixpanel
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,17 +28,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         analytics = Analytics(configuration: configuration)
         
-        // Add Adjust destination plugin
-        analytics?.add(plugin: AdjustDestination())
-        
         // Add Amplitude session plugin
         analytics?.add(plugin: AmplitudeSession())
         
         // Add Mixpanel destination plugin
         analytics?.add(plugin: MixpanelDestination())
-        
-        // Add Flurry destination plugin
-        analytics?.add(plugin: FlurryDestination())
         
         // Add the Firebase destination plugin
         analytics?.add(plugin: FirebaseDestination())
@@ -41,8 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Add the AppsFlyer destination plugin
         analytics?.add(plugin: AppsFlyerDestination())
         
-        // Add the Comscore destination plugin
-        analytics?.add(plugin: ComscoreDestination())
+        // Add the Facebook App Events plugin
+        analytics?.add(plugin: FacebookAppEventsDestination())
         
         return true
     }

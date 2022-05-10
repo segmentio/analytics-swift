@@ -58,6 +58,10 @@ public protocol DestinationPlugin: EventPlugin {
 
 public protocol UtilityPlugin: EventPlugin { }
 
+public protocol VersionedPlugin {
+    static func version() -> String
+}
+
 // For internal platform-specific bits
 internal protocol PlatformPlugin: Plugin { }
 
@@ -154,5 +158,9 @@ extension Analytics {
     
     public func find<T: Plugin>(pluginType: T.Type) -> T? {
         return timeline.find(pluginType: pluginType)
+    }
+    
+    public func find(key: String) -> DestinationPlugin? {
+        return timeline.find(key: key)
     }
 }

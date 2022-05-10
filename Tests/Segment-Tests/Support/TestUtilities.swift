@@ -107,6 +107,7 @@ class OutputReaderPlugin: Plugin {
     let type: PluginType
     var analytics: Analytics?
     
+    var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
     
     init() {
@@ -116,6 +117,7 @@ class OutputReaderPlugin: Plugin {
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
         if let t = lastEvent as? TrackEvent {
+            events.append(t)
             print("EVENT: \(t.event)")
         }
         return event

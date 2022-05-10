@@ -36,7 +36,6 @@ public class SegmentDestination: DestinationPlugin {
         let task: URLSessionDataTask
         // set/used via an extension in iOSLifecycleMonitor.swift
         typealias CleanupClosure = () -> Void
-        var taskID: Int = 0
         var cleanup: CleanupClosure? = nil
     }
     
@@ -58,6 +57,8 @@ public class SegmentDestination: DestinationPlugin {
         flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) {
             self.flush()
         }
+        // Add DestinationMetadata enrichment plugin
+        add(plugin: DestinationMetadataPlugin())
     }
     
     public func update(settings: Settings, type: UpdateType) {
@@ -71,10 +72,10 @@ public class SegmentDestination: DestinationPlugin {
     
     // MARK: - Event Handling Methods
     public func execute<T: RawEvent>(event: T?) -> T? {
-        let result: T? = event
+        guard let event = event else { return nil }
+        let result = process(incomingEvent: event)
         if let r = result {
-            let modified = configureCloudDestinations(event: r)
-            queueEvent(event: modified)
+            queueEvent(event: r)
         }
         return result
     }
@@ -129,6 +130,10 @@ public class SegmentDestination: DestinationPlugin {
                     }
                     
                     analytics.log(message: "Processed: \(url.lastPathComponent)")
+                    // the upload we have here has just finished.
+                    // make sure it gets removed and it's cleanup() called rather
+                    // than waiting on the next flush to come around.
+                    self.cleanupUploads()
                 }
                 // we have a legit upload in progress now, so add it to our list.
                 if let upload = uploadTask {
@@ -138,37 +143,6 @@ public class SegmentDestination: DestinationPlugin {
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
         }
-    }
-}
-
-// MARK: - Utility methods
-extension SegmentDestination {
-    internal func configureCloudDestinations<T: RawEvent>(event: T) -> T {
-        guard let integrationSettings = analytics?.settings() else { return event }
-        guard let plugins = analytics?.timeline.plugins[.destination]?.plugins as? [DestinationPlugin] else { return event }
-        guard let customerValues = event.integrations?.dictionaryValue else { return event }
-        
-        var merged = [String: Any]()
-        
-        // compare settings to loaded plugins
-        for plugin in plugins {
-            let hasSettings = integrationSettings.hasIntegrationSettings(forPlugin: plugin)
-            if hasSettings {
-                // we have a device mode plugin installed.
-                // tell segment not to send it via cloud mode.
-                merged[plugin.key] = false
-            }
-        }
-        
-        // apply customer values; the customer is always right!
-        for (key, value) in customerValues {
-            merged[key] = value
-        }
-        
-        var modified = event
-        modified.integrations = try? JSON(merged)
-        
-        return modified
     }
 }
 
@@ -207,5 +181,13 @@ extension SegmentDestination {
         uploadsQueue.sync {
             uploads.append(uploadTask)
         }
+    }
+}
+
+// MARK: Versioning
+
+extension SegmentDestination: VersionedPlugin {
+    public static func version() -> String {
+        return __segment_version
     }
 }

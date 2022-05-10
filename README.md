@@ -1,7 +1,6 @@
 # Analytics-Swift
-
-NOTE: This project is currently in the Beta phase and is covered by Segment's [First Access & Beta Preview Terms](https://segment.com/legal/first-access-beta-preview/).  We encourage you
-to try out this new library. Please provide feedback via Github issues/PRs, and feel free to submit pull requests.
+![](https://github.com/segmentio/analytics-swift/actions/workflows/swift.yml/badge.svg)
+![](https://img.shields.io/github/license/segmentio/analytics-swift)
 
 The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS/macOS/Linux/iPadOS). Analytics helps you measure your users, product, and business. It unlocks insights into your app's funnel, core business metrics, and whether you have product-market fit.
 
@@ -40,11 +39,21 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
     order by price desc
     ```
 
+## Supported Device Mode Destinations
+
+| Partner | Package |
+| --- | --- |
+| Amplitude | https://github.com/segment-integrations/analytics-swift-amplitude |
+| AppsFlyer | https://github.com/segment-integrations/analytics-swift-appsflyer |
+| Facebook | https://github.com/segment-integrations/analytics-swift-facebook-app-events |
+| Firebase | https://github.com/segment-integrations/analytics-swift-firebase |
+| Mixpanel | https://github.com/segment-integrations/analytics-swift-mixpanel |
+
 ## Documentation
 
 You can find usage documentation at [https://segment.com/docs/sources/mobile/swift-ios/](https://segment.com/docs/sources/mobile/swift-ios/).
 
-Explore more via the [example projects](Examples) which showcase analytics instrumentation on different platforms/languages and usage of plugins. These projects contain sample [plugins](Examples/other_plugins) and [destination plugins](Examples/destination_plugins)
+Explore more via the [example projects](Examples) which showcase analytics instrumentation on different platforms/languages and usage of plugins. These projects contain sample [plugins](Examples/other_plugins) and [destination plugins](Examples/destination_plugins).
 
 ## Contributing
 
