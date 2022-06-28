@@ -132,10 +132,6 @@
 		46B1AC6827346D3D00846DE8 /* StressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTests.swift; sourceTree = "<group>"; };
 		46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
 		46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
-		46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixpanelDestination.swift; sourceTree = "<group>"; };
-		46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppsFlyerDestination.swift; sourceTree = "<group>"; };
-		46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDestination.swift; sourceTree = "<group>"; };
-		46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSession.swift; sourceTree = "<group>"; };
 		46D98E4426D6FEF300E7A86A /* UIKitScreenTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKitScreenTracking.swift; sourceTree = "<group>"; };
 		46D98E4526D6FEF300E7A86A /* ConsentTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
 		46D98E4626D6FEF300E7A86A /* IDFACollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDFACollection.swift; sourceTree = "<group>"; };
@@ -150,6 +146,8 @@
 		46FE4CFA25A6C671003A7362 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
 		46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage_Tests.swift; sourceTree = "<group>"; };
 		759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationMetadataPlugin.swift; sourceTree = "<group>"; };
+		7B3C818F285BAD7600199D3E /* ComscoreDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComscoreDestination.swift; sourceTree = "<group>"; };
+		7B3C8190285BAD8700199D3E /* IntercomDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntercomDestination.swift; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
@@ -256,13 +254,11 @@
 		46D98E3C26D6FEF300E7A86A /* destination_plugins */ = {
 			isa = PBXGroup;
 			children = (
+				7B3C8190285BAD8700199D3E /* IntercomDestination.swift */,
+				7B3C818F285BAD7600199D3E /* ComscoreDestination.swift */,
 				46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */,
-				46D98E4226D6FEF300E7A86A /* AmplitudeSession.swift */,
-				46D98E4026D6FEF300E7A86A /* AppsFlyerDestination.swift */,
 				9679DD6226EFF00800A6933C /* ExampleDestination.swift */,
-				46D98E4126D6FEF300E7A86A /* FirebaseDestination.swift */,
 				46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */,
-				46D98E3F26D6FEF300E7A86A /* MixpanelDestination.swift */,
 			);
 			name = destination_plugins;
 			path = Examples/destination_plugins;
