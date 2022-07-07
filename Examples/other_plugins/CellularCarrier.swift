@@ -59,7 +59,7 @@ class CellularCarrier: Plugin {
     func execute<T: RawEvent>(event: T?) -> T? {
         guard var workingEvent = event else { return event }
         
-        if let isCellular: Bool = workingEvent.context?[keyPath: "network"],
+        if let isCellular: Bool = workingEvent.context?[keyPath: "network.cellular"],
             isCellular,
            let carriers = self.carriers
         {
