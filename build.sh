@@ -40,5 +40,3 @@ rm -rf "${SIMULATOR_ARCHIVE_PATH}"
 rm -rf "${IOS_DEVICE_ARCHIVE_PATH}"
 
 zip -r Segment.xcframework.zip "${FRAMEWORK_FOLDER_NAME}/Segment.xcframework"
-
-open "${FRAMEWORK_FOLDER_NAME}"
