@@ -47,7 +47,7 @@ public class SegmentDestination: DestinationPlugin {
     private var apiKey: String? = nil
     private var apiHost: String? = nil
     
-    @Atomic private var eventCount: Int = 0
+    @Atomic internal var eventCount: Int = 0
     internal var flushTimer: QueueTimer? = nil
     
     internal func initialSetup() {
@@ -99,7 +99,6 @@ public class SegmentDestination: DestinationPlugin {
         storage.write(.events, value: event)
         eventCount += 1
         if eventCount >= analytics.configuration.values.flushAt {
-            eventCount = 0
             flush()
         }
     }
@@ -112,6 +111,7 @@ public class SegmentDestination: DestinationPlugin {
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }
         
+        eventCount = 0
         cleanupUploads()
         
         analytics.log(message: "Uploads in-progress: \(pendingUploads)")
@@ -124,6 +124,7 @@ public class SegmentDestination: DestinationPlugin {
                     switch result {
                         case .success(_):
                             storage.remove(file: url)
+                            self.cleanupUploads()
                         default:
                             analytics.logFlush()
                     }

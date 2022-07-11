@@ -285,6 +285,10 @@ extension Storage {
     }
     
     private func finish(file: URL) {
+        if self.fileHandle == nil {
+            self.fileHandle = try? FileHandle(forWritingTo: file)
+        }
+        
         guard let fileHandle = self.fileHandle else {
             // we haven't actually started a file yet and being told to flush
             // so ignore it and get out.

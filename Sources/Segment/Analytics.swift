@@ -157,3 +157,43 @@ extension Analytics {
     }
 
 }
+
+extension Analytics {
+    /// Determine if there are any events that have yet to be sent to Segment
+    public var hasUnsentEvents: Bool {
+        if let segmentDest = self.find(pluginType: SegmentDestination.self) {
+            if segmentDest.pendingUploads > 0 {
+                return true
+            }
+            if segmentDest.eventCount > 0 {
+                return true
+            }
+        }
+
+        if let files = storage.read(Storage.Constants.events) {
+            if files.count > 0 {
+                return true
+            }
+        }
+            
+        return false
+    }
+    
+    /// Provides a list of finished, but unsent events.
+    public var pendingUploads: [URL]? {
+        return storage.read(Storage.Constants.events)
+    }
+    
+    /// Wait until the Analytics object has completed startup.
+    /// This method is primarily useful for command line utilities where
+    /// it's desirable to wait until the system is up and running
+    /// before executing commands.  GUI apps could potentially use this via
+    /// a background thread if needed.
+    public func waitUntilStarted() {
+        if let startupQueue = find(pluginType: StartupQueue.self) {
+            while startupQueue.running != true {
+                RunLoop.main.run(until: Date.distantPast)
+            }
+        }
+    }
+}

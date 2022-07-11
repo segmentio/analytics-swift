@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Analytics.support.track(name: "test event")
         
+        Analytics.main.screen(title: "home screen shown", category: nil, properties: nil)
 
         return true
     }
