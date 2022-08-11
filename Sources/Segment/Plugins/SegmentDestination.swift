@@ -120,20 +120,27 @@ public class SegmentDestination: DestinationPlugin {
             for url in data {
                 analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                 
-                let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
+                let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] (result) in
                     switch result {
                         case .success(_):
                             storage.remove(file: url)
-                            self.cleanupUploads()
-                        default:
-                            analytics.logFlush()
+                            analytics.log(message: "Processed: \(url.lastPathComponent)")
+                        case .failure(let e):
+                            analytics.log(message: "Failed to process: \(url.lastPathComponent), \(e)")
+                            if e.connectivityError {
+                                self?.flushTimer?.suspend()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 300) { [weak self] in
+                                    self?.flushTimer?.resume()
+                                }
+                            }
                     }
                     
-                    analytics.log(message: "Processed: \(url.lastPathComponent)")
+                    analytics.logFlush()
+
                     // the upload we have here has just finished.
                     // make sure it gets removed and it's cleanup() called rather
                     // than waiting on the next flush to come around.
-                    self.cleanupUploads()
+                    self?.cleanupUploads()
                 }
                 // we have a legit upload in progress now, so add it to our list.
                 if let upload = uploadTask {

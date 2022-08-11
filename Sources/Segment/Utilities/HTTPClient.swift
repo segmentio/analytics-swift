@@ -16,6 +16,21 @@ enum HTTPClientErrors: Error {
     case statusCode(code: Int)
 }
 
+extension Error {
+    internal var connectivityError: Bool {
+        guard let urlError = self as? URLError else { return false }
+        
+        switch urlError.code {
+        case .timedOut:
+            fallthrough
+        case .notConnectedToInternet:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 public class HTTPClient {
     private static let defaultAPIHost = "api.segment.io/v1"
     private static let defaultCDNHost = "cdn-settings.segment.com/v1"
