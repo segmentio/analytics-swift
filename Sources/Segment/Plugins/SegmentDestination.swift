@@ -128,6 +128,8 @@ public class SegmentDestination: DestinationPlugin {
                         case .failure(let e):
                             analytics.log(message: "Failed to process: \(url.lastPathComponent), \(e)")
                             if e.connectivityError {
+                                // In the event of a connectivity error, suspend
+                                // the flush timer for 5 minutes, and then resume it.
                                 self?.flushTimer?.suspend()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 300) { [weak self] in
                                     self?.flushTimer?.resume()
