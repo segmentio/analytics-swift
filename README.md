@@ -45,6 +45,7 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
 | --- | --- |
 | Amplitude | https://github.com/segment-integrations/analytics-swift-amplitude |
 | AppsFlyer | https://github.com/segment-integrations/analytics-swift-appsflyer |
+| Braze    | https://github.com/segment-integrations/analytics-swift-braze |
 | Facebook | https://github.com/segment-integrations/analytics-swift-facebook-app-events |
 | Firebase | https://github.com/segment-integrations/analytics-swift-firebase |
 | Mixpanel | https://github.com/segment-integrations/analytics-swift-mixpanel |
