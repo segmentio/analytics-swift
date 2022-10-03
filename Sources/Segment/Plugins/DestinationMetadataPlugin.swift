@@ -29,7 +29,7 @@ public class DestinationMetadataPlugin: Plugin {
         guard let destinations = analytics?.timeline.plugins[.destination]?.plugins as? [DestinationPlugin] else { return event }
         
         // Mark all loaded and enabled destinations as bundled
-        var bundled = [String]()
+        var bundled: Set<String> = []
         for plugin in destinations {
             // Skip processing for Segment.io
             if (plugin is SegmentDestination) {
@@ -38,21 +38,30 @@ public class DestinationMetadataPlugin: Plugin {
             let hasSettings = integrationSettings.hasIntegrationSettings(forPlugin: plugin)
             if hasSettings {
                 // we have a device mode plugin installed.
-                bundled.append(plugin.key)
+                bundled.insert(plugin.key)
             }
         }
-        
+
+        // All active integrations, not in `bundled` are put in `unbundled`
         // All unbundledIntegrations not in `bundled` are put in `unbundled`
-        var unbundled = [String]()
+        var unbundled: Set<String> = []
+
+        let activeIntegrations = integrationSettings.integrations?.dictionaryValue ?? [:]
+        for (integration, _) in activeIntegrations {
+            if (integration != "Segment.io" && !bundled.contains(integration)) {
+                unbundled.insert(integration)
+            }
+        }
+
         let segmentInfo = integrationSettings.integrationSettings(forKey: "Segment.io")
         let unbundledIntegrations = segmentInfo?["unbundledIntegrations"] as? [String] ?? []
         for integration in unbundledIntegrations {
             if (!bundled.contains(integration)) {
-                unbundled.append(integration)
+                unbundled.insert(integration)
             }
         }
         
-        modified._metadata = DestinationMetadata(bundled: bundled, unbundled: unbundled, bundledIds: [])
+        modified._metadata = DestinationMetadata(bundled: Array(bundled), unbundled: Array(unbundled), bundledIds: [])
         
         return modified
     }
