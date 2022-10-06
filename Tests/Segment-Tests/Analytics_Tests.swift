@@ -394,7 +394,7 @@ final class Analytics_Tests: XCTestCase {
         let metadata = trackEvent?._metadata
         
         XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
-        XCTAssertEqual(metadata?.unbundled, ["Customer.io", "Amplitude"])
+        XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io"])
     }
     
     // Test to ensure bundled and active integrations are populated correctly
@@ -433,6 +433,6 @@ final class Analytics_Tests: XCTestCase {
         let metadata = trackEvent?._metadata
         
         XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
-        XCTAssertEqual(metadata?.unbundled, ["Amplitude", "dest1", "Customer.io"])
+        XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io", "dest1"])
     }
 }
