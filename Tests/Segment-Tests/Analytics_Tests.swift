@@ -358,6 +358,7 @@ final class Analytics_Tests: XCTestCase {
         }
     }
 
+    // Test to ensure bundled and unbundled integrations are populated correctly
     func testDestinationMetadata() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let mixpanel = AnyDestination(key: "Mixpanel")
@@ -393,6 +394,45 @@ final class Analytics_Tests: XCTestCase {
         let metadata = trackEvent?._metadata
         
         XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
-        XCTAssertEqual(metadata?.unbundled, ["Customer.io", "Amplitude"])
+        XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io"])
+    }
+    
+    // Test to ensure bundled and active integrations are populated correctly
+    func testDestinationMetadataUnbundled() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let mixpanel = AnyDestination(key: "Mixpanel")
+        let outputReader = OutputReaderPlugin()
+        
+        // we want the output reader on the segment plugin
+        // cuz that's the only place the metadata is getting added.
+        let segmentDest = analytics.find(pluginType: SegmentDestination.self)
+        segmentDest?.add(plugin: outputReader)
+
+        analytics.add(plugin: mixpanel)
+        var settings = Settings(writeKey: "123")
+        let integrations = try? JSON([
+            "Segment.io": JSON([
+                "unbundledIntegrations":
+                    [
+                        "Customer.io"
+                    ]
+                ]),
+            "Mixpanel": JSON(["someKey": "someVal"]),
+            "Amplitude": JSON(["someKey": "somVal"]),
+            "dest1": JSON(["someKey": "someVal"])
+        ])
+        settings.integrations = integrations
+        analytics.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
+        
+        waitUntilStarted(analytics: analytics)
+
+        
+        analytics.track(name: "sampleEvent")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let metadata = trackEvent?._metadata
+        
+        XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
+        XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io", "dest1"])
     }
 }
