@@ -51,7 +51,7 @@ public enum JSON: Equatable {
             }
             
         // handle swift types
-        case nil:
+        case Optional<Any>.none:
             self = .null
         case let url as URL:
             self = .string(url.absoluteString)

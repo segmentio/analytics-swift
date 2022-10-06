@@ -53,7 +53,7 @@ class JSONTests: XCTestCase {
     }
     
     func testJSONNil() throws {
-        let traits = try JSON(["type": NSNull(), "preferences": ["bwack"]])
+        let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil])
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
