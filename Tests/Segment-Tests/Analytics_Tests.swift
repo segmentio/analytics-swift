@@ -312,9 +312,11 @@ final class Analytics_Tests: XCTestCase {
 
     func testFlush() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey").flushInterval(9999).flushAt(9999))
         
         waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
     
@@ -323,7 +325,8 @@ final class Analytics_Tests: XCTestCase {
         analytics.flush()
         analytics.track(name: "test")
         
-        let newBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
+        let batches = analytics.storage.eventFiles(includeUnfinished: true)
+        let newBatchCount = batches.count
         // 1 new temp file
         XCTAssertTrue(newBatchCount == currentBatchCount + 1, "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
     }

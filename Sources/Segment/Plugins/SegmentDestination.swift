@@ -39,7 +39,7 @@ public class SegmentDestination: DestinationPlugin {
         var cleanup: CleanupClosure? = nil
     }
     
-    private var httpClient: HTTPClient?
+    internal var httpClient: HTTPClient?
     private var uploads = [UploadTaskInfo]()
     private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?

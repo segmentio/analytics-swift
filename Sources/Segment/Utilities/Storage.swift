@@ -16,13 +16,18 @@ internal class Storage: Subscriber {
 
     // This queue synchronizes reads/writes.
     // Do NOT use it outside of: write, read, reset, remove.
-    let syncQueue = DispatchQueue(label: "storage.segment.com")
+    let syncQueue = DispatchQueue(label: "sync.segment.com")
 
-    private var fileHandle: FileHandle? = nil
+    private var outputStream: OutputFileStream? = nil
     
-    init(store: Store, writeKey: String) {
+    internal var onFinish: ((URL) -> Void)? = nil
+    
+    internal let storageMonitor: ((Error) -> Void)?
+    
+    init(store: Store, writeKey: String, monitor: ((Error) -> Void)?) {
         self.store = store
         self.writeKey = writeKey
+        self.storageMonitor = monitor
         self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)")
         store.subscribe(self, handler: userInfoUpdate)
         store.subscribe(self, handler: systemUpdate)
@@ -242,8 +247,8 @@ extension Storage {
         if fm.fileExists(atPath: storeFile.path) == false {
             start(file: storeFile)
             newFile = true
-        } else if fileHandle == nil {
-            fileHandle = try? FileHandle(forWritingTo: file)
+        } else if outputStream == nil {
+            Analytics.segmentLog(message: "Storage: Output stream is nil for \(storeFile)", kind: .error)
         }
         
         // Verify file size isn't too large
@@ -258,38 +263,34 @@ extension Storage {
         }
         
         let jsonString = event.toString()
-        if let jsonData = jsonString.data(using: .utf8) {
-            fileHandle?.seekToEndOfFile()
-            // prepare for the next entry
+        do {
+            if outputStream == nil {
+                Analytics.segmentLog(message: "Storage: Output stream is nil for \(storeFile)", kind: .error)
+            }
             if newFile == false {
-                fileHandle?.write(",".data(using: .utf8)!)
+                // prepare for the next entry
+                try outputStream?.write(",")
             }
-            // write the data
-            fileHandle?.write(jsonData)
-            if #available(tvOS 13, *) {
-                try? fileHandle?.synchronize()
-            }
-        } else {
-            assert(false, "Storage: Unable to convert event to json!")
+            try outputStream?.write(jsonString)
+        } catch {
+            storageMonitor?(error)
+            Analytics.segmentLog(message: "Storage: Unable to write to \(storeFile), Error: \(error)", kind: .error)
         }
     }
     
     private func start(file: URL) {
         let contents = "{ \"batch\": ["
         do {
-            FileManager.default.createFile(atPath: file.path, contents: contents.data(using: .utf8))
-            fileHandle = try FileHandle(forWritingTo: file)
+            outputStream = try OutputFileStream(fileURL: file)
+            try outputStream?.write(contents)
         } catch {
-            assert(false, "Storage: failed to write \(file), error: \(error)")
+            storageMonitor?(error)
+            Analytics.segmentLog(message: "Storage: Unable to write to \(file), Error: \(error)", kind: .error)
         }
     }
     
     private func finish(file: URL) {
-        if self.fileHandle == nil {
-            self.fileHandle = try? FileHandle(forWritingTo: file)
-        }
-        
-        guard let fileHandle = self.fileHandle else {
+        guard let outputStream = self.outputStream else {
             // we haven't actually started a file yet and being told to flush
             // so ignore it and get out.
             return
@@ -299,19 +300,14 @@ extension Storage {
 
         // write it to the existing file
         let fileEnding = "],\"sentAt\":\"\(sentAt)\",\"writeKey\":\"\(writeKey)\"}"
-        let endData = fileEnding.data(using: .utf8)
-        if let endData = endData {
-            fileHandle.seekToEndOfFile()
-            fileHandle.write(endData)
-            if #available(tvOS 13, *) {
-                try? fileHandle.synchronize()
-            }
-            fileHandle.closeFile()
-            self.fileHandle = nil
-        } else {
-            // something is wrong with this file :S
-            Analytics.segmentLog(message: "Event storage \(file) has some kind of problem.", kind: .error)
+        do {
+            try outputStream.write(fileEnding)
+        } catch {
+            storageMonitor?(error)
+            Analytics.segmentLog(message: "Storage: Unable to write to \(file), Error: \(error)", kind: .error)
         }
+        outputStream.close()
+        self.outputStream = nil
 
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
         do {
@@ -319,6 +315,9 @@ extension Storage {
         } catch {
             Analytics.segmentLog(message: "Unable to rename to temp: \(file), Error: \(error)", kind: .error)
         }
+        
+        // necessary for testing, do not use.
+        onFinish?(tempFile)
 
         let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
         userDefaults?.set(currentFile, forKey: Constants.events.rawValue)

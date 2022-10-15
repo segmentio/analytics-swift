@@ -30,6 +30,7 @@ public class Configuration {
         var autoAddSegmentDestination: Bool = true
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
+        var storageMonitor: ((Error) -> Void)?
     }
     internal var values: Values
 
@@ -93,6 +94,12 @@ public extension Configuration {
     @discardableResult
     func cdnHost(_ value: String) -> Configuration {
         values.cdnHost = value
+        return self
+    }
+    
+    @discardableResult
+    func storageMonitor(_ value: @escaping (Error) -> Void) -> Configuration {
+        values.storageMonitor = value
         return self
     }
 }

@@ -20,7 +20,7 @@ public class HTTPClient {
     private static let defaultAPIHost = "api.segment.io/v1"
     private static let defaultCDNHost = "cdn-settings.segment.com/v1"
     
-    private var session: URLSession
+    internal var session: URLSession
     private var apiHost: String
     private var apiKey: String
     private var cdnHost: String
