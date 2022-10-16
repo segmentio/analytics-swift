@@ -56,7 +56,6 @@
 		96259F8626CF1D45008AE301 /* ConsoleTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96259F8526CF1D45008AE301 /* ConsoleTarget.swift */; };
 		96469AF82706225900AC5772 /* SystemTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96469AF72706225900AC5772 /* SystemTarget.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
-		967C40DA258D472C008EB0B6 /* SegmentLog_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40D9258D472C008EB0B6 /* SegmentLog_Tests.swift */; };
 		967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40E2258D4DAF008EB0B6 /* Metrics_Tests.swift */; };
 		9692724E25A4E5B7009B5298 /* Startup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692724D25A4E5B7009B5298 /* Startup.swift */; };
 		9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9692726725A583A6009B5298 /* SegmentDestination.swift */; };
@@ -64,7 +63,6 @@
 		96A9668927BC137F00078F8B /* iOSLifecycle_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A9668827BC137F00078F8B /* iOSLifecycle_Tests.swift */; };
 		96C33A9C25880A5E00F3D538 /* SegmentLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33A9B25880A5E00F3D538 /* SegmentLog.swift */; };
 		96C33AB1258961F500F3D538 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C33AB0258961F500F3D538 /* Settings.swift */; };
-		96C95B16271DE22700C3EB9A /* LogTarget_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C95B15271DE22600C3EB9A /* LogTarget_Tests.swift */; };
 		96DBF37B26F39B5500724B0B /* Timeline_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96DBF37A26F39B5500724B0B /* Timeline_Tests.swift */; };
 		A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A16252576B6F200C9CDDF /* Timeline.swift */; };
 		A31A162F2576B73F00C9CDDF /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31A162E2576B73F00C9CDDF /* State.swift */; };
@@ -600,11 +598,9 @@
 				46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */,
 				967C40E3258D4DAF008EB0B6 /* Metrics_Tests.swift in Sources */,
 				96A9668927BC137F00078F8B /* iOSLifecycle_Tests.swift in Sources */,
-				96C95B16271DE22700C3EB9A /* LogTarget_Tests.swift in Sources */,
 				A31A16512576C47400C9CDDF /* JSON_Tests.swift in Sources */,
 				46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */,
 				46FE4CFB25A6C671003A7362 /* TestUtilities.swift in Sources */,
-				967C40DA258D472C008EB0B6 /* SegmentLog_Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
