@@ -22,7 +22,7 @@ class StressTests: XCTestCase {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
-        let analytics = Analytics(configuration: Configuration(writeKey: "test").storageMonitor({ error in
+        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest").storageMonitor({ error in
             XCTFail("Storage Error: \(error)")
         }))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -107,13 +107,13 @@ class StressTests: XCTestCase {
         }
     }
 
-    /*
-    func testStressXTimes() throws {
+    
+    /*func testStressXTimes() throws {
         for i in 0..<20 {
             print("Stress test #\(i):")
             try testStorageStress()
             print("\n")
         }
-    }
-     */
+    }*/
+     
 }

@@ -248,7 +248,13 @@ extension Storage {
             start(file: storeFile)
             newFile = true
         } else if outputStream == nil {
-            Analytics.segmentLog(message: "Storage: Output stream is nil for \(storeFile)", kind: .error)
+            // this can happen if an instance was terminated before finishing a file.
+            do {
+                outputStream = try OutputFileStream(fileURL: storeFile)
+            } catch {
+                storageMonitor?(error)
+                Analytics.segmentLog(message: "Storage: Unable to open \(file), Error: \(error)", kind: .error)
+            }
         }
         
         // Verify file size isn't too large
@@ -308,6 +314,7 @@ extension Storage {
         }
         outputStream.close()
         self.outputStream = nil
+        print("stream closed for \(file)")
 
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
         do {
