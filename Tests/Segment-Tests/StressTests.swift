@@ -18,6 +18,7 @@ class StressTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
+    #if !os(Linux)
     func testStorageStress() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
@@ -106,7 +107,7 @@ class StressTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
         }
     }
-
+    #endif
     
     /*func testStressXTimes() throws {
         for i in 0..<20 {

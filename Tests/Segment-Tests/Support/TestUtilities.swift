@@ -134,6 +134,7 @@ func waitUntilStarted(analytics: Analytics?) {
     }
 }
 
+#if !os(Linux)
 
 class BlockNetworkCalls: URLProtocol {
     var initialURL: URL? = nil
@@ -157,3 +158,5 @@ class BlockNetworkCalls: URLProtocol {
         
     }
 }
+
+#endif
