@@ -11,7 +11,7 @@ import Sovran
 
 // MARK: - Main Timeline
 
-public class Timeline: Subscriber {
+public class Timeline {
     internal let plugins: [PluginType: Mediator]
     
     public init() {
