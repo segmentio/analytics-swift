@@ -24,7 +24,8 @@ public class HTTPClient {
     private var apiHost: String
     private var apiKey: String
     private var cdnHost: String
-    private let analytics: Analytics
+    
+    private let analytics: Analytics?
     
     init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil, cdnHost: String? = nil) {
         self.analytics = analytics
@@ -75,7 +76,7 @@ public class HTTPClient {
         
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
-                self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
+                self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
                 completion(.failure(error))
             } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
@@ -83,16 +84,16 @@ public class HTTPClient {
                     completion(.success(true))
                     return
                 case 300..<400:
-                    self?.analytics.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
+                    self?.analytics?.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 case 429:
-                    self?.analytics.log(message: "Server limited client with response code \(httpResponse.statusCode).")
+                    self?.analytics?.log(message: "Server limited client with response code \(httpResponse.statusCode).")
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 case 400..<500:
-                    self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
+                    self?.analytics?.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 default: // All 500 codes
-                    self?.analytics.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
+                    self?.analytics?.log(message: "Server rejected payload with HTTP code \(httpResponse.statusCode).")
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 }
             }
@@ -113,21 +114,21 @@ public class HTTPClient {
 
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
-                self?.analytics.log(message: "Error fetching settings \(error.localizedDescription).")
+                self?.analytics?.log(message: "Error fetching settings \(error.localizedDescription).")
                 completion(false, nil)
                 return
             }
 
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode > 300 {
-                    self?.analytics.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
+                    self?.analytics?.log(message: "Server responded with unexpected HTTP code \(httpResponse.statusCode).")
                     completion(false, nil)
                     return
                 }
             }
 
             guard let data = data, let responseJSON = try? JSONDecoder().decode(Settings.self, from: data) else {
-                self?.analytics.log(message: "Error deserializing settings.")
+                self?.analytics?.log(message: "Error deserializing settings.")
                 completion(false, nil)
                 return
             }

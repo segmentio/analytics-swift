@@ -17,7 +17,9 @@ public class StartupQueue: Plugin, Subscriber {
     
     public var analytics: Analytics? = nil {
         didSet {
-            analytics?.store.subscribe(self, handler: runningUpdate)
+            analytics?.store.subscribe(self) { [weak self] (state: System) in
+                self?.runningUpdate(state: state)
+            }
         }
     }
     

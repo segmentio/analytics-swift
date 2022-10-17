@@ -54,8 +54,8 @@ public class SegmentDestination: DestinationPlugin {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) {
-            self.flush()
+        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
+            self?.flush()
         }
         // Add DestinationMetadata enrichment plugin
         add(plugin: DestinationMetadataPlugin())
