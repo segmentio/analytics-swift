@@ -32,8 +32,10 @@ final class MemoryLeak_Tests: XCTestCase {
         let segmentLog = analytics.find(pluginType: SegmentLog.self)!
          
         let context = analytics.find(pluginType: Context.self)!
-        let deviceToken = analytics.find(pluginType: DeviceToken.self)!
         
+        #if !os(Linux)
+        let deviceToken = analytics.find(pluginType: DeviceToken.self)!
+        #endif
         #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         let iosLifecycle = analytics.find(pluginType: iOSLifecycleEvents.self)!
         let iosMonitor = analytics.find(pluginType: iOSLifecycleMonitor.self)!
@@ -51,7 +53,9 @@ final class MemoryLeak_Tests: XCTestCase {
         segmentDest.remove(plugin: destMetadata)
          
         analytics.remove(plugin: context)
+        #if !os(Linux)
         analytics.remove(plugin: deviceToken)
+        #endif
         #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         analytics.remove(plugin: iosLifecycle)
         analytics.remove(plugin: iosMonitor)
@@ -70,8 +74,10 @@ final class MemoryLeak_Tests: XCTestCase {
         checkIfLeaked(destMetadata)
         checkIfLeaked(startupQueue)
         
-        checkIfLeaked(deviceToken)
         checkIfLeaked(context)
+        #if !os(Linux)
+        checkIfLeaked(deviceToken)
+        #endif
         #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         checkIfLeaked(iosLifecycle)
         checkIfLeaked(iosMonitor)
