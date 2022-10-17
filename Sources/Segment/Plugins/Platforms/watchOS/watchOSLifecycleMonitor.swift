@@ -28,7 +28,7 @@ public extension watchOSLifecycle {
 
 
 class watchOSLifecycleMonitor: PlatformPlugin {
-    var type = PluginType.utility
+    let type = PluginType.utility
     var analytics: Analytics?
     var wasBackgrounded: Bool = false
     
