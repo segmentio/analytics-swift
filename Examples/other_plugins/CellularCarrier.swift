@@ -54,7 +54,7 @@ import CoreTelephony
 class CellularCarrier: Plugin {
     var type: PluginType = .enrichment
     
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     func execute<T: RawEvent>(event: T?) -> T? {
         guard var workingEvent = event else { return event }

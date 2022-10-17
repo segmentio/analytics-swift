@@ -13,7 +13,7 @@ import Foundation
  */
 public class DestinationMetadataPlugin: Plugin {
     public let type: PluginType = PluginType.enrichment
-    public var analytics: Analytics?
+    public weak var analytics: Analytics?
     private var analyticsSettings: Settings? = nil
     
     public func update(settings: Settings, type: UpdateType) {

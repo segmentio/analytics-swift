@@ -46,7 +46,7 @@ import UIKit
  */
 class ConsentTracking: Plugin {
     let type = PluginType.before
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     var queuedEvents = [RawEvent]()
     

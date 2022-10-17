@@ -25,7 +25,7 @@ public class HTTPClient {
     private var apiKey: String
     private var cdnHost: String
     
-    private let analytics: Analytics?
+    private weak var analytics: Analytics?
     
     init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil, cdnHost: String? = nil) {
         self.analytics = analytics

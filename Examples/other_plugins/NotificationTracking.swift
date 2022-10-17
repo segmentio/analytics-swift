@@ -40,7 +40,7 @@ import Segment
 
 class NotificationTracking: Plugin {
     var type: PluginType = .utility
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     func trackNotification(_ properties: [String: Any], fromLaunch launch: Bool) {
         if launch {

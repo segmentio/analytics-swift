@@ -51,7 +51,7 @@ class UIKitScreenTracking: UtilityPlugin {
     static let controllerKey = "controller"
     
     let type = PluginType.utility
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     init() {
         setupUIKitHooks()

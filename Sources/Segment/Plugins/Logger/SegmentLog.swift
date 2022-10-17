@@ -11,7 +11,7 @@ import Foundation
 
 internal class SegmentLog: UtilityPlugin {
     public var filterKind = LogFilterKind.debug
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     let type = PluginType.utility
     

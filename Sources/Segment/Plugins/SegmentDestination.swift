@@ -25,7 +25,7 @@ public class SegmentDestination: DestinationPlugin {
     public let type = PluginType.destination
     public let key: String = Constants.integrationName.rawValue
     public let timeline = Timeline()
-    public var analytics: Analytics? {
+    public weak var analytics: Analytics? {
         didSet {
             initialSetup()
         }
