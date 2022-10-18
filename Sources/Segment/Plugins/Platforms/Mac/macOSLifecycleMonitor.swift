@@ -46,7 +46,7 @@ class macOSLifecycleMonitor: PlatformPlugin {
     static var specificName = "Segment_macOSLifecycleMonitor"
     let type = PluginType.utility
     let name = specificName
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     private var application: NSApplication
     private var appNotifications: [NSNotification.Name] =

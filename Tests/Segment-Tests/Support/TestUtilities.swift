@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import XCTest
 @testable import Segment
 
 extension UUID{
@@ -130,6 +131,17 @@ func waitUntilStarted(analytics: Analytics?) {
     if let startupQueue = analytics.find(pluginType: StartupQueue.self) {
         while startupQueue.running != true {
             RunLoop.main.run(until: Date.distantPast)
+        }
+    }
+}
+
+extension XCTestCase {
+    func checkIfLeaked(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+            if instance != nil {
+                print("Instance \(String(describing: instance)) is not nil")
+            }
+            XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak!", file: file, line: line)
         }
     }
 }

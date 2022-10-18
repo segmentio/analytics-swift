@@ -25,7 +25,7 @@ public class SegmentDestination: DestinationPlugin {
     public let type = PluginType.destination
     public let key: String = Constants.integrationName.rawValue
     public let timeline = Timeline()
-    public var analytics: Analytics? {
+    public weak var analytics: Analytics? {
         didSet {
             initialSetup()
         }
@@ -54,8 +54,8 @@ public class SegmentDestination: DestinationPlugin {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) {
-            self.flush()
+        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
+            self?.flush()
         }
         // Add DestinationMetadata enrichment plugin
         add(plugin: DestinationMetadataPlugin())

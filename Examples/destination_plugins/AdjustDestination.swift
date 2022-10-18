@@ -41,7 +41,7 @@ class AdjustDestination: NSObject, DestinationPlugin, RemoteNotifications {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "Adjust"
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     private var settings: AdjustSettings? = nil
     

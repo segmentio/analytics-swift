@@ -172,7 +172,7 @@ internal class watchOSVendorSystem: VendorSystem {
     }
     
     override var requiredPlugins: [PlatformPlugin] {
-        return [watchOSLifecycleMonitor()]
+        return [watchOSLifecycleMonitor(), DeviceToken()]
     }
     
     private func deviceModel() -> String {

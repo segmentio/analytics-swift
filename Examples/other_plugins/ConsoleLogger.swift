@@ -42,7 +42,7 @@ import Segment
 class ConsoleLogger: Plugin {
     let type = PluginType.after
     let name: String
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     var identifier: String? = nil
     
