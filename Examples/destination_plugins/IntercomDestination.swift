@@ -43,7 +43,7 @@ class IntercomDestination: DestinationPlugin {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "Intercom"
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     private var intercomSettings: IntercomSettings?
     private var configurationLabels = [String: Any]()

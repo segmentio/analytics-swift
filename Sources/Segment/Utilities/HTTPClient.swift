@@ -24,7 +24,8 @@ public class HTTPClient {
     private var apiHost: String
     private var apiKey: String
     private var cdnHost: String
-    private let analytics: Analytics
+    
+    private weak var analytics: Analytics?
     
     init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil, cdnHost: String? = nil) {
         self.analytics = analytics
@@ -75,7 +76,7 @@ public class HTTPClient {
         
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
-                self?.analytics.log(message: "Error uploading request \(error.localizedDescription).")
+                self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
                 completion(.failure(error))
             } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {

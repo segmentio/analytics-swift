@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import XCTest
 @testable import Segment
 
 extension UUID{

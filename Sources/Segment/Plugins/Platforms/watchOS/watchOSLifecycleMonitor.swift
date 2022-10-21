@@ -28,8 +28,8 @@ public extension watchOSLifecycle {
 
 
 class watchOSLifecycleMonitor: PlatformPlugin {
-    var type = PluginType.utility
-    var analytics: Analytics?
+    let type = PluginType.utility
+    weak var analytics: Analytics?
     var wasBackgrounded: Bool = false
     
     private var watchExtension = WKExtension.shared()

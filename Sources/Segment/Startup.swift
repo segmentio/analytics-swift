@@ -76,10 +76,10 @@ extension Analytics {
         // do the first one
         checkSettings()
         // set up return-from-background to do it again.
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { [weak self] (notification) in
             guard let app = notification.object as? UIApplication else { return }
             if app.applicationState == .background {
-                self.checkSettings()
+                self?.checkSettings()
             }
         }
     }
@@ -100,8 +100,8 @@ extension Analytics {
         // now set up a timer to do it every 24 hrs.
         // mac apps change focus a lot more than iOS apps, so this
         // seems more appropriate here.
-        QueueTimer.schedule(interval: .days(1), queue: .main) {
-            self.checkSettings()
+        QueueTimer.schedule(interval: .days(1), queue: .main) { [weak self] in
+            self?.checkSettings()
         }
     }
 }

@@ -44,7 +44,7 @@ class ComscoreDestination: DestinationPlugin {
     let timeline = Timeline()
     let type = PluginType.destination
     let key = "comScore"
-    var analytics: Analytics? = nil
+    weak var analytics: Analytics? = nil
     
     private var comscoreSettings: ComscoreSettings?
     private var comscoreEnrichment: ComscoreEnrichment?

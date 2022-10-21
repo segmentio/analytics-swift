@@ -38,7 +38,7 @@ public extension iOSLifecycle {
 
 class iOSLifecycleMonitor: PlatformPlugin {
     let type = PluginType.utility
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     private var application: UIApplication? = nil
     private var appNotifications: [NSNotification.Name] = [UIApplication.didEnterBackgroundNotification,

@@ -11,7 +11,7 @@ import Foundation
 
 internal class SegmentLog: UtilityPlugin {
     public var filterKind = LogFilterKind.debug
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     let type = PluginType.utility
     
@@ -22,7 +22,7 @@ internal class SegmentLog: UtilityPlugin {
     
     // For internal use only. Note: This will contain the last created instance
     // of analytics when used in a multi-analytics environment.
-    internal static var sharedAnalytics: Analytics? = nil
+    internal static weak var sharedAnalytics: Analytics? = nil
     
     #if DEBUG
     internal static var globalLogger: SegmentLog {

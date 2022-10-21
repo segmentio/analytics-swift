@@ -16,7 +16,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     static var buildKey = "SEGBuildKeyV2"
     
     let type = PluginType.before
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     /// Since application:didFinishLaunchingWithOptions is not automatically called with Scenes / SwiftUI,
     /// this gets around by using a flag in user defaults to check for big events like application updating,

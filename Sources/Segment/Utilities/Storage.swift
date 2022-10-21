@@ -9,7 +9,6 @@ import Foundation
 import Sovran
 
 internal class Storage: Subscriber {
-    let store: Store
     let writeKey: String
     let userDefaults: UserDefaults?
     static let MAXFILESIZE = 475000 // Server accepts max 500k per batch
@@ -24,11 +23,14 @@ internal class Storage: Subscriber {
     internal weak var analytics: Analytics? = nil
     
     init(store: Store, writeKey: String) {
-        self.store = store
         self.writeKey = writeKey
         self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)")
-        store.subscribe(self, handler: userInfoUpdate)
-        store.subscribe(self, handler: systemUpdate)
+        store.subscribe(self) { [weak self] (state: UserInfo) in
+            self?.userInfoUpdate(state: state)
+        }
+        store.subscribe(self) { [weak self] (state: System) in
+            self?.systemUpdate(state: state)
+        }
     }
     
     func write<T: Codable>(_ key: Storage.Constants, value: T?) {

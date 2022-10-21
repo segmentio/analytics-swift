@@ -10,6 +10,6 @@ import Foundation
 #if os(Linux)
 class LinuxLifecycleMonitor: PlatformPlugin {
     let type = PluginType.utility
-    var analytics: Analytics?
+    weak var analytics: Analytics?
 }
 #endif
