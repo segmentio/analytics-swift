@@ -84,13 +84,13 @@ public class HTTPClient {
                     completion(.success(true))
                     return
                 case 300..<400:
-                    self?.analytics.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
+                    self?.analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 case 429:
-                    self?.analytics.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
+                    self?.analytics?.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 default:
-                    self?.analytics.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))
+                    self?.analytics?.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))
                     completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
                 }
             }
@@ -111,21 +111,21 @@ public class HTTPClient {
 
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
-                self?.analytics.reportInternalError(AnalyticsError.networkUnknown(error))
+                self?.analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
                 completion(false, nil)
                 return
             }
 
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode > 300 {
-                    self?.analytics.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
+                    self?.analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
                     completion(false, nil)
                     return
                 }
             }
 
             guard let data = data else {
-                self?.analytics.reportInternalError(AnalyticsError.networkInvalidData)
+                self?.analytics?.reportInternalError(AnalyticsError.networkInvalidData)
                 completion(false, nil)
                 return
             }
@@ -134,7 +134,7 @@ public class HTTPClient {
                 let responseJSON = try JSONDecoder().decode(Settings.self, from: data)
                 completion(true, responseJSON)
             } catch {
-                self?.analytics.reportInternalError(AnalyticsError.jsonUnableToDeserialize(error))
+                self?.analytics?.reportInternalError(AnalyticsError.jsonUnableToDeserialize(error))
                 completion(false, nil)
                 return
             }
