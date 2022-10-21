@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Errors.swift
 //  
 //
 //  Created by Brandon Sneed on 10/20/22.
