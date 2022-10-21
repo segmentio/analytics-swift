@@ -30,7 +30,10 @@ public class Configuration {
         var autoAddSegmentDestination: Bool = true
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
-        var storageMonitor: ((Error) -> Void)?
+        var errorHandler: ((Error) -> Void)?
+        var requestFactory: (URLRequest) -> URLRequest = { request in
+            return request
+        }
     }
     internal var values: Values
 
@@ -98,9 +101,14 @@ public extension Configuration {
     }
     
     @discardableResult
-    func storageMonitor(_ value: @escaping (Error) -> Void) -> Configuration {
-        values.storageMonitor = value
+    func errorHandler(_ value: @escaping (Error) -> Void) -> Configuration {
+        values.errorHandler = value
         return self
     }
 }
 
+extension Analytics {
+    func configuration<T>(valueFor: () -> T) -> T {
+        return valueFor()
+    }
+}

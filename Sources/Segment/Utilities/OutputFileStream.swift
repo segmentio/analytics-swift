@@ -15,19 +15,42 @@ import Glibc
 import Darwin.C
 #endif
 
-struct OutputFileStream {
+internal class OutputFileStream {
     enum OutputStreamError: Error {
         case invalidPath(String)
         case unableToOpen(String)
-        case unableToWrite
+        case unableToWrite(String)
+        case unableToCreate(String)
     }
     
-    internal var filePointer: UnsafeMutablePointer<FILE>? = nil
+    var filePointer: UnsafeMutablePointer<FILE>? = nil
+    let fileURL: URL
     
     init(fileURL: URL) throws {
+        self.fileURL = fileURL
         let path = fileURL.path
         guard path.isEmpty == false else { throw OutputStreamError.invalidPath(path) }
-        
+    }
+    
+    /// Create attempts to create + open
+    func create() throws {
+        let path = fileURL.path
+        if FileManager.default.fileExists(atPath: path) {
+            throw OutputStreamError.unableToCreate(path)
+        } else {
+            let created = FileManager.default.createFile(atPath: fileURL.path, contents: nil)
+            if created == false {
+                throw OutputStreamError.unableToCreate(path)
+            } else {
+                try open()
+            }
+        }
+    }
+    
+    /// Open simply opens the file, no attempt at creation is made.
+    func open() throws {
+        if filePointer != nil { return }
+        let path = fileURL.path
         path.withCString { file in
             filePointer = fopen(file, "w")
         }
@@ -45,52 +68,17 @@ struct OutputFileStream {
             if let baseAddr = str.baseAddress {
                 fwrite(baseAddr, 1, str.count, filePointer)
             } else {
-                throw OutputStreamError.unableToWrite
+                throw OutputStreamError.unableToWrite(fileURL.path)
             }
             if ferror(filePointer) != 0 {
-                throw OutputStreamError.unableToWrite
+                throw OutputStreamError.unableToWrite(fileURL.path)
             }
         }
     }
     
     func close() {
         fclose(filePointer)
+        filePointer = nil
     }
 }
 
-
-/** FileHandle version for comparison ------------------------------------ */
-/*
-struct OutputFileStream {
-    enum OutputStreamError: Error {
-        case unableToWrite
-        case unableToCreate(String)
-    }
-    
-    internal var fileHandle: FileHandle
-    
-    init(fileURL: URL) throws {
-        let created = FileManager.default.createFile(atPath: fileURL.path, contents: nil)
-        if !created { throw OutputStreamError.unableToCreate(fileURL.path) }
-        fileHandle = try FileHandle(forWritingTo: fileURL)
-    }
-    
-    func write(_ data: Data) throws {
-        fileHandle.seekToEndOfFile()
-        if #available(macOS 10.15.4, iOS 13.4, *) {
-            try fileHandle.write(contentsOf: data)
-        } else {
-            fileHandle.write(data)
-        }
-    }
-    
-    func write(_ string: String) throws {
-        guard let data = string.data(using: .utf8) else { throw OutputStreamError.unableToWrite }
-        try write(data)
-    }
-    
-    func close() {
-        try? fileHandle.close()
-    }
-}
-*/

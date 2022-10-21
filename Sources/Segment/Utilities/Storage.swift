@@ -21,13 +21,11 @@ internal class Storage: Subscriber {
     private var outputStream: OutputFileStream? = nil
     
     internal var onFinish: ((URL) -> Void)? = nil
+    internal weak var analytics: Analytics? = nil
     
-    internal let storageMonitor: ((Error) -> Void)?
-    
-    init(store: Store, writeKey: String, monitor: ((Error) -> Void)?) {
+    init(store: Store, writeKey: String) {
         self.store = store
         self.writeKey = writeKey
-        self.storageMonitor = monitor
         self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)")
         store.subscribe(self, handler: userInfoUpdate)
         store.subscribe(self, handler: systemUpdate)
@@ -249,12 +247,7 @@ extension Storage {
             newFile = true
         } else if outputStream == nil {
             // this can happen if an instance was terminated before finishing a file.
-            do {
-                outputStream = try OutputFileStream(fileURL: storeFile)
-            } catch {
-                storageMonitor?(error)
-                Analytics.segmentLog(message: "Storage: Unable to open \(file), Error: \(error)", kind: .error)
-            }
+            open(file: storeFile)
         }
         
         // Verify file size isn't too large
@@ -279,8 +272,7 @@ extension Storage {
             }
             try outputStream?.write(jsonString)
         } catch {
-            storageMonitor?(error)
-            Analytics.segmentLog(message: "Storage: Unable to write to \(storeFile), Error: \(error)", kind: .error)
+            analytics?.reportInternalError(error)
         }
     }
     
@@ -288,10 +280,29 @@ extension Storage {
         let contents = "{ \"batch\": ["
         do {
             outputStream = try OutputFileStream(fileURL: file)
+            try outputStream?.create()
             try outputStream?.write(contents)
         } catch {
-            storageMonitor?(error)
-            Analytics.segmentLog(message: "Storage: Unable to write to \(file), Error: \(error)", kind: .error)
+            analytics?.reportInternalError(error)
+        }
+    }
+    
+    private func open(file: URL) {
+        if outputStream == nil {
+            // this can happen if an instance was terminated before finishing a file.
+            do {
+                outputStream = try OutputFileStream(fileURL: file)
+            } catch {
+                analytics?.reportInternalError(error)
+            }
+        }
+
+        if let outputStream = outputStream {
+            do {
+                try outputStream.open()
+            } catch {
+                analytics?.reportInternalError(error)
+            }
         }
     }
     
@@ -309,18 +320,16 @@ extension Storage {
         do {
             try outputStream.write(fileEnding)
         } catch {
-            storageMonitor?(error)
-            Analytics.segmentLog(message: "Storage: Unable to write to \(file), Error: \(error)", kind: .error)
+            analytics?.reportInternalError(error)
         }
         outputStream.close()
         self.outputStream = nil
-        print("stream closed for \(file)")
 
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
         do {
             try FileManager.default.moveItem(at: file, to: tempFile)
         } catch {
-            Analytics.segmentLog(message: "Unable to rename to temp: \(file), Error: \(error)", kind: .error)
+            analytics?.reportInternalError(AnalyticsError.storageUnableToRename(file.path))
         }
         
         // necessary for testing, do not use.
