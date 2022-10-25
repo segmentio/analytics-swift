@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Sovran
 
 #if os(Linux)
 // Whoever is doing swift/linux development over there
@@ -15,7 +16,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-public class SegmentDestination: DestinationPlugin {
+public class SegmentDestination: DestinationPlugin, Subscriber {
     internal enum Constants: String {
         case integrationName = "Segment.io"
         case apiHost = "apiHost"
@@ -39,7 +40,7 @@ public class SegmentDestination: DestinationPlugin {
         var cleanup: CleanupClosure? = nil
     }
     
-    private var httpClient: HTTPClient?
+    internal var httpClient: HTTPClient?
     private var uploads = [UploadTaskInfo]()
     private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?
@@ -48,15 +49,23 @@ public class SegmentDestination: DestinationPlugin {
     private var apiHost: String? = nil
     
     @Atomic internal var eventCount: Int = 0
+    internal var flushAt: Int = 0
     internal var flushTimer: QueueTimer? = nil
     
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
-            self?.flush()
+        
+        // flushInterval and flushAt can be modified post initialization
+        analytics.store.subscribe(self, initialState: true) { [weak self] (state: System) in
+            guard let self = self else { return }
+            self.flushTimer = QueueTimer(interval: state.configuration.values.flushInterval) { [weak self] in
+                self?.flush()
+            }
+            self.flushAt = state.configuration.values.flushAt
         }
+        
         // Add DestinationMetadata enrichment plugin
         add(plugin: DestinationMetadataPlugin())
     }
@@ -93,12 +102,11 @@ public class SegmentDestination: DestinationPlugin {
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         guard let storage = self.storage else { return }
-        guard let analytics = self.analytics else { return }
         
         // Send Event to File System
         storage.write(.events, value: event)
         eventCount += 1
-        if eventCount >= analytics.configuration.values.flushAt {
+        if eventCount >= flushAt {
             flush()
         }
     }

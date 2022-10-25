@@ -24,9 +24,8 @@ extension Analytics {
                 let event = TrackEvent(event: name, properties: nil)
                 process(incomingEvent: event)
             }
-            
         } catch {
-            exceptionFailure("\(error)")
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -53,7 +52,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            exceptionFailure("\(error)")
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -67,7 +66,7 @@ extension Analytics {
             let event = IdentifyEvent(traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
-            exceptionFailure("\(error)")
+            reportInternalError(error, fatal: true)
         }
     }
 
@@ -94,7 +93,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            exceptionFailure("\(error)")
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -113,7 +112,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            exceptionFailure("\(error)")
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -143,7 +142,7 @@ extension Analytics {
             do {
                 props = try JSON(properties)
             } catch {
-                exceptionFailure("\(error)")
+                reportInternalError(error, fatal: true)
             }
         }
         let event = TrackEvent(event: name, properties: props)
@@ -169,9 +168,8 @@ extension Analytics {
                 let event = IdentifyEvent(userId: userId, traits: nil)
                 process(incomingEvent: event)
             }
-
         } catch {
-            exceptionFailure("Could not parse traits.")
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -187,7 +185,7 @@ extension Analytics {
                 let jsonProperties = try JSON(properties)
                 event = ScreenEvent(title: title, category: category, properties: jsonProperties)
             } catch {
-                exceptionFailure("Could not parse properties.")
+                reportInternalError(error, fatal: true)
             }
         }
         process(incomingEvent: event)
@@ -204,7 +202,7 @@ extension Analytics {
                 let jsonTraits = try JSON(traits)
                 event = GroupEvent(groupId: groupId, traits: jsonTraits)
             } catch {
-                exceptionFailure("Could not parse traits.")
+                reportInternalError(error, fatal: true)
             }
         }
         process(incomingEvent: event)

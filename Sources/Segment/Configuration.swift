@@ -30,6 +30,7 @@ public class Configuration {
         var autoAddSegmentDestination: Bool = true
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
+        var errorHandler: ((Error) -> Void)?
     }
     internal var values: Values
 
@@ -95,5 +96,16 @@ public extension Configuration {
         values.cdnHost = value
         return self
     }
+    
+    @discardableResult
+    func errorHandler(_ value: @escaping (Error) -> Void) -> Configuration {
+        values.errorHandler = value
+        return self
+    }
 }
 
+extension Analytics {
+    func configuration<T>(valueFor: () -> T) -> T {
+        return valueFor()
+    }
+}

@@ -145,3 +145,30 @@ extension XCTestCase {
         }
     }
 }
+
+#if !os(Linux)
+
+class BlockNetworkCalls: URLProtocol {
+    var initialURL: URL? = nil
+    override class func canInit(with request: URLRequest) -> Bool {
+        
+        return true
+    }
+    
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    
+    override var cachedResponse: CachedURLResponse? { return nil }
+    
+    override func startLoading() {
+        client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 200, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    override func stopLoading() {
+        
+    }
+}
+
+#endif
