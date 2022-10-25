@@ -31,9 +31,6 @@ public class Configuration {
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
         var errorHandler: ((Error) -> Void)?
-        var requestFactory: (URLRequest) -> URLRequest = { request in
-            return request
-        }
     }
     internal var values: Values
 
