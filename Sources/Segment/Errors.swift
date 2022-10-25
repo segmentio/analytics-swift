@@ -58,21 +58,21 @@ extension Analytics {
     }
     
     /// Reports an internal error to the user-defined error handler.
-    public func reportInternalError(_ error: Error, hardStop: Bool = false) {
+    public func reportInternalError(_ error: Error, fatal: Bool = false) {
         let translatedError = Self.translate(error: error)
         configuration.values.errorHandler?(translatedError)
         Self.segmentLog(message: "An internal error occurred: \(translatedError)", kind: .error)
-        if hardStop {
+        if fatal {
             exceptionFailure("A critical error occurred: \(translatedError)")
         }
     }
     
-    static public func reportInternalError(_ error: Error, hardStop: Bool = false) {
+    static public func reportInternalError(_ error: Error, fatal: Bool = false) {
         // we don't have an instance of analytics to call to get our error handler,
         // but we can at least report the message to the console.
         let translatedError = Self.translate(error: error)
         Self.segmentLog(message: "An internal error occurred: \(translatedError)", kind: .error)
-        if hardStop {
+        if fatal {
             exceptionFailure("A critical error occurred: \(translatedError)")
         }
     }
