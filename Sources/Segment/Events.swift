@@ -25,7 +25,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -52,7 +52,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -66,7 +66,7 @@ extension Analytics {
             let event = IdentifyEvent(traits: jsonTraits)
             process(incomingEvent: event)
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
 
@@ -93,7 +93,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -112,7 +112,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -142,7 +142,7 @@ extension Analytics {
             do {
                 props = try JSON(properties)
             } catch {
-                reportInternalError(error, hardStop: true)
+                reportInternalError(error, fatal: true)
             }
         }
         let event = TrackEvent(event: name, properties: props)
@@ -169,7 +169,7 @@ extension Analytics {
                 process(incomingEvent: event)
             }
         } catch {
-            reportInternalError(error, hardStop: true)
+            reportInternalError(error, fatal: true)
         }
     }
     
@@ -185,7 +185,7 @@ extension Analytics {
                 let jsonProperties = try JSON(properties)
                 event = ScreenEvent(title: title, category: category, properties: jsonProperties)
             } catch {
-                reportInternalError(error, hardStop: true)
+                reportInternalError(error, fatal: true)
             }
         }
         process(incomingEvent: event)
@@ -202,7 +202,7 @@ extension Analytics {
                 let jsonTraits = try JSON(traits)
                 event = GroupEvent(groupId: groupId, traits: jsonTraits)
             } catch {
-                reportInternalError(error, hardStop: true)
+                reportInternalError(error, fatal: true)
             }
         }
         process(incomingEvent: event)
