@@ -74,6 +74,10 @@ public class HTTPClient {
         var urlRequest = URLRequest(url: uploadURL)
         urlRequest.httpMethod = "POST"
         
+        if let requestFactory = analytics?.configuration.values.requestFactory {
+            urlRequest = requestFactory(urlRequest)
+        }
+        
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
@@ -111,6 +115,10 @@ public class HTTPClient {
         
         var urlRequest = URLRequest(url: settingsURL)
         urlRequest.httpMethod = "GET"
+        
+        if let requestFactory = analytics?.configuration.values.requestFactory {
+            urlRequest = requestFactory(urlRequest)
+        }
 
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
@@ -172,7 +180,8 @@ extension HTTPClient {
         configuration.httpMaximumConnectionsPerHost = 2
         configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+                                               "User-Agent": "analytics-ios/\(Analytics.version())",
+                                               "Accept-Encoding" : "gzip",]
         let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         return session
     }
