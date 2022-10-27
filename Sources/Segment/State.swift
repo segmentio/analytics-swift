@@ -14,6 +14,7 @@ struct System: State {
     let configuration: Configuration
     let settings: Settings?
     let running: Bool
+    let enabled: Bool
     
     struct UpdateSettingsAction: Action {
         let settings: Settings
@@ -21,7 +22,8 @@ struct System: State {
         func reduce(state: System) -> System {
             let result = System(configuration: state.configuration,
                                 settings: settings,
-                                running: state.running)
+                                running: state.running,
+                                enabled: state.enabled)
             return result
         }
     }
@@ -32,7 +34,30 @@ struct System: State {
         func reduce(state: System) -> System {
             return System(configuration: state.configuration,
                           settings: state.settings,
-                          running: running)
+                          running: running,
+                          enabled: state.enabled)
+        }
+    }
+    
+    struct ToggleEnabledAction: Action {
+        let enabled: Bool
+        
+        func reduce(state: System) -> System {
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: enabled)
+        }
+    }
+    
+    struct UpdateConfigurationAction: Action {
+        let configuration: Configuration
+        
+        func reduce(state: System) -> System {
+            return System(configuration: configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: state.enabled)
         }
     }
     
@@ -47,7 +72,8 @@ struct System: State {
             }
             return System(configuration: state.configuration,
                           settings: settings,
-                          running: state.running)
+                          running: state.running,
+                          enabled: state.enabled)
         }
     }
 }
@@ -112,7 +138,7 @@ extension System {
                 settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
-        return System(configuration: configuration, settings: settings, running: false)
+        return System(configuration: configuration, settings: settings, running: false, enabled: true)
     }
 }
 

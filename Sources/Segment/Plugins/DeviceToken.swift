@@ -22,7 +22,7 @@ public class DeviceToken: PlatformPlugin {
             do {
                 workingEvent.context = try JSON(context)
             } catch {
-                exceptionFailure("Unable to convert context to JSON: \(error)")
+                analytics?.reportInternalError(error)
             }
         }
         return workingEvent

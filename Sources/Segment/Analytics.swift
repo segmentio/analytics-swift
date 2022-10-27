@@ -11,7 +11,13 @@ import Sovran
 // MARK: - Base Setup
 
 public class Analytics {
-    internal var configuration: Configuration
+    internal var configuration: Configuration {
+        get {
+            // we're absolutely certain we will have a config
+            let system: System = store.currentState()!
+            return system.configuration
+        }
+    }
     internal var store: Store
     internal var storage: Storage
     
@@ -28,8 +34,6 @@ public class Analytics {
     /// - Parameters:
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
-        self.configuration = configuration
-        
         store = Store()
         storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
         timeline = Timeline()
@@ -38,11 +42,14 @@ public class Analytics {
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
         store.provide(state: UserInfo.defaultState(from: storage))
         
+        storage.analytics = self
+        
         // Get everything running
         platformStartup()
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
+        guard enabled == true else { return }
         let event = incomingEvent.applyRawEventData(store: store)
         _ = timeline.process(incomingEvent: event)
     }
@@ -51,6 +58,7 @@ public class Analytics {
     /// - Parameters:
     ///   - event: An event conforming to RawEvent that will be processed.
     public func process(event: RawEvent) {
+        guard enabled == true else { return }
         switch event {
         case let e as TrackEvent:
             timeline.process(incomingEvent: e)
@@ -71,6 +79,20 @@ public class Analytics {
 // MARK: - System Modifiers
 
 extension Analytics {
+    /// Enable/Disable analytics capture
+    public var enabled: Bool {
+        get {
+            if let system: System = store.currentState() {
+                return system.enabled
+            }
+            // we don't have state if we get here, so assume we're not enabled.
+            return false
+        }
+        set(value) {
+            store.dispatch(action: System.ToggleEnabledAction(enabled: value))
+        }
+    }
+    
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
@@ -85,6 +107,32 @@ extension Analytics {
             return userInfo.userId
         }
         return nil
+    }
+    
+    /// Adjusts the flush interval post configuration.
+    public var flushInterval: TimeInterval {
+        get {
+            configuration.values.flushInterval
+        }
+        set(value) {
+            if let state: System = store.currentState() {
+                let config = state.configuration.flushInterval(value)
+                store.dispatch(action: System.UpdateConfigurationAction(configuration: config))
+            }
+        }
+    }
+    
+    /// Adjusts the flush-at count post configuration.
+    public var flushAt: Int {
+        get {
+            configuration.values.flushAt
+        }
+        set(value) {
+            if let state: System = store.currentState() {
+                let config = state.configuration.flushAt(value)
+                store.dispatch(action: System.UpdateConfigurationAction(configuration: config))
+            }
+        }
     }
     
     /// Returns the traits that were specified in the last identify call.
@@ -182,6 +230,20 @@ extension Analytics {
     /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
         return storage.read(Storage.Constants.events)
+    }
+    
+    /// Purge all pending event upload files.
+    public func purgeStorage() {
+        if let files = pendingUploads {
+            for file in files {
+                purgeStorage(fileURL: file)
+            }
+        }
+    }
+    
+    /// Purge a single event upload file.
+    public func purgeStorage(fileURL: URL) {
+        try? FileManager.default.removeItem(at: fileURL)
     }
     
     /// Wait until the Analytics object has completed startup.

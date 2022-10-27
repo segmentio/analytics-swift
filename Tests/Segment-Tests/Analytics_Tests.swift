@@ -312,9 +312,11 @@ final class Analytics_Tests: XCTestCase {
 
     func testFlush() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey").flushInterval(9999).flushAt(9999))
         
         waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
     
@@ -323,9 +325,103 @@ final class Analytics_Tests: XCTestCase {
         analytics.flush()
         analytics.track(name: "test")
         
-        let newBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
+        let batches = analytics.storage.eventFiles(includeUnfinished: true)
+        let newBatchCount = batches.count
         // 1 new temp file
         XCTAssertTrue(newBatchCount == currentBatchCount + 1, "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
+    }
+    
+    func testEnabled() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "enabled")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent!.event == "enabled")
+
+        outputReader.lastEvent = nil
+        analytics.enabled = false
+        analytics.track(name: "notEnabled")
+        
+        let noEvent = outputReader.lastEvent
+        XCTAssertNil(noEvent)
+        
+        analytics.enabled = true
+        analytics.track(name: "enabled")
+
+        let newEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(newEvent!.event == "enabled")
+    }
+    
+    func testSetFlushIntervalAfter() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
+        
+        waitUntilStarted(analytics: analytics)
+
+        let segment = analytics.find(pluginType: SegmentDestination.self)!
+        XCTAssertTrue(segment.flushTimer!.interval == 30)
+        
+        analytics.flushInterval = 60
+        
+        RunLoop.main.run(until: Date.distantPast)
+        
+        XCTAssertTrue(segment.flushTimer!.interval == 60)
+    }
+    
+    func testSetFlushAtAfter() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
+        
+        waitUntilStarted(analytics: analytics)
+
+        let segment = analytics.find(pluginType: SegmentDestination.self)!
+        XCTAssertTrue(segment.flushAt == 20)
+        
+        analytics.flushAt = 60
+        
+        RunLoop.main.run(until: Date.distantPast)
+        
+        XCTAssertTrue(segment.flushAt == 60)
+    }
+    
+    func testPurgeStorage() {
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either").flushInterval(9999).flushAt(9999))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+    
+        let currentPendingCount = analytics.pendingUploads!.count
+        
+        XCTAssertEqual(currentPendingCount, 1)
+    
+        analytics.flush()
+        analytics.track(name: "test")
+        
+        analytics.flush()
+        analytics.track(name: "test")
+        
+        analytics.flush()
+        analytics.track(name: "test")
+        
+        var newPendingCount = analytics.pendingUploads!.count
+        XCTAssertEqual(newPendingCount, 4)
+        
+        let pending = analytics.pendingUploads!
+        analytics.purgeStorage(fileURL: pending.first!)
+
+        newPendingCount = analytics.pendingUploads!.count
+        XCTAssertEqual(newPendingCount, 3)
+        
+        analytics.purgeStorage()
+        newPendingCount = analytics.pendingUploads!.count
+        XCTAssertEqual(newPendingCount, 0)
     }
     
     func testVersion() {
