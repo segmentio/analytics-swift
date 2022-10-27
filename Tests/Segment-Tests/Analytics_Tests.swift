@@ -531,4 +531,27 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
         XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io", "dest1"])
     }
+    
+    func testRequestFactory() {
+        let config = Configuration(writeKey: "test").requestFactory { request in
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Accept-Encoding"), "gzip")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json; charset=utf-8")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Basic test")
+            XCTAssertTrue(request.value(forHTTPHeaderField: "User-Agent")!.contains("analytics-ios/"))
+            return request
+        }.errorHandler { error in
+            XCTFail("\(error)")
+        }
+        let analytics = Analytics(configuration: config)
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "something")
+        
+        analytics.flush()
+        
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))
+    }
 }

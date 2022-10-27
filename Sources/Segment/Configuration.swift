@@ -31,7 +31,7 @@ public class Configuration {
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
-        var errorHandler: ((Error) -> Void)?
+        var errorHandler: ((Error) -> Void)? = nil
     }
     
     internal var values: Values
@@ -100,7 +100,7 @@ public extension Configuration {
     }
     
     @discardableResult
-    func requestFactory(_ value: ((URLRequest) -> URLRequest)?) -> Configuration {
+    func requestFactory(_ value: @escaping (URLRequest) -> URLRequest) -> Configuration {
         values.requestFactory = value
         return self
     }
