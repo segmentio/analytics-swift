@@ -70,10 +70,9 @@ public class HTTPClient {
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
-                
-        var urlRequest = URLRequest(url: uploadURL)
-        urlRequest.httpMethod = "POST"
-        
+          
+        let urlRequest = configuredRequest(for: uploadURL, method: "POST")
+
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
@@ -106,9 +105,8 @@ public class HTTPClient {
             return
         }
         
-        var urlRequest = URLRequest(url: settingsURL)
-        urlRequest.httpMethod = "GET"
-
+        let urlRequest = configuredRequest(for: settingsURL, method: "GET")
+        
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
@@ -169,15 +167,24 @@ extension HTTPClient {
         return Self.defaultCDNHost
     }
     
+    internal func configuredRequest(for url: URL, method: String) -> URLRequest {
+        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 60)
+        request.httpMethod = method
+        request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.addValue("Basic \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.addValue("analytics-ios/\(Analytics.version())", forHTTPHeaderField: "User-Agent")
+        request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
+        
+        if let requestFactory = analytics?.configuration.values.requestFactory {
+            request = requestFactory(request)
+        }
+        
+        return request
+    }
+    
     internal static func configuredSession(for writeKey: String) -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = true
-        configuration.timeoutIntervalForResource = 30
-        configuration.timeoutIntervalForRequest = 60
         configuration.httpMaximumConnectionsPerHost = 2
-        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                               "Authorization": "Basic \(Self.authorizationHeaderForWriteKey(writeKey))",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
         let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         return session
     }

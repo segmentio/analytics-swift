@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if os(Linux)
+import FoundationNetworking
+#endif
 
 public typealias AdvertisingIdCallback = () -> String?
 
@@ -30,8 +33,10 @@ public class Configuration {
         var autoAddSegmentDestination: Bool = true
         var apiHost: String = HTTPClient.getDefaultAPIHost()
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
-        var errorHandler: ((Error) -> Void)?
+        var requestFactory: ((URLRequest) -> URLRequest)? = nil
+        var errorHandler: ((Error) -> Void)? = nil
     }
+    
     internal var values: Values
 
     public init(writeKey: String) {
@@ -94,6 +99,12 @@ public extension Configuration {
     @discardableResult
     func cdnHost(_ value: String) -> Configuration {
         values.cdnHost = value
+        return self
+    }
+    
+    @discardableResult
+    func requestFactory(_ value: @escaping (URLRequest) -> URLRequest) -> Configuration {
+        values.requestFactory = value
         return self
     }
     
