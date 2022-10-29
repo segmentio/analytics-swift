@@ -45,9 +45,6 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?
     
-    private var apiKey: String? = nil
-    private var apiHost: String? = nil
-    
     @Atomic internal var eventCount: Int = 0
     internal var flushAt: Int = 0
     internal var flushTimer: QueueTimer? = nil
@@ -71,11 +68,33 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     }
     
     public func update(settings: Settings, type: UpdateType) {
+        guard let analytics = analytics else { return }
         let segmentInfo = settings.integrationSettings(forKey: self.key)
-        apiKey = segmentInfo?[Self.Constants.apiKey.rawValue] as? String
-        apiHost = segmentInfo?[Self.Constants.apiHost.rawValue] as? String
-        if (apiHost != nil && apiKey != nil), let analytics = self.analytics {
-            httpClient = HTTPClient(analytics: analytics, apiKey: apiKey, apiHost: apiHost)
+        // if customer cycles out a writekey at app.segment.com, this is necessary.
+        /*
+         This actually works differently than anticipated.  It was thought that when a writeKey was
+         revoked, it's old writekey would redirect to the new, but it doesn't work this way.  As a result
+         it doesn't appear writekey can be changed remotely.  Leaving this here in case that changes in the
+         near future (written on 10/29/2022).
+         */
+        /*
+        if let key = segmentInfo?[Self.Constants.apiKey.rawValue] as? String, key.isEmpty == false {
+            if key != analytics.configuration.values.writeKey {
+                /*
+                 - would need to flush.
+                 - would need to change the writeKey across the system.
+                 - would need to re-init storage.
+                 - probably other things too ...
+                 */
+            }
+        }
+         */
+        // if customer specifies a different apiHost (ie: eu1.segmentapis.com) at app.segment.com ...
+        if let host = segmentInfo?[Self.Constants.apiHost.rawValue] as? String, host.isEmpty == false {
+            if host != analytics.configuration.values.writeKey {
+                analytics.configuration.values.apiHost = host
+                httpClient = HTTPClient(analytics: analytics)
+            }
         }
     }
     

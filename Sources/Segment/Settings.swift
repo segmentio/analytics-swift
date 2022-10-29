@@ -124,7 +124,7 @@ extension Analytics {
         #endif
         
         let writeKey = self.configuration.values.writeKey
-        let httpClient = HTTPClient(analytics: self, cdnHost: configuration.values.cdnHost)
+        let httpClient = HTTPClient(analytics: self)
         let systemState: System? = store.currentState()
         let hasSettings = (systemState?.settings?.integrations != nil && systemState?.settings?.plan != nil)
         let updateType = (hasSettings ? UpdateType.refresh : UpdateType.initial)
