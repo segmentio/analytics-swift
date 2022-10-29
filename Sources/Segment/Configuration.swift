@@ -10,16 +10,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-public typealias AdvertisingIdCallback = () -> String?
-
-
 // MARK: - Internal Configuration
-
-// - IDFA handled by external plugin if desired.
-// - recordingScreenViews handled by plugin?
-// - trackInAppPurchases handled by plugin?
-// - trackDeepLinks ??
-// - flushAt / flushInterval to be done by segment destination plugin
 
 public class Configuration {
     internal struct Values {
