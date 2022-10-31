@@ -27,26 +27,12 @@ public class HTTPClient {
     
     private weak var analytics: Analytics?
     
-    init(analytics: Analytics, apiKey: String? = nil, apiHost: String? = nil, cdnHost: String? = nil) {
+    init(analytics: Analytics) {
         self.analytics = analytics
         
-        if let apiKey = apiKey {
-            self.apiKey = apiKey
-        } else {
-            self.apiKey = analytics.configuration.values.writeKey
-        }
-        
-        if let apiHost = apiHost {
-            self.apiHost = apiHost
-        } else {
-            self.apiHost = Self.defaultAPIHost
-        }
-        
-        if let cdnHost = cdnHost {
-            self.cdnHost = cdnHost
-        } else {
-            self.cdnHost = Self.defaultCDNHost
-        }
+        self.apiKey = analytics.configuration.values.writeKey
+        self.apiHost = analytics.configuration.values.apiHost
+        self.cdnHost = analytics.configuration.values.cdnHost
         
         self.session = Self.configuredSession(for: self.apiKey)
     }
