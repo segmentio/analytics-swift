@@ -133,6 +133,10 @@ jobs:
       run: |
           cd Examples/apps/SegmentUIKitExample
           xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
+    - name: build for ios simulator
+      run: |
+          cd Examples/apps/SegmentWeatherWidget
+          xcodebuild -workspace "SegmentWeatherWidget.xcworkspace" -scheme "SegmentWeatherWidget" -sdk iphonesimulator
     - name: build for mac catalyst
       run: |
           cd Examples/apps/SegmentUIKitExample
