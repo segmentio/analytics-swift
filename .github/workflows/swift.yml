@@ -50,9 +50,9 @@ jobs:
     needs: cancel_previous
     runs-on: macos-11
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1.5.1
+    - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: '13.2.1'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
@@ -106,11 +106,11 @@ jobs:
     
   build_and_test_examples:
     needs: cancel_previous
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
     - uses: maxim-lobanov/setup-xcode@v1.5.1
       with:
-        xcode-version: latest-stable
+        xcode-version: '14.0.0'
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
