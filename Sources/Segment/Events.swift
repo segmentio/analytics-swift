@@ -35,7 +35,7 @@ extension Analytics {
     
     /// Associate a user with their unique ID and record traits about them.
     /// - Parameters:
-    ///   - userId: A database ID  for this user. If you don't have a userId
+    ///   - userId: A database ID for this user. If you don't have a userId
     ///     but want to record traits, just pass traits into the event and they will be associated
     ///     with the anonymousId of that user. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see
@@ -134,7 +134,7 @@ extension Analytics {
 extension Analytics {
     /// Associate a user with their unique ID and record traits about them.
     /// - Parameters:
-    ///   - userId: A database ID  for this user. If you don't have a userId
+    ///   - userId: A database ID for this user. If you don't have a userId
     ///     but want to record traits, just pass traits into the event and they will be associated
     ///     with the anonymousId of that user. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see
@@ -155,7 +155,7 @@ extension Analytics {
     
     /// Associate a user with their unique ID and record traits about them.
     /// - Parameters:
-    ///   - userId: A database ID  for this user. If you don't have a userId
+    ///   - userId: A database ID for this user. If you don't have a userId
     ///     but want to record traits, just pass traits into the event and they will be associated
     ///     with the anonymousId of that user. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see
