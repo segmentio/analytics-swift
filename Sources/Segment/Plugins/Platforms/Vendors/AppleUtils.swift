@@ -222,7 +222,7 @@ internal class MacOSVendorSystem: VendorSystem {
     }
     
     override var systemName: String {
-        return device.operatingSystemVersionString
+        return "macOS"
     }
     
     override var systemVersion: String {
