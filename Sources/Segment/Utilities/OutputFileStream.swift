@@ -83,6 +83,7 @@ internal class OutputFileStream {
         do {
             let existing = fileHandle
             fileHandle = nil
+            try existing?.synchronize() // this might be overkill, but JIC.
             try existing?.close()
         } catch {
             throw OutputStreamError.unableToClose(fileURL.path)
