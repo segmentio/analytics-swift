@@ -60,7 +60,7 @@ internal class OutputFileStream {
     
     func write(_ data: Data) throws {
         guard data.isEmpty == false else { return }
-        if #available(macOS 10.15.4, *) {
+        if #available(macOS 10.15.4, iOS 13.4, macCatalyst 13.4, tvOS 13.4, watchOS 13.4, *) {
             do {
                 try fileHandle?.write(contentsOf: data)
             } catch {
