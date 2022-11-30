@@ -533,16 +533,23 @@ final class Analytics_Tests: XCTestCase {
     }
     
     func testRequestFactory() {
-        let config = Configuration(writeKey: "test").requestFactory { request in
+        let config = Configuration(writeKey: "testSequential").requestFactory { request in
             XCTAssertEqual(request.value(forHTTPHeaderField: "Accept-Encoding"), "gzip")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json; charset=utf-8")
-            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Basic test")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Basic testSequential")
             XCTAssertTrue(request.value(forHTTPHeaderField: "User-Agent")!.contains("analytics-ios/"))
             return request
         }.errorHandler { error in
-            XCTFail("\(error)")
+            switch error {
+            case AnalyticsError.networkServerRejected(_):
+                // we expect this one; it's a bogus writekey
+                break;
+            default:
+                XCTFail("\(error)")
+            }
         }
         let analytics = Analytics(configuration: config)
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
