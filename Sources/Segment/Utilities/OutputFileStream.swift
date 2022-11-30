@@ -83,8 +83,14 @@ internal class OutputFileStream {
         do {
             let existing = fileHandle
             fileHandle = nil
-            try existing?.synchronize() // this might be overkill, but JIC.
-            try existing?.close()
+            if #available(tvOS 13.0, *) {
+                try existing?.synchronize() // this might be overkill, but JIC.
+                try existing?.close()
+            } else {
+                // Fallback on earlier versions
+                existing?.synchronizeFile()
+                existing?.closeFile()
+            }
         } catch {
             throw OutputStreamError.unableToClose(fileURL.path)
         }
