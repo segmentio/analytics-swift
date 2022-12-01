@@ -12,6 +12,7 @@ public enum AnalyticsError: Error {
     case storageUnableToWrite(String)
     case storageUnableToRename(String)
     case storageUnableToOpen(String)
+    case storageUnableToClose(String)
     case storageInvalid(String)
     case storageUnknown(Error)
 
@@ -41,6 +42,8 @@ extension Analytics {
                 return AnalyticsError.storageUnableToOpen(path)
             case .unableToWrite(let path):
                 return AnalyticsError.storageUnableToWrite(path)
+            case .unableToClose(let path):
+                return AnalyticsError.storageUnableToClose(path)
             }
         }
         

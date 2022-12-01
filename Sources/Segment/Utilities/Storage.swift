@@ -321,10 +321,11 @@ extension Storage {
         let fileEnding = "],\"sentAt\":\"\(sentAt)\",\"writeKey\":\"\(writeKey)\"}"
         do {
             try outputStream.write(fileEnding)
+            try outputStream.close()
         } catch {
             analytics?.reportInternalError(error)
         }
-        outputStream.close()
+        
         self.outputStream = nil
 
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
