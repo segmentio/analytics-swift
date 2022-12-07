@@ -17,6 +17,7 @@
 		46E38371265837EB00BA2502 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46E3836F265837EB00BA2502 /* LaunchScreen.storyboard */; };
 		46E3837A2658387D00BA2502 /* Sovran in Frameworks */ = {isa = PBXBuildFile; productRef = 46E383792658387D00BA2502 /* Sovran */; };
 		46E3837D265838B800BA2502 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 46E3837C265838B800BA2502 /* Segment */; };
+		823163E22941070500682352 /* InjectTraits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823163E12941070500682352 /* InjectTraits.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		46E3836D265837EB00BA2502 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		46E38370265837EB00BA2502 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		46E38372265837EB00BA2502 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		823163E12941070500682352 /* InjectTraits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectTraits.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				4663C72A267A8D6B00ADDD1A /* BasicExample.entitlements */,
 				46E38364265837EA00BA2502 /* AppDelegate.swift */,
 				465879BC268A511600180335 /* ConsoleLogger.swift */,
+				823163E12941070500682352 /* InjectTraits.swift */,
 				46E38366265837EA00BA2502 /* SceneDelegate.swift */,
 				469F7AF8265C25890038E773 /* EventData.swift */,
 				46E38368265837EA00BA2502 /* ViewController.swift */,
@@ -169,6 +172,7 @@
 				469F7AF9265C25890038E773 /* EventData.swift in Sources */,
 				465879BD268A511600180335 /* ConsoleLogger.swift in Sources */,
 				46E38367265837EA00BA2502 /* SceneDelegate.swift in Sources */,
+				823163E22941070500682352 /* InjectTraits.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
