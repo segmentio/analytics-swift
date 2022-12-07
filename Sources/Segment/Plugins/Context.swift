@@ -13,6 +13,7 @@ public class Context: PlatformPlugin {
     
     internal var staticContext = staticContextData()
     internal static var device = VendorSystem.current
+    internal let instanceId = UUID().uuidString
     
     public func execute<T: RawEvent>(event: T?) -> T? {
         guard var workingEvent = event else { return event }
@@ -20,6 +21,9 @@ public class Context: PlatformPlugin {
         var context = staticContext
         
         insertDynamicPlatformContextData(context: &context)
+        
+        // add instanceId to the context
+        context["instanceId"] = instanceId
         
         // if this event came in with context data already
         // let it take precedence over our values.
@@ -42,7 +46,7 @@ public class Context: PlatformPlugin {
         // library name
         staticContext["library"] = [
             "name": "analytics-swift",
-            "version": __segment_version
+            "version": __segment_version,
         ]
         
         // app info

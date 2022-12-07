@@ -536,7 +536,6 @@ final class Analytics_Tests: XCTestCase {
         let config = Configuration(writeKey: "testSequential").requestFactory { request in
             XCTAssertEqual(request.value(forHTTPHeaderField: "Accept-Encoding"), "gzip")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json; charset=utf-8")
-            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Basic testSequential")
             XCTAssertTrue(request.value(forHTTPHeaderField: "User-Agent")!.contains("analytics-ios/"))
             return request
         }.errorHandler { error in

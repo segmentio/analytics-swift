@@ -157,7 +157,6 @@ extension HTTPClient {
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 60)
         request.httpMethod = method
         request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.addValue("Basic \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("analytics-ios/\(Analytics.version())", forHTTPHeaderField: "User-Agent")
         request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
         
