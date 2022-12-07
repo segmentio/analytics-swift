@@ -80,27 +80,74 @@ extension Analytics {
                 p.continueUserActivity(activity)
             }
         }
+        
+        if activity.activityType == NSUserActivityTypeBrowsingWeb {
+            if let url = activity.webpageURL {
+                openURL(url, options: ["title": activity.title ?? ""])
+            }
+        }
     }
 }
 
 // MARK: - Opening a URL
 
 public protocol OpeningURLs {
-    func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any])
+    func openURL(_ url: URL, options: [String : Any])
 }
 
 extension OpeningURLs {
-    func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) {}
+    func openURL(_ url: URL, options: [String : Any]) {}
 }
 
 extension Analytics {
-    public func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) {
+    /**
+     Call openURL when instructed to by either UIApplicationDelegate or UISceneDelegate.
+     This is necessary to track URL referrers across events.  This method will also iterate
+     any plugins that are watching for openURL events.
+     
+     Example:
+     ```
+     <TODO>
+     ```
+     */
+    public func openURL<T: Codable>(_ url: URL, options: T? = nil) {
+        guard let jsonProperties = try? JSON(with: options) else { return }
+        guard let dict = jsonProperties.dictionaryValue else { return }
+        openURL(url, options: dict)
+    }
+    
+    /**
+     Call openURL when instructed to by either UIApplicationDelegate or UISceneDelegate.
+     This is necessary to track URL referrers across events.  This method will also iterate
+     any plugins that are watching for openURL events.
+     
+     Example:
+     ```
+     <TODO>
+     ```
+     */
+    public func openURL(_ url: URL, options: [String: Any] = [:]) {
+        store.dispatch(action: UserInfo.SetReferrerAction(url: url))
+        
+        // let any conforming plugins know
         apply { plugin in
             if let p = plugin as? OpeningURLs {
                 p.openURL(url, options: options)
             }
         }
+        
+        var jsonProperties: JSON? = nil
+        if let json = try? JSON(options) {
+            jsonProperties = json
+            _ = try? jsonProperties?.add(value: url.absoluteString, forKey: "url")
+        } else {
+            if let json = try? JSON(["url": url.absoluteString]) {
+                jsonProperties = json
+            }
+        }
+        track(name: "Deep Link Opened", properties: jsonProperties)
     }
 }
+
 
 #endif

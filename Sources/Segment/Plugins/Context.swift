@@ -25,6 +25,10 @@ public class Context: PlatformPlugin {
         // add instanceId to the context
         context["instanceId"] = instanceId
         
+        if let userInfo: UserInfo = analytics?.store.currentState(), let referrer = userInfo.referrer {
+            context["referrer"] = ["url": referrer.absoluteString]
+        }
+        
         // if this event came in with context data already
         // let it take precedence over our values.
         if let eventContext = workingEvent.context?.dictionaryValue {
