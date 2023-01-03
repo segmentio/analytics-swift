@@ -125,6 +125,9 @@ final class Analytics_Tests: XCTestCase {
 
         waitUntilStarted(analytics: analytics)
         
+        // add a referrer
+        analytics.openURL(URL(string: "https://google.com")!)
+        
         analytics.track(name: "token check")
         
         let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
@@ -138,6 +141,9 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(context?["timezone"], "timezone missing!")
         XCTAssertNotNil(context?["library"], "library missing!")
         XCTAssertNotNil(context?["device"], "device missing!")
+        
+        let referrer = context?["referrer"] as! [String: Any]
+        XCTAssertEqual(referrer["url"] as! String, "https://google.com")
 
         // this key not present on watchOS (doesn't have webkit)
         #if !os(watchOS)
