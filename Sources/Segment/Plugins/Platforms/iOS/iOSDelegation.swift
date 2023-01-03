@@ -89,15 +89,4 @@ extension Analytics {
     }
 }
 
-// MARK: - Opening a URL
-
-public protocol OpeningURLs {
-    func openURL(_ url: URL, options: [String : Any])
-}
-
-extension OpeningURLs {
-    func openURL(_ url: URL, options: [String : Any]) {}
-}
-
-
 #endif

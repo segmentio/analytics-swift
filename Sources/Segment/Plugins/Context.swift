@@ -7,6 +7,14 @@
 
 import Foundation
 
+public protocol OpeningURLs {
+    func openURL(_ url: URL, options: [String : Any])
+}
+
+extension OpeningURLs {
+    func openURL(_ url: URL, options: [String : Any]) {}
+}
+
 public class Context: PlatformPlugin {
     public let type: PluginType = .before
     public weak var analytics: Analytics?
