@@ -87,6 +87,14 @@ extension Analytics {
             }
         }
     }
+    
+    public func openURL(_ url: URL, options: [UIApplication.OpenURLOptionsKey: Any]) {
+        var converted: [String: Any] = [:]
+        for (key, value) in options {
+            converted[String(describing:key)] = value
+        }
+        openURL(url, options: converted)
+    }
 }
 
 #endif
