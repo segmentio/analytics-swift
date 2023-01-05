@@ -267,7 +267,11 @@ extension Analytics {
      
      Example:
      ```
-     <TODO>
+     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+         let myStruct = MyStruct(options)
+         analytics?.openURL(url, options: options)
+         return true
+     }
      ```
      */
     public func openURL<T: Codable>(_ url: URL, options: T? = nil) {
@@ -283,7 +287,10 @@ extension Analytics {
      
      Example:
      ```
-     <TODO>
+     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+         analytics?.openURL(url, options: options)
+         return true
+     }
      ```
      */
     public func openURL(_ url: URL, options: [String: Any] = [:]) {
