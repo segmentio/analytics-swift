@@ -127,4 +127,4 @@ rm $tempFile
 ./build.sh
 
 # upload the release
-gh release upload $version Segment.xcframework.zip
+gh release upload $newVersion Segment.xcframework.zip
