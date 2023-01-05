@@ -203,7 +203,6 @@ extension Analytics {
     public func manuallyEnableDestination(plugin: DestinationPlugin) {
         self.store.dispatch(action: System.AddDestinationToSettingsAction(key: plugin.key))
     }
-
 }
 
 extension Analytics {
@@ -257,5 +256,62 @@ extension Analytics {
                 RunLoop.main.run(until: Date.distantPast)
             }
         }
+    }
+}
+
+extension Analytics {
+    /**
+     Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
+     This is necessary to track URL referrers across events.  This method will also iterate
+     any plugins that are watching for openURL events.
+     
+     Example:
+     ```
+     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+         let myStruct = MyStruct(options)
+         analytics?.openURL(url, options: options)
+         return true
+     }
+     ```
+     */
+    public func openURL<T: Codable>(_ url: URL, options: T? = nil) {
+        guard let jsonProperties = try? JSON(with: options) else { return }
+        guard let dict = jsonProperties.dictionaryValue else { return }
+        openURL(url, options: dict)
+    }
+    
+    /**
+     Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
+     This is necessary to track URL referrers across events.  This method will also iterate
+     any plugins that are watching for openURL events.
+     
+     Example:
+     ```
+     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+         analytics?.openURL(url, options: options)
+         return true
+     }
+     ```
+     */
+    public func openURL(_ url: URL, options: [String: Any] = [:]) {
+        store.dispatch(action: UserInfo.SetReferrerAction(url: url))
+        
+        // let any conforming plugins know
+        apply { plugin in
+            if let p = plugin as? OpeningURLs {
+                p.openURL(url, options: options)
+            }
+        }
+        
+        var jsonProperties: JSON? = nil
+        if let json = try? JSON(options) {
+            jsonProperties = json
+            _ = try? jsonProperties?.add(value: url.absoluteString, forKey: "url")
+        } else {
+            if let json = try? JSON(["url": url.absoluteString]) {
+                jsonProperties = json
+            }
+        }
+        track(name: "Deep Link Opened", properties: jsonProperties)
     }
 }

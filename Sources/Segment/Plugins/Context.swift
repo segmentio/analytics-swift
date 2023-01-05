@@ -7,6 +7,14 @@
 
 import Foundation
 
+public protocol OpeningURLs {
+    func openURL(_ url: URL, options: [String : Any])
+}
+
+extension OpeningURLs {
+    func openURL(_ url: URL, options: [String : Any]) {}
+}
+
 public class Context: PlatformPlugin {
     public let type: PluginType = .before
     public weak var analytics: Analytics?
@@ -24,6 +32,10 @@ public class Context: PlatformPlugin {
         
         // add instanceId to the context
         context["instanceId"] = instanceId
+        
+        if let userInfo: UserInfo = analytics?.store.currentState(), let referrer = userInfo.referrer {
+            context["referrer"] = ["url": referrer.absoluteString]
+        }
         
         // if this event came in with context data already
         // let it take precedence over our values.
