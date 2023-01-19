@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Segment",
+    name: "SegmentDeprecated",
     platforms: [
         .macOS("10.15"),
         .iOS("13.0"),
@@ -14,7 +14,7 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "Segment",
+            name: "SegmentDeprecated",
             targets: ["Segment"]),
     ],
     dependencies: [
