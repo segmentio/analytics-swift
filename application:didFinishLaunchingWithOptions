@@ -1,0 +1,9 @@
+SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:@"GuFdwhVCg91vhdMuLAA3Zl6Z2PrzuOXT"];
+
+// Enable this to record certain application events automatically!
+configuration.trackApplicationLifecycleEvents = YES;
+
+// Enable this to record screen views automatically!
+configuration.recordScreenViews = YES;
+
+[SEGAnalytics setupWithConfiguration:configuration];
