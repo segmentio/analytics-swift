@@ -117,8 +117,9 @@ internal class Storage: Subscriber {
             result = true
         } else {
             switch value {
-            case is NSNull:
-                fallthrough
+            // NSNull is not valid for UserDefaults
+            //case is NSNull:
+            //    fallthrough
             case is Decimal:
                 fallthrough
             case is NSNumber:
