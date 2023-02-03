@@ -17,6 +17,56 @@ class StorageTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+    
+    func testSettingsWrite() throws {
+        let dummySettings = """
+        {
+            "integrations": {
+              "Segment.io": {
+                "apiKey": "1234",
+                "unbundledIntegrations": [],
+                "addBundledMetadata": true
+              }
+            },
+            "middlewareSettings": {
+              "routingRules": [
+                {
+                  "transformers": [
+                    [
+                      {
+                        "type": "allow_properties",
+                        "config": {
+                          "allow": {
+                            "traits": null,
+                            "context": null,
+                            "_metadata": null,
+                            "integrations": null,
+                          }
+                        }
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+          }
+        """
+        let jsonData = dummySettings.data(using: .utf8)!
+        let jsonSettings = try! JSONSerialization.jsonObject(with: jsonData)
+        
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        // this will crash if it fails.
+        let j = try! JSON(jsonSettings)
+        analytics.storage.write(.settings, value: j)
+        
+        RunLoop.main.run(until: Date.distantPast)
+        
+        let result: JSON? = analytics.storage.read(.settings)
+
+        XCTAssertNotNil(result)
+    }
 
     func testBasicWriting() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
