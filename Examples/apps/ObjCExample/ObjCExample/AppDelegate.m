@@ -18,7 +18,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    SEGConfiguration *config = [[SEGConfiguration alloc] initWithWriteKey:@"GM88xxNqA6PfthZE9ZzA2AREQBMjc6xA"];
+    SEGConfiguration *config = [[SEGConfiguration alloc] initWithWriteKey:@"<writekey>"];
     config.trackApplicationLifecycleEvents = YES;
     
     _analytics = [[SEGAnalytics alloc] initWithConfiguration: config];
