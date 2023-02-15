@@ -6,9 +6,11 @@
 //
 
 #import <UIKit/UIKit.h>
+@import Segment;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+@property (nonatomic, retain, nullable) SEGAnalytics *analytics;
 
 @end
 

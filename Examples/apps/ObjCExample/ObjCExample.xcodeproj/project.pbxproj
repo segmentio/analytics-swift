@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		460FF309299AAEEC00635FF9 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 460FF308299AAEEC00635FF9 /* Segment */; };
 		464247BC26C6D7A700CAD301 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BB26C6D7A700CAD301 /* AppDelegate.m */; };
 		464247BF26C6D7A700CAD301 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BE26C6D7A700CAD301 /* SceneDelegate.m */; };
 		464247C226C6D7A700CAD301 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247C126C6D7A700CAD301 /* ViewController.m */; };
@@ -14,7 +15,6 @@
 		464247C726C6D7A800CAD301 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 464247C626C6D7A800CAD301 /* Assets.xcassets */; };
 		464247CA26C6D7A800CAD301 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 464247C826C6D7A800CAD301 /* LaunchScreen.storyboard */; };
 		464247CD26C6D7A800CAD301 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247CC26C6D7A800CAD301 /* main.m */; };
-		464247D526C6D7DC00CAD301 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 464247D426C6D7DC00CAD301 /* Segment */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				464247D526C6D7DC00CAD301 /* Segment in Frameworks */,
+				460FF309299AAEEC00635FF9 /* Segment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +103,7 @@
 			);
 			name = ObjCExample;
 			packageProductDependencies = (
-				464247D426C6D7DC00CAD301 /* Segment */,
+				460FF308299AAEEC00635FF9 /* Segment */,
 			);
 			productName = ObjCExample;
 			productReference = 464247B726C6D7A700CAD301 /* ObjCExample.app */;
@@ -357,7 +357,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		464247D426C6D7DC00CAD301 /* Segment */ = {
+		460FF308299AAEEC00635FF9 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
 		};
