@@ -167,6 +167,11 @@ extension ObjCAnalytics {
     }
     
     @objc
+    public func openURL(_ url: URL, options: [String: Any] = [:]) {
+        analytics.openURL(url, options: options)
+    }
+    
+    @objc
     public func version() -> String {
         return analytics.version()
     }

@@ -34,16 +34,6 @@ public class ObjCConfiguration: NSObject {
     }
     
     @objc
-    public var trackDeeplinks: Bool {
-        get {
-            return configuration.values.trackDeeplinks
-        }
-        set(value) {
-            configuration.trackDeeplinks(value)
-        }
-    }
-    
-    @objc
     public var flushAt: Int {
         get {
             return configuration.values.flushAt

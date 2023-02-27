@@ -17,7 +17,6 @@ public class Configuration {
         var writeKey: String
         var application: Any? = nil
         var trackApplicationLifecycleEvents: Bool = true
-        var trackDeeplinks: Bool = true
         var flushAt: Int = 20
         var flushInterval: TimeInterval = 30
         var defaultSettings: Settings? = nil
@@ -48,12 +47,6 @@ public extension Configuration {
     @discardableResult
     func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
         values.trackApplicationLifecycleEvents = enabled
-        return self
-    }
-    
-    @discardableResult
-    func trackDeeplinks(_ enabled: Bool) -> Configuration {
-        values.trackDeeplinks = enabled
         return self
     }
     
