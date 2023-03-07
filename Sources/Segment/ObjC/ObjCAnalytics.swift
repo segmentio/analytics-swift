@@ -65,6 +65,8 @@ extension ObjCAnalytics {
     @objc(identify:traits:)
     public func identify(userId: String?, traits: [String: Any]?) {
         if let userId = userId {
+            // at first glance this looks like recursion.  It's actually calling
+            // into the swift version of this call where userId is NOT optional.
             analytics.identify(userId: userId, traits: traits)
         } else if let traits = try? JSON(traits as Any) {
             analytics.store.dispatch(action: UserInfo.SetTraitsAction(traits: traits))
