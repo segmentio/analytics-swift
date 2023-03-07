@@ -110,7 +110,7 @@ struct UserInfo: Codable, State {
     }
     
     struct SetUserIdAndTraitsAction: Action {
-        let userId: String
+        let userId: String?
         let traits: JSON?
         
         func reduce(state: UserInfo) -> UserInfo {
