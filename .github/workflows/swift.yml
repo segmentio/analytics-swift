@@ -163,4 +163,4 @@ jobs:
     - name: build for ios simulator
       run: |
           cd Examples/apps/DestinationsExample
-          xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator
+          xcodebuild -workspace "DestinationsExample.xcworkspace" -scheme "DestinationsExample" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11,OS=14.0'
