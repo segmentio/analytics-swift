@@ -63,8 +63,18 @@ extension ObjCAnalytics {
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     /// In the case when user logs out, make sure to call ``reset()`` to clear user's identity info.
     @objc(identify:traits:)
-    public func identify(userId: String, traits: [String: Any]?) {
-        analytics.identify(userId: userId, traits: traits)
+    public func identify(userId: String?, traits: [String: Any]?) {
+        if let userId = userId {
+            // at first glance this looks like recursion.  It's actually calling
+            // into the swift version of this call where userId is NOT optional.
+            analytics.identify(userId: userId, traits: traits)
+        } else if let traits = try? JSON(traits as Any) {
+            analytics.store.dispatch(action: UserInfo.SetTraitsAction(traits: traits))
+            let userInfo: UserInfo? = analytics.store.currentState()
+            let userId = userInfo?.userId
+            let event = IdentifyEvent(userId: userId, traits: traits)
+            analytics.process(incomingEvent: event)
+        }
     }
     
     /// Track a screen change with a title, category and other properties.

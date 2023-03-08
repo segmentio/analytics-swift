@@ -50,6 +50,8 @@ class ObjC_Tests: XCTestCase {
         config.defaultSettings = ["integrations": ["Amplitude": true]]
         
         let analytics = ObjCAnalytics(configuration: config)
+        analytics.reset()
+        
         analytics.identify(userId: "testPerson", traits: ["email" : "blah@blah.com"])
         
         waitUntilStarted(analytics: analytics.analytics)
@@ -63,6 +65,25 @@ class ObjC_Tests: XCTestCase {
         let traits = analytics.traits()
         XCTAssertTrue(traits != nil)
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
+        
+        let userId = analytics.userId
+        XCTAssertTrue(userId == "testPerson")
+    }
+    
+    func testTraitsAndUserIdOptionality() {
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let analytics = ObjCAnalytics(configuration: config)
+        analytics.reset()
+        
+        analytics.identify(userId: nil, traits: ["email" : "blah@blah.com"])
+        
+        waitUntilStarted(analytics: analytics.analytics)
+        let userId = analytics.userId
+        XCTAssertNil(userId)
+        let traits = analytics.traits()
+        XCTAssertTrue(traits != nil)
+        XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
+
     }
 }
 
