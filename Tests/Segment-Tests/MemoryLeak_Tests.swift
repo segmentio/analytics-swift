@@ -29,7 +29,6 @@ final class MemoryLeak_Tests: XCTestCase {
         let segmentDest = analytics.find(pluginType: SegmentDestination.self)!
         let destMetadata = segmentDest.timeline.find(pluginType: DestinationMetadataPlugin.self)!
         let startupQueue = analytics.find(pluginType: StartupQueue.self)!
-        let segmentLog = analytics.find(pluginType: SegmentLog.self)!
          
         let context = analytics.find(pluginType: Context.self)!
         
@@ -48,7 +47,6 @@ final class MemoryLeak_Tests: XCTestCase {
         #endif
 
         analytics.remove(plugin: startupQueue)
-        analytics.remove(plugin: segmentLog)
         analytics.remove(plugin: segmentDest)
         segmentDest.remove(plugin: destMetadata)
          
@@ -69,7 +67,6 @@ final class MemoryLeak_Tests: XCTestCase {
 
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
 
-        checkIfLeaked(segmentLog)
         checkIfLeaked(segmentDest)
         checkIfLeaked(destMetadata)
         checkIfLeaked(startupQueue)

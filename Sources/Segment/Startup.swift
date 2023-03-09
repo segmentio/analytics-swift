@@ -11,7 +11,6 @@ import Sovran
 extension Analytics: Subscriber {
         
     internal func platformStartup() {
-        add(plugin: SegmentLog())
         add(plugin: StartupQueue())
         
         // add segment destination plugin unless

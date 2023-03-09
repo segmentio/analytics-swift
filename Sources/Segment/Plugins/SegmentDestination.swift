@@ -153,7 +153,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
                             storage.remove(file: url)
                             self.cleanupUploads()
                         default:
-                            analytics.logFlush()
+                            break
                     }
                     
                     analytics.log(message: "Processed: \(url.lastPathComponent)")
