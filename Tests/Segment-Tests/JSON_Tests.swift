@@ -52,6 +52,16 @@ class JSONTests: XCTestCase {
         }
     }
     
+    func testJSONCollectionTypes() throws {
+        let testSet: Set = ["1", "2", "3"]
+        let traits = try! JSON(["type": NSNull(), "preferences": ["bwack"], "key": testSet])
+        let jsonSet = traits["key"]
+        XCTAssertNotNil(jsonSet)
+        let array = jsonSet!.arrayValue!
+        XCTAssertNotNil(array)
+        XCTAssertEqual(array.count, 3)
+    }
+    
     func testJSONNil() throws {
         let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil])
         let encoder = JSONEncoder()
