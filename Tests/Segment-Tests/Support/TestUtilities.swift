@@ -33,17 +33,9 @@ class GooberPlugin: EventPlugin {
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
-        let beginningTime = Date()
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "goober"
-        sleep(3)
-        let endingTime = Date()
-        let finalTime = endingTime.timeIntervalSince(beginningTime)
-        
-        Analytics.segmentMetric(.gauge, name: "Gauge Test", value: finalTime, tags: ["timing", "function_length"])
-        
         return newEvent
-        //return nil
     }
 }
 
