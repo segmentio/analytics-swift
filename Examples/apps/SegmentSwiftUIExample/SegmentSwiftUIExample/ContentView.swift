@@ -26,7 +26,6 @@ struct ContentView: View {
             HStack {
                 Button(action: {
                     Analytics.main.group(groupId: "12345-Group")
-                    Analytics.main.log(message: "Started group")
                 }, label: {
                     Text("Group")
                 }).padding(6)
