@@ -59,7 +59,9 @@ public enum JSON: Equatable {
             self = .string(string)
         case let bool as Bool:
             self = .bool(bool)
-        case let array as any Collection:
+        case let aSet as Set<AnyHashable>:
+            self = .array(try aSet.map(JSON.init))
+        case let array as Array<Any>:
             self = .array(try array.map(JSON.init))
         case let object as [String: Any]:
             self = .object(try object.mapValues(JSON.init))
