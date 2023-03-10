@@ -11,7 +11,6 @@
 		46871695270E16080028B595 /* UIKitScreenTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4687168F270E16080028B595 /* UIKitScreenTracking.swift */; };
 		46871696270E16080028B595 /* ConsentTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871690270E16080028B595 /* ConsentTracking.swift */; };
 		46871697270E16080028B595 /* IDFACollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871691270E16080028B595 /* IDFACollection.swift */; };
-		46871698270E16080028B595 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46871692270E16080028B595 /* ConsoleLogger.swift */; };
 		468DE06527D28C6500F2D94B /* SegmentAmplitude in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE06427D28C6500F2D94B /* SegmentAmplitude */; };
 		468DE06827D28C7E00F2D94B /* SegmentAppsFlyer in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE06727D28C7E00F2D94B /* SegmentAppsFlyer */; };
 		468DE06B27D28CB200F2D94B /* SegmentFacebook in Frameworks */ = {isa = PBXBuildFile; productRef = 468DE06A27D28CB200F2D94B /* SegmentFacebook */; };
@@ -34,7 +33,6 @@
 		4687168F270E16080028B595 /* UIKitScreenTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKitScreenTracking.swift; sourceTree = "<group>"; };
 		46871690270E16080028B595 /* ConsentTracking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsentTracking.swift; sourceTree = "<group>"; };
 		46871691270E16080028B595 /* IDFACollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IDFACollection.swift; sourceTree = "<group>"; };
-		46871692270E16080028B595 /* ConsoleLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		469EC8CF266066130068F9E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		469EC8E1266828AF0068F9E3 /* DestinationsExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DestinationsExample-Bridging-Header.h"; sourceTree = "<group>"; };
 		469F7B04266011690038E773 /* DestinationsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DestinationsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,7 +73,6 @@
 				4687168F270E16080028B595 /* UIKitScreenTracking.swift */,
 				46871690270E16080028B595 /* ConsentTracking.swift */,
 				46871691270E16080028B595 /* IDFACollection.swift */,
-				46871692270E16080028B595 /* ConsoleLogger.swift */,
 			);
 			name = other_plugins;
 			path = ../../../other_plugins;
@@ -220,7 +217,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46871698270E16080028B595 /* ConsoleLogger.swift in Sources */,
 				469F7B0C266011690038E773 /* ViewController.swift in Sources */,
 				469F7B08266011690038E773 /* AppDelegate.swift in Sources */,
 				46871694270E16080028B595 /* NotificationTracking.swift in Sources */,
