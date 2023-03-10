@@ -54,12 +54,15 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
             ])
         }
         
+        let sourceApp: String? = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
+        let url: String? = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String ?? ""
+        
         analytics?.track(name: "Application Opened", properties: [
             "from_background": false,
             "version": currentVersion ?? "",
             "build": currentBuild ?? "",
-            "referring_application": launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] ?? "",
-            "url": launchOptions?[UIApplication.LaunchOptionsKey.url] ?? ""
+            "referring_application": sourceApp,
+            "url": url
         ])
         
         UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)

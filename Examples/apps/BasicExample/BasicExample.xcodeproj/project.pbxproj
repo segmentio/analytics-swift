@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		465879BD268A511600180335 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879BC268A511600180335 /* ConsoleLogger.swift */; };
 		469F7AF9265C25890038E773 /* EventData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469F7AF8265C25890038E773 /* EventData.swift */; };
 		46E38365265837EA00BA2502 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E38364265837EA00BA2502 /* AppDelegate.swift */; };
 		46E38367265837EA00BA2502 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E38366265837EA00BA2502 /* SceneDelegate.swift */; };
@@ -20,7 +19,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		465879BC268A511600180335 /* ConsoleLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConsoleLogger.swift; path = ../../../other_plugins/ConsoleLogger.swift; sourceTree = "<group>"; };
 		4663C72A267A8D6B00ADDD1A /* BasicExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BasicExample.entitlements; sourceTree = "<group>"; };
 		469F7AF8265C25890038E773 /* EventData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventData.swift; sourceTree = "<group>"; };
 		46E38361265837EA00BA2502 /* BasicExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BasicExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,7 +66,6 @@
 			children = (
 				4663C72A267A8D6B00ADDD1A /* BasicExample.entitlements */,
 				46E38364265837EA00BA2502 /* AppDelegate.swift */,
-				465879BC268A511600180335 /* ConsoleLogger.swift */,
 				46E38366265837EA00BA2502 /* SceneDelegate.swift */,
 				469F7AF8265C25890038E773 /* EventData.swift */,
 				46E38368265837EA00BA2502 /* ViewController.swift */,
@@ -167,7 +164,6 @@
 				46E38369265837EA00BA2502 /* ViewController.swift in Sources */,
 				46E38365265837EA00BA2502 /* AppDelegate.swift in Sources */,
 				469F7AF9265C25890038E773 /* EventData.swift in Sources */,
-				465879BD268A511600180335 /* ConsoleLogger.swift in Sources */,
 				46E38367265837EA00BA2502 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
