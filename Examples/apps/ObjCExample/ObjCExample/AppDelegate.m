@@ -28,6 +28,22 @@
     
     [self.analytics flush];
     
+    [self.analytics addSourceMiddleware:^NSDictionary<NSString *,id> * _Nullable(NSDictionary<NSString *,id> * _Nullable event) {
+        // drop all events named booya
+        NSString *eventType = event[@"type"];
+        if ([eventType isEqualToString:@"track"]) {
+            NSString *eventName = event[@"event"];
+            if ([eventName isEqualToString:@"booya"]) {
+                return nil;
+            }
+        }
+        return event;
+    }];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.analytics track:@"booya"];
+    });
+    
     return YES;
 }
 
