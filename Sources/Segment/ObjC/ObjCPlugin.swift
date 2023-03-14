@@ -5,6 +5,8 @@
 //  Created by Brandon Sneed on 3/14/23.
 //
 
+#if !os(Linux)
+
 import Foundation
 import Sovran
 
@@ -54,3 +56,5 @@ internal class ObjCShimPlugin: Plugin, Subscriber {
         }
     }
 }
+
+#endif
