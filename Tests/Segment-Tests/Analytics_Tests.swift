@@ -566,4 +566,43 @@ final class Analytics_Tests: XCTestCase {
         
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))
     }
+    
+    func testEnrichment() {
+        var sourceHit: Bool = false
+        let sourceEnrichment: EnrichmentClosure = { event in
+            print("source enrichment applied")
+            sourceHit = true
+            return event
+        }
+        
+        var destHit: Bool = true
+        let destEnrichment: EnrichmentClosure = { event in
+            print("destination enrichment applied")
+            destHit = true
+            return event
+        }
+        
+        let config = Configuration(writeKey: "testEnrichments")
+        let analytics = Analytics(configuration: config)
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        analytics.add(enrichment: sourceEnrichment)
+        
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        segment?.add(enrichment: destEnrichment)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "something")
+        
+        analytics.flush()
+        
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))
+        
+        XCTAssertTrue(sourceHit)
+        XCTAssertTrue(destHit)
+
+    }
 }
