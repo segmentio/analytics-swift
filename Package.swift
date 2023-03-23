@@ -16,6 +16,9 @@ let package = Package(
         .library(
             name: "Segment",
             targets: ["Segment"]),
+        .library(
+            name: "SegmentObjCSupport",
+            targets: ["SegmentObjCSupport"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -32,6 +35,9 @@ let package = Package(
         .target(
             name: "Segment",
             dependencies: ["Sovran"]),
+        .target(
+            name: "SegmentObjCSupport",
+            dependencies: ["Segment"]),
         .testTarget(
             name: "Segment-Tests",
             dependencies: ["Segment"]),

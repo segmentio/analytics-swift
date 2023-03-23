@@ -28,7 +28,7 @@ extension Analytics {
         }
     }
     
-    internal func log(message: String) {
+    public func log(message: String) {
         Self.segmentLog(message: message, kind: .none)
     }
     

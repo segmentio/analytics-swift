@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		460FF309299AAEEC00635FF9 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 460FF308299AAEEC00635FF9 /* Segment */; };
+		46262AB229CB731B005C68FF /* SegmentMixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 46262AB129CB731B005C68FF /* SegmentMixpanel */; };
+		46262AB429CCB4BF005C68FF /* SegmentObjCSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 46262AB329CCB4BF005C68FF /* SegmentObjCSupport */; };
 		464247BC26C6D7A700CAD301 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BB26C6D7A700CAD301 /* AppDelegate.m */; };
 		464247BF26C6D7A700CAD301 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BE26C6D7A700CAD301 /* SceneDelegate.m */; };
 		464247C226C6D7A700CAD301 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247C126C6D7A700CAD301 /* ViewController.m */; };
@@ -37,6 +39,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46262AB429CCB4BF005C68FF /* SegmentObjCSupport in Frameworks */,
+				46262AB229CB731B005C68FF /* SegmentMixpanel in Frameworks */,
 				460FF309299AAEEC00635FF9 /* Segment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,6 +108,8 @@
 			name = ObjCExample;
 			packageProductDependencies = (
 				460FF308299AAEEC00635FF9 /* Segment */,
+				46262AB129CB731B005C68FF /* SegmentMixpanel */,
+				46262AB329CCB4BF005C68FF /* SegmentObjCSupport */,
 			);
 			productName = ObjCExample;
 			productReference = 464247B726C6D7A700CAD301 /* ObjCExample.app */;
@@ -131,6 +137,9 @@
 				Base,
 			);
 			mainGroup = 464247AE26C6D7A700CAD301;
+			packageReferences = (
+				469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */,
+			);
 			productRefGroup = 464247B826C6D7A700CAD301 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -356,10 +365,30 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/segment-integrations/analytics-swift-mixpanel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		460FF308299AAEEC00635FF9 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
+		};
+		46262AB129CB731B005C68FF /* SegmentMixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */;
+			productName = SegmentMixpanel;
+		};
+		46262AB329CCB4BF005C68FF /* SegmentObjCSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SegmentObjCSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
