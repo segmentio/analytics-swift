@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 @import Segment;
+@import SegmentMixpanel;
 
 @interface AppDelegate ()
 
@@ -39,6 +40,9 @@
         }
         return event;
     }];
+    
+    //[self.analytics addDestination:[[SEGMixpanelDestination alloc] init]];
+    
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.analytics track:@"booya"];

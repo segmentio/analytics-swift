@@ -31,6 +31,13 @@ public class Configuration {
 
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
+        // enable segment destination by default
+        var settings = Settings(writeKey: writeKey)
+        settings.integrations = try? JSON([
+            "Segment.io": true
+        ])
+        
+        self.defaultSettings(settings)
     }
 }
 
