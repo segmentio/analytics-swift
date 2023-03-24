@@ -8,7 +8,6 @@
 #if !os(Linux)
 
 import Foundation
-import Segment
 import Sovran
 
 internal class ObjCShimPlugin: Plugin, Subscriber {

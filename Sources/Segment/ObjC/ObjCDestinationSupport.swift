@@ -8,7 +8,6 @@
 #if !os(Linux)
 
 import Foundation
-import Segment
 
 @objc(SEGDestination)
 public protocol ObjCDestination {}
@@ -17,16 +16,17 @@ public protocol ObjCDestinationShim {
     func instance() -> DestinationPlugin
 }
 
-// MARK: Mixpanel
+// NOTE: Destination plugins need something similar to the following to work
+// in objective-c.
 
-#if canImport(SegmentMixpanel)
-import SegmentMixpanel
+/*
+
 @objc(SEGMixpanelDestination)
 public class ObjCSegmentMixpanel: NSObject, ObjCDestination, ObjCDestinationShim {
     public func instance() -> DestinationPlugin { return MixpanelDestination() }
 }
-#endif
 
+*/
 
 
 #endif // !os(Linux)

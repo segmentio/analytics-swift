@@ -93,10 +93,17 @@ internal class Storage: Subscriber {
         return result
     }
     
+    static func hardSettingsReset(writeKey: String) {
+        guard let defaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)") else { return }
+        defaults.removeObject(forKey: Constants.anonymousId.rawValue)
+        defaults.removeObject(forKey: Constants.settings.rawValue)
+        print(Array(defaults.dictionaryRepresentation().keys).count)
+    }
+    
     func hardReset(doYouKnowHowToUseThis: Bool) {
         syncQueue.sync {
             if doYouKnowHowToUseThis != true { return }
-
+            
             let urls = eventFiles(includeUnfinished: true)
             for key in Constants.allCases {
                 // on linux, setting a key's value to nil just deadlocks.
