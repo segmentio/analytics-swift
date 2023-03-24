@@ -93,8 +93,6 @@ class ObjC_Tests: XCTestCase {
         Storage.hardSettingsReset(writeKey: "WRITE_KEY")
         
         let config = ObjCConfiguration(writeKey: "WRITE_KEY")
-        //config.defaultSettings = ["integrations": ["Segment.io": true]]
-
         let analytics = ObjCAnalytics(configuration: config)
         analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
