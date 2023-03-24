@@ -37,11 +37,12 @@
 		4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4663C728267A799100ADDD1A /* QueueTimer.swift */; };
 		466EC2CE28FB7D5D001B384E /* OutputFileStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466EC2CD28FB7D5D001B384E /* OutputFileStream.swift */; };
 		4697A238290341EF00FAE14F /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4697A237290341EF00FAE14F /* Errors.swift */; };
-		469891A329C11A890021B552 /* ObjCPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469891A229C11A890021B552 /* ObjCPlugin.swift */; };
 		46A018C225E5857D00F9CCD8 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C125E5857D00F9CCD8 /* Context.swift */; };
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
 		46A018EE25E9A74F00F9CCD8 /* VendorSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */; };
+		46A9439F29CE162A00D65DC3 /* ObjCDestinationSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A9439D29CE162A00D65DC3 /* ObjCDestinationSupport.swift */; };
+		46A943A029CE162A00D65DC3 /* ObjCPluginSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A9439E29CE162A00D65DC3 /* ObjCPluginSupport.swift */; };
 		46B1AC6927346D3D00846DE8 /* StressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46B1AC6827346D3D00846DE8 /* StressTests.swift */; };
 		46E382E72654429A00BA2502 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E382E62654429A00BA2502 /* Utils.swift */; };
 		46F7485D26C718710042798E /* ObjCAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F7485B26C718710042798E /* ObjCAnalytics.swift */; };
@@ -125,11 +126,12 @@
 		4663C728267A799100ADDD1A /* QueueTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTimer.swift; sourceTree = "<group>"; };
 		466EC2CD28FB7D5D001B384E /* OutputFileStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputFileStream.swift; sourceTree = "<group>"; };
 		4697A237290341EF00FAE14F /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
-		469891A229C11A890021B552 /* ObjCPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCPlugin.swift; sourceTree = "<group>"; };
 		46A018C125E5857D00F9CCD8 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
 		46A018ED25E9A74F00F9CCD8 /* VendorSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VendorSystem.swift; sourceTree = "<group>"; };
+		46A9439D29CE162A00D65DC3 /* ObjCDestinationSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCDestinationSupport.swift; sourceTree = "<group>"; };
+		46A9439E29CE162A00D65DC3 /* ObjCPluginSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCPluginSupport.swift; sourceTree = "<group>"; };
 		46B1AC6827346D3D00846DE8 /* StressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StressTests.swift; sourceTree = "<group>"; };
 		46D98E3D26D6FEF300E7A86A /* FlurryDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlurryDestination.swift; sourceTree = "<group>"; };
 		46D98E3E26D6FEF300E7A86A /* AdjustDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdjustDestination.swift; sourceTree = "<group>"; };
@@ -222,7 +224,8 @@
 			children = (
 				46F7485B26C718710042798E /* ObjCAnalytics.swift */,
 				46F7485C26C718710042798E /* ObjCConfiguration.swift */,
-				469891A229C11A890021B552 /* ObjCPlugin.swift */,
+				46A9439D29CE162A00D65DC3 /* ObjCDestinationSupport.swift */,
+				46A9439E29CE162A00D65DC3 /* ObjCPluginSupport.swift */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -528,6 +531,7 @@
 				46022764261E64A800A9E913 /* iOSLifecycleEvents.swift in Sources */,
 				96A9624E2810C6B80011DE54 /* macOSLifecycleEvents.swift in Sources */,
 				460FF30B29BA525900635FF9 /* Logging.swift in Sources */,
+				46A9439F29CE162A00D65DC3 /* ObjCDestinationSupport.swift in Sources */,
 				4621080C2605332D00EBC4A8 /* KeyPath.swift in Sources */,
 				A31A16262576B6F200C9CDDF /* Timeline.swift in Sources */,
 				96C33AB1258961F500F3D538 /* Settings.swift in Sources */,
@@ -543,11 +547,11 @@
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
-				469891A329C11A890021B552 /* ObjCPlugin.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
 				46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */,
 				759D6CD127B48ABB00AB900A /* DestinationMetadataPlugin.swift in Sources */,
+				46A943A029CE162A00D65DC3 /* ObjCPluginSupport.swift in Sources */,
 				A31A162F2576B73F00C9CDDF /* State.swift in Sources */,
 				9692726825A583A6009B5298 /* SegmentDestination.swift in Sources */,
 				4602276C261E7BF900A9E913 /* iOSDelegation.swift in Sources */,
