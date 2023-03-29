@@ -13,7 +13,7 @@ import Foundation
 public protocol ObjCDestination {}
 
 public protocol ObjCDestinationShim {
-    func instance() -> DestinationPlugin
+    func instance() -> EventPlugin
 }
 
 // NOTE: Destination plugins need something similar to the following to work
