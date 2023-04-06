@@ -48,6 +48,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     @Atomic internal var eventCount: Int = 0
     internal var flushAt: Int = 0
     internal var flushTimer: QueueTimer? = nil
+    internal var flushPolicies: [FlushPolicy] = []
     
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
@@ -61,6 +62,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
                 self?.flush()
             }
             self.flushAt = state.configuration.values.flushAt
+            self.flushPolicies = state.configuration.values.flushPolicies
         }
         
         // Add DestinationMetadata enrichment plugin
@@ -121,13 +123,9 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         guard let storage = self.storage else { return }
-        
         // Send Event to File System
         storage.write(.events, value: event)
         eventCount += 1
-        if eventCount >= flushAt {
-            flush()
-        }
     }
     
     public func flush() {

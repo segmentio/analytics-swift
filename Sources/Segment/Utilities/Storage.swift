@@ -40,6 +40,15 @@ internal class Storage: Subscriber {
                 if let event = value as? RawEvent {
                     let eventStoreFile = currentFile(key)
                     self.storeEvent(toFile: eventStoreFile, event: event)
+                    if let flushPolicies = analytics?.configuration.values.flushPolicies {
+                        for policy in flushPolicies {
+                            policy.updateState(event: event)
+
+                            if (policy.shouldFlush() == true) {
+                                policy.reset()
+                            }
+                        }
+                    }
                 }
                 break
             default:

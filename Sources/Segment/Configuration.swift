@@ -25,6 +25,7 @@ public class Configuration {
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
+        var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy()]
     }
     
     internal var values: Values
@@ -95,6 +96,12 @@ public extension Configuration {
     @discardableResult
     func errorHandler(_ value: @escaping (Error) -> Void) -> Configuration {
         values.errorHandler = value
+        return self
+    }
+    
+    @discardableResult
+    func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
+        values.flushPolicies = policies
         return self
     }
 }

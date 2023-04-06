@@ -28,6 +28,12 @@ extension Analytics: Subscriber {
             }
         }
         
+        for policy in configuration.values.flushPolicies {
+            policy.configure(analytics: self)
+        }
+        
+        
+        
         // plugins will receive any settings we currently have as they are added.
         // ... but lets go check if we have new stuff ....
         // start checking periodically for settings changes from segment.com

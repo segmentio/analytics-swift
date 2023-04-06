@@ -47,7 +47,18 @@ public class Analytics {
     internal func process<E: RawEvent>(incomingEvent: E) {
         guard enabled == true else { return }
         let event = incomingEvent.applyRawEventData(store: store)
+        
         _ = timeline.process(incomingEvent: event)
+        
+        let flushPolicies = configuration.values.flushPolicies
+        for policy in flushPolicies {
+            policy.updateState(event: event)
+            
+            if (policy.shouldFlush() == true) {
+                flush()
+                policy.reset()
+            }
+        }
     }
     
     /// Process a raw event through the system.  Useful when one needs to queue and replay events at a later time.
@@ -128,6 +139,13 @@ extension Analytics {
                 let config = state.configuration.flushAt(value)
                 store.dispatch(action: System.UpdateConfigurationAction(configuration: config))
             }
+        }
+    }
+    
+    public var flushPolicies: [FlushPolicy] {
+        
+        get {
+            configuration.values.flushPolicies
         }
     }
     
