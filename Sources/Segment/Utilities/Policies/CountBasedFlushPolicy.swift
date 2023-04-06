@@ -6,20 +6,23 @@
 //
 
 import Foundation
-import Sovran
 
 public class CountBasedFlushPolicy: FlushPolicy {
     public var analytics: Analytics?
+    internal var desiredCount: Int?
     internal var count: Int = 0
-    internal var flushCount: Int = 20
     
-    init() {}
+    init() { }
+    
+    init(count: Int) {
+        desiredCount = count
+    }
     
     public func configure(analytics: Analytics) {
         self.analytics = analytics
-        
-      
-        
+        if let desiredCount = desiredCount {
+            analytics.flushAt = desiredCount
+        }
     }
     
     public func shouldFlush() -> Bool {
@@ -27,7 +30,7 @@ public class CountBasedFlushPolicy: FlushPolicy {
             return false
         }
         print(count)
-        if (count >=  a.configuration.values.flushAt) {
+        if (count >= a.configuration.values.flushAt) {
             return true
         } else {
             return false
