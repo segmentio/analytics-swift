@@ -10,7 +10,7 @@ import Foundation
 public class CountBasedFlushPolicy: FlushPolicy {
     public var analytics: Analytics?
     internal var desiredCount: Int?
-    internal var count: Int = 0
+    internal var count: Int = 20
     
     init() { }
     
