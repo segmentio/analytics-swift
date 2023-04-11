@@ -29,7 +29,6 @@ public class CountBasedFlushPolicy: FlushPolicy {
         guard let a = analytics else {
             return false
         }
-        print(count)
         if a.configuration.values.flushAt > 0 && count >= a.configuration.values.flushAt {
             return true
         } else {

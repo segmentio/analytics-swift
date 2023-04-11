@@ -33,7 +33,7 @@ class FlushPolicyTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-
+    
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
@@ -53,27 +53,48 @@ class FlushPolicyTests: XCTestCase {
             flushPolicy === dummy
         }))
     }
-    // test add method
-    // mock flush policy
-    // analytics.add(flushPolicy: mockFlushPolicy)
-    // check that config has mockFlushPolicy
     
+    func testRemoveFlushPolicy() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        
+        let dummy = DummyFlushPolicy()
+        analytics.add(flushPolicy: dummy)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.remove(flushPolicy: dummy)
+        
+        let policies = analytics.configuration.values.flushPolicies
+        
+        XCTAssertFalse(policies.contains(where: { flushPolicy in
+            flushPolicy === dummy
+        }))
+    }
     
-    // test remove method
-    // mock flush policies in the config
-    // analytics.remove(flushPolicy: mockFlushPolicy)
-    // check config no longer has mockFlushPolicy
+    func testRemoveAllFlushPolicies() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        var policies = analytics.configuration.values.flushPolicies
+        
+        waitUntilStarted(analytics: analytics)
+        
+        XCTAssertFalse(policies.isEmpty)
+        
+        analytics.removeAllFlushPolicies()
+        
+        policies = analytics.configuration.values.flushPolicies
+        
+        XCTAssert(policies.isEmpty)
+    }
     
-    // test removeAll method
-    // mock flush policies in config
-    // analytics.removeAll()
-    // how does analytics know this only applies to flush policies?
-    
-    
-    // test find method
-    // mock flush policies in config
-    // analytics.find(flushPolicy: mockFlushPolicy)
-    // returns the mock flush policy from config
+    func testFindFlushPolicy() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        let policy =  analytics.find(flushPolicy: CountBasedFlushPolicy.self)
+        
+        XCTAssertNotNil(policy)
+    }
     
     func testCountBasedFlushPolicy() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "countFlushPolicy"))

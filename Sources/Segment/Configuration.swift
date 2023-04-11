@@ -25,7 +25,7 @@ public class Configuration {
         var cdnHost: String = HTTPClient.getDefaultCDNHost()
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
-        var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy()]
+        var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
     }
     
     internal var values: Values

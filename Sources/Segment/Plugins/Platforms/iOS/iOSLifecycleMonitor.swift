@@ -184,6 +184,16 @@ extension SegmentDestination: iOSLifecycle {
     }
 }
 
+extension IntervalBasedFlushPolicy: iOSLifecycle {
+    public func applicationWillEnterForeground(application: UIApplication?) {
+        enterForeground()
+    }
+    
+    public func applicationDidEnterBackground(application: UIApplication?) {
+        enterBackground()
+    }
+}
+
 extension SegmentDestination.UploadTaskInfo {
     init(url: URL, task: URLSessionDataTask) {
         self.url = url
