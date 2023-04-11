@@ -10,7 +10,7 @@ import Foundation
 public class CountBasedFlushPolicy: FlushPolicy {
     public var analytics: Analytics?
     internal var desiredCount: Int?
-    internal var count: Int = 20
+    internal var count: Int = 0
     
     init() { }
     
@@ -30,7 +30,7 @@ public class CountBasedFlushPolicy: FlushPolicy {
             return false
         }
         print(count)
-        if (count >= a.configuration.values.flushAt) {
+        if a.configuration.values.flushAt > 0 && count >= a.configuration.values.flushAt {
             return true
         } else {
             return false
