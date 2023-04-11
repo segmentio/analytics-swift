@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Sovran
 
 
-public class IntervalBasedFlushPolicy: FlushPolicy {
+public class IntervalBasedFlushPolicy: FlushPolicy,
+                                       Subscriber {
     public var analytics: Analytics?
     internal var desiredInterval: TimeInterval?
     internal var flushTimer: QueueTimer? = nil
@@ -28,10 +30,13 @@ public class IntervalBasedFlushPolicy: FlushPolicy {
             analytics.flushInterval = desiredInterval
         }
         
-        self.flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
-            self?.analytics?.flush()
+        // `flushInterval` can change post-initialization so we subscribe to changes here
+        analytics.store.subscribe(self, initialState: true) { [weak self] (state: System) in
+            guard let self = self else { return }
+            self.flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
+                self?.analytics?.flush()
+            }
         }
-        
     }
     
     public func shouldFlush() -> Bool {
@@ -44,6 +49,7 @@ public class IntervalBasedFlushPolicy: FlushPolicy {
     public func reset() { }
     
     // MARK: - Abstracted Lifecycle Methods
+    
     internal func enterForeground() {
         flushTimer?.resume()
     }
