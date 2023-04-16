@@ -57,7 +57,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14'
+    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13'
 
 
   build_and_test_tvos:
