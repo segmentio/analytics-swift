@@ -113,11 +113,11 @@ extension ObjCAnalytics {
         _ = dest.add(plugin: ObjCShimPlugin(middleware: middleware))
     }
     
-    @objc(addDestination:)
-    public func addDestination(_ destination: ObjCDestination) {
-        guard let bouncer = destination as? ObjCDestinationShim else { return }
-        let dest = bouncer.instance()
-        analytics.add(plugin: dest)
+    @objc(addPlugin:)
+    public func add(plugin: ObjCPlugin) {
+        guard let bouncer = plugin as? ObjCPluginShim else { return }
+        let p = bouncer.instance()
+        analytics.add(plugin: p)
     }
 }
 

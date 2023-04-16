@@ -6,6 +6,7 @@
 //
 
 #import "AppDelegate.h"
+#import "ObjCExample-Swift.h"
 
 @import Segment;
 @import SegmentMixpanel;
@@ -28,6 +29,9 @@
     [self.analytics track:@"testProps" properties:@{@"email": @"blah@blah.com"}];
     
     [self.analytics flush];
+    
+    SEGTestDestination *testDestination = [[SEGTestDestination alloc] init];
+    [self.analytics addPlugin:testDestination];
     
     [self.analytics addSourceMiddleware:^NSDictionary<NSString *,id> * _Nullable(NSDictionary<NSString *,id> * _Nullable event) {
         // drop all events named booya

@@ -61,6 +61,11 @@ class ZiggyPlugin: EventPlugin {
     }
 }
 
+@objc(SEGMyDestination)
+public class ObjCMyDestination: NSObject, ObjCPlugin, ObjCPluginShim {
+    public func instance() -> EventPlugin { return MyDestination() }
+}
+
 class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType

@@ -142,7 +142,7 @@ extension Analytics {
     ///     generate the UUID and Apple's policies on IDs, see
     ///      https://segment.io/libraries/ios#ids
     ///   - properties: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func track(name: String, properties: [String: Codable]? = nil) {
+    public func track(name: String, properties: [String: Any]? = nil) {
         var props: JSON? = nil
         if let properties = properties {
             do {
@@ -165,7 +165,7 @@ extension Analytics {
     ///      https://segment.io/libraries/ios#ids
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     /// In the case when user logs out, make sure to call ``reset()`` to clear user's identity info.
-    public func identify(userId: String, traits: [String: Codable]? = nil) {
+    public func identify(userId: String, traits: [String: Any]? = nil) {
         do {
             if let traits = traits {
                 let traits = try JSON(traits as Any)
@@ -187,7 +187,7 @@ extension Analytics {
     ///   - screenTitle: The title of the screen being tracked.
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
-    public func screen(title: String, category: String? = nil, properties: [String: Codable]? = nil) {
+    public func screen(title: String, category: String? = nil, properties: [String: Any]? = nil) {
         var event = ScreenEvent(title: title, category: category, properties: nil)
         if let properties = properties {
             do {
@@ -204,7 +204,7 @@ extension Analytics {
     /// - Parameters:
     ///   - groupId: A unique identifier for the group identification in your system.
     ///   - traits: Traits of the group you may be interested in such as email, phone or name.
-    public func group(groupId: String, traits: [String: Codable]?) {
+    public func group(groupId: String, traits: [String: Any]?) {
         var event = GroupEvent(groupId: groupId)
         if let traits = traits {
             do {
