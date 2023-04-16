@@ -9,11 +9,11 @@
 
 import Foundation
 
-@objc(SEGDestination)
-public protocol ObjCDestination {}
+@objc(SEGPlugin)
+public protocol ObjCPlugin {}
 
-public protocol ObjCDestinationShim {
-    func instance() -> DestinationPlugin
+public protocol ObjCPluginShim {
+    func instance() -> EventPlugin
 }
 
 // NOTE: Destination plugins need something similar to the following to work
@@ -22,8 +22,8 @@ public protocol ObjCDestinationShim {
 /*
 
 @objc(SEGMixpanelDestination)
-public class ObjCSegmentMixpanel: NSObject, ObjCDestination, ObjCDestinationShim {
-    public func instance() -> DestinationPlugin { return MixpanelDestination() }
+public class ObjCSegmentMixpanel: NSObject, ObjCPlugin, ObjCPluginShim {
+    public func instance() -> EventPlugin { return MixpanelDestination() }
 }
 
 */
