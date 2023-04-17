@@ -98,6 +98,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     }
     
     // MARK: - Abstracted Lifecycle Methods
+    internal func enterForeground() { }
     
     internal func enterBackground() {
         flush()

@@ -176,6 +176,9 @@ class iOSLifecycleMonitor: PlatformPlugin {
 
 
 extension SegmentDestination: iOSLifecycle {
+    public func applicationWillEnterForeground(application: UIApplication?) {
+        enterForeground()
+    }
     
     public func applicationDidEnterBackground(application: UIApplication?) {
         enterBackground()
