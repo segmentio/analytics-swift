@@ -5,10 +5,18 @@
 //  Created by Brandon Sneed on 3/14/23.
 //
 
+/*
 #if !os(Linux)
 
 import Foundation
 import Sovran
+
+@objc(SEGPlugin)
+public protocol ObjCPlugin {}
+
+public protocol ObjCPluginShim {
+    func instance() -> EventPlugin
+}
 
 internal class ObjCShimPlugin: Plugin, Subscriber {
     var type: PluginType = .enrichment
@@ -61,7 +69,7 @@ internal class ObjCShimPlugin: Plugin, Subscriber {
 
 @objc
 extension ObjCAnalytics {
-    /// This method allows you to add middleware to an Analytics instance, similar to Analytics-iOS.
+    /*/// This method allows you to add middleware to an Analytics instance, similar to Analytics-iOS.
     /// However, it is **strongly encouraged** that Enrichments/Plugins/Middlewares be written in swift
     /// to avoid the overhead of type conversion back and forth.  This exists solely for compatibility
     /// purposes.
@@ -111,7 +119,7 @@ extension ObjCAnalytics {
         // couldn't find the destination they wanted
         guard let dest = analytics.find(key: destinationKey) else { return }
         _ = dest.add(plugin: ObjCShimPlugin(middleware: middleware))
-    }
+    }*/
     
     @objc(addPlugin:)
     public func add(plugin: ObjCPlugin) {
@@ -123,3 +131,4 @@ extension ObjCAnalytics {
 
 
 #endif
+*/

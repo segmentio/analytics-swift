@@ -28,6 +28,11 @@ public enum JSON: Equatable {
         self = .object(try object.mapValues(JSON.init))
     }
     
+    public init?(nilOrObject object: [String: Any]?) throws {
+        guard let object = object else { return nil }
+        try self.init(object)
+    }
+    
     // For Value types
     public init<T: Codable>(with value: T) throws {
         let encoder = JSONEncoder()
