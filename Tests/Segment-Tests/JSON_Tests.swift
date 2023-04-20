@@ -63,7 +63,7 @@ class JSONTests: XCTestCase {
     }
     
     func testJSONNil() throws {
-        let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil])
+        let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil] as [String : Any?])
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
@@ -218,7 +218,7 @@ class JSONTests: XCTestCase {
     
     func testKeyMappingWithValueTransform() {
         let keys = ["Key1": "AKey1", "Key2": "AKey2"]
-        let dict: [String: Any] = ["Key1": 1, "Key2": 2, "Key3": 3, "Key4": ["Key1": 1], "Key5": [1, 2, ["Key1": 1]]]
+        let dict: [String: Any] = ["Key1": 1, "Key2": 2, "Key3": 3, "Key4": ["Key1": 1], "Key5": [1, 2, ["Key1": 1]] as [Any]]
         
         let json = try! JSON(dict)
         
