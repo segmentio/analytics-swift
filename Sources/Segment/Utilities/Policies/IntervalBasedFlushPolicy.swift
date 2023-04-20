@@ -11,7 +11,7 @@ import Sovran
 
 public class IntervalBasedFlushPolicy: FlushPolicy,
                                        Subscriber {
-    public var analytics: Analytics?
+    public weak var analytics: Analytics?
     internal var desiredInterval: TimeInterval?
     internal var flushTimer: QueueTimer? = nil
     
@@ -19,6 +19,11 @@ public class IntervalBasedFlushPolicy: FlushPolicy,
     
     init(interval: TimeInterval) {
         desiredInterval = interval
+    }
+    
+    deinit {
+        flushTimer?.suspend()
+        flushTimer = nil
     }
     
     // all we need to do is check for a custom `flushInterval` if it exists we set `config.flushInterval` otherwise we set the QueueTimer to use the `flushInterval` from the config
@@ -31,9 +36,10 @@ public class IntervalBasedFlushPolicy: FlushPolicy,
         }
         
         // `flushInterval` can change post-initialization so we subscribe to changes here
-        analytics.store.subscribe(self, initialState: true) { [weak self] (state: System) in
+        self.analytics?.store.subscribe(self, initialState: true) { [weak self] (state: System) in
             guard let self = self else { return }
-            self.flushTimer = QueueTimer(interval: analytics.configuration.values.flushInterval) { [weak self] in
+            guard let a = self.analytics else { return }
+            self.flushTimer = QueueTimer(interval: a.configuration.values.flushInterval) { [weak self] in
                 self?.analytics?.flush()
             }
         }

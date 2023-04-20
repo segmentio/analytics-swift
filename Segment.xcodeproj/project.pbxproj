@@ -53,6 +53,11 @@
 		46FE4CFB25A6C671003A7362 /* TestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4CFA25A6C671003A7362 /* TestUtilities.swift */; };
 		46FE4D1D25A7A850003A7362 /* Storage_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46FE4D1C25A7A850003A7362 /* Storage_Tests.swift */; };
 		759D6CD127B48ABB00AB900A /* DestinationMetadataPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */; };
+		823479E929F1A8280051BC99 /* FlushPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479E629F1A8280051BC99 /* FlushPolicy.swift */; };
+		823479EA29F1A8280051BC99 /* IntervalBasedFlushPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479E729F1A8280051BC99 /* IntervalBasedFlushPolicy.swift */; };
+		823479EB29F1A8280051BC99 /* CountBasedFlushPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479E829F1A8280051BC99 /* CountBasedFlushPolicy.swift */; };
+		823479EE29F1A8910051BC99 /* MemoryLeak_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */; };
+		823479EF29F1A8910051BC99 /* FlushPolicy_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
@@ -149,6 +154,11 @@
 		759D6CD027B48ABB00AB900A /* DestinationMetadataPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationMetadataPlugin.swift; sourceTree = "<group>"; };
 		7B3C818F285BAD7600199D3E /* ComscoreDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComscoreDestination.swift; sourceTree = "<group>"; };
 		7B3C8190285BAD8700199D3E /* IntercomDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntercomDestination.swift; sourceTree = "<group>"; };
+		823479E629F1A8280051BC99 /* FlushPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlushPolicy.swift; sourceTree = "<group>"; };
+		823479E729F1A8280051BC99 /* IntervalBasedFlushPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntervalBasedFlushPolicy.swift; sourceTree = "<group>"; };
+		823479E829F1A8280051BC99 /* CountBasedFlushPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountBasedFlushPolicy.swift; sourceTree = "<group>"; };
+		823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryLeak_Tests.swift; sourceTree = "<group>"; };
+		823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlushPolicy_Tests.swift; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
@@ -271,6 +281,16 @@
 			path = Examples/other_plugins;
 			sourceTree = "<group>";
 		};
+		823479E529F1A8280051BC99 /* Policies */ = {
+			isa = PBXGroup;
+			children = (
+				823479E629F1A8280051BC99 /* FlushPolicy.swift */,
+				823479E729F1A8280051BC99 /* IntervalBasedFlushPolicy.swift */,
+				823479E829F1A8280051BC99 /* CountBasedFlushPolicy.swift */,
+			);
+			path = Policies;
+			sourceTree = "<group>";
+		};
 		96208624256DC23F00314F8D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -334,6 +354,7 @@
 		A31A16A325780A8D00C9CDDF /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				823479E529F1A8280051BC99 /* Policies */,
 				460FF30A29BA525900635FF9 /* Logging.swift */,
 				967C40ED259A7311008EB0B6 /* HTTPClient.swift */,
 				A31A16A425780E8D00C9CDDF /* JSON.swift */,
@@ -359,6 +380,8 @@
 		OBJ_11 /* Segment-Tests */ = {
 			isa = PBXGroup;
 			children = (
+				823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */,
+				823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */,
 				OBJ_12 /* Analytics_Tests.swift */,
 				4658175325BA4C20006B2809 /* HTTPClient_Tests.swift */,
 				A31A16502576C47400C9CDDF /* JSON_Tests.swift */,
@@ -534,6 +557,7 @@
 				46E382E72654429A00BA2502 /* Utils.swift in Sources */,
 				A31A16B225781CB400C9CDDF /* JSON.swift in Sources */,
 				46022771261F7A4800A9E913 /* Atomic.swift in Sources */,
+				823479EB29F1A8280051BC99 /* CountBasedFlushPolicy.swift in Sources */,
 				46F7485D26C718710042798E /* ObjCAnalytics.swift in Sources */,
 				A3471FBE256487F000965480 /* Configuration.swift in Sources */,
 				OBJ_23 /* Analytics.swift in Sources */,
@@ -541,6 +565,7 @@
 				46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
+				823479E929F1A8280051BC99 /* FlushPolicy.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
 				469891A329C11A890021B552 /* ObjCPlugin.swift in Sources */,
@@ -555,6 +580,7 @@
 				466EC2CE28FB7D5D001B384E /* OutputFileStream.swift in Sources */,
 				46FE4C9725A3F35E003A7362 /* macOSLifecycleMonitor.swift in Sources */,
 				9620862C2575C0C800314F8D /* Events.swift in Sources */,
+				823479EA29F1A8280051BC99 /* IntervalBasedFlushPolicy.swift in Sources */,
 				A3AEE1882581A8F1002386EB /* Deprecations.swift in Sources */,
 				966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */,
 				A31A16CA25794D9700C9CDDF /* Plugins.swift in Sources */,
@@ -574,7 +600,9 @@
 				OBJ_30 /* Analytics_Tests.swift in Sources */,
 				46F7486026C720F60042798E /* ObjC_Tests.swift in Sources */,
 				OBJ_31 /* XCTestManifests.swift in Sources */,
+				823479EF29F1A8910051BC99 /* FlushPolicy_Tests.swift in Sources */,
 				46B1AC6927346D3D00846DE8 /* StressTests.swift in Sources */,
+				823479EE29F1A8910051BC99 /* MemoryLeak_Tests.swift in Sources */,
 				4658175425BA4C20006B2809 /* HTTPClient_Tests.swift in Sources */,
 				46210811260538BE00EBC4A8 /* KeyPath_Tests.swift in Sources */,
 				96A9668927BC137F00078F8B /* iOSLifecycle_Tests.swift in Sources */,
