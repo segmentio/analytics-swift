@@ -13,6 +13,9 @@ import Foundation
 public class ObjCConfiguration: NSObject {
     internal var configuration: Configuration
     
+    /// Sets a reference to your application.  This can be useful in instances
+    /// where referring back to your application is necessary, such as within plugins
+    /// or async code.  The default value is `nil`.
     @objc
     public var application: Any? {
         get {
@@ -23,6 +26,7 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Opt-in/out of tracking lifecycle events.  The default value is `false`.
     @objc
     public var trackApplicationLifecycleEvents: Bool {
         get {
@@ -33,6 +37,8 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Set the number of events necessary to automatically flush. The default
+    /// value is `20`.
     @objc
     public var flushAt: Int {
         get {
@@ -43,6 +49,8 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Set a time interval (in seconds) by which to trigger an automatic flush.
+    /// The default value is `30`.
     @objc
     public var flushInterval: TimeInterval {
         get {
@@ -53,6 +61,15 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Sets a default set of Settings.  Normally these will come from Segment's
+    /// api.segment.com/v1/projects/<writekey>/settings, however in instances such
+    /// as first app launch, it can be useful to have a pre-set batch of settings to
+    /// ensure that the proper destinations and other settings are enabled prior
+    /// to receiving them from the Settings endpoint.  The default is `nil`.
+    ///
+    /// You can retrieve a copy of your settings from the following URL:
+    ///
+    /// https://cdn-settings.segment.com/v1/projects/<writekey>/settings
     @objc
     public var defaultSettings: [String: Any] {
         get {
@@ -81,6 +98,9 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Enable/Disable the automatic adding of Segment as a destination.
+    /// This can be useful in instances such as Consent Management, or in device
+    /// mode only setups.  The default value is `true`.
     @objc
     public var autoAddSegmentDestination: Bool {
         get {
@@ -91,6 +111,9 @@ public class ObjCConfiguration: NSObject {
         }
     }
     
+    /// Sets an alternative API host.  This is useful when a proxy is in use, or
+    /// events need to be routed to certain locales at all times (such as the EU).
+    /// The default value is `api.segment.io/v1`.
     @objc
     public var apiHost: String {
         get {
@@ -101,6 +124,9 @@ public class ObjCConfiguration: NSObject {
         }
     }
 
+    /// Sets an alternative CDN host for settings retrieval. This is useful when
+    /// a proxy is in use, or settings need to be queried from certain locales at
+    /// all times (such as the EU). The default value is `cdn-settings.segment.com/v1`.
     @objc
     public var cdnHost: String {
         get {
@@ -110,8 +136,25 @@ public class ObjCConfiguration: NSObject {
             configuration.cdnHost(value)
         }
     }
+    
+    /// Sets a block to be used when generating outgoing HTTP requests.  Useful in
+    /// proxying, or adding additional header information for outbound traffic.
+    ///
+    /// - Parameter value: A block to call when requests are made.
+    /// - Returns: The current Configuration.
+    @objc
+    public var requestFactory: ((URLRequest) -> URLRequest)? {
+        get {
+            return configuration.values.requestFactory
+        }
+        set(value) {
+            configuration.values.requestFactory = value
+        }
+    }
 
-
+    /// Initialize a configuration object to pass along to an Analytics instance.
+    ///
+    /// - Parameter writeKey: Your Segment write key value
     @objc
     public init(writeKey: String) {
         self.configuration = Configuration(writeKey: writeKey)
