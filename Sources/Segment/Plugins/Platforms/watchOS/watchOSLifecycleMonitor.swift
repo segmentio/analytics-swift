@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  watchOSLifecycleMonitor.swift
 //  
 //
 //  Created by Brandon Sneed on 6/24/21.
