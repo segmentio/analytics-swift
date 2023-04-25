@@ -61,8 +61,8 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
             "from_background": false,
             "version": currentVersion ?? "",
             "build": currentBuild ?? "",
-            "referring_application": sourceApp,
-            "url": url
+            "referring_application": sourceApp ?? "",
+            "url": url ?? ""
         ])
         
         UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)

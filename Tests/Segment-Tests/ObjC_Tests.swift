@@ -101,22 +101,19 @@ class ObjC_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin()
         analytics.analytics.add(plugin: outputReader)
         
-        analytics.addSourceMiddleware { event in
+        let sourcePlugin = ObjCBlockPlugin { event in
             print("source enrichment applied")
             sourceHit = true
             return event
         }
+        analytics.add(plugin: sourcePlugin)
         
-        analytics.addDestinationMiddleware(middleware: { event in
+        let destPlugin = ObjCBlockPlugin { event in
             print("destination enrichment applied")
             destHit = true
             return event
-        }, destinationKey: "Segment.io")
-        
-        //analytics.add(enrichment: sourceEnrichment)
-        
-        //let segment = analytics.find(pluginType: SegmentDestination.self)
-        //segment?.add(enrichment: destEnrichment)
+        }
+        analytics.add(plugin: destPlugin, destinationKey: "Segment.io")
         
         waitUntilStarted(analytics: analytics.analytics)
         

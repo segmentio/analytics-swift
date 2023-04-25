@@ -124,7 +124,7 @@ extension Analytics {
     }
     
     public func alias(newId: String) {
-        let event = AliasEvent(newId: newId)
+        let event = AliasEvent(newId: newId, previousId: self.userId)
         store.dispatch(action: UserInfo.SetUserIdAction(userId: newId))
         process(incomingEvent: event)
     }

@@ -62,7 +62,7 @@ class KeyPath_Tests: XCTestCase {
                 "else": [
                     "@path": "$.context.device.id"
                 ]
-            ]
+            ] as [String : Any]
         ]
 
     ]

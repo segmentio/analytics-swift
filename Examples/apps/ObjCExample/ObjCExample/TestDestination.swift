@@ -19,8 +19,18 @@ public class TestDestination: DestinationPlugin {
     public let type = PluginType.destination
     public var analytics: Analytics? = nil
     
-    public func execute<T: RawEvent>(event: T?) -> T? {
-        print("some event came to visit us for xmas din din.")
+    public func configure(analytics: Analytics) {
+        analytics.manuallyEnableDestination(plugin: self)
+        self.analytics = analytics
+    }
+    
+    public func update(settings: Settings, type: UpdateType) {
+       // analytics?.manuallyEnableDestination(plugin: self)
+    }
+    
+    public func track(event: TrackEvent) -> TrackEvent? {
+        print("Event Received: \n")
+        print(event.prettyPrint())
         return event
     }
 }
