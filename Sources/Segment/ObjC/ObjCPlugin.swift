@@ -2,59 +2,89 @@
 //  ObjCPlugin.swift
 //  
 //
-//  Created by Brandon Sneed on 3/14/23.
+//  Created by Brandon Sneed on 4/17/23.
 //
+
 
 #if !os(Linux)
 
 import Foundation
-import Sovran
 
-internal class ObjCShimPlugin: Plugin, Subscriber {
-    var type: PluginType = .enrichment
-    var analytics: Analytics? = nil
-    var executionBlock: (([String: Any]?) -> [String: Any]?)? = nil
+@objc(SEGPlugin)
+public protocol ObjCPlugin {}
+
+public protocol ObjCPluginShim {
+    func instance() -> EventPlugin
+}
+
+// NOTE: Destination plugins need something similar to the following to work/
+/*
+
+@objc(SEGMixpanelDestination)
+public class ObjCSegmentMixpanel: NSObject, ObjCPlugin, ObjCPluginShim {
+    public func instance() -> EventPlugin { return MixpanelDestination() }
+}
+
+*/
+
+@objc(SEGEventPlugin)
+public class ObjCEventPlugin: NSObject, EventPlugin, ObjCPlugin {
+    public var type: PluginType = .enrichment
+    public var analytics: Analytics? = nil
     
-    required init(middleware: @escaping ([String: Any]?) -> [String: Any]?) {
-        executionBlock = middleware
+    @objc(executeEvent:)
+    public func execute(event: ObjCRawEvent?) -> ObjCRawEvent? {
+        #if DEBUG
+        print("SEGEventPlugin's execute: method must be overridden!")
+        #endif
+        return event
     }
     
-    func execute<T>(event: T?) -> T? where T : RawEvent {
-        // is our event actually valid?
-        guard let event = event else { return event }
-        // do we actually have an execution block?
-        guard let executionBlock = executionBlock else { return event }
-        // can we conver this to a JSON dictionary?
-        guard let dictEvent = try? JSON(with: event).dictionaryValue else { return event }
-        // is it valid json?
-        guard JSONSerialization.isValidJSONObject(dictEvent as Any) == true else { return event }
-        // run the execution block, a nil result tells us to drop the event.
-        guard let result = executionBlock(dictEvent) else { return nil }
+    public func execute<T>(event: T?) -> T? where T : RawEvent {
+        let objcEvent = objcEventFromEvent(event)
+        let result = execute(event: objcEvent)
+        let newEvent = eventFromObjCEvent(result)
+        return newEvent as? T
+    }
+}
+
+@objc(SEGBlockPlugin)
+public class ObjCBlockPlugin: ObjCEventPlugin {
+    let block: (ObjCRawEvent?) -> ObjCRawEvent?
+    
+    @objc(executeEvent:)
+    public override func execute(event: ObjCRawEvent?) -> ObjCRawEvent? {
+        return block(event)
+    }
+    
+    @objc(initWithBlock:)
+    public init(block: @escaping (ObjCRawEvent?) -> ObjCRawEvent?) {
+        self.block = block
+    }
+}
+
+@objc
+extension ObjCAnalytics {
+    @objc(addPlugin:)
+    public func add(plugin: ObjCPlugin?) {
+        if let p = plugin as? ObjCPluginShim {
+            analytics.add(plugin: p.instance())
+        } else if let p = plugin as? ObjCEventPlugin {
+            analytics.add(plugin: p)
+        }
+    }
+    
+    @objc(addPlugin:destinationKey:)
+    public func add(plugin: ObjCPlugin?, destinationKey: String) {
+        guard let d = analytics.find(key: destinationKey) else { return }
         
-        if let jsonData = try? JSONSerialization.data(withJSONObject: result, options: .prettyPrinted) {
-            let decoder = JSONDecoder()
-            var newEvent: RawEvent? = nil
-            switch event {
-                case is IdentifyEvent:
-                    newEvent = try? decoder.decode(IdentifyEvent.self, from: jsonData)
-                case is TrackEvent:
-                    newEvent = try? decoder.decode(TrackEvent.self, from: jsonData)
-                case is ScreenEvent:
-                    newEvent = try? decoder.decode(ScreenEvent.self, from: jsonData)
-                case is AliasEvent:
-                    newEvent = try? decoder.decode(AliasEvent.self, from: jsonData)
-                case is GroupEvent:
-                    newEvent = try? decoder.decode(GroupEvent.self, from: jsonData)
-                default:
-                    break
-            }
-            // return the decoded event ...
-            return newEvent as? T
-        } else {
-            // we weren't able to serialize, so return the original event.
-            return event
+        if let p = plugin as? ObjCPluginShim {
+            _ = d.add(plugin: p.instance())
+        } else if let p = plugin as? ObjCEventPlugin {
+            _ = d.add(plugin: p)
         }
     }
 }
 
 #endif
+

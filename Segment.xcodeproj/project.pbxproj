@@ -36,8 +36,9 @@
 		465879BB2686560C00180335 /* watchOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */; };
 		4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4663C728267A799100ADDD1A /* QueueTimer.swift */; };
 		466EC2CE28FB7D5D001B384E /* OutputFileStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466EC2CD28FB7D5D001B384E /* OutputFileStream.swift */; };
+		4689231329F7391500AB26E5 /* ObjCPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4689231129F7391500AB26E5 /* ObjCPlugin.swift */; };
+		4689231429F7391500AB26E5 /* ObjCEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4689231229F7391500AB26E5 /* ObjCEvents.swift */; };
 		4697A238290341EF00FAE14F /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4697A237290341EF00FAE14F /* Errors.swift */; };
-		469891A329C11A890021B552 /* ObjCPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469891A229C11A890021B552 /* ObjCPlugin.swift */; };
 		46A018C225E5857D00F9CCD8 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018C125E5857D00F9CCD8 /* Context.swift */; };
 		46A018D425E6C9C200F9CCD8 /* LinuxUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */; };
 		46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */; };
@@ -129,8 +130,9 @@
 		465879B92686560C00180335 /* watchOSLifecycleMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = watchOSLifecycleMonitor.swift; sourceTree = "<group>"; };
 		4663C728267A799100ADDD1A /* QueueTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueTimer.swift; sourceTree = "<group>"; };
 		466EC2CD28FB7D5D001B384E /* OutputFileStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputFileStream.swift; sourceTree = "<group>"; };
+		4689231129F7391500AB26E5 /* ObjCPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCPlugin.swift; sourceTree = "<group>"; };
+		4689231229F7391500AB26E5 /* ObjCEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCEvents.swift; sourceTree = "<group>"; };
 		4697A237290341EF00FAE14F /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
-		469891A229C11A890021B552 /* ObjCPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCPlugin.swift; sourceTree = "<group>"; };
 		46A018C125E5857D00F9CCD8 /* Context.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		46A018D325E6C9C200F9CCD8 /* LinuxUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinuxUtils.swift; sourceTree = "<group>"; };
 		46A018D925E97FDF00F9CCD8 /* AppleUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleUtils.swift; sourceTree = "<group>"; };
@@ -231,8 +233,9 @@
 			isa = PBXGroup;
 			children = (
 				46F7485B26C718710042798E /* ObjCAnalytics.swift */,
+				4689231229F7391500AB26E5 /* ObjCEvents.swift */,
+				4689231129F7391500AB26E5 /* ObjCPlugin.swift */,
 				46F7485C26C718710042798E /* ObjCConfiguration.swift */,
-				469891A229C11A890021B552 /* ObjCPlugin.swift */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -513,7 +516,7 @@
 			attributes = {
 				LastSwiftMigration = 9999;
 				LastSwiftUpdateCheck = 1220;
-				LastUpgradeCheck = 1340;
+				LastUpgradeCheck = 1430;
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Segment" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -563,12 +566,13 @@
 				OBJ_23 /* Analytics.swift in Sources */,
 				A31A16342576B7AF00C9CDDF /* Types.swift in Sources */,
 				46A018DA25E97FDF00F9CCD8 /* AppleUtils.swift in Sources */,
+				4689231429F7391500AB26E5 /* ObjCEvents.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
 				823479E929F1A8280051BC99 /* FlushPolicy.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,
-				469891A329C11A890021B552 /* ObjCPlugin.swift in Sources */,
+				4689231329F7391500AB26E5 /* ObjCPlugin.swift in Sources */,
 				46FE4C9C25A3F41C003A7362 /* LinuxLifecycleMonitor.swift in Sources */,
 				460227422612987300A9E913 /* watchOSLifecycleEvents.swift in Sources */,
 				46F7485E26C718710042798E /* ObjCConfiguration.swift in Sources */,
@@ -640,6 +644,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -670,6 +675,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -701,6 +707,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
@@ -727,6 +734,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
@@ -772,6 +780,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = YES;
@@ -809,6 +818,7 @@
 		OBJ_37 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				LD = /usr/bin/true;
 				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -package-description-version 5.3.0";
 				SWIFT_VERSION = 5.0;
@@ -818,6 +828,7 @@
 		OBJ_38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 				LD = /usr/bin/true;
 				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -package-description-version 5.3.0";
 				SWIFT_VERSION = 5.0;
@@ -848,6 +859,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -882,12 +894,14 @@
 		OBJ_43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Debug;
 		};
 		OBJ_44 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = YES;
 			};
 			name = Release;
 		};

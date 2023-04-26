@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		460FF309299AAEEC00635FF9 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 460FF308299AAEEC00635FF9 /* Segment */; };
+		46262AB229CB731B005C68FF /* SegmentMixpanel in Frameworks */ = {isa = PBXBuildFile; productRef = 46262AB129CB731B005C68FF /* SegmentMixpanel */; };
+		463F61EA29E9C33400BBB4ED /* TestDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 463F61E929E9C33400BBB4ED /* TestDestination.swift */; };
 		464247BC26C6D7A700CAD301 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BB26C6D7A700CAD301 /* AppDelegate.m */; };
 		464247BF26C6D7A700CAD301 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247BE26C6D7A700CAD301 /* SceneDelegate.m */; };
 		464247C226C6D7A700CAD301 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 464247C126C6D7A700CAD301 /* ViewController.m */; };
@@ -18,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		463F61E829E9C33400BBB4ED /* ObjCExample-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ObjCExample-Bridging-Header.h"; sourceTree = "<group>"; };
+		463F61E929E9C33400BBB4ED /* TestDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDestination.swift; sourceTree = "<group>"; };
 		464247B726C6D7A700CAD301 /* ObjCExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ObjCExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		464247BA26C6D7A700CAD301 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		464247BB26C6D7A700CAD301 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -37,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46262AB229CB731B005C68FF /* SegmentMixpanel in Frameworks */,
 				460FF309299AAEEC00635FF9 /* Segment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -64,6 +69,7 @@
 		464247B926C6D7A700CAD301 /* ObjCExample */ = {
 			isa = PBXGroup;
 			children = (
+				463F61E929E9C33400BBB4ED /* TestDestination.swift */,
 				464247BA26C6D7A700CAD301 /* AppDelegate.h */,
 				464247BB26C6D7A700CAD301 /* AppDelegate.m */,
 				464247BD26C6D7A700CAD301 /* SceneDelegate.h */,
@@ -75,6 +81,7 @@
 				464247C826C6D7A800CAD301 /* LaunchScreen.storyboard */,
 				464247CB26C6D7A800CAD301 /* Info.plist */,
 				464247CC26C6D7A800CAD301 /* main.m */,
+				463F61E829E9C33400BBB4ED /* ObjCExample-Bridging-Header.h */,
 			);
 			path = ObjCExample;
 			sourceTree = "<group>";
@@ -104,6 +111,7 @@
 			name = ObjCExample;
 			packageProductDependencies = (
 				460FF308299AAEEC00635FF9 /* Segment */,
+				46262AB129CB731B005C68FF /* SegmentMixpanel */,
 			);
 			productName = ObjCExample;
 			productReference = 464247B726C6D7A700CAD301 /* ObjCExample.app */;
@@ -119,6 +127,7 @@
 				TargetAttributes = {
 					464247B626C6D7A700CAD301 = {
 						CreatedOnToolsVersion = 12.5.1;
+						LastSwiftMigration = 1430;
 					};
 				};
 			};
@@ -131,6 +140,9 @@
 				Base,
 			);
 			mainGroup = 464247AE26C6D7A700CAD301;
+			packageReferences = (
+				469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */,
+			);
 			productRefGroup = 464247B826C6D7A700CAD301 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -158,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				463F61EA29E9C33400BBB4ED /* TestDestination.swift in Sources */,
 				464247C226C6D7A700CAD301 /* ViewController.m in Sources */,
 				464247BC26C6D7A700CAD301 /* AppDelegate.m in Sources */,
 				464247CD26C6D7A800CAD301 /* main.m in Sources */,
@@ -304,6 +317,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = ObjCExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -312,6 +326,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.segment.ObjCExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ObjCExample/ObjCExample-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -321,6 +338,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = ObjCExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -329,6 +347,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.segment.ObjCExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ObjCExample/ObjCExample-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -356,10 +376,26 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/segment-integrations/analytics-swift-mixpanel";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		460FF308299AAEEC00635FF9 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
+		};
+		46262AB129CB731B005C68FF /* SegmentMixpanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 469891A529CB72D80021B552 /* XCRemoteSwiftPackageReference "analytics-swift-mixpanel" */;
+			productName = SegmentMixpanel;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

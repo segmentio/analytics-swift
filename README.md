@@ -52,7 +52,7 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
 
 ## Documentation
 
-You can find usage documentation at [https://segment.com/docs/sources/mobile/swift-ios/](https://segment.com/docs/sources/mobile/swift-ios/).
+You can find usage documentation at [Segment Docs, Analytics-Swift](https://segment.com/docs/connections/sources/catalog/libraries/mobile/apple/).
 
 Explore more via the [example projects](Examples) which showcase analytics instrumentation on different platforms/languages and usage of plugins. These projects contain sample [plugins](Examples/other_plugins) and [destination plugins](Examples/destination_plugins).
 

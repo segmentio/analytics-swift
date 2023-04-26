@@ -143,15 +143,16 @@ public struct AliasEvent: RawEvent {
     public var metrics: [JSON]? = nil
     public var _metadata: DestinationMetadata? = nil
     
-    public var userId: String?
-    public var previousId: String?
+    public var userId: String? = nil
+    public var previousId: String? = nil
     
-    public init(newId: String? = nil) {
+    public init(newId: String?, previousId: String? = nil) {
         self.userId = newId
+        self.previousId = previousId
     }
     
     public init(existing: AliasEvent) {
-        self.init(newId: existing.userId)
+        self.init(newId: existing.userId, previousId: existing.previousId)
         applyRawEventData(event: existing)
     }
 }

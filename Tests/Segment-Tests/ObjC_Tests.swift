@@ -46,6 +46,7 @@ class ObjC_Tests: XCTestCase {
     }
     
     func testNonTrivialAnalytics() {
+        Storage.hardSettingsReset(writeKey: "WRITE_KEY")
         let config = ObjCConfiguration(writeKey: "WRITE_KEY")
         config.defaultSettings = ["integrations": ["Amplitude": true]]
         
@@ -83,7 +84,51 @@ class ObjC_Tests: XCTestCase {
         let traits = analytics.traits()
         XCTAssertTrue(traits != nil)
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
-
+    }
+    
+    func testObjCMiddlewares() {
+        var sourceHit: Bool = false
+        var destHit: Bool = false
+        
+        Storage.hardSettingsReset(writeKey: "WRITE_KEY")
+        
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let analytics = ObjCAnalytics(configuration: config)
+        analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        analytics.reset()
+        
+        let outputReader = OutputReaderPlugin()
+        analytics.analytics.add(plugin: outputReader)
+        
+        let sourcePlugin = ObjCBlockPlugin { event in
+            print("source enrichment applied")
+            sourceHit = true
+            return event
+        }
+        analytics.add(plugin: sourcePlugin)
+        
+        let destPlugin = ObjCBlockPlugin { event in
+            print("destination enrichment applied")
+            destHit = true
+            return event
+        }
+        analytics.add(plugin: destPlugin, destinationKey: "Segment.io")
+        
+        waitUntilStarted(analytics: analytics.analytics)
+        
+        analytics.identify(userId: "batman")
+        
+        analytics.flush()
+        
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 5))
+        
+        XCTAssertTrue(sourceHit)
+        XCTAssertTrue(destHit)
+        
+        let lastEvent = outputReader.lastEvent
+        XCTAssertTrue(lastEvent is IdentifyEvent)
+        XCTAssertTrue((lastEvent as! IdentifyEvent).userId == "batman")
     }
 }
 

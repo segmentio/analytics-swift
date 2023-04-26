@@ -39,6 +39,18 @@ public struct Settings: Codable {
         self.middlewareSettings = try? values.decode(JSON.self, forKey: CodingKeys.middlewareSettings)
     }
     
+    static public func load(from url: URL?) -> Settings? {
+        guard let url = url else { return nil }
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        let settings = try? JSONDecoder().decode(Settings.self, from: data)
+        return settings
+    }
+    
+    static public func load(resource: String, bundle: Bundle = Bundle.main) -> Settings? {
+        let url = bundle.url(forResource: resource, withExtension: nil)
+        return load(from: url)
+    }
+    
     enum CodingKeys: String, CodingKey {
         case integrations
         case plan

@@ -65,6 +65,22 @@ public protocol VersionedPlugin {
 // For internal platform-specific bits
 internal protocol PlatformPlugin: Plugin { }
 
+public typealias EnrichmentClosure = (_ event: RawEvent?) -> RawEvent?
+public class ClosureEnrichment: Plugin {
+    public var type: PluginType = .enrichment
+    public var analytics: Analytics? = nil
+    
+    internal let closure: EnrichmentClosure
+    
+    init(closure: @escaping EnrichmentClosure) {
+        self.closure = closure
+    }
+    
+    public func execute<T: RawEvent>(event: T?) -> T? {
+        return closure(event) as? T
+    }
+}
+
 
 // MARK: - Plugin instance helpers
 extension Plugin {
@@ -98,11 +114,28 @@ extension DestinationPlugin {
      Adds a new plugin to the currently loaded set.
      
      - Parameter plugin: The plugin to be added.
-     - Returns: Returns the name of the supplied plugin.
+     - Returns: Returns the supplied plugin.
      
      */
     @discardableResult
     public func add(plugin: Plugin) -> Plugin {
+        if let analytics = self.analytics {
+            plugin.configure(analytics: analytics)
+        }
+        timeline.add(plugin: plugin)
+        return plugin
+    }
+    
+    /**
+     Adds a new enrichment to the currently loaded set of plugins.
+     
+     - Parameter enrichment: The enrichment closure to be added.
+     - Returns: Returns the the generated plugin.
+     
+     */
+    @discardableResult
+    public func add(enrichment: @escaping EnrichmentClosure) -> Plugin {
+        let plugin = ClosureEnrichment(closure: enrichment)
         if let analytics = self.analytics {
             plugin.configure(analytics: analytics)
         }
@@ -142,6 +175,21 @@ extension Analytics {
      */
     @discardableResult
     public func add(plugin: Plugin) -> Plugin {
+        plugin.configure(analytics: self)
+        timeline.add(plugin: plugin)
+        return plugin
+    }
+    
+    /**
+     Adds a new enrichment to the currently loaded set of plugins.
+     
+     - Parameter enrichment: The enrichment closure to be added.
+     - Returns: Returns the the generated plugin.
+     
+     */
+    @discardableResult
+    public func add(enrichment: @escaping EnrichmentClosure) -> Plugin {
+        let plugin = ClosureEnrichment(closure: enrichment)
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
         return plugin
