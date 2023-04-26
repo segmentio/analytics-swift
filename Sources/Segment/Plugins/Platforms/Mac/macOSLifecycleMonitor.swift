@@ -239,4 +239,16 @@ extension SegmentDestination: macOSLifecycle {
     }
 }
 
+// MARK: - Interval Based Flush Policy Extension
+
+extension IntervalBasedFlushPolicy: macOSLifecycle {
+    public func applicationWillEnterForeground(application: UIApplication?) {
+        enterForeground()
+    }
+    
+    public func applicationDidEnterBackground(application: UIApplication?) {
+        enterBackground()
+    }
+}
+
 #endif
