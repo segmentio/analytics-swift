@@ -23,7 +23,7 @@ let package = Package(
         .package(
             name: "Sovran",
             url: "https://github.com/segmentio/Sovran-Swift.git",
-            from: "1.0.3"
+            from: "1.1.0"
         )
     ],
     targets: [
