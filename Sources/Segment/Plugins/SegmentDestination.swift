@@ -46,22 +46,11 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     private var storage: Storage?
     
     @Atomic internal var eventCount: Int = 0
-    internal var flushAt: Int = 0
-    internal var flushTimer: QueueTimer? = nil
     
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        
-        // flushInterval and flushAt can be modified post initialization
-        analytics.store.subscribe(self, initialState: true) { [weak self] (state: System) in
-            guard let self = self else { return }
-            self.flushTimer = QueueTimer(interval: state.configuration.values.flushInterval) { [weak self] in
-                self?.flush()
-            }
-            self.flushAt = state.configuration.values.flushAt
-        }
         
         // Add DestinationMetadata enrichment plugin
         add(plugin: DestinationMetadataPlugin())
@@ -109,25 +98,18 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
     }
     
     // MARK: - Abstracted Lifecycle Methods
-    internal func enterForeground() {
-        flushTimer?.resume()
-    }
+    internal func enterForeground() { }
     
     internal func enterBackground() {
-        flushTimer?.suspend()
         flush()
     }
     
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         guard let storage = self.storage else { return }
-        
         // Send Event to File System
         storage.write(.events, value: event)
         eventCount += 1
-        if eventCount >= flushAt {
-            flush()
-        }
     }
     
     public func flush() {

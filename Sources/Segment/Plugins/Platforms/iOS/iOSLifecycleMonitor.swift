@@ -174,6 +174,7 @@ class iOSLifecycleMonitor: PlatformPlugin {
 
 // MARK: - Segment Destination Extension
 
+
 extension SegmentDestination: iOSLifecycle {
     public func applicationWillEnterForeground(application: UIApplication?) {
         enterForeground()
@@ -200,6 +201,18 @@ extension SegmentDestination.UploadTaskInfo {
                 application.endBackgroundTask(taskIdentifier)
             }
         }
+    }
+}
+
+// MARK: - Interval Based Flush Policy Extension
+
+extension IntervalBasedFlushPolicy: iOSLifecycle {
+    public func applicationWillEnterForeground(application: UIApplication?) {
+        enterForeground()
+    }
+    
+    public func applicationDidEnterBackground(application: UIApplication?) {
+        enterBackground()
     }
 }
 

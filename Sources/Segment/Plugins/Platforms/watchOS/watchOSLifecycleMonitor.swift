@@ -131,4 +131,16 @@ extension SegmentDestination: watchOSLifecycle {
     }
 }
 
+
+// MARK: - Interval Based Flush Policy Extension
+
+extension IntervalBasedFlushPolicy: watchOSLifecycle {
+    public func applicationWillEnterForeground(watchExtension: WKExtension) {
+        enterForeground()
+    }
+    
+    public func applicationDidEnterBackground(watchExtension: WKExtension) {
+        enterBackground()
+    }
+}
 #endif

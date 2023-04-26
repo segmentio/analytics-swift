@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let configuration = Configuration(writeKey: "<WRITE KEY>")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
+            .flushAt(2)
         
         analytics = Analytics(configuration: configuration)
         
