@@ -96,3 +96,7 @@ Package.resolved
 # XCFramework
 Segment-Package_XCFramework
 *.zip
+Segment.xcframework.zip
+Segment.xcframework
+XCFrameworkOutput
+

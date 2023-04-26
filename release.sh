@@ -1,5 +1,10 @@
 #!/bin/bash
 
+PROJECT_NAME="Analytics-Swift"
+PRODUCT_NAME="Segment"
+
+LOWER_PRODUCT_NAME="$(echo ${PRODUCT_NAME} | tr '[:upper:]' '[:lower:]')"
+
 vercomp () {
 	if [[ $1 == $2 ]]
 	then
@@ -56,7 +61,7 @@ then
 	exit 1
 fi
 
-versionFile="./sources/Segment/Version.swift"
+versionFile="./sources/${PRODUCT_NAME}/Version.swift"
 
 # get last line in version.swift
 versionLine=$(tail -n 1 $versionFile)
@@ -65,7 +70,7 @@ version=$(cut -d "=" -f2- <<< "$versionLine")
 # remove quotes and spaces
 version=$(sed "s/[' \"]//g" <<< "$version")
 
-echo "Analytics-Swift current version: $version"
+echo "${PROJECT_NAME} current version: $version"
 
 # no args, so give usage.
 if [ $# -eq 0 ]
@@ -113,7 +118,7 @@ echo -e "$changelog" >> $tempFile
 # - remove last line...
 sed -i '' -e '$ d' $versionFile
 # - add new line w/ new version
-echo "internal let __segment_version = \"$newVersion\"" >> $versionFile
+echo "internal let __${LOWER_PRODUCT_NAME}_version = \"$newVersion\"" >> $versionFile
 
 # commit the version change.
 git commit -am "Version $newVersion" && git push
@@ -127,4 +132,4 @@ rm $tempFile
 ./build.sh
 
 # upload the release
-gh release upload $newVersion Segment.xcframework.zip
+gh release upload $newVersion ${PRODUCT_NAME}.xcframework.zip

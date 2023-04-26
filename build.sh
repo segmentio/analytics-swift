@@ -1,42 +1,115 @@
 #!/bin/zsh
 
 # Set Project name
-PROJECT_NAME="Segment-Package"
+# These are the only variables that need to be set per-project, the rest
+# is very generic and should work for most things.
+PROJECT_NAME="Segment"
+SCHEME_NAME="Segment-Package"
 
-# set framework folder name
-FRAMEWORK_FOLDER_NAME="${PROJECT_NAME}_XCFramework"
+# Your PROJECT_NAME.xcodeproj should include schemes for
+#   iOS
+#   tvOS
+#   watchOS
+#   macOS
+#   Mac Catalyst
 
-# set framework name or read it from project by this variable
-FRAMEWORK_NAME="Segment"
-
-#xcframework path
-FRAMEWORK_PATH="${FRAMEWORK_FOLDER_NAME}/${FRAMEWORK_NAME}.xcframework"
-
-# set path for iOS simulator archive
-SIMULATOR_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
-
-# set path for iOS device archive
-IOS_DEVICE_ARCHIVE_PATH="${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
+XCFRAMEWORK_OUTPUT_PATH="./XCFrameworkOutput"
 
 # clean up old releases
-rm -rf Segment.xcframework.zip
-echo "Deleted the xcframework"
+echo "Removing previous ${PROJECT_NAME}.xcframework.zip"
+rm -rf ${PROJECT_NAME}.xcframework.zip
+rm -rf ${PROJECT_NAME}.xcframework
+rm -rf ${XCFRAMEWORK_OUTPUT_PATH}
 
-rm -rf "${FRAMEWORK_FOLDER_NAME}"
-echo "Deleted ${FRAMEWORK_FOLDER_NAME}"
+mkdir "${XCFRAMEWORK_OUTPUT_PATH}"
+echo "Created ${XCFRAMEWORK_OUTPUT_PATH}"
 
-mkdir "${FRAMEWORK_FOLDER_NAME}"
-echo "Created ${FRAMEWORK_FOLDER_NAME}"
+# iOS Related Slices
+echo "Building iOS Slices ..."
+xcodebuild archive \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=iOS" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/iOS" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
-echo "Archiving ${FRAMEWORK_NAME}"
+xcodebuild archive \
+ONLY_ACTIVE_ARCH=NO \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=iOS Simulator" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/iOSSimulator" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
-xcodebuild archive -scheme ${PROJECT_NAME} -destination="iOS Simulator" -archivePath "${SIMULATOR_ARCHIVE_PATH}" -sdk iphonesimulator SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
+# tvOS Related Slices
+echo "Building tvOS Slices ..."
+xcodebuild archive \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=tvOS" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/tvOS" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
-xcodebuild archive -scheme ${PROJECT_NAME} -destination="iOS" -archivePath "${IOS_DEVICE_ARCHIVE_PATH}" -sdk iphoneos SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
+xcodebuild archive \
+ONLY_ACTIVE_ARCH=NO \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=tvOS Simulator" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/tvOSSimulator" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
-#Creating XCFramework
-xcodebuild -create-xcframework -framework ${SIMULATOR_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework -framework ${IOS_DEVICE_ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework -output "${FRAMEWORK_PATH}"
-rm -rf "${SIMULATOR_ARCHIVE_PATH}"
-rm -rf "${IOS_DEVICE_ARCHIVE_PATH}"
+# watchOS Related Slices
+echo "Building watchOS Slices ..."
+xcodebuild archive \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=watchOS" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/watchOS" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
-zip -r Segment.xcframework.zip "${FRAMEWORK_FOLDER_NAME}/Segment.xcframework"
+xcodebuild archive \
+ONLY_ACTIVE_ARCH=NO \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=watchOS Simulator" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/watchOSSimulator" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+# macOS Related Slices
+echo "Building macOS Slices ..."
+
+xcodebuild archive \
+ONLY_ACTIVE_ARCH=NO \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=macOS" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/macOS" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+xcodebuild archive \
+ONLY_ACTIVE_ARCH=NO \
+-scheme "${SCHEME_NAME}" \
+-destination "generic/platform=macOS,variant=Mac Catalyst,name=Any Mac" \
+-archivePath "${XCFRAMEWORK_OUTPUT_PATH}/macOSCatalyst" \
+SKIP_INSTALL=NO \
+BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+# Combine all the slices into XCFramework
+echo "Combining Slices into XCFramework ..."
+xcodebuild -create-xcframework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/iOS.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/iOSSimulator.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/tvOS.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/tvOSSimulator.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/watchOS.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/watchOSSimulator.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/macOS.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-framework ./${XCFRAMEWORK_OUTPUT_PATH}/macOSCatalyst.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework \
+-output "./${XCFRAMEWORK_OUTPUT_PATH}/${PROJECT_NAME}.xcframework"
+
+# Zip it up!
+
+echo "Zipping up ${PROJECT_NAME}.xcframework ..."
+zip -r ${PROJECT_NAME}.xcframework.zip "./${XCFRAMEWORK_OUTPUT_PATH}/${PROJECT_NAME}.xcframework"
+
+echo "Done."
