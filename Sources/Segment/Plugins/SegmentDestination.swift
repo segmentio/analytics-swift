@@ -116,6 +116,9 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
+        
+        // don't flush if analytics is disabled.
+        guard analytics.enabled == true else { return }
 
         // Read events from file system
         guard let data = storage.read(Storage.Constants.events) else { return }

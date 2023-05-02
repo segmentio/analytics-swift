@@ -12,7 +12,7 @@ import Segment
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var analytics: Analytics? = nil
-
+    let blockerFlushPolicy = NetBlockerFlushPolicy()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
@@ -20,8 +20,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let configuration = Configuration(writeKey: "<WRITE KEY>")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
+            .flushAt(1)
+            .errorHandler { error in
+                NetBlockerFlushPolicy.networkBlockedHandler(error: error, blockerPolicy: self.blockerFlushPolicy)
+            }
         
         analytics = Analytics(configuration: configuration)
+        analytics?.add(flushPolicy: blockerFlushPolicy)
+        
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { _ in
+            self.analytics?.track(name: "test little snitch")
+        })
+        
         //analytics?.add(plugin: NotificationTracking())
     }
 

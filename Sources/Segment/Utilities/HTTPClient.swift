@@ -14,6 +14,7 @@ enum HTTPClientErrors: Error {
     case badSession
     case failedToOpenBatch
     case statusCode(code: Int)
+    case unknown(error: Error)
 }
 
 public class HTTPClient {
@@ -53,6 +54,7 @@ public class HTTPClient {
     @discardableResult
     func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
         guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
+            self.analytics?.reportInternalError(HTTPClientErrors.failedToOpenBatch)
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
@@ -62,7 +64,8 @@ public class HTTPClient {
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
-                completion(.failure(error))
+                self?.analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
+                completion(.failure(HTTPClientErrors.unknown(error: error)))
             } else if let httpResponse = response as? HTTPURLResponse {
                 switch (httpResponse.statusCode) {
                 case 1..<300:
