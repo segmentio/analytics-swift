@@ -168,6 +168,9 @@ extension Analytics {
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
     /// be sent to each plugin present in the system.
     public func flush() {
+        // only flush if we're enabled.
+        guard enabled == true else { return }
+        
         apply { plugin in
             if let p = plugin as? EventPlugin {
                 p.flush()
