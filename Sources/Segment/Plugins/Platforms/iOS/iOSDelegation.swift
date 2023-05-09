@@ -14,6 +14,7 @@ import UIKit
 // MARK: - Remote Notifications
 
 public protocol RemoteNotifications: Plugin {
+    func declinedRemoteNotifications()
     func registeredForRemoteNotifications(deviceToken: Data)
     func failedToRegisterForRemoteNotification(error: Error?)
     func receivedRemoteNotification(userInfo: [AnyHashable: Any])
@@ -21,6 +22,7 @@ public protocol RemoteNotifications: Plugin {
 }
 
 extension RemoteNotifications {
+    public func declinedRemoteNotifications() {}
     public func registeredForRemoteNotifications(deviceToken: Data) {}
     public func failedToRegisterForRemoteNotification(error: Error?) {}
     public func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {}
@@ -28,6 +30,13 @@ extension RemoteNotifications {
 }
 
 extension Analytics {
+    public func declinedRemoteNotifications() {
+        apply { plugin in
+            if let p = plugin as? RemoteNotifications {
+                p.declinedRemoteNotifications()
+            }
+        }
+    }
     public func registeredForRemoteNotifications(deviceToken: Data) {
         setDeviceToken(deviceToken.hexString)
         
