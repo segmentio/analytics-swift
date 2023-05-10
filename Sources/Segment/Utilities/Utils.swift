@@ -58,6 +58,3 @@ extension Optional: Flattenable {
     }
 }
 
-internal func codable(_ dict: [String: Any]?) -> [String: Codable]? {
-    return dict as? [String: Codable]
-}
