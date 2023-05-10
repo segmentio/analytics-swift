@@ -188,7 +188,9 @@ extension Analytics {
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
     public func screen(title: String, category: String? = nil, properties: [String: Any]? = nil) {
+        // if properties is nil, this is the event that'll get used.
         var event = ScreenEvent(title: title, category: category, properties: nil)
+        // if we have properties, get a new one rolling.
         if let properties = properties {
             do {
                 let jsonProperties = try JSON(properties)
