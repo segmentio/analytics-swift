@@ -182,6 +182,7 @@
 		A3471FBD256487F000965480 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		A3AEE1492580208E002386EB /* iso8601.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iso8601.swift; sourceTree = "<group>"; };
 		A3AEE1872581A8F1002386EB /* Deprecations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecations.swift; sourceTree = "<group>"; };
+		BD387AE42A12C1CF007568C4 /* Segment.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Segment.podspec; sourceTree = "<group>"; };
 		OBJ_12 /* Analytics_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics_Tests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -413,6 +414,7 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				BD387AE42A12C1CF007568C4 /* Segment.podspec */,
 				46D98E3B26D6FED300E7A86A /* Examples */,
 				OBJ_7 /* Sources */,
 				OBJ_10 /* Tests */,
