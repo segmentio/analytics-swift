@@ -9,8 +9,6 @@ import Foundation
 import Sovran
 import Safely
 
-//TODO: make userDefaults extension for safe set and call that instead of userDefaults.set
-
 internal class Storage: Subscriber {
     let writeKey: String
     let userDefaults: UserDefaults?
@@ -58,17 +56,20 @@ internal class Storage: Subscriber {
             default:
                 if isBasicType(value: value) {
                     // we can write it like normal
-                    let setUserDefaults = self.userDefaults?.safelySetUserDefaults(valueToWrite: value, keyToWrite: key.rawValue)
+                    let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: value, keyToWrite: key.rawValue)
                     
-                    if let error = setUserDefaults {
+                    if let error = userDefaultsError {
                         analytics?.reportInternalError(error)
                     }
                 } else {
                     // encode it to a data object to store
                     let encoder = PropertyListEncoder()
                     if let plistValue = try? encoder.encode(value) {
-                        userDefaults?.set(plistValue, forKey: key.rawValue)
-                    }
+                        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: plistValue, keyToWrite: key.rawValue)
+                        
+                        if let error = userDefaultsError {
+                            analytics?.reportInternalError(error)
+                        }                    }
                 }
             }
             userDefaults?.synchronize()
@@ -206,7 +207,11 @@ extension Storage {
     private func currentFile(_ key: Storage.Constants) -> URL {
         var currentFile = 0
         let index: Int = userDefaults?.integer(forKey: key.rawValue) ?? 0
-        userDefaults?.set(index, forKey: key.rawValue)
+        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: index, keyToWrite: key.rawValue)
+        
+        if let error = userDefaultsError {
+            analytics?.reportInternalError(error)
+        }
         currentFile = index
         return self.eventsFile(index: currentFile)
     }
@@ -364,7 +369,11 @@ extension Storage {
         onFinish?(tempFile)
         
         let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
-        userDefaults?.set(currentFile, forKey: Constants.events.rawValue)
+        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: currentFile, keyToWrite: Constants.events.rawValue)
+        
+        if let error = userDefaultsError {
+            analytics?.reportInternalError(error)
+        }
     }
 }
 
@@ -385,11 +394,11 @@ extension UserDefaults {
     func safelySetUserDefaults( valueToWrite: Sendable, keyToWrite: String) -> Error? {
         let context = UserContext(UserDefaults: UserDefaults(), valueToWrite: valueToWrite, keyToWrite: keyToWrite)
         
-        let result = Safely.call(scenario: Scenarios.nullDefaultValues, context: context) { context in
+        let callError = Safely.call(scenario: Scenarios.nullDefaultValues, context: context) { context in
             context.UserDefaults.set(valueToWrite, forKey: keyToWrite)
         }
         
-        return result
+        return callError
     }
 }
 
