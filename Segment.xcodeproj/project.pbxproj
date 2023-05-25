@@ -60,6 +60,7 @@
 		823479EE29F1A8910051BC99 /* MemoryLeak_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */; };
 		823479EF29F1A8910051BC99 /* FlushPolicy_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */; };
 		8238EA0A2A1F926300FCAA7C /* Safely in Frameworks */ = {isa = PBXBuildFile; productRef = 8238EA092A1F926300FCAA7C /* Safely */; };
+		8238EA0C2A1FF0F900FCAA7C /* SafeDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8238EA0B2A1FF0F900FCAA7C /* SafeDefinitions.swift */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
@@ -162,6 +163,7 @@
 		823479E829F1A8280051BC99 /* CountBasedFlushPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountBasedFlushPolicy.swift; sourceTree = "<group>"; };
 		823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryLeak_Tests.swift; sourceTree = "<group>"; };
 		823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlushPolicy_Tests.swift; sourceTree = "<group>"; };
+		8238EA0B2A1FF0F900FCAA7C /* SafeDefinitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeDefinitions.swift; sourceTree = "<group>"; };
 		9620862B2575C0C800314F8D /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		962086482579CCC200314F8D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSLifecycleMonitor.swift; sourceTree = "<group>"; };
@@ -370,6 +372,7 @@
 				46022770261F7A4800A9E913 /* Atomic.swift */,
 				46E382E62654429A00BA2502 /* Utils.swift */,
 				4663C728267A799100ADDD1A /* QueueTimer.swift */,
+				8238EA0B2A1FF0F900FCAA7C /* SafeDefinitions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -573,6 +576,7 @@
 				4689231429F7391500AB26E5 /* ObjCEvents.swift in Sources */,
 				A31A16E12579779600C9CDDF /* Version.swift in Sources */,
 				46210836260BBEE400EBC4A8 /* DeviceToken.swift in Sources */,
+				8238EA0C2A1FF0F900FCAA7C /* SafeDefinitions.swift in Sources */,
 				823479E929F1A8280051BC99 /* FlushPolicy.swift in Sources */,
 				9692724E25A4E5B7009B5298 /* Startup.swift in Sources */,
 				4663C729267A799100ADDD1A /* QueueTimer.swift in Sources */,

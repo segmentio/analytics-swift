@@ -34,14 +34,27 @@ internal class Storage: Subscriber {
         }
     }
     
+    struct StoreEventStruct {
+        let event: RawEvent
+        let eventStoreFile: URL
+    }
+    
     func write<T: Codable>(_ key: Storage.Constants, value: T?) {
         syncQueue.sync {
             switch key {
             case .events:
                 if let event = value as? RawEvent {
                     let eventStoreFile = currentFile(key)
-                    //TODO: wrap w safely
-                    self.storeEvent(toFile: eventStoreFile, event: event)
+                    let context = StoreEventStruct(event: event, eventStoreFile: eventStoreFile)
+                    
+                    let storeEventError = Safely.call(scenario: Scenarios.failedToWriteEvent, context: context) { context in
+                        self.storeEvent(toFile: eventStoreFile, event: event)
+                    }
+                    
+                    if let error = storeEventError {
+                        analytics?.reportInternalError(error)
+                    }
+                    
                     if let flushPolicies = analytics?.configuration.values.flushPolicies {
                         for policy in flushPolicies {
                             policy.updateState(event: event)
@@ -377,18 +390,14 @@ extension Storage {
     }
 }
 
+// MARK: - Set UserDefaults Safely
+
 extension UserDefaults {
     
     struct UserContext {
         let UserDefaults: UserDefaults
         let valueToWrite: Sendable
         let keyToWrite: String
-    }
-    
-    struct Scenarios {
-        static let nullDefaultValues = SafeScenario(
-            description: "Guard against null getting set as a user default value",
-            implementor: "@alanjcharles")
     }
     
     func safelySetUserDefaults( valueToWrite: Sendable, keyToWrite: String) -> Error? {
