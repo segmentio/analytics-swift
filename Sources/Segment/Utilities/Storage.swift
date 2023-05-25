@@ -7,16 +7,19 @@
 
 import Foundation
 import Sovran
+import Safely
+
+//TODO: make userDefaults extension for safe set and call that instead of userDefaults.set
 
 internal class Storage: Subscriber {
     let writeKey: String
     let userDefaults: UserDefaults?
     static let MAXFILESIZE = 475000 // Server accepts max 500k per batch
-
+    
     // This queue synchronizes reads/writes.
     // Do NOT use it outside of: write, read, reset, remove.
     let syncQueue = DispatchQueue(label: "sync.segment.com")
-
+    
     private var outputStream: OutputFileStream? = nil
     
     internal var onFinish: ((URL) -> Void)? = nil
@@ -39,11 +42,12 @@ internal class Storage: Subscriber {
             case .events:
                 if let event = value as? RawEvent {
                     let eventStoreFile = currentFile(key)
+                    //TODO: wrap w safely
                     self.storeEvent(toFile: eventStoreFile, event: event)
                     if let flushPolicies = analytics?.configuration.values.flushPolicies {
                         for policy in flushPolicies {
                             policy.updateState(event: event)
-
+                            
                             if (policy.shouldFlush() == true) {
                                 policy.reset()
                             }
@@ -54,7 +58,11 @@ internal class Storage: Subscriber {
             default:
                 if isBasicType(value: value) {
                     // we can write it like normal
-                    userDefaults?.set(value, forKey: key.rawValue)
+                    let setUserDefaults = self.userDefaults?.safelySetUserDefaults(valueToWrite: value, keyToWrite: key.rawValue)
+                    
+                    if let error = setUserDefaults {
+                        analytics?.reportInternalError(error)
+                    }
                 } else {
                     // encode it to a data object to store
                     let encoder = PropertyListEncoder()
@@ -120,7 +128,7 @@ internal class Storage: Subscriber {
                 // wanna do anyway.
                 userDefaults?.removeObject(forKey: key.rawValue)
             }
-
+            
             for url in urls {
                 try? FileManager.default.removeItem(atPath: url.path)
             }
@@ -133,9 +141,9 @@ internal class Storage: Subscriber {
             result = true
         } else {
             switch value {
-            // NSNull is not valid for UserDefaults
-            //case is NSNull:
-            //    fallthrough
+                // NSNull is not valid for UserDefaults
+                //case is NSNull:
+                //    fallthrough
             case is Decimal:
                 fallthrough
             case is NSNumber:
@@ -157,7 +165,7 @@ internal class Storage: Subscriber {
             try? FileManager.default.removeItem(atPath: file.path)
         }
     }
-
+    
 }
 
 // MARK: - String Contants
@@ -204,11 +212,11 @@ extension Storage {
     }
     
     private func eventStorageDirectory() -> URL {
-        #if os(tvOS) || os(macOS)
+#if os(tvOS) || os(macOS)
         let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
-        #else
+#else
         let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
-        #endif
+#endif
         
         let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
         let docURL = urls[0]
@@ -229,7 +237,7 @@ extension Storage {
         // synchronized against finishing/creating files while we're getting
         // a list of files to send.
         var result = [URL]()
-
+        
         // finish out any file in progress
         let index = userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0
         finish(file: eventsFile(index: index))
@@ -315,7 +323,7 @@ extension Storage {
                 analytics?.reportInternalError(error)
             }
         }
-
+        
         if let outputStream = outputStream {
             do {
                 try outputStream.open()
@@ -333,7 +341,7 @@ extension Storage {
         }
         
         let sentAt = Date().iso8601()
-
+        
         // write it to the existing file
         let fileEnding = "],\"sentAt\":\"\(sentAt)\",\"writeKey\":\"\(writeKey)\"}"
         do {
@@ -344,7 +352,7 @@ extension Storage {
         }
         
         self.outputStream = nil
-
+        
         let tempFile = file.appendingPathExtension(Storage.tempExtension)
         do {
             try FileManager.default.moveItem(at: file, to: tempFile)
@@ -354,8 +362,34 @@ extension Storage {
         
         // necessary for testing, do not use.
         onFinish?(tempFile)
-
+        
         let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
         userDefaults?.set(currentFile, forKey: Constants.events.rawValue)
     }
 }
+
+extension UserDefaults {
+    
+    struct UserContext {
+        let UserDefaults: UserDefaults
+        let valueToWrite: Sendable
+        let keyToWrite: String
+    }
+    
+    struct Scenarios {
+        static let nullDefaultValues = SafeScenario(
+            description: "Guard against null getting set as a user default value",
+            implementor: "@alanjcharles")
+    }
+    
+    func safelySetUserDefaults( valueToWrite: Sendable, keyToWrite: String) -> Error? {
+        let context = UserContext(UserDefaults: UserDefaults(), valueToWrite: valueToWrite, keyToWrite: keyToWrite)
+        
+        let result = Safely.call(scenario: Scenarios.nullDefaultValues, context: context) { context in
+            context.UserDefaults.set(valueToWrite, forKey: keyToWrite)
+        }
+        
+        return result
+    }
+}
+

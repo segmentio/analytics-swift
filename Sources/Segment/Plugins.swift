@@ -175,6 +175,7 @@ extension Analytics {
      */
     @discardableResult
     public func add(plugin: Plugin) -> Plugin {
+        //TODO: wrap w safely
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
         return plugin
@@ -190,6 +191,7 @@ extension Analytics {
     @discardableResult
     public func add(enrichment: @escaping EnrichmentClosure) -> Plugin {
         let plugin = ClosureEnrichment(closure: enrichment)
+        //TODO: wrap w safely
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
         return plugin

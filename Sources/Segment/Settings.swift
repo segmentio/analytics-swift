@@ -105,6 +105,7 @@ extension Analytics {
     internal func update(settings: Settings, type: UpdateType) {
         apply { (plugin) in
             // tell all top level plugins to update.
+            //TODO: wrap w safely
             update(plugin: plugin, settings: settings, type: type)
         }
     }

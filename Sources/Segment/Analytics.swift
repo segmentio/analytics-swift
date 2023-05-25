@@ -173,6 +173,7 @@ extension Analytics {
         
         apply { plugin in
             if let p = plugin as? EventPlugin {
+                //TODO: wrap w safely
                 p.flush()
             }
         }
@@ -184,6 +185,7 @@ extension Analytics {
         store.dispatch(action: UserInfo.ResetAction())
         apply { plugin in
             if let p = plugin as? EventPlugin {
+                //TODO: wrap w safely
                 p.reset()
             }
         }

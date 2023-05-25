@@ -46,6 +46,7 @@ public class Timeline {
     internal func applyPlugins<E: RawEvent>(type: PluginType, event: E?) -> E? {
         var result: E? = event
         if let mediator = plugins[type], let e = event {
+            //TODO: wrap in safely call
             result = mediator.execute(event: e)
         }
         return result
@@ -117,6 +118,7 @@ extension Timeline {
                     return plugin === storedPlugin
                 }
                 toRemove.forEach { (plugin) in
+                    //TODO: wrap w safely
                     plugin.shutdown()
                     mediator.remove(plugin: plugin)
                 }

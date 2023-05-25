@@ -59,6 +59,7 @@
 		823479EB29F1A8280051BC99 /* CountBasedFlushPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479E829F1A8280051BC99 /* CountBasedFlushPolicy.swift */; };
 		823479EE29F1A8910051BC99 /* MemoryLeak_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479EC29F1A8910051BC99 /* MemoryLeak_Tests.swift */; };
 		823479EF29F1A8910051BC99 /* FlushPolicy_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823479ED29F1A8910051BC99 /* FlushPolicy_Tests.swift */; };
+		8238EA0A2A1F926300FCAA7C /* Safely in Frameworks */ = {isa = PBXBuildFile; productRef = 8238EA092A1F926300FCAA7C /* Safely */; };
 		9620862C2575C0C800314F8D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620862B2575C0C800314F8D /* Events.swift */; };
 		96208650257AA83E00314F8D /* iOSLifecycleMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9620864F257AA83E00314F8D /* iOSLifecycleMonitor.swift */; };
 		966945D7259BDCDD00271339 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967C40ED259A7311008EB0B6 /* HTTPClient.swift */; };
@@ -196,6 +197,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				8238EA0A2A1F926300FCAA7C /* Safely in Frameworks */,
 				462107F22603DA4D00EBC4A8 /* Sovran in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -472,6 +474,7 @@
 			name = Segment;
 			packageProductDependencies = (
 				462107F12603DA4D00EBC4A8 /* Sovran */,
+				8238EA092A1F926300FCAA7C /* Safely */,
 			);
 			productName = Segment;
 			productReference = "Segment::Segment::Product" /* Segment.framework */;
@@ -529,6 +532,7 @@
 			mainGroup = OBJ_5;
 			packageReferences = (
 				462107F02603DA4D00EBC4A8 /* XCRemoteSwiftPackageReference "Sovran-Swift" */,
+				8238EA082A1F926300FCAA7C /* XCRemoteSwiftPackageReference "safely-swift" */,
 			);
 			productRefGroup = OBJ_14 /* Products */;
 			projectDirPath = "";
@@ -972,6 +976,14 @@
 				minimumVersion = 1.0.2;
 			};
 		};
+		8238EA082A1F926300FCAA7C /* XCRemoteSwiftPackageReference "safely-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/segmentio/safely-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -979,6 +991,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 462107F02603DA4D00EBC4A8 /* XCRemoteSwiftPackageReference "Sovran-Swift" */;
 			productName = Sovran;
+		};
+		8238EA092A1F926300FCAA7C /* Safely */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8238EA082A1F926300FCAA7C /* XCRemoteSwiftPackageReference "safely-swift" */;
+			productName = Safely;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
