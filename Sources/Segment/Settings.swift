@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Safely
 
 public struct Settings: Codable {
     public var integrations: JSON? = nil
@@ -105,10 +106,16 @@ extension Analytics {
     internal func update(settings: Settings, type: UpdateType) {
         apply { (plugin) in
             // tell all top level plugins to update.
-            //TODO: wrap w safely
-            update(plugin: plugin, settings: settings, type: type)
+            let updatePluginError = Safely.call(scenario: Scenarios.failedToUpdatePlugin, context: NoContext()) { context in
+                update(plugin: plugin, settings: settings, type: type)
+            }
+            
+            if let error = updatePluginError {
+                self.reportInternalError(error)
+            }
         }
     }
+
     
     internal func update(plugin: Plugin, settings: Settings, type: UpdateType) {
         plugin.update(settings: settings, type: type)
