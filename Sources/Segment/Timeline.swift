@@ -7,12 +7,14 @@
 
 import Foundation
 import Sovran
+import Safely
 
 
 // MARK: - Main Timeline
 
 public class Timeline {
     internal let plugins: [PluginType: Mediator]
+    internal weak var analytics: Analytics? = nil
     
     public init() {
         self.plugins = [
@@ -46,8 +48,13 @@ public class Timeline {
     internal func applyPlugins<E: RawEvent>(type: PluginType, event: E?) -> E? {
         var result: E? = event
         if let mediator = plugins[type], let e = event {
-            //TODO: wrap in safely call
-            result = mediator.execute(event: e)
+            let applyEnrichmentError = Safely.call(scenario: Scenarios.failedToProcessEnrichment, context: NoContext()) { context in
+                result = mediator.execute(event: e)
+            }
+            
+            if let error = applyEnrichmentError {
+                analytics?.reportInternalError(error)
+            }
         }
         return result
     }
@@ -118,9 +125,13 @@ extension Timeline {
                     return plugin === storedPlugin
                 }
                 toRemove.forEach { (plugin) in
-                    //TODO: wrap w safely
-                    plugin.shutdown()
-                    mediator.remove(plugin: plugin)
+                    let pluginShutdownError = Safely.call(scenario: Scenarios.failedToShutdownPlugin, context: NoContext()) { context in
+                        plugin.shutdown()
+                        mediator.remove(plugin: plugin)
+                    }
+                    if let error = pluginShutdownError {
+                        analytics?.reportInternalError(error)
+                    }
                 }
             }
         }
