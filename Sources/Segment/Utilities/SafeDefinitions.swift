@@ -24,4 +24,8 @@ struct Scenarios {
     static let failedToResetPlugin = SafeScenario(
         description: "Plugin failed to reset (?)",
         implementor: "@alanjcharles")
+    
+    static let failedToConfigurePlugin = SafeScenario(
+        description: "Plugin failed to configure (?)",
+        implementor: "@alanjcharles")
 }
