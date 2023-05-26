@@ -7,6 +7,7 @@
 
 import Foundation
 import Sovran
+import Safely
 
 // MARK: - Base Setup
 
@@ -173,20 +174,29 @@ extension Analytics {
         
         apply { plugin in
             if let p = plugin as? EventPlugin {
-                //TODO: wrap w safely
-                p.flush()
+                let flushPluginError = Safely.call(scenario: Scenarios.failedToFlushPlugin, context: NoContext()) { context in
+                    p.flush()
+                }
+                
+                if let error = flushPluginError {
+                    self.reportInternalError(error)
+                }
             }
         }
     }
-    
     /// Resets this instance of Analytics to a clean slate.  Traits, UserID's, anonymousId, etc are all cleared or reset.  This
     /// command will also be sent to each plugin present in the system.
     public func reset() {
         store.dispatch(action: UserInfo.ResetAction())
         apply { plugin in
             if let p = plugin as? EventPlugin {
-                //TODO: wrap w safely
-                p.reset()
+                let resetPluginError = Safely.call(scenario: Scenarios.failedToResetPlugin, context: NoContext()) { context in
+                    p.reset()
+                }
+                
+                if let error = resetPluginError {
+                    self.reportInternalError(error)
+                }
             }
         }
     }

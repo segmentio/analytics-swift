@@ -16,4 +16,12 @@ struct Scenarios {
     static let failedToWriteEvent = SafeScenario(
         description: "Failed to write event to disk...something more descriptive",
         implementor: "@alanjcharles")
+    
+    static let failedToFlushPlugin = SafeScenario(
+        description: "Plugin failed to flush events",
+        implementor: "@alanjcharles")
+    
+    static let failedToResetPlugin = SafeScenario(
+        description: "Plugin failed to reset (?)",
+        implementor: "@alanjcharles")
 }
