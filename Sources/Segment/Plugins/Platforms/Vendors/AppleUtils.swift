@@ -19,6 +19,7 @@ import WebKit
 
 internal class iOSVendorSystem: VendorSystem {
     private let device = UIDevice.current
+    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -65,17 +66,15 @@ internal class iOSVendorSystem: VendorSystem {
     
     override var userAgent: String? {
         #if !os(tvOS)
-        var userAgent: String?
-        
-        if Thread.isMainThread {
-            userAgent = WKWebView().value(forKey: "userAgent") as? String
-        } else {
-            DispatchQueue.main.sync {
-              userAgent = WKWebView().value(forKey: "userAgent") as? String
+        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
+        // It has to be fetched on the main thread, so we've spun it off
+        // async and cache it when it comes back.
+        if Self.asyncUserAgent == nil {
+            DispatchQueue.main.async {
+                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
             }
         }
-
-        return userAgent
+        return Self.asyncUserAgent
         #else
         // webkit isn't on tvos
         return "unknown"
@@ -198,6 +197,7 @@ import WebKit
 
 internal class MacOSVendorSystem: VendorSystem {
     private let device = ProcessInfo.processInfo
+    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -238,16 +238,15 @@ internal class MacOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        var userAgent: String?
-        if Thread.isMainThread {
-            userAgent = WKWebView().value(forKey: "userAgent") as? String
-        } else {
-            DispatchQueue.main.sync {
-              userAgent = WKWebView().value(forKey: "userAgent") as? String
+        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
+        // It has to be fetched on the main thread, so we've spun it off
+        // async and cache it when it comes back.
+        if Self.asyncUserAgent == nil {
+            DispatchQueue.main.async {
+                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
             }
         }
-        
-        return userAgent
+        return Self.asyncUserAgent
     }
     
     override var connection: ConnectionStatus {
