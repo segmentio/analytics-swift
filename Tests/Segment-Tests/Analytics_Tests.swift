@@ -123,11 +123,13 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
+#if !os(watchOS) && !os(Linux)
         // prime the pump for userAgent, since it's retrieved async.
         let vendorSystem = VendorSystem.current
         while vendorSystem.userAgent == nil {
             RunLoop.main.run(until: Date.distantPast)
         }
+#endif
         
         waitUntilStarted(analytics: analytics)
         
