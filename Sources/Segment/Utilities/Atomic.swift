@@ -14,6 +14,7 @@ import Foundation
 //
 // Additionally, moving to a lock free version is just desirable, so moved to a queue.
 //
+// Also see thread here: https://github.com/apple/swift-evolution/pull/1387
 
 @propertyWrapper
 public class Atomic<T> {
