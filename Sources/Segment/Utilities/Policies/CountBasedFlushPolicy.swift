@@ -10,7 +10,7 @@ import Foundation
 public class CountBasedFlushPolicy: FlushPolicy {
     public weak var analytics: Analytics?
     internal var desiredCount: Int?
-    internal var count: Int = 0
+    @Atomic internal var count: Int = 0
     
     init() { }
     
