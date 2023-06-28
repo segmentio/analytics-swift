@@ -99,4 +99,4 @@ Segment-Package_XCFramework
 Segment.xcframework.zip
 Segment.xcframework
 XCFrameworkOutput
-
+*.sha256

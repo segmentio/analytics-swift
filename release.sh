@@ -44,6 +44,18 @@ then
 	exit 1
 fi
 
+# check if `swift-create-xcframework` tool is installed.
+# command will return non-zero if not.
+if ! command -v swift-create-xcframework &> /dev/null
+then
+	echo "Swift's create-xcframework tool is required, but could not be found."
+	echo "Install it via:"
+    echo "    $ brew install mint"
+    echo "    $ mint install unsignedapps/swift-create-xcframework"
+    echo ""
+	exit 1
+fi
+
 # check if `gh` tool has auth access.
 # command will return non-zero if not auth'd.
 authd=$(gh auth status -t)
@@ -132,4 +144,9 @@ rm $tempFile
 ./build.sh
 
 # upload the release
-gh release upload $newVersion ${PRODUCT_NAME}.xcframework.zip
+gh release upload $newVersion ${PRODUCT_NAME}.zip
+gh release upload $newVersion ${PRODUCT_NAME}.sha256
+
+# SPECIAL CASE: We need to upload Sovran to save them time.
+gh release upload $newVersion Sovran.zip
+gh release upload $newVersion Sovran.sha256
