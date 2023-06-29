@@ -57,7 +57,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13'
+    - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13'
 
 
   build_and_test_tvos:
@@ -71,7 +71,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+    - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
   build_and_test_watchos:
     needs: cancel_previous
@@ -84,7 +84,7 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 8 (45mm)'
+    - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 8 (45mm)'
     
   build_and_test_examples:
     needs: cancel_previous
