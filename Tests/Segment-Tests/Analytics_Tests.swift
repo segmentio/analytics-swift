@@ -622,6 +622,8 @@ final class Analytics_Tests: XCTestCase {
     }
     
     func testSharedInstance() {
+        Analytics.firstInstance = nil
+        
         let dead = Analytics.shared()
         XCTAssertTrue(dead.isDead)
         
