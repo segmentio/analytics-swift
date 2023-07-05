@@ -620,4 +620,25 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(destHit)
 
     }
+    
+    func testSharedInstance() {
+        Analytics.firstInstance = nil
+        
+        let dead = Analytics.shared()
+        XCTAssertTrue(dead.isDead)
+        
+        let alive = Analytics(configuration: Configuration(writeKey: "1234"))
+        XCTAssertFalse(alive.isDead)
+        
+        let shared = Analytics.shared()
+        XCTAssertFalse(shared.isDead)
+        
+        XCTAssertTrue(alive === shared)
+        
+        let alive2 = Analytics(configuration: Configuration(writeKey: "ABCD"))
+        let shared2 = Analytics.shared()
+        XCTAssertFalse(alive2 === shared2)
+        XCTAssertTrue(shared2 === shared)
+        
+    }
 }
