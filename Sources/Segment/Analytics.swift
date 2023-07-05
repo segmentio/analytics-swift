@@ -26,6 +26,24 @@ public class Analytics {
     
     public var timeline: Timeline
     
+    static internal let deadInstance = "DEADINSTANCE"
+    static internal weak var firstInstance: Analytics? = nil
+    static func shared() -> Analytics {
+        if let a = firstInstance {
+            if a.isDead == false {
+                return a
+            }
+        }
+        
+        #if DEBUG
+        if isUnitTesting == false {
+            assert(true == false, "An instance of Analytice does not exist!")
+        }
+        #endif
+        
+        return Analytics(configuration: Configuration(writeKey: deadInstance))
+    }
+    
     /// Initialize this instance of Analytics with a given configuration setup.
     /// - Parameters:
     ///    - configuration: The configuration to use
@@ -39,6 +57,8 @@ public class Analytics {
         store.provide(state: UserInfo.defaultState(from: storage))
         
         storage.analytics = self
+        
+        checkSharedInstance()
         
         // Get everything running
         platformStartup()
@@ -142,8 +162,8 @@ extension Analytics {
         }
     }
     
+    /// Returns a list of currently active flush policies.
     public var flushPolicies: [FlushPolicy] {
-        
         get {
             configuration.values.flushPolicies
         }
@@ -330,5 +350,27 @@ extension Analytics {
             }
         }
         track(name: "Deep Link Opened", properties: jsonProperties)
+    }
+}
+
+// MARK: Private Stuff
+
+extension Analytics {
+    private func checkSharedInstance() {
+        // is firstInstance a dead one?  If so, override it.
+        if let firstInstance = Self.firstInstance {
+            if firstInstance.isDead {
+                Self.firstInstance = self
+            }
+        }
+        // is firstInstance nil?  If so, set it.
+        if Self.firstInstance == nil {
+            Self.firstInstance = self
+        }
+    }
+        
+    /// Determines if an instance is dead.
+    internal var isDead: Bool {
+        return configuration.values.writeKey == Self.deadInstance
     }
 }
