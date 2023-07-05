@@ -28,6 +28,16 @@ public class Analytics {
     
     static internal let deadInstance = "DEADINSTANCE"
     static internal weak var firstInstance: Analytics? = nil
+    
+    /**
+     This method isn't a traditional singleton implementation.  It's provided here
+     to ease migration from analytics-ios to analytics-swift.  Rather than return a
+     singleton, it returns the first instance of Analytics created, OR an instance
+     who's writekey is "DEADINSTANCE".
+     
+     In the case of a dead instance, an assert will be thrown when in DEBUG builds to
+     assist developers in knowning that `shared()` is being called too soon.
+     */
     static func shared() -> Analytics {
         if let a = firstInstance {
             if a.isDead == false {
