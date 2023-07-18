@@ -73,7 +73,7 @@ public class Context: PlatformPlugin {
         }
         if app.count != 0 {
             staticContext["app"] = [
-                "name": app["CFBundleDisplayName"] ?? "",
+                "name": app["CFBundleDisplayName"] ?? app["CFBundleName"] ?? "",
                 "version": app["CFBundleShortVersionString"] ?? "",
                 "build": app["CFBundleVersion"] ?? "",
                 "namespace": Bundle.main.bundleIdentifier ?? ""
