@@ -12,9 +12,9 @@ public class CountBasedFlushPolicy: FlushPolicy {
     internal var desiredCount: Int?
     @Atomic internal var count: Int = 0
     
-    init() { }
+    public init() { }
     
-    init(count: Int) {
+    public init(count: Int) {
         desiredCount = count
     }
     

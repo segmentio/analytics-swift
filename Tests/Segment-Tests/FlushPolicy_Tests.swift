@@ -119,4 +119,48 @@ class FlushPolicyTests: XCTestCase {
         // we now have ONE HA HA.  TWO HA HA .. 3 ... HA HA THREE!  Items to flush!  <flys aways>
         XCTAssertTrue(countFlush.shouldFlush())
     }
+
+    func testIntervalBasedFlushPolicy() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "intervalFlushPolicy"))
+        let intervalFlush = IntervalBasedFlushPolicy(interval: 4000)
+        analytics.add(flushPolicy: intervalFlush)
+        
+        waitUntilStarted(analytics: analytics)
+        //let event = TrackEvent(event: "blah", properties: nil)
+        analytics.track(name: "blah", properties: nil)
+        
+        let hasUnsent = analytics.hasUnsentEvents
+        XCTAssertTrue(hasUnsent)
+        
+        // sleep for 5 seconds for 4 second flush policy
+        sleep(5)
+        
+        let hasUnsent2 = analytics.hasUnsentEvents
+        XCTAssertFalse(hasUnsent2)
+    }
+    
+//      Ignore, previous test
+//    func testIntervalBasedFlushPolicy() throws {
+//        let analytics = Analytics(configuration: Configuration(writeKey: "intervalFlushPolicy"))
+//        let intervalFlush = IntervalBasedFlushPolicy(interval: 4000)
+//        analytics.add(flushPolicy: intervalFlush)
+//        
+//        waitUntilStarted(analytics: analytics)
+//        
+//        let event = TrackEvent(event: "blah", properties: nil)
+//                
+//        // 1
+//        intervalFlush.updateState(event: event)
+//        XCTAssertFalse(intervalFlush.shouldFlush())
+//
+//        let exp = expectation(description: "Test after 5 seconds")
+//        let result = XCTWaiter.wait(for: [exp], timeout: 5)
+//        
+//        if result == XCTWaiter.Result.timedOut {
+//            XCTAssertTrue(intervalFlush.shouldFlush())
+//        } else {
+//            XCTFail("Delay interrupted")
+//        }
+//    }
+    
 }
