@@ -129,7 +129,7 @@ class FlushPolicyTests: XCTestCase {
         // make sure storage has no old events
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
-        let intervalFlush = IntervalBasedFlushPolicy(interval: 4)
+        let intervalFlush = IntervalBasedFlushPolicy(interval: 2)
         analytics.add(flushPolicy: intervalFlush)
         
         waitUntilStarted(analytics: analytics)
@@ -137,8 +137,8 @@ class FlushPolicyTests: XCTestCase {
         
         XCTAssertTrue(analytics.hasUnsentEvents)
         
-        // sleep for 5 seconds for 4 second flush policy
-        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 6))
+        // sleep for 4 seconds for 2 second flush policy
+        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 4))
         
         XCTAssertFalse(analytics.hasUnsentEvents)
     }
