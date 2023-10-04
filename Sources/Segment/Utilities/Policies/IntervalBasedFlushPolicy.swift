@@ -15,9 +15,9 @@ public class IntervalBasedFlushPolicy: FlushPolicy,
     internal var desiredInterval: TimeInterval?
     internal var flushTimer: QueueTimer? = nil
     
-    init() { }
+    public init() { }
     
-    init(interval: TimeInterval) {
+    public init(interval: TimeInterval) {
         desiredInterval = interval
     }
     

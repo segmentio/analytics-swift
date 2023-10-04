@@ -119,4 +119,27 @@ class FlushPolicyTests: XCTestCase {
         // we now have ONE HA HA.  TWO HA HA .. 3 ... HA HA THREE!  Items to flush!  <flys aways>
         XCTAssertTrue(countFlush.shouldFlush())
     }
+
+    func testIntervalBasedFlushPolicy() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "intervalFlushPolicy"))
+        
+        //remove default flush policies
+        analytics.removeAllFlushPolicies()
+        
+        // make sure storage has no old events
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        let intervalFlush = IntervalBasedFlushPolicy(interval: 2)
+        analytics.add(flushPolicy: intervalFlush)
+        
+        waitUntilStarted(analytics: analytics)
+        analytics.track(name: "blah", properties: nil)
+        
+        XCTAssertTrue(analytics.hasUnsentEvents)
+        
+        // sleep for 4 seconds for 2 second flush policy
+        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 4))
+        
+        XCTAssertFalse(analytics.hasUnsentEvents)
+    }
 }
