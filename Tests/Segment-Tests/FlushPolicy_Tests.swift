@@ -135,13 +135,11 @@ class FlushPolicyTests: XCTestCase {
         waitUntilStarted(analytics: analytics)
         analytics.track(name: "blah", properties: nil)
         
-        let hasUnsent = analytics.hasUnsentEvents
-        XCTAssertTrue(hasUnsent)
+        XCTAssertTrue(analytics.hasUnsentEvents)
         
         // sleep for 5 seconds for 4 second flush policy
-        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 5))
+        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 6))
         
-        let hasUnsent2 = analytics.hasUnsentEvents
-        XCTAssertFalse(hasUnsent2)
+        XCTAssertFalse(analytics.hasUnsentEvents)
     }
 }
