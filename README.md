@@ -49,6 +49,7 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
 | Facebook | https://github.com/segment-integrations/analytics-swift-facebook-app-events |
 | Firebase | https://github.com/segment-integrations/analytics-swift-firebase |
 | Mixpanel | https://github.com/segment-integrations/analytics-swift-mixpanel |
+| Survicate | https://github.com/Survicate/analytics-swift-survicate |
 
 ## Documentation
 
