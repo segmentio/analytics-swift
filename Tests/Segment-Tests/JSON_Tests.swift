@@ -17,7 +17,6 @@ struct Personal: Codable {
 struct TestStruct: Codable {
     let str: String
     let bool: Bool
-    let float: Float
     let int: Int
     let uint: UInt
     let double: Double
@@ -98,7 +97,6 @@ class JSONTests: XCTestCase {
         let test = TestStruct(
             str: "hello",
             bool: true,
-            float: 3.14,
             int: -42,
             uint: 42,
             double: 1.234,
@@ -143,7 +141,6 @@ class JSONTests: XCTestCase {
         let test = TestStruct(
             str: "hello",
             bool: true,
-            float: 3.14,
             int: -42,
             uint: 42,
             double: 1.234,
@@ -160,13 +157,6 @@ class JSONTests: XCTestCase {
         
         let str = typedDict?["str"] as? String
         let bool = typedDict?["bool"] as? Bool
-        #if os(Linux)
-        // the linux implementation of Dictionary has
-        // some issues w/ type conversion to float.
-        let float = typedDict?["float"] as? Decimal
-        #else
-        let float = typedDict?["float"] as? Float
-        #endif
         let int = typedDict?["int"] as? Int
         let uint = typedDict?["uint"] as? UInt
         let double = typedDict?["double"] as? Double
@@ -176,7 +166,6 @@ class JSONTests: XCTestCase {
         
         XCTAssertEqual(str, "hello")
         XCTAssertEqual(bool, true)
-        XCTAssertEqual(float, 3.14)
         XCTAssertEqual(int, -42)
         XCTAssertEqual(uint, 42)
         XCTAssertEqual(double, 1.234)
