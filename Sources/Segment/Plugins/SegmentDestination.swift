@@ -129,7 +129,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
             self.eventCount = 0
             self.cleanupUploads()
             
-            analytics.log(message: "Uploads in-progress: \(pendingUploads)")
+            analytics.log(message: "Uploads in-progress: \(self.pendingUploads)")
             
             if self.pendingUploads == 0 {
                 for url in data {
