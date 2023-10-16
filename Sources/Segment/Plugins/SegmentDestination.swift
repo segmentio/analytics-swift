@@ -126,12 +126,12 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
             // Read events from file system
             guard let data = storage.read(Storage.Constants.events) else { return }
             
-            eventCount = 0
-            cleanupUploads()
+            self.eventCount = 0
+            self.cleanupUploads()
             
             analytics.log(message: "Uploads in-progress: \(pendingUploads)")
             
-            if pendingUploads == 0 {
+            if self.pendingUploads == 0 {
                 for url in data {
                     analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                     
@@ -152,7 +152,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber {
                     }
                     // we have a legit upload in progress now, so add it to our list.
                     if let upload = uploadTask {
-                        add(uploadTask: UploadTaskInfo(url: url, task: upload))
+                        self.add(uploadTask: UploadTaskInfo(url: url, task: upload))
                     }
                 }
             } else {
