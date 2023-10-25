@@ -68,7 +68,7 @@ internal protocol PlatformPlugin: Plugin { }
 public typealias EnrichmentClosure = (_ event: RawEvent?) -> RawEvent?
 public class ClosureEnrichment: Plugin {
     public var type: PluginType = .enrichment
-    public var analytics: Analytics? = nil
+    public weak var analytics: Analytics? = nil
     
     internal let closure: EnrichmentClosure
     
