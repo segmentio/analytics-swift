@@ -45,6 +45,11 @@ final class MemoryLeak_Tests: XCTestCase {
         let macLifecycle = analytics.find(pluginType: macOSLifecycleEvents.self)!
         let macMonitor = analytics.find(pluginType: macOSLifecycleMonitor.self)!
         #endif
+        
+        // test that enrichment closure isn't leaked.  was previously a retain loop.
+        analytics.add { event in
+            return event
+        }
 
         analytics.remove(plugin: startupQueue)
         analytics.remove(plugin: segmentDest)
