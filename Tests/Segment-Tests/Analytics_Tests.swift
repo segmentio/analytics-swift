@@ -165,6 +165,53 @@ final class Analytics_Tests: XCTestCase {
 #endif
     }
     
+    
+    func testContextWithUserAgent() {
+        let configuration = Configuration(writeKey: "test")
+        configuration.userAgent("testing user agent")
+        let analytics = Analytics(configuration: configuration)
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+#if !os(watchOS) && !os(Linux)
+        // prime the pump for userAgent, since it's retrieved async.
+        let vendorSystem = VendorSystem.current
+        while vendorSystem.userAgent == nil {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+#endif
+        
+        waitUntilStarted(analytics: analytics)
+        
+        // add a referrer
+        analytics.openURL(URL(string: "https://google.com")!)
+        
+        analytics.track(name: "token check")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let context = trackEvent?.context?.dictionaryValue
+        // Verify that context isn't empty here.
+        // We need to verify the values but will do that in separate platform specific tests.
+        XCTAssertNotNil(context)
+        XCTAssertNotNil(context?["screen"], "screen missing!")
+        XCTAssertNotNil(context?["network"], "network missing!")
+        XCTAssertNotNil(context?["os"], "os missing!")
+        XCTAssertNotNil(context?["timezone"], "timezone missing!")
+        XCTAssertNotNil(context?["library"], "library missing!")
+        XCTAssertNotNil(context?["device"], "device missing!")
+        
+        let referrer = context?["referrer"] as! [String: Any]
+        XCTAssertEqual(referrer["url"] as! String, "https://google.com")
+
+        XCTAssertEqual(context?["userAgent"] as! String, "testing user agent")
+        
+        // these keys not present on linux
+#if !os(Linux)
+        XCTAssertNotNil(context?["app"], "app missing!")
+        XCTAssertNotNil(context?["locale"], "locale missing!")
+#endif
+    }
+    
     func testDeviceToken() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()

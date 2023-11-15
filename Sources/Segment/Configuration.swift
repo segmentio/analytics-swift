@@ -26,6 +26,7 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
+        var userAgent: String? = nil
     }
     
     internal var values: Values
@@ -180,6 +181,12 @@ public extension Configuration {
     @discardableResult
     func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
         values.flushPolicies = policies
+        return self
+    }
+    
+    @discardableResult
+    func userAgent(_ userAgent: String) -> Configuration {
+        values.userAgent = userAgent
         return self
     }
 }
