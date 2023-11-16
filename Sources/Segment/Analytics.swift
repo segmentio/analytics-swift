@@ -436,19 +436,16 @@ extension OperatingMode {
                 task()
             }
         case .server:
-            // if .main is used, we'll get a lockup calling sync.
-            // so instead, we're gonna use a worker, as our Dispatch
-            // mechanisms only work when a queue is in place.  Just
-            // calling the task() wouldn't be enough.
-            if queue == DispatchQueue.main {
-                DispatchQueue.global(qos: .utility).sync {
-                    task()
-                }
-            } else {
-                queue.sync {
-                    task()
-                }
+            // we need to be careful about doing a sync on the same queue we're running
+            // on, and we have no way of knowing that.  So we're gonna dispatch to a
+            // safe place elsewhere, and just wait.
+            let group = DispatchGroup()
+            group.enter()
+            DispatchQueue.global(qos: .utility).async {
+                task()
+                group.leave()
             }
+            group.wait()
         }
     }
 }
