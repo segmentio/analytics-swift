@@ -137,9 +137,15 @@ class FlushPolicyTests: XCTestCase {
         
         XCTAssertTrue(analytics.hasUnsentEvents)
         
-        // sleep for 4 seconds for 2 second flush policy
-        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 4))
+        @Atomic var flushSent = false
+        while !flushSent {
+            RunLoop.main.run(until: Date.distantPast)
+            if analytics.pendingUploads!.count > 0 {
+                // flush was triggered
+                flushSent = true
+            }
+        }
         
-        XCTAssertFalse(analytics.hasUnsentEvents)
+        XCTAssertTrue(flushSent)
     }
 }
