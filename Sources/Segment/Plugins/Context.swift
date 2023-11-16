@@ -148,7 +148,7 @@ public class Context: PlatformPlugin {
         // BKS: This use to be in the static section, however it was discovered that on some platforms
         // there can be a delay in retrieval.  It has to be fetched on the main thread, so we've spun it off
         // async and cache it when it comes back.
-        let userAgent = device.userAgent
+        let userAgent = analytics?.configuration.values.userAgent ?? device.userAgent
         context["userAgent"] = userAgent
 
         // other stuff?? ...
