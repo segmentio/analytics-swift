@@ -440,7 +440,7 @@ extension OperatingMode {
             // so instead, we're gonna use a worker, as our Dispatch
             // mechanisms only work when a queue is in place.  Just
             // calling the task() wouldn't be enough.
-            if queue == DispatchQueue.main {
+            if queue === DispatchQueue.main {
                 DispatchQueue.global(qos: .utility).sync {
                     task()
                 }
