@@ -146,6 +146,11 @@ extension Analytics {
         return nil
     }
     
+    /// Returns the current operating mode this instance was given.
+    public var operatingMode: OperatingMode {
+        return configuration.values.operatingMode
+    }
+    
     /// Adjusts the flush interval post configuration.
     public var flushInterval: TimeInterval {
         get {
@@ -196,15 +201,51 @@ extension Analytics {
     }
     
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
-    /// be sent to each plugin present in the system.
-    public func flush() {
+    /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
+    /// called when flush has completed.
+    public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { return }
         
+        let flushGroup = DispatchGroup()
+        // gotta call enter at least once before we ask to be notified.
+        flushGroup.enter()
+        
         apply { plugin in
-            if let p = plugin as? EventPlugin {
-                p.flush()
+            operatingMode.run(queue: configuration.values.flushQueue) {
+                if let p = plugin as? FlushCompletion {
+                    // this is async
+                    // flush(group:completion:) handles the enter/leave.
+                    p.flush(group: flushGroup) { plugin in
+                        // we don't really care about the plugin value .. yet.
+                    }
+                } else if let p = plugin as? EventPlugin {
+                    // we have no idea if this will be async or not, assume it's sync.
+                    flushGroup.enter()
+                    p.flush()
+                    flushGroup.leave()
+                }
             }
+        }
+        
+        // if we're not in server mode, we need to be notified when it's done.
+        if let completion, operatingMode != .server {
+            // set up our callback to know when the group has completed, if we're not
+            // in .server operating mode.
+            flushGroup.notify(queue: configuration.values.flushQueue) {
+                completion()
+            }
+        }
+        
+        flushGroup.leave() // matches our initial enter().
+        
+        // if we ARE in server mode, we need to wait on the group.
+        // This effectively ends up being a `sync` operation.
+        if operatingMode == .server {
+            flushGroup.wait()
+            // we need to call completion on our own since
+            // we skipped setting up notify.
+            if let completion { completion() }
         }
     }
     
@@ -382,5 +423,32 @@ extension Analytics {
     /// Determines if an instance is dead.
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
+    }
+}
+
+// MARK: Operating mode based scheduling
+
+extension OperatingMode {
+    func run(queue: DispatchQueue, task: @escaping () -> Void) {
+        switch self {
+        case .client:
+            queue.async {
+                task()
+            }
+        case .server:
+            // if .main is used, we'll get a lockup calling sync.
+            // so instead, we're gonna use a worker, as our Dispatch
+            // mechanisms only work when a queue is in place.  Just
+            // calling the task() wouldn't be enough.
+            if queue == DispatchQueue.main {
+                DispatchQueue.global(qos: .utility).sync {
+                    task()
+                }
+            } else {
+                queue.sync {
+                    task()
+                }
+            }
+        }
     }
 }

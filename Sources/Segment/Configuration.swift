@@ -10,6 +10,15 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - Operating Mode
+/// Specifies the operating mode/context
+public enum OperatingMode {
+    /// Running as an executable on a server
+    case server
+    /// Running as a long-lived application
+    case client
+}
+
 // MARK: - Internal Configuration
 
 public class Configuration {
@@ -26,6 +35,8 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
+        var operatingMode: OperatingMode = .client
+        var flushQueue: DispatchQueue = DispatchQueue(label: "com.segment.flushQueue", qos: .background)
     }
     
     internal var values: Values
@@ -180,6 +191,24 @@ public extension Configuration {
     @discardableResult
     func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
         values.flushPolicies = policies
+        return self
+    }
+    
+    /// Informs the Analytics instance of its operating mode/context.
+    /// Use `.server` when operating in a web service, or when synchronous operation
+    /// is desired.  Use `.client` when operating in a long lived process,
+    /// desktop/mobile application.
+    @discardableResult
+    func operatingMode(_ mode: OperatingMode) -> Configuration {
+        values.operatingMode = mode
+        return self
+    }
+    
+    /// Specify a custom queue to use when performing a flush operation.  The default
+    /// value is a Segment owned background queue.
+    @discardableResult
+    func flushQueue(_ queue: DispatchQueue) -> Configuration {
+        values.flushQueue = queue
         return self
     }
 }
