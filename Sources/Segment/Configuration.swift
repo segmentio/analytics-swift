@@ -37,8 +37,10 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
+
         var operatingMode: OperatingMode = .asynchronous
         var flushQueue: DispatchQueue = OperatingMode.defaultQueue
+        var userAgent: String? = nil
     }
     
     internal var values: Values
@@ -211,6 +213,10 @@ public extension Configuration {
     @discardableResult
     func flushQueue(_ queue: DispatchQueue) -> Configuration {
         values.flushQueue = queue
+
+    @discardableResult
+    func userAgent(_ userAgent: String) -> Configuration {
+        values.userAgent = userAgent
         return self
     }
 }
