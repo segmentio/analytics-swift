@@ -116,7 +116,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // unused .. see flush(group:completion:)
     }
     
-    public func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
+    public func flush(completion: @escaping (DestinationPlugin) -> Void) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
@@ -135,8 +135,6 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         if pendingUploads == 0 {
             for url in data {
                 analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
-                // enter the dispatch group
-                group.enter()
                 // set up the task
                 let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
                     switch result {
@@ -154,8 +152,6 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
                     self.cleanupUploads()
                     // call the completion
                     completion(self)
-                    // leave the dispatch group
-                    group.leave()
                 }
                 // we have a legit upload in progress now, so add it to our list.
                 if let upload = uploadTask {

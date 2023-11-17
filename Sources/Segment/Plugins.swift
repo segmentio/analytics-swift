@@ -63,7 +63,7 @@ public protocol VersionedPlugin {
 }
 
 public protocol FlushCompletion {
-    func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void)
+    func flush(completion: @escaping (DestinationPlugin) -> Void)
 }
 
 // For internal platform-specific bits

@@ -212,17 +212,22 @@ extension Analytics {
         flushGroup.enter()
         
         apply { plugin in
+            // we want to enter as soon as possible.  waiting to do it from
+            // another queue just takes too long.
+            flushGroup.enter()
             operatingMode.run(queue: configuration.values.flushQueue) {
                 if let p = plugin as? FlushCompletion {
-                    // this is async
                     // flush(group:completion:) handles the enter/leave.
-                    p.flush(group: flushGroup) { plugin in
+                    p.flush { plugin in
                         // we don't really care about the plugin value .. yet.
+                        flushGroup.leave()
                     }
                 } else if let p = plugin as? EventPlugin {
                     // we have no idea if this will be async or not, assume it's sync.
-                    flushGroup.enter()
                     p.flush()
+                    flushGroup.leave()
+                } else {
+                    // this is for plugins that don't implement flush.
                     flushGroup.leave()
                 }
             }
