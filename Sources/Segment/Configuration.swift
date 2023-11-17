@@ -213,6 +213,8 @@ public extension Configuration {
     @discardableResult
     func flushQueue(_ queue: DispatchQueue) -> Configuration {
         values.flushQueue = queue
+        return self
+    }
 
     @discardableResult
     func userAgent(_ userAgent: String) -> Configuration {
