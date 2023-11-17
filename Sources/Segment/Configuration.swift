@@ -13,10 +13,12 @@ import FoundationNetworking
 // MARK: - Operating Mode
 /// Specifies the operating mode/context
 public enum OperatingMode {
-    /// Running as an executable on a server
-    case server
-    /// Running as a long-lived application
-    case client
+    /// The operation of the Analytics client are synchronous.
+    case synchronous
+    /// The operation of the Analytics client are asynchronous.
+    case asynchronous
+    
+    static internal let defaultQueue = DispatchQueue(label: "com.segment.operatingModeQueue", qos: .utility)
 }
 
 // MARK: - Internal Configuration
@@ -35,8 +37,8 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
-        var operatingMode: OperatingMode = .client
-        var flushQueue: DispatchQueue = DispatchQueue(label: "com.segment.flushQueue", qos: .background)
+        var operatingMode: OperatingMode = .asynchronous
+        var flushQueue: DispatchQueue = OperatingMode.defaultQueue
     }
     
     internal var values: Values

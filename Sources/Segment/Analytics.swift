@@ -229,11 +229,11 @@ extension Analytics {
         }
         
         // if we're not in server mode, we need to be notified when it's done.
-        if let completion, operatingMode != .server {
+        if let completion, operatingMode != .synchronous {
             // set up our callback to know when the group has completed, if we're not
             // in .server operating mode.
             flushGroup.notify(queue: configuration.values.flushQueue) {
-                completion()
+                DispatchQueue.main.async { completion() }
             }
         }
         
@@ -241,11 +241,11 @@ extension Analytics {
         
         // if we ARE in server mode, we need to wait on the group.
         // This effectively ends up being a `sync` operation.
-        if operatingMode == .server {
+        if operatingMode == .synchronous {
             flushGroup.wait()
             // we need to call completion on our own since
             // we skipped setting up notify.
-            if let completion { completion() }
+            if let completion { DispatchQueue.main.async { completion() }}
         }
     }
     
@@ -430,22 +430,20 @@ extension Analytics {
 
 extension OperatingMode {
     func run(queue: DispatchQueue, task: @escaping () -> Void) {
+        //
         switch self {
-        case .client:
+        case .asynchronous:
             queue.async {
                 task()
             }
-        case .server:
-            // we need to be careful about doing a sync on the same queue we're running
-            // on, and we have no way of knowing that.  So we're gonna dispatch to a
-            // safe place elsewhere, and just wait.
-            let group = DispatchGroup()
-            group.enter()
-            DispatchQueue.global(qos: .utility).async {
-                task()
-                group.leave()
+        case .synchronous:
+            if queue === DispatchQueue.main {
+                OperatingMode.defaultQueue.asyncAndWait {
+                    task()
+                }
+            } else {
+                queue.asyncAndWait { task() }
             }
-            group.wait()
         }
     }
 }

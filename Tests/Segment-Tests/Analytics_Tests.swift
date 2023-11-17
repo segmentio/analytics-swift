@@ -413,7 +413,7 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either")
             .flushInterval(9999)
             .flushAt(9999)
-            .operatingMode(.server))
+            .operatingMode(.synchronous))
         
         waitUntilStarted(analytics: analytics)
         
@@ -650,7 +650,7 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_serverMode")
             .flushInterval(9999)
             .flushAt(9999)
-            .operatingMode(.server))
+            .operatingMode(.synchronous))
         
         waitUntilStarted(analytics: analytics)
         
