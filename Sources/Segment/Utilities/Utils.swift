@@ -7,6 +7,17 @@
 
 import Foundation
 
+#if os(Linux)
+extension DispatchQueue {
+    func asyncAndWait(execute workItem: DispatchWorkItem) {
+        async {
+            workItem.perform()
+        }
+        workItem.wait()
+    }
+}
+#endif
+
 /// Inquire as to whether we are within a Unit Testing environment.
 #if DEBUG
 internal var isUnitTesting: Bool = {

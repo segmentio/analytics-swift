@@ -437,14 +437,11 @@ extension OperatingMode {
                 task()
             }
         case .synchronous:
-            // if for some reason, we're told to do all this stuff on
-            // main, ignore it, and use the default queue.  this prevents
-            // a possible deadlock.
-            if queue === DispatchQueue.main {
-                OperatingMode.defaultQueue.asyncAndWait(execute: DispatchWorkItem(block: task))
-            } else {
-                queue.asyncAndWait(execute: DispatchWorkItem(block: task))
-            }
+            // in synchronous mode, always use our own queue to
+            // prevent deadlocks.
+            let workItem = DispatchWorkItem(block: task)
+            OperatingMode.defaultQueue.asyncAndWait(execute: workItem)
         }
     }
 }
+
