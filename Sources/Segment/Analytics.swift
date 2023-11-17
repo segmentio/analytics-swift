@@ -244,8 +244,9 @@ extension Analytics {
         if operatingMode == .synchronous {
             flushGroup.wait()
             // we need to call completion on our own since
-            // we skipped setting up notify.
-            if let completion { DispatchQueue.main.async { completion() }}
+            // we skipped setting up notify.  we don't need to do it on
+            // .main since we are in synchronous mode.
+            if let completion { completion() }
         }
     }
     
