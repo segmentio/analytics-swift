@@ -441,9 +441,9 @@ extension OperatingMode {
             // main, ignore it, and use the default queue.  this prevents
             // a possible deadlock.
             if queue === DispatchQueue.main {
-                OperatingMode.defaultQueue.asyncAndWait(execute: task)
+                OperatingMode.defaultQueue.asyncAndWait(execute: DispatchWorkItem(block: task))
             } else {
-                queue.asyncAndWait(execute: task)
+                queue.asyncAndWait(execute: DispatchWorkItem(block: task))
             }
         }
     }
