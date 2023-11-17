@@ -457,7 +457,10 @@ final class Analytics_Tests: XCTestCase {
     
     func testPurgeStorage() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either").flushInterval(9999).flushAt(9999))
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
         
         waitUntilStarted(analytics: analytics)
         
@@ -479,13 +482,13 @@ final class Analytics_Tests: XCTestCase {
         analytics.track(name: "test")
         
         var newPendingCount = analytics.pendingUploads!.count
-        XCTAssertEqual(newPendingCount, 4)
+        XCTAssertEqual(newPendingCount, 1)
         
         let pending = analytics.pendingUploads!
         analytics.purgeStorage(fileURL: pending.first!)
         
         newPendingCount = analytics.pendingUploads!.count
-        XCTAssertEqual(newPendingCount, 3)
+        XCTAssertEqual(newPendingCount, 0)
         
         analytics.purgeStorage()
         newPendingCount = analytics.pendingUploads!.count
@@ -687,5 +690,39 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertFalse(alive2 === shared2)
         XCTAssertTrue(shared2 === shared)
         
+    }
+    
+    func testServerOperatingMode() {
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_serverMode")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+
+        @Atomic var completionCalled = false
+        
+        // put an event in the pipe ...
+        analytics.track(name: "completion test1")
+        // flush it, that'll get us an upload going
+        analytics.flush {
+            // verify completion is called.
+            completionCalled = true
+        }
+        
+        // completion shouldn't be called before flush returned.
+        XCTAssertTrue(completionCalled)
+        XCTAssertEqual(analytics.pendingUploads!.count, 0)
+        
+        // put another event in the pipe.
+        analytics.track(name: "completion test2")
+        analytics.flush()
+        
+        // flush shouldn't return until all uploads are done, cuz
+        // it's running in sync mode.
+        XCTAssertEqual(analytics.pendingUploads!.count, 0)
     }
 }

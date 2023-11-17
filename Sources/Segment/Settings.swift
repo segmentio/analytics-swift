@@ -131,12 +131,14 @@ extension Analytics {
             // we don't really wanna wait for this network call during tests...
             // but we should make it work similarly.
             store.dispatch(action: System.ToggleRunningAction(running: false))
-            DispatchQueue.main.async {
+            
+            operatingMode.run(queue: DispatchQueue.main) {
                 if let state: System = self.store.currentState(), let settings = state.settings {
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
                 }
                 self.store.dispatch(action: System.ToggleRunningAction(running: true))
             }
+            
             return
         }
         #endif

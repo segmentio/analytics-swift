@@ -62,6 +62,10 @@ public protocol VersionedPlugin {
     static func version() -> String
 }
 
+public protocol FlushCompletion {
+    func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void)
+}
+
 // For internal platform-specific bits
 internal protocol PlatformPlugin: Plugin { }
 
