@@ -214,37 +214,33 @@ extension Analytics {
         apply { plugin in
             // we want to enter as soon as possible.  waiting to do it from
             // another queue just takes too long.
-            flushGroup.enter()
             operatingMode.run(queue: configuration.values.flushQueue) {
                 if let p = plugin as? FlushCompletion {
-                    // flush(group:completion:) handles the enter/leave.
-                    p.flush { plugin in
+                    // flush handles the groups enter/leave calls
+                    p.flush(group: flushGroup) { plugin in
                         // we don't really care about the plugin value .. yet.
-                        flushGroup.leave()
                     }
                 } else if let p = plugin as? EventPlugin {
+                    flushGroup.enter()
                     // we have no idea if this will be async or not, assume it's sync.
                     p.flush()
-                    flushGroup.leave()
-                } else {
-                    // this is for plugins that don't implement flush.
                     flushGroup.leave()
                 }
             }
         }
         
-        // if we're not in server mode, we need to be notified when it's done.
+        // if we're not in sync mode, we need to be notified when it's done.
         if let completion, operatingMode != .synchronous {
             // set up our callback to know when the group has completed, if we're not
-            // in .server operating mode.
+            // in .synchronous operating mode.
             flushGroup.notify(queue: configuration.values.flushQueue) {
-                DispatchQueue.main.async { completion() }
+                completion() //DispatchQueue.main.async { completion() }
             }
         }
         
         flushGroup.leave() // matches our initial enter().
         
-        // if we ARE in server mode, we need to wait on the group.
+        // if we ARE in sync mode, we need to wait on the group.
         // This effectively ends up being a `sync` operation.
         if operatingMode == .synchronous {
             flushGroup.wait()

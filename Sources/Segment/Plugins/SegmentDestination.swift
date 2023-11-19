@@ -116,7 +116,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // unused .. see flush(group:completion:)
     }
     
-    public func flush(completion: @escaping (DestinationPlugin) -> Void) {
+    public func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
@@ -124,8 +124,11 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // don't flush if analytics is disabled.
         guard analytics.enabled == true else { return }
 
+        // enter for the high level flush, allow us time to run through any existing files..
+        group.enter()
+        
         // Read events from file system
-        guard let data = storage.read(Storage.Constants.events) else { return }
+        guard let data = storage.read(Storage.Constants.events) else { group.leave(); return }
         
         eventCount = 0
         cleanupUploads()
@@ -134,6 +137,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         
         if pendingUploads == 0 {
             for url in data {
+                // enter for this url we're going to kick off
+                group.enter()
                 analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
                 // set up the task
                 let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
@@ -152,6 +157,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
                     self.cleanupUploads()
                     // call the completion
                     completion(self)
+                    // leave for the url we kicked off.
+                    group.leave()
                 }
                 // we have a legit upload in progress now, so add it to our list.
                 if let upload = uploadTask {
@@ -161,6 +168,9 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
         }
+        
+        // leave for the high level flush
+        group.leave()
     }
 }
 

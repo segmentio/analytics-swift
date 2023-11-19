@@ -69,7 +69,8 @@ class StressTests: XCTestCase {
                 let event = "write queue 1: \(eventsWritten)"
                 analytics.track(name: event)
                 eventsWritten += 1
-                usleep(0001)
+                //usleep(0001)
+                RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 1 wrote \(eventsWritten) events.")
             queue1Done = true
@@ -82,7 +83,8 @@ class StressTests: XCTestCase {
                 let event = "write queue 2: \(eventsWritten)"
                 analytics.track(name: event)
                 eventsWritten += 1
-                usleep(0001)
+                //usleep(0001)
+                RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 2 wrote \(eventsWritten) events.")
             queue2Done = true
@@ -91,10 +93,12 @@ class StressTests: XCTestCase {
         flushQueue.async {
             while (ready == false) { usleep(1) }
             var counter = 0
-            sleep(1)
+            //sleep(1)
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
             while (queue1Done == false || queue2Done == false) {
                 let sleepTime = UInt32.random(in: 1..<3000)
-                usleep(sleepTime)
+                //usleep(sleepTime)
+                RunLoop.main.run(until: Date(timeIntervalSinceNow: Double(sleepTime / 1000) ))
                 analytics.flush()
                 counter += 1
             }
