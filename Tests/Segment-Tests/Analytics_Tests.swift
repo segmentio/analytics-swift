@@ -692,9 +692,38 @@ final class Analytics_Tests: XCTestCase {
         
     }
     
-    func testServerOperatingMode() {
+    func testAsyncOperatingMode() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_serverMode")
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_asyncMode")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.asynchronous))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+
+        @Atomic var completionCalled = false
+        
+        // put an event in the pipe ...
+        analytics.track(name: "completion test1")
+        // flush it, that'll get us an upload going
+        analytics.flush {
+            // verify completion is called.
+            completionCalled = true
+        }
+        
+        while !completionCalled {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+        
+        XCTAssertTrue(completionCalled)
+        XCTAssertEqual(analytics.pendingUploads!.count, 0)
+    }
+    
+    func testSyncOperatingMode() {
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_syncMode")
             .flushInterval(9999)
             .flushAt(9999)
             .operatingMode(.synchronous))

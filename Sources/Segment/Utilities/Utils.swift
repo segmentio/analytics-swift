@@ -7,6 +7,17 @@
 
 import Foundation
 
+#if os(Linux)
+extension DispatchQueue {
+    func asyncAndWait(execute workItem: DispatchWorkItem) {
+        async {
+            workItem.perform()
+        }
+        workItem.wait()
+    }
+}
+#endif
+
 /// Inquire as to whether we are within a Unit Testing environment.
 #if DEBUG
 internal var isUnitTesting: Bool = {
@@ -58,3 +69,36 @@ extension Optional: Flattenable {
     }
 }
 
+class TrackingDispatchGroup: CustomStringConvertible {
+    internal let group = DispatchGroup()
+    
+    var description: String {
+        return "DispatchGroup Enters: \(enters), Leaves: \(leaves)"
+    }
+    
+    var enters: Int = 0
+    var leaves: Int = 0
+    var current: Int = 0
+    
+    func enter() {
+        enters += 1
+        current += 1
+        group.enter()
+    }
+    
+    func leave() {
+        leaves += 1
+        current -= 1
+        group.leave()
+    }
+    
+    init() { }
+    
+    func wait() {
+        group.wait()
+    }
+    
+    public func notify(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], queue: DispatchQueue, execute work: @escaping @convention(block) () -> Void) {
+        group.notify(qos: qos, flags: flags, queue: queue, execute: work)
+    }
+}

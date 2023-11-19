@@ -212,40 +212,49 @@ extension Analytics {
         flushGroup.enter()
         
         apply { plugin in
+            // we want to enter as soon as possible.  waiting to do it from
+            // another queue just takes too long.
             operatingMode.run(queue: configuration.values.flushQueue) {
                 if let p = plugin as? FlushCompletion {
-                    // this is async
-                    // flush(group:completion:) handles the enter/leave.
+                    // flush handles the groups enter/leave calls
                     p.flush(group: flushGroup) { plugin in
                         // we don't really care about the plugin value .. yet.
                     }
                 } else if let p = plugin as? EventPlugin {
-                    // we have no idea if this will be async or not, assume it's sync.
                     flushGroup.enter()
+                    // we have no idea if this will be async or not, assume it's sync.
                     p.flush()
                     flushGroup.leave()
                 }
             }
         }
         
-        // if we're not in server mode, we need to be notified when it's done.
-        if let completion, operatingMode != .synchronous {
-            // set up our callback to know when the group has completed, if we're not
-            // in .server operating mode.
-            flushGroup.notify(queue: configuration.values.flushQueue) {
-                DispatchQueue.main.async { completion() }
-            }
-        }
-        
         flushGroup.leave() // matches our initial enter().
         
-        // if we ARE in server mode, we need to wait on the group.
+        // if we ARE in sync mode, we need to wait on the group.
         // This effectively ends up being a `sync` operation.
         if operatingMode == .synchronous {
             flushGroup.wait()
             // we need to call completion on our own since
-            // we skipped setting up notify.
-            if let completion { DispatchQueue.main.async { completion() }}
+            // we skipped setting up notify.  we don't need to do it on
+            // .main since we are in synchronous mode.
+            if let completion { completion() }
+        } else if operatingMode == .asynchronous {
+            // if we're not, flip over to our serial queue, tell it to wait on the flush
+            // group to complete if we have a completion to hit.  Otherwise, no need to
+            // wait on completion.
+            if let completion {
+                // NOTE: DispatchGroup's `notify` method on linux ended up getting called
+                // before the tasks have actually completed, so we went with this instead.
+                OperatingMode.defaultQueue.async { [weak self] in
+                    let timedOut = flushGroup.wait(timeout: .now() + 15 /*seconds*/)
+                    if timedOut == .timedOut {
+                        self?.log(message: "flush(completion:) timed out waiting for completion.")
+                    }
+                    completion()
+                    //DispatchQueue.main.async { completion() }
+                }
+            }
         }
     }
     
@@ -437,16 +446,11 @@ extension OperatingMode {
                 task()
             }
         case .synchronous:
-            // if for some reason, we're told to do all this stuff on
-            // main, ignore it, and use the default queue.  this prevents
-            // a possible deadlock.
-            if queue === DispatchQueue.main {
-                OperatingMode.defaultQueue.asyncAndWait {
-                    task()
-                }
-            } else {
-                queue.asyncAndWait { task() }
-            }
+            // in synchronous mode, always use our own queue to
+            // prevent deadlocks.
+            let workItem = DispatchWorkItem(block: task)
+            OperatingMode.defaultQueue.asyncAndWait(execute: workItem)
         }
     }
 }
+
