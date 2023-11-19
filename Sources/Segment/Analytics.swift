@@ -230,13 +230,13 @@ extension Analytics {
         }
         
         // if we're not in sync mode, we need to be notified when it's done.
-        if let completion, operatingMode != .synchronous {
+        /*if let completion, operatingMode != .synchronous {
             // set up our callback to know when the group has completed, if we're not
             // in .synchronous operating mode.
             flushGroup.notify(queue: configuration.values.flushQueue) {
-                completion() //DispatchQueue.main.async { completion() }
+                DispatchQueue.main.async { completion() }
             }
-        }
+        }*/
         
         flushGroup.leave() // matches our initial enter().
         
@@ -248,6 +248,11 @@ extension Analytics {
             // we skipped setting up notify.  we don't need to do it on
             // .main since we are in synchronous mode.
             if let completion { completion() }
+        } else {
+            OperatingMode.defaultQueue.async {
+                flushGroup.wait()
+                if let completion { DispatchQueue.main.async { completion() }}
+            }
         }
     }
     

@@ -10,10 +10,17 @@ import Foundation
 #if os(Linux)
 extension DispatchQueue {
     func asyncAndWait(execute workItem: DispatchWorkItem) {
-        async {
+        /*async {
             workItem.perform()
         }
-        workItem.wait()
+        workItem.wait()*/
+        let group = DispatchGroup()
+        group.enter()
+        OperatingMode.defaultQueue.async {
+            workItem.perform()
+            group.leave()
+        }
+        group.wait()
     }
 }
 #endif
