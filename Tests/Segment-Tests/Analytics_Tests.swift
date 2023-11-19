@@ -698,7 +698,6 @@ final class Analytics_Tests: XCTestCase {
             .flushInterval(9999)
             .flushAt(9999)
             .operatingMode(.asynchronous))
-        Analytics.debugLogsEnabled = true
         
         waitUntilStarted(analytics: analytics)
         
@@ -717,10 +716,6 @@ final class Analytics_Tests: XCTestCase {
         while !completionCalled {
             RunLoop.main.run(until: Date.distantPast)
         }
-
-        /*while analytics.pendingUploads!.count != 0 {
-            RunLoop.main.run(until: Date.distantPast)
-        }*/
         
         XCTAssertTrue(completionCalled)
         XCTAssertEqual(analytics.pendingUploads!.count, 0)
