@@ -251,7 +251,8 @@ extension Analytics {
                     if timedOut == .timedOut {
                         self?.log(message: "flush(completion:) timed out waiting for completion.")
                     }
-                    DispatchQueue.main.async { completion() }
+                    completion()
+                    //DispatchQueue.main.async { completion() }
                 }
             }
         }
