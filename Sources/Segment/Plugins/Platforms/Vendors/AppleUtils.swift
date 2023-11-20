@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - iOS, tvOS, Catalyst
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
 import SystemConfiguration
 import UIKit
@@ -30,6 +30,8 @@ internal class iOSVendorSystem: VendorSystem {
         return "ios"
         #elseif os(tvOS)
         return "tvos"
+        #elseif os(visionOS)
+        return "visionos"
         #elseif targetEnvironment(macCatalyst)
         return "macos"
         #else
@@ -60,8 +62,13 @@ internal class iOSVendorSystem: VendorSystem {
     }
     
     override var screenSize: ScreenSize {
+        #if os(iOS) || os(tvOS)
         let screenSize = UIScreen.main.bounds.size
         return ScreenSize(width: Double(screenSize.width), height: Double(screenSize.height))
+        #elseif os(visionOS)
+        let windowSize = UIApplication.shared.delegate?.window??.bounds.size
+        return windowSize.map { ScreenSize(width: $0.width, height: $0.height) } ?? ScreenSize(width: 1280, height: 720)
+        #endif
     }
     
     override var userAgent: String? {
@@ -310,7 +317,7 @@ internal class MacOSVendorSystem: VendorSystem {
 
 // MARK: - Reachability
 
-#if os(iOS) || os(tvOS) || os(macOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || os(macOS) || targetEnvironment(macCatalyst)
 
 #if os(macOS)
 import SystemConfiguration

@@ -49,7 +49,7 @@ extension Analytics: Subscriber {
 
         // setup lifecycle if desired
         if configuration.values.trackApplicationLifecycleEvents, operatingMode != .synchronous {
-            #if os(iOS) || os(tvOS)
+            #if os(iOS) || os(tvOS) || os(visionOS) || os(visionOS)
             plugins.append(iOSLifecycleEvents())
             #endif
             #if os(watchOS)
@@ -72,7 +72,7 @@ extension Analytics: Subscriber {
     }
 }
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 import UIKit
 extension Analytics {
     internal func setupSettingsCheck() {
