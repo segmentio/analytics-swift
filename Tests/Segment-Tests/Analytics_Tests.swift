@@ -754,4 +754,29 @@ final class Analytics_Tests: XCTestCase {
         // it's running in sync mode.
         XCTAssertEqual(analytics.pendingUploads!.count, 0)
     }
+    
+    func testFindAll() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFindAll")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
+        
+        analytics.add(plugin: ZiggyPlugin())
+        analytics.add(plugin: ZiggyPlugin())
+        analytics.add(plugin: ZiggyPlugin())
+
+        let myDestination = MyDestination()
+        myDestination.add(plugin: GooberPlugin())
+        myDestination.add(plugin: GooberPlugin())
+        
+        analytics.add(plugin: myDestination)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        let ziggysFound = analytics.findAll(pluginType: ZiggyPlugin.self)
+        let goobersFound = myDestination.findAll(pluginType: GooberPlugin.self)
+        
+        XCTAssertEqual(ziggysFound!.count, 3)
+        XCTAssertEqual(goobersFound!.count, 2)
+    }
 }

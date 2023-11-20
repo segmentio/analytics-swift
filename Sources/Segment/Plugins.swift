@@ -156,6 +156,14 @@ extension DestinationPlugin {
         timeline.remove(plugin: plugin)
     }
 
+    public func find<T: Plugin>(pluginType: T.Type) -> T? {
+        return timeline.find(pluginType: pluginType)
+    }
+    
+    public func findAll<T: Plugin>(pluginType: T.Type) -> [T]? {
+        return timeline.findAll(pluginType: pluginType)
+    }
+
 }
 
 extension Analytics {
@@ -210,6 +218,10 @@ extension Analytics {
     
     public func find<T: Plugin>(pluginType: T.Type) -> T? {
         return timeline.find(pluginType: pluginType)
+    }
+    
+    public func findAll<T: Plugin>(pluginType: T.Type) -> [T]? {
+        return timeline.findAll(pluginType: pluginType)
     }
     
     public func find(key: String) -> DestinationPlugin? {
