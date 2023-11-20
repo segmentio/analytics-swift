@@ -7,7 +7,7 @@
 
 import Foundation
 
-// MARK: - iOS, tvOS, Catalyst
+// MARK: - iOS, tvOS, visionOS, Catalyst
 
 #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
