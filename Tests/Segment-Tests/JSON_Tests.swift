@@ -56,7 +56,7 @@ class JSONTests: XCTestCase {
             let myDate: Date
         }
         
-        let now = Date.now
+        let now = Date(timeIntervalSinceNow: 0)
         
         let test = TestStruct(myDate: now)
         let object = try JSON(with: test)
