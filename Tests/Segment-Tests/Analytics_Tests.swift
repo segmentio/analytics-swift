@@ -228,7 +228,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(token == "1234")
     }
     
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
     func testDeviceTokenData() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()

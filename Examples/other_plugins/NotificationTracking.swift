@@ -80,9 +80,9 @@ extension NotificationTracking: macOSLifecycle {
 #endif
 */
 
-// MARK: iOS/tvOS/Catalyst
+// MARK: iOS/tvOS/visionOS/Catalyst
 
-#if os(tvOS) || os(iOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
 import UIKit
 

@@ -97,7 +97,7 @@ extension NetBlockerFlushPolicy: macOSLifecycle {
 }
 #endif
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 import UIKit
 extension NetBlockerFlushPolicy: iOSLifecycle {
     public func applicationDidBecomeActive(application: UIApplication?) {
