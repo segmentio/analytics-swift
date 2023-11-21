@@ -30,7 +30,8 @@ let package = Package(
             name: "Segment",
             dependencies: [
                 .product(name: "Sovran", package: "sovran-swift")
-            ]),
+            ],
+            exclude: ["PrivacyInfo.xcprivacy"]),
         .testTarget(
             name: "Segment-Tests",
             dependencies: ["Segment"]),
