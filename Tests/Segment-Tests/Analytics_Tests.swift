@@ -50,6 +50,50 @@ final class Analytics_Tests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
     
+    func testDestinationInitialUpdateOnlyOnce() {
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        
+        let expectation = XCTestExpectation(description: "MyDestination Expectation")
+        let myDestination = MyDestination {
+            expectation.fulfill()
+            return true
+        }
+        
+        var settings = Settings(writeKey: "test")
+        if let existing = settings.integrations?.dictionaryValue {
+            var newIntegrations = existing
+            newIntegrations[myDestination.key] = true
+            settings.integrations = try! JSON(newIntegrations)
+        }
+        let configuration = Configuration(writeKey: "test")
+        configuration.defaultSettings(settings)
+        let analytics = Analytics(configuration: configuration)
+        
+        let ziggy1 = ZiggyPlugin()
+        analytics.add(plugin: myDestination)
+        analytics.add(plugin: ziggy1)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "testDestinationEnabled")
+        
+        let ziggy2 = ZiggyPlugin()
+        analytics.add(plugin: ziggy2)
+        
+        let dest = analytics.find(key: myDestination.key)
+        XCTAssertNotNil(dest)
+        XCTAssertTrue(dest is MyDestination)
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(myDestination.receivedInitialUpdate, 1)
+        XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
+        XCTAssertEqual(ziggy2.receivedInitialUpdate, 1)
+        
+    }
+
+    
     func testDestinationEnabled() {
         // need to clear settings for this one.
         UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")

@@ -42,11 +42,16 @@ class GooberPlugin: EventPlugin {
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
     var analytics: Analytics?
+    var receivedInitialUpdate: Int = 0
     
     var completion: (() -> Void)?
     
     required init() {
         self.type = .enrichment
+    }
+    
+    func update(settings: Settings, type: UpdateType) {
+        if type == .initial { receivedInitialUpdate += 1 }
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -78,6 +83,7 @@ class MyDestination: DestinationPlugin {
     let trackCompletion: (() -> Bool)?
     
     let disabled: Bool
+    var receivedInitialUpdate: Int = 0
     
     init(disabled: Bool = false, trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
@@ -88,6 +94,7 @@ class MyDestination: DestinationPlugin {
     }
     
     func update(settings: Settings, type: UpdateType) {
+        if type == .initial { receivedInitialUpdate += 1 }
         if disabled == false {
             // add ourselves to the settings
             analytics?.manuallyEnableDestination(plugin: self)

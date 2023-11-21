@@ -108,20 +108,44 @@ extension Settings: Equatable {
 }
 
 extension Analytics {     
-    internal func update(settings: Settings, type: UpdateType) {
-        apply { (plugin) in
-            // tell all top level plugins to update.
-            update(plugin: plugin, settings: settings, type: type)
+    internal func update(settings: Settings) {
+        guard let system: System = store.currentState() else { return }
+        apply { plugin in
+            plugin.update(settings: settings, type: updateType(for: plugin, in: system))
+            if let destPlugin = plugin as? DestinationPlugin {
+                destPlugin.apply { subPlugin in
+                    subPlugin.update(settings: settings, type: updateType(for: subPlugin, in: system))
+                }
+            }
         }
     }
     
-    internal func update(plugin: Plugin, settings: Settings, type: UpdateType) {
-        plugin.update(settings: settings, type: type)
-        // if it's a destination, tell it's plugins to update as well.
-        if let dest = plugin as? DestinationPlugin {
-            dest.apply { (subPlugin) in
-                subPlugin.update(settings: settings, type: type)
+    internal func updateIfNecessary(plugin: Plugin) {
+        guard let system: System = store.currentState() else { return }
+        // if we're already running, update has already been called for existing plugins,
+        // so we just wanna call it on this one if it hasn't been done already.
+        if system.running, let settings = system.settings {
+            let alreadyInitialized = system.initializedPlugins.contains { p in
+                return plugin === p
             }
+            if !alreadyInitialized {
+                store.dispatch(action: System.AddPluginToInitialized(plugin: plugin))
+                plugin.update(settings: settings, type: .initial)
+            } else {
+                plugin.update(settings: settings, type: .refresh)
+            }
+        }
+    }
+    
+    internal func updateType(for plugin: Plugin, in system: System) -> UpdateType {
+        let alreadyInitialized = system.initializedPlugins.contains { p in
+            return plugin === p
+        }
+        if alreadyInitialized {
+            return .refresh
+        } else {
+            store.dispatch(action: System.AddPluginToInitialized(plugin: plugin))
+            return .initial
         }
     }
     
@@ -135,6 +159,7 @@ extension Analytics {
             operatingMode.run(queue: DispatchQueue.main) {
                 if let state: System = self.store.currentState(), let settings = state.settings {
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
+                    self.update(settings: settings)
                 }
                 self.store.dispatch(action: System.ToggleRunningAction(running: true))
             }
@@ -145,9 +170,6 @@ extension Analytics {
         
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self)
-        let systemState: System? = store.currentState()
-        let hasSettings = (systemState?.settings?.integrations != nil && systemState?.settings?.plan != nil)
-        let updateType = (hasSettings ? UpdateType.refresh : UpdateType.initial)
         
         // stop things; queue in case our settings have changed.
         store.dispatch(action: System.ToggleRunningAction(running: false))
@@ -158,7 +180,7 @@ extension Analytics {
                     // this will cause them to be cached.
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
                     // let plugins know we just received some settings..
-                    self.update(settings: s, type: updateType)
+                    self.update(settings: s)
                 }
             }
             // we're good to go back to a running state.
