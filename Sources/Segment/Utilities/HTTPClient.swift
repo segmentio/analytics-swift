@@ -118,7 +118,7 @@ public class HTTPClient {
             }
             
             do {
-                let responseJSON = try JSONDecoder().decode(Settings.self, from: data)
+                let responseJSON = try JSONDecoder.default.decode(Settings.self, from: data)
                 completion(true, responseJSON)
             } catch {
                 self?.analytics?.reportInternalError(AnalyticsError.jsonUnableToDeserialize(error))

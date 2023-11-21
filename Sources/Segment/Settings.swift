@@ -46,7 +46,7 @@ public struct Settings: Codable {
     static public func load(from url: URL?) -> Settings? {
         guard let url = url else { return nil }
         guard let data = try? Data(contentsOf: url) else { return nil }
-        let settings = try? JSONDecoder().decode(Settings.self, from: data)
+        let settings = try? JSONDecoder.default.decode(Settings.self, from: data)
         return settings
     }
     
@@ -80,7 +80,7 @@ public struct Settings: Codable {
         var result: T? = nil
         guard let settings = integrations?.dictionaryValue else { return nil }
         if let dict = settings[key], let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
-            result = try? JSONDecoder().decode(T.self, from: jsonData)
+            result = try? JSONDecoder.default.decode(T.self, from: jsonData)
         }
         return result
     }

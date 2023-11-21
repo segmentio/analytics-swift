@@ -692,7 +692,7 @@ final class Analytics_Tests: XCTestCase {
         
     }
     
-    func testAsyncOperatingMode() {
+    func testAsyncOperatingMode() throws {
         // Use a specific writekey to this test so we do not collide with other cached items.
         let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_asyncMode")
             .flushInterval(9999)
@@ -721,7 +721,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(analytics.pendingUploads!.count, 0)
     }
     
-    func testSyncOperatingMode() {
+    func testSyncOperatingMode() throws {
         // Use a specific writekey to this test so we do not collide with other cached items.
         let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_syncMode")
             .flushInterval(9999)
@@ -755,7 +755,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(analytics.pendingUploads!.count, 0)
     }
     
-    func testFindAll() {
+    func testFindAll() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "testFindAll")
             .flushInterval(9999)
             .flushAt(9999)

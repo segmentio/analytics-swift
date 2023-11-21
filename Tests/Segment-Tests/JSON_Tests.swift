@@ -39,7 +39,7 @@ class JSONTests: XCTestCase {
         let traits = try? JSON(["email": "blah@blah.com"])
         let userInfo = UserInfo(anonymousId: "1234", userId: "brandon", traits: traits, referrer: nil)
         
-        let encoder = JSONEncoder()
+        let encoder = JSONEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -49,6 +49,34 @@ class JSONTests: XCTestCase {
             print(error)
             XCTFail()
         }
+    }
+    
+    func testJSONDateHandling() throws {
+        struct TestStruct: Codable {
+            let myDate: Date
+        }
+        
+        let now = Date(timeIntervalSinceNow: 0)
+        
+        let test = TestStruct(myDate: now)
+        let object = try JSON(with: test)
+        let encoder = JSONEncoder.default
+        encoder.outputFormatting = .prettyPrinted
+        
+        do {
+            let json = try encoder.encode(object)
+            XCTAssertNotNil(json)
+            let newTest = try! JSONDecoder.default.decode(TestStruct.self, from: json)
+            XCTAssertEqual(newTest.myDate.toString(), now.toString())
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+        let dummyProps = ["myDate": now] // <- conforms to Codable
+        let j = try! JSON(dummyProps)
+        let anotherTest: TestStruct! = j.codableValue()
+        XCTAssertEqual(anotherTest.myDate.toString(), now.toString())
     }
     
     func testJSONCollectionTypes() throws {
@@ -63,13 +91,13 @@ class JSONTests: XCTestCase {
     
     func testJSONNil() throws {
         let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil] as [String : Any?])
-        let encoder = JSONEncoder()
+        let encoder = JSONEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
             let json = try encoder.encode(traits)
             XCTAssertNotNil(json)
-            let decoded = try JSONDecoder().decode(Personal.self, from: json)
+            let decoded = try JSONDecoder.default.decode(Personal.self, from: json)
             XCTAssertNil(decoded.type, "Type should be nil")
         }
     }
@@ -81,7 +109,7 @@ class JSONTests: XCTestCase {
         
         let test = TestStruct(blah: "hello")
         let object = try JSON(with: test)
-        let encoder = JSONEncoder()
+        let encoder = JSONEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
