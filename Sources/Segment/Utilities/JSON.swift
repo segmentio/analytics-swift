@@ -35,7 +35,7 @@ public enum JSON: Equatable {
     
     // For Value types
     public init<T: Codable>(with value: T) throws {
-        let encoder = JSONEncoder()
+        let encoder = JSONEncoder.default
         let json = try encoder.encode(value)
         let output = try JSONSerialization.jsonObject(with: json)
         try self.init(output)
@@ -58,6 +58,8 @@ public enum JSON: Equatable {
         // handle swift types
         case Optional<Any>.none:
             self = .null
+        case let date as Date:
+            self = .string(date.iso8601())
         case let url as URL:
             self = .string(url.absoluteString)
         case let string as String:
@@ -134,7 +136,7 @@ extension Encodable {
     public func toString(pretty: Bool) -> String {
         var returnString = ""
         do {
-            let encoder = JSONEncoder()
+            let encoder = JSONEncoder.default
             if pretty {
                 encoder.outputFormatting = .prettyPrinted
             }
@@ -182,7 +184,11 @@ extension JSON {
     public func codableValue<T: Codable>() -> T? {
         var result: T? = nil
         if let dict = dictionaryValue, let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
-            result = try? JSONDecoder().decode(T.self, from: jsonData)
+            do {
+                result = try JSONDecoder.default.decode(T.self, from: jsonData)
+            } catch {
+                print(error)
+            }
         }
         return result
     }
@@ -402,7 +408,7 @@ extension JSON {
                     if let v = value as? [String: Any] {
                         if let jsonData = try? JSONSerialization.data(withJSONObject: v) {
                             do {
-                                result = try JSONDecoder().decode(T.self, from: jsonData)
+                                result = try JSONDecoder.default.decode(T.self, from: jsonData)
                             } catch {
                                 Analytics.segmentLog(message: "Unable to decode object (\(keyPath)) to a Codable: \(error)", kind: .error)
                             }

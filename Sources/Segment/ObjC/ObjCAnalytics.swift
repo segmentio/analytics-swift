@@ -164,7 +164,7 @@ extension ObjCAnalytics {
         var result: [String: Any]? = nil
         if let system: System = analytics.store.currentState() {
             do {
-                let encoder = JSONEncoder()
+                let encoder = JSONEncoder.default
                 let json = try encoder.encode(system.settings)
                 if let r = try JSONSerialization.jsonObject(with: json) as? [String: Any] {
                     result = r
