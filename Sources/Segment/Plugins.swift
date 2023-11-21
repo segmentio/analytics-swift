@@ -93,7 +93,6 @@ extension Plugin {
     }
 }
 
-
 // MARK: - Adding/Removing Plugins
 
 extension DestinationPlugin {
@@ -127,6 +126,7 @@ extension DestinationPlugin {
             plugin.configure(analytics: analytics)
         }
         timeline.add(plugin: plugin)
+        analytics?.updateIfNecessary(plugin: plugin)
         return plugin
     }
     
@@ -189,6 +189,7 @@ extension Analytics {
     public func add(plugin: Plugin) -> Plugin {
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
+        updateIfNecessary(plugin: plugin)
         return plugin
     }
     
