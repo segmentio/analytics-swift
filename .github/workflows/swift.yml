@@ -55,9 +55,6 @@ jobs:
         branch: swift-5.8-release
         tag: 5.8-RELEASE
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: Build
       run: swift build
     - name: Run tests
