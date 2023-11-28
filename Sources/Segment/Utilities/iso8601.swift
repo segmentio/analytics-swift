@@ -38,19 +38,3 @@ extension DateFormatter {
         return formatter
     }()
 }
-
-extension JSONDecoder {
-    static var `default`: JSONDecoder {
-        let d = JSONDecoder()
-        d.dateDecodingStrategy = .formatted(DateFormatter.iso8601)
-        return d
-    }
-}
-
-extension JSONSafeEncoder {
-    static var `default`: JSONSafeEncoder {
-        let e = JSONSafeEncoder()
-        e.dateEncodingStrategy = .formatted(DateFormatter.iso8601)
-        return e
-    }
-}

@@ -8,6 +8,23 @@
 import Foundation
 import JSONSafeEncoder
 
+extension JSONDecoder {
+    static var `default`: JSONDecoder {
+        let d = JSONDecoder()
+        d.dateDecodingStrategy = .formatted(DateFormatter.iso8601)
+        return d
+    }
+}
+
+extension JSONSafeEncoder {
+    static var `default`: JSONSafeEncoder {
+        let e = JSONSafeEncoder()
+        e.dateEncodingStrategy = .formatted(DateFormatter.iso8601)
+        e.nonConformingFloatEncodingStrategy = JSON.jsonNonConformingNumberStrategy
+        return e
+    }
+}
+
 // MARK: - JSON Definition
 
 public enum JSON: Equatable {
@@ -17,6 +34,8 @@ public enum JSON: Equatable {
     case string(String)
     case array([JSON])
     case object([String: JSON])
+    
+    static var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
     
     internal enum JSONError: Error {
         case unknown
