@@ -84,7 +84,7 @@ class ViewController: UIViewController {
             case .alias:
                 aliasEvent()
             case .none:
-                analytics?.log(message: "Failed to establish event type", kind: .error)
+                analytics?.log(message: "Failed to establish event type")
         }
         
         clearAll()
