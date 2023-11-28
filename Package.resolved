@@ -1,16 +1,23 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Sovran",
-        "repositoryURL": "https://github.com/segmentio/Sovran-Swift.git",
-        "state": {
-          "branch": null,
-          "revision": "64f3b5150c282a34af4578188dce2fd597e600e3",
-          "version": "1.1.0"
-        }
+  "pins" : [
+    {
+      "identity" : "jsonsafeencoder-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/jsonsafeencoder-swift.git",
+      "state" : {
+        "revision" : "75ad40f07d4e0b938e3afb80811244d6b7acd4ba",
+        "version" : "1.0.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "sovran-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/Sovran-Swift.git",
+      "state" : {
+        "revision" : "64f3b5150c282a34af4578188dce2fd597e600e3",
+        "version" : "1.1.0"
+      }
+    }
+  ],
+  "version" : 2
 }

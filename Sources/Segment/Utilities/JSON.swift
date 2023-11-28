@@ -6,7 +6,24 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 
+extension JSONDecoder {
+    static var `default`: JSONDecoder {
+        let d = JSONDecoder()
+        d.dateDecodingStrategy = .formatted(DateFormatter.iso8601)
+        return d
+    }
+}
+
+extension JSONSafeEncoder {
+    static var `default`: JSONSafeEncoder {
+        let e = JSONSafeEncoder()
+        e.dateEncodingStrategy = .formatted(DateFormatter.iso8601)
+        e.nonConformingFloatEncodingStrategy = JSON.jsonNonConformingNumberStrategy
+        return e
+    }
+}
 
 // MARK: - JSON Definition
 
@@ -17,6 +34,8 @@ public enum JSON: Equatable {
     case string(String)
     case array([JSON])
     case object([String: JSON])
+    
+    static var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
     
     internal enum JSONError: Error {
         case unknown
@@ -35,7 +54,7 @@ public enum JSON: Equatable {
     
     // For Value types
     public init<T: Codable>(with value: T) throws {
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         let json = try encoder.encode(value)
         let output = try JSONSerialization.jsonObject(with: json)
         try self.init(output)
@@ -136,7 +155,7 @@ extension Encodable {
     public func toString(pretty: Bool) -> String {
         var returnString = ""
         do {
-            let encoder = JSONEncoder.default
+            let encoder = JSONSafeEncoder.default
             if pretty {
                 encoder.outputFormatting = .prettyPrinted
             }

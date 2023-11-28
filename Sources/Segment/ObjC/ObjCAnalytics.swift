@@ -8,6 +8,7 @@
 #if !os(Linux)
 
 import Foundation
+import JSONSafeEncoder
 
 // MARK: - ObjC Compatibility
 
@@ -164,7 +165,7 @@ extension ObjCAnalytics {
         var result: [String: Any]? = nil
         if let system: System = analytics.store.currentState() {
             do {
-                let encoder = JSONEncoder.default
+                let encoder = JSONSafeEncoder.default
                 let json = try encoder.encode(system.settings)
                 if let r = try JSONSerialization.jsonObject(with: json) as? [String: Any] {
                     result = r
