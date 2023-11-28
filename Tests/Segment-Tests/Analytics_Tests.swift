@@ -825,7 +825,9 @@ final class Analytics_Tests: XCTestCase {
     }
     
     func testJSONNaNDefaultHandlingZero() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .jsonNonConformingNumberStrategy(.zero)
+        )
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
