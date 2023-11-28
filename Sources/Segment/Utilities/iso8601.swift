@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 
 enum SegmentISO8601DateFormatter {
     static let shared: ISO8601DateFormatter = {
@@ -16,7 +17,6 @@ enum SegmentISO8601DateFormatter {
 }
 
 internal extension Date {
-    // TODO: support nanoseconds
     func iso8601() -> String {
         return SegmentISO8601DateFormatter.shared.string(from: self)
     }
@@ -47,9 +47,9 @@ extension JSONDecoder {
     }
 }
 
-extension JSONEncoder {
-    static var `default`: JSONEncoder {
-        let e = JSONEncoder()
+extension JSONSafeEncoder {
+    static var `default`: JSONSafeEncoder {
+        let e = JSONSafeEncoder()
         e.dateEncodingStrategy = .formatted(DateFormatter.iso8601)
         return e
     }

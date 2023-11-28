@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import JSONSafeEncoder
 
 // MARK: - JSON Definition
 
@@ -35,7 +35,7 @@ public enum JSON: Equatable {
     
     // For Value types
     public init<T: Codable>(with value: T) throws {
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         let json = try encoder.encode(value)
         let output = try JSONSerialization.jsonObject(with: json)
         try self.init(output)
@@ -136,7 +136,7 @@ extension Encodable {
     public func toString(pretty: Bool) -> String {
         var returnString = ""
         do {
-            let encoder = JSONEncoder.default
+            let encoder = JSONSafeEncoder.default
             if pretty {
                 encoder.outputFormatting = .prettyPrinted
             }

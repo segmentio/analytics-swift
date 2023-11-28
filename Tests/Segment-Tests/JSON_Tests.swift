@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import JSONSafeEncoder
 @testable import Segment
 
 struct Personal: Codable {
@@ -39,7 +40,7 @@ class JSONTests: XCTestCase {
         let traits = try? JSON(["email": "blah@blah.com"])
         let userInfo = UserInfo(anonymousId: "1234", userId: "brandon", traits: traits, referrer: nil)
         
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -60,7 +61,7 @@ class JSONTests: XCTestCase {
         
         let test = TestStruct(myDate: now)
         let object = try JSON(with: test)
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -91,7 +92,7 @@ class JSONTests: XCTestCase {
     
     func testJSONNil() throws {
         let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil] as [String : Any?])
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -109,7 +110,7 @@ class JSONTests: XCTestCase {
         
         let test = TestStruct(blah: "hello")
         let object = try JSON(with: test)
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {

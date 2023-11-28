@@ -69,6 +69,8 @@ extension Optional: Flattenable {
     }
 }
 
+/* for dev testing only
+#if DEBUG
 class TrackingDispatchGroup: CustomStringConvertible {
     internal let group = DispatchGroup()
     
@@ -102,3 +104,5 @@ class TrackingDispatchGroup: CustomStringConvertible {
         group.notify(qos: qos, flags: flags, queue: queue, execute: work)
     }
 }
+#endif
+*/
