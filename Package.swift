@@ -29,7 +29,7 @@ let package = Package(
         .target(
             name: "Segment",
             dependencies: [
-                .product(name: "Sovran", package: "sovran-swift")
+                .product(name: "Sovran", package: "sovran-swift"),
                 .product(name: "JSONSafeEncoder", package: "jsonsafeencoder-swift")
             ],
             exclude: ["PrivacyInfo.xcprivacy"]),
