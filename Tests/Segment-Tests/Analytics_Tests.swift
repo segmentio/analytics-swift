@@ -823,4 +823,38 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(ziggysFound!.count, 3)
         XCTAssertEqual(goobersFound!.count, 2)
     }
+    
+    func testJSONNaNDefaultHandlingZero() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "test track", properties: ["TestNaN": Double.nan])
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent?.event == "test track")
+        XCTAssertTrue(trackEvent?.type == "track")
+        let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
+        XCTAssertTrue(d! == 0)
+    }
+    
+    func testJSONNaNDefaultHandlingNull() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .jsonNonConformingNumberStrategy(.null)
+        )
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "test track", properties: ["TestNaN": Double.nan])
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent?.event == "test track")
+        XCTAssertTrue(trackEvent?.type == "track")
+        let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
+        XCTAssertNil(d)
+    }
 }

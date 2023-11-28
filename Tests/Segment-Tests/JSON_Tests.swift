@@ -324,4 +324,77 @@ class JSONTests: XCTestCase {
         XCTAssertThrowsError(try json?.remove(key: "merchant"))
     }
     
+    func testJSONNaNZero() throws {
+        struct TestStruct: Codable {
+            let str: String
+            let decimal: Double
+            let nando: Double
+        }
+        let nan = NSNumber.FloatLiteralType(nan: 1, signaling: true)
+        
+        JSON.jsonNonConformingNumberStrategy = .zero
+        
+        do {
+            let o = try JSON(nan)
+            XCTAssertNotNil(o)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+        let test = TestStruct(
+            str: "hello",
+            decimal: 333.9999,
+            nando: nan
+        )
+        
+        do {
+            let o = try JSON(with: test)
+            XCTAssertNotNil(o)
+            
+            let t: TestStruct? = o.codableValue()
+            XCTAssertNotNil(t)
+            XCTAssertTrue(t!.nando == 0)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+    }
+    
+    func testJSONNaNNull() throws {
+        struct TestStruct: Codable {
+            let str: String
+            let decimal: Double
+            let nando: Double?
+        }
+        let nan = NSNumber.FloatLiteralType(nan: 1, signaling: true)
+        
+        JSON.jsonNonConformingNumberStrategy = .null
+        
+        do {
+            let o = try JSON(nan)
+            XCTAssertNotNil(o)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+        let test = TestStruct(
+            str: "hello",
+            decimal: 333.9999,
+            nando: nan
+        )
+        
+        do {
+            let o = try JSON(with: test)
+            XCTAssertNotNil(o)
+            
+            let t: TestStruct? = o.codableValue()
+            XCTAssertNotNil(t)
+            XCTAssertNil(t!.nando)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+    }
 }
