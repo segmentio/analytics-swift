@@ -51,6 +51,7 @@ public class Configuration {
     /// - Parameter writeKey: Your Segment write key value
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
+        JSON.jsonNonConformingNumberStrategy = self.values.jsonNonConformingNumberStrategy
         // enable segment destination by default
         var settings = Settings(writeKey: writeKey)
         settings.integrations = try? JSON([
