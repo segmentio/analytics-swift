@@ -1,11 +1,11 @@
 //
 //  ObjCAnalytics.swift
-//  
+//
 //
 //  Created by Cody Garvin on 6/10/21.
 //
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 import Foundation
 import JSONSafeEncoder
@@ -16,12 +16,12 @@ import JSONSafeEncoder
 public class ObjCAnalytics: NSObject {
     /// The underlying Analytics object we're working with
     public let analytics: Analytics
-    
+
     @objc
     public init(configuration: ObjCConfiguration) {
         self.analytics = Analytics(configuration: configuration.configuration)
     }
-    
+
     /// Get a workable ObjC instance by wrapping a Swift instance
     /// Useful when you want additional flexibility or to share
     /// a single instance between ObjC<>Swift.
@@ -38,7 +38,7 @@ extension ObjCAnalytics {
     public func track(name: String) {
         track(name: name, properties: nil)
     }
-    
+
 
     @objc(track:properties:)
     public func track(name: String, properties: [String: Any]?) {
@@ -77,7 +77,7 @@ extension ObjCAnalytics {
             analytics.process(incomingEvent: event)
         }
     }
-    
+
     /// Track a screen change with a title, category and other properties.
     /// - Parameters:
     ///   - title: The title of the screen being tracked.
@@ -85,7 +85,7 @@ extension ObjCAnalytics {
     public func screen(title: String) {
         screen(title: title, category: nil, properties: nil)
     }
-    
+
     /// Track a screen change with a title, category and other properties.
     /// - Parameters:
     ///   - title: The title of the screen being tracked.
@@ -120,7 +120,7 @@ extension ObjCAnalytics {
     public func group(groupId: String, traits: [String: Any]?) {
         analytics.group(groupId: groupId, traits: traits)
     }
-    
+
     @objc(alias:)
     /// The alias method is used to merge two user identities, effectively connecting two sets of user data
     /// as one. This is an advanced method, but it is required to manage user identities successfully in some of our destinations.
@@ -139,27 +139,27 @@ extension ObjCAnalytics {
     public var anonymousId: String {
         return analytics.anonymousId
     }
-    
+
     @objc
     public var userId: String? {
         return analytics.userId
     }
-    
+
     @objc
     public func traits() -> [String: Any]? {
         return analytics.traits()
     }
-    
+
     @objc
     public func flush() {
         analytics.flush()
     }
-    
+
     @objc
     public func reset() {
         analytics.reset()
     }
-    
+
     @objc
     public func settings() -> [String: Any]? {
         var result: [String: Any]? = nil
@@ -177,12 +177,12 @@ extension ObjCAnalytics {
         }
         return result
     }
-    
+
     @objc
     public func openURL(_ url: URL, options: [String: Any] = [:]) {
         analytics.openURL(url, options: options)
     }
-    
+
     @objc
     public func version() -> String {
         return analytics.version()

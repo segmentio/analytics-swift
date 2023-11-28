@@ -20,21 +20,21 @@ public class Analytics {
     }
     internal var store: Store
     internal var storage: Storage
-    
+
     /// Enabled/disables debug logging to trace your data going through the SDK.
     public static var debugLogsEnabled = false
-    
+
     public var timeline: Timeline
-    
+
     static internal let deadInstance = "DEADINSTANCE"
     static internal weak var firstInstance: Analytics? = nil
-    
+
     /**
      This method isn't a traditional singleton implementation.  It's provided here
      to ease migration from analytics-ios to analytics-swift.  Rather than return a
      singleton, it returns the first instance of Analytics created, OR an instance
      who's writekey is "DEADINSTANCE".
-     
+
      In the case of a dead instance, an assert will be thrown when in DEBUG builds to
      assist developers in knowning that `shared()` is being called too soon.
      */
@@ -44,16 +44,16 @@ public class Analytics {
                 return a
             }
         }
-        
+
         #if DEBUG
         if isUnitTesting == false {
             assert(true == false, "An instance of Analytice does not exist!")
         }
         #endif
-        
+
         return Analytics(configuration: Configuration(writeKey: deadInstance))
     }
-    
+
     /// Initialize this instance of Analytics with a given configuration setup.
     /// - Parameters:
     ///    - configuration: The configuration to use
@@ -61,36 +61,36 @@ public class Analytics {
         store = Store()
         storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
         timeline = Timeline()
-        
+
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
         store.provide(state: UserInfo.defaultState(from: storage))
-        
+
         storage.analytics = self
-        
+
         checkSharedInstance()
-        
+
         // Get everything running
         platformStartup()
     }
-    
+
     internal func process<E: RawEvent>(incomingEvent: E) {
         guard enabled == true else { return }
         let event = incomingEvent.applyRawEventData(store: store)
-        
+
         _ = timeline.process(incomingEvent: event)
-        
+
         let flushPolicies = configuration.values.flushPolicies
         for policy in flushPolicies {
             policy.updateState(event: event)
-            
+
             if (policy.shouldFlush() == true) {
                 flush()
                 policy.reset()
             }
         }
     }
-    
+
     /// Process a raw event through the system.  Useful when one needs to queue and replay events at a later time.
     /// - Parameters:
     ///   - event: An event conforming to RawEvent that will be processed.
@@ -129,7 +129,7 @@ extension Analytics {
             store.dispatch(action: System.ToggleEnabledAction(enabled: value))
         }
     }
-    
+
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
@@ -137,7 +137,7 @@ extension Analytics {
         }
         return ""
     }
-    
+
     /// Returns the userId that was specified in the last identify call.
     public var userId: String? {
         if let userInfo: UserInfo = store.currentState() {
@@ -145,12 +145,12 @@ extension Analytics {
         }
         return nil
     }
-    
+
     /// Returns the current operating mode this instance was given.
     public var operatingMode: OperatingMode {
         return configuration.values.operatingMode
     }
-    
+
     /// Adjusts the flush interval post configuration.
     public var flushInterval: TimeInterval {
         get {
@@ -163,7 +163,7 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Adjusts the flush-at count post configuration.
     public var flushAt: Int {
         get {
@@ -176,14 +176,14 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Returns a list of currently active flush policies.
     public var flushPolicies: [FlushPolicy] {
         get {
             configuration.values.flushPolicies
         }
     }
-    
+
     /// Returns the traits that were specified in the last identify call.
     public func traits<T: Codable>() -> T? {
         if let userInfo: UserInfo = store.currentState() {
@@ -191,7 +191,7 @@ extension Analytics {
         }
         return nil
     }
-    
+
     /// Returns the traits that were specified in the last identify call, as a dictionary.
     public func traits() -> [String: Any]? {
         if let userInfo: UserInfo = store.currentState() {
@@ -199,18 +199,18 @@ extension Analytics {
         }
         return nil
     }
-    
+
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
     /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
     /// called when flush has completed.
     public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { return }
-        
+
         let flushGroup = DispatchGroup()
         // gotta call enter at least once before we ask to be notified.
         flushGroup.enter()
-        
+
         apply { plugin in
             // we want to enter as soon as possible.  waiting to do it from
             // another queue just takes too long.
@@ -228,9 +228,9 @@ extension Analytics {
                 }
             }
         }
-        
+
         flushGroup.leave() // matches our initial enter().
-        
+
         // if we ARE in sync mode, we need to wait on the group.
         // This effectively ends up being a `sync` operation.
         if operatingMode == .synchronous {
@@ -257,7 +257,7 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Resets this instance of Analytics to a clean slate.  Traits, UserID's, anonymousId, etc are all cleared or reset.  This
     /// command will also be sent to each plugin present in the system.
     public func reset() {
@@ -268,13 +268,13 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Retrieve the version of this library in use.
     /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
     public func version() -> String {
         return Analytics.version()
     }
-    
+
     /// Retrieve the version of this library in use.
     /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
     public static func version() -> String {
@@ -292,7 +292,7 @@ extension Analytics {
         }
         return settings
     }
-    
+
     /// Manually enable a destination plugin.  This is useful when a given DestinationPlugin doesn't have any Segment tie-ins at all.
     /// This will allow the destination to be processed in the same way within this library.
     /// - Parameters:
@@ -319,15 +319,15 @@ extension Analytics {
                 return true
             }
         }
-            
+
         return false
     }
-    
+
     /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
         return storage.read(Storage.Constants.events)
     }
-    
+
     /// Purge all pending event upload files.
     public func purgeStorage() {
         if let files = pendingUploads {
@@ -336,12 +336,12 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Purge a single event upload file.
     public func purgeStorage(fileURL: URL) {
         try? FileManager.default.removeItem(at: fileURL)
     }
-    
+
     /// Wait until the Analytics object has completed startup.
     /// This method is primarily useful for command line utilities where
     /// it's desirable to wait until the system is up and running
@@ -361,7 +361,7 @@ extension Analytics {
      Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
      This is necessary to track URL referrers across events.  This method will also iterate
      any plugins that are watching for openURL events.
-     
+
      Example:
      ```
      func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -376,12 +376,12 @@ extension Analytics {
         guard let dict = jsonProperties.dictionaryValue else { return }
         openURL(url, options: dict)
     }
-    
+
     /**
      Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
      This is necessary to track URL referrers across events.  This method will also iterate
      any plugins that are watching for openURL events.
-     
+
      Example:
      ```
      func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -392,14 +392,14 @@ extension Analytics {
      */
     public func openURL(_ url: URL, options: [String: Any] = [:]) {
         store.dispatch(action: UserInfo.SetReferrerAction(url: url))
-        
+
         // let any conforming plugins know
         apply { plugin in
             if let p = plugin as? OpeningURLs {
                 p.openURL(url, options: options)
             }
         }
-        
+
         var jsonProperties: JSON? = nil
         if let json = try? JSON(options) {
             jsonProperties = json
@@ -428,7 +428,7 @@ extension Analytics {
             Self.firstInstance = self
         }
     }
-        
+
     /// Determines if an instance is dead.
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
@@ -453,4 +453,3 @@ extension OperatingMode {
         }
     }
 }
-

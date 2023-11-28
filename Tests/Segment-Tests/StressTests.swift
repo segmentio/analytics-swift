@@ -17,13 +17,13 @@ class StressTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-    
+
     // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
-    #if !os(Linux) && !os(watchOS)
+    #if !os(Linux) && !os(watchOS) && !os(Windows)
     func testStorageStress() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
-                
+
         let analytics = Analytics(configuration: Configuration(writeKey: "stressTest").errorHandler({ error in
             XCTFail("Storage Error: \(error)")
         }))
@@ -39,7 +39,7 @@ class StressTests: XCTestCase {
         }
 
         waitUntilStarted(analytics: analytics)
-        
+
         // set the httpclient to use our blocker session
         let segment = analytics.find(pluginType: SegmentDestination.self)
         let configuration = URLSessionConfiguration.ephemeral
@@ -53,15 +53,15 @@ class StressTests: XCTestCase {
                                                "User-Agent": "analytics-ios/\(Analytics.version())"]
         let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         segment?.httpClient?.session = blockSession
-        
+
         let writeQueue1 = DispatchQueue(label: "write queue 1")
         let writeQueue2 = DispatchQueue(label: "write queue 2")
         let flushQueue = DispatchQueue(label: "flush queue")
-        
+
         @Atomic var ready = false
         @Atomic var queue1Done = false
         @Atomic var queue2Done = false
-        
+
         writeQueue1.async {
             while (ready == false) { usleep(1) }
             var eventsWritten = 0
@@ -75,7 +75,7 @@ class StressTests: XCTestCase {
             print("queue 1 wrote \(eventsWritten) events.")
             queue1Done = true
         }
-        
+
         writeQueue2.async {
             while (ready == false) { usleep(1) }
             var eventsWritten = 0
@@ -89,7 +89,7 @@ class StressTests: XCTestCase {
             print("queue 2 wrote \(eventsWritten) events.")
             queue2Done = true
         }
-        
+
         flushQueue.async {
             while (ready == false) { usleep(1) }
             var counter = 0
@@ -105,16 +105,16 @@ class StressTests: XCTestCase {
             print("flushed \(counter) times.")
             ready = false
         }
-        
+
         ready = true
-        
+
         while (ready) {
             RunLoop.main.run(until: Date.distantPast)
         }
     }
     #endif
-     
-    
+
+
     /*func testStressXTimes() throws {
         for i in 0..<50 {
             print("Stress test #\(i):")
@@ -122,5 +122,5 @@ class StressTests: XCTestCase {
             print("\n")
         }
     }*/
-     
+
 }
