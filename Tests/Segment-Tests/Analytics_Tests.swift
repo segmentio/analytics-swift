@@ -825,9 +825,8 @@ final class Analytics_Tests: XCTestCase {
     }
     
     func testJSONNaNDefaultHandlingZero() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test")
-            .jsonNonConformingNumberStrategy(.zero)
-        )
+        // notice we didn't set the nan handling option.  zero is the default.
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -842,7 +841,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(d! == 0)
     }
     
-    func testJSONNaNDefaultHandlingNull() throws {
+    func testJSONNaNHandlingNull() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "test")
             .jsonNonConformingNumberStrategy(.null)
         )
