@@ -56,28 +56,42 @@ class JSONTests: XCTestCase {
         struct TestStruct: Codable {
             let myDate: Date
         }
-        
-        let now = Date(timeIntervalSinceNow: 0)
-        
-        let test = TestStruct(myDate: now)
+
+        let expectedDateString = "2023-12-14T16:03:14.300Z"
+        let expectedDate = try XCTUnwrap(expectedDateString.iso8601())
+
+        let test = TestStruct(myDate: expectedDate)
         let object = try JSON(with: test)
         let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
-        
+
         do {
             let json = try encoder.encode(object)
             XCTAssertNotNil(json)
             let newTest = try! JSONDecoder.default.decode(TestStruct.self, from: json)
-            XCTAssertEqual(newTest.myDate.toString(), now.toString())
+            XCTAssertEqual(newTest.myDate.toString(), "\"\(expectedDateString)\"")
         } catch {
             print(error)
             XCTFail()
         }
-        
-        let dummyProps = ["myDate": now] // <- conforms to Codable
+
+        let dummyProps = ["myDate": expectedDate] // <- conforms to Codable
         let j = try! JSON(dummyProps)
         let anotherTest: TestStruct! = j.codableValue()
-        XCTAssertEqual(anotherTest.myDate.toString(), now.toString())
+        XCTAssertEqual(anotherTest.myDate.toString(), "\"\(expectedDateString)\"")
+
+        // Non-Codable (e.g., Objective-C) interface
+
+        let dictWithDate = ["myDate": expectedDate]
+        let json = try JSON(dictWithDate)
+        let value = json["myDate"]
+
+        guard case .string(let actualDateString) = value else {
+            XCTFail()
+            return
+        }
+
+        XCTAssertEqual(expectedDateString, actualDateString)
     }
     
     func testJSONCollectionTypes() throws {
