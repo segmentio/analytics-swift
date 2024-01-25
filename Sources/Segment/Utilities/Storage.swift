@@ -206,6 +206,9 @@ extension Storage {
     private func eventStorageDirectory() -> URL {
         #if os(tvOS) || os(macOS)
         let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
+        #elseif os(Windows)
+        // `itemReplacementDirectory` is used to create a temp directory
+        let searchPathDirectory = FileManager.SearchPathDirectory.itemReplacementDirectory
         #else
         let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
         #endif
