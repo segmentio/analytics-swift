@@ -7,6 +7,7 @@
 
 import Foundation
 import Sovran
+import Safely
 
 // MARK: - Base Setup
 
@@ -216,15 +217,28 @@ extension Analytics {
             // another queue just takes too long.
             operatingMode.run(queue: configuration.values.flushQueue) {
                 if let p = plugin as? FlushCompletion {
-                    // flush handles the groups enter/leave calls
-                    p.flush(group: flushGroup) { plugin in
-                        // we don't really care about the plugin value .. yet.
+                    let flushPluginError = Safely.call(scenario: Scenarios.failedToFlushPlugin, context: NoContext()) { context in
+                        // flush handles the groups enter/leave calls
+                        p.flush(group: flushGroup) { plugin in
+                            // we don't really care about the plugin value .. yet.
+                        }
                     }
+
+                    if let error = flushPluginError {
+                        self.reportInternalError(error)
+                    }
+              
                 } else if let p = plugin as? EventPlugin {
-                    flushGroup.enter()
-                    // we have no idea if this will be async or not, assume it's sync.
-                    p.flush()
-                    flushGroup.leave()
+                    let flushPluginError = Safely.call(scenario: Scenarios.failedToFlushEventPlugin, context: NoContext()) { context in
+                        flushGroup.enter()
+                        // we have no idea if this will be async or not, assume it's sync.
+                        p.flush()
+                        flushGroup.leave()
+                    }
+
+                    if let error = flushPluginError {
+                        self.reportInternalError(error)
+                    }
                 }
             }
         }

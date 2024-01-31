@@ -7,12 +7,14 @@
 
 import Foundation
 import Sovran
+import Safely
 
 
 // MARK: - Main Timeline
 
 public class Timeline {
     internal let plugins: [PluginType: Mediator]
+    internal weak var analytics: Analytics? = nil
     
     public init() {
         self.plugins = [
@@ -38,7 +40,7 @@ public class Timeline {
         
         // apply .after plugins ...
         let afterResult = applyPlugins(type: .after, event: enrichmentResult)
-
+        
         return afterResult
     }
     
@@ -46,7 +48,13 @@ public class Timeline {
     internal func applyPlugins<E: RawEvent>(type: PluginType, event: E?) -> E? {
         var result: E? = event
         if let mediator = plugins[type], let e = event {
-            result = mediator.execute(event: e)
+            let applyEnrichmentError = Safely.call(scenario: Scenarios.failedToProcessEnrichment, context: NoContext()) { context in
+                result = mediator.execute(event: e)
+            }
+            
+            if let error = applyEnrichmentError {
+                analytics?.reportInternalError(error)
+            }
         }
         return result
     }
@@ -62,7 +70,7 @@ internal class Mediator {
             return plugin === storedPlugin
         }
     }
-
+    
     internal var plugins = [Plugin]()
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
@@ -114,8 +122,13 @@ extension Timeline {
                     return plugin === storedPlugin
                 }
                 toRemove.forEach { (plugin) in
-                    plugin.shutdown()
-                    mediator.remove(plugin: plugin)
+                    let pluginShutdownError = Safely.call(scenario: Scenarios.failedToShutdownPlugin, context: NoContext()) { context in
+                        plugin.shutdown()
+                        mediator.remove(plugin: plugin)
+                    }
+                    if let error = pluginShutdownError {
+                        analytics?.reportInternalError(error)
+                    }
                 }
             }
         }
@@ -168,7 +181,7 @@ extension Plugin {
     public func update(settings: Settings, type: UpdateType) {
         // do nothing by default, user can override.
     }
-
+    
     public func shutdown() {
         // do nothing by default, user can override.
     }
@@ -178,22 +191,22 @@ extension EventPlugin {
     public func execute<T: RawEvent>(event: T?) -> T? {
         var result: T? = event
         switch result {
-            case let r as IdentifyEvent:
-                result = self.identify(event: r) as? T
-            case let r as TrackEvent:
-                result = self.track(event: r) as? T
-            case let r as ScreenEvent:
-                result = self.screen(event: r) as? T
-            case let r as AliasEvent:
-                result = self.alias(event: r) as? T
-            case let r as GroupEvent:
-                result = self.group(event: r) as? T
-            default:
-                break
+        case let r as IdentifyEvent:
+            result = self.identify(event: r) as? T
+        case let r as TrackEvent:
+            result = self.track(event: r) as? T
+        case let r as ScreenEvent:
+            result = self.screen(event: r) as? T
+        case let r as AliasEvent:
+            result = self.alias(event: r) as? T
+        case let r as GroupEvent:
+            result = self.group(event: r) as? T
+        default:
+            break
         }
         return result
     }
-
+    
     // Default implementations that forward the event. This gives plugin
     // implementors the chance to interject on an event.
     public func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -244,7 +257,7 @@ extension DestinationPlugin {
         
         return (hasSettings == true && customerDisabled == false)
     }
-
+    
     internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // This will process plugins (think destination middleware) that are tied
         // to this destination.
@@ -260,18 +273,18 @@ extension DestinationPlugin {
             // incoming event, like identify, and map it to whatever is appropriate for this destination.
             var destinationResult: E? = nil
             switch enrichmentResult {
-                case let e as IdentifyEvent:
-                    destinationResult = identify(event: e) as? E
-                case let e as TrackEvent:
-                    destinationResult = track(event: e) as? E
-                case let e as ScreenEvent:
-                    destinationResult = screen(event: e) as? E
-                case let e as GroupEvent:
-                    destinationResult = group(event: e) as? E
-                case let e as AliasEvent:
-                    destinationResult = alias(event: e) as? E
-                default:
-                    break
+            case let e as IdentifyEvent:
+                destinationResult = identify(event: e) as? E
+            case let e as TrackEvent:
+                destinationResult = track(event: e) as? E
+            case let e as ScreenEvent:
+                destinationResult = screen(event: e) as? E
+            case let e as GroupEvent:
+                destinationResult = group(event: e) as? E
+            case let e as AliasEvent:
+                destinationResult = alias(event: e) as? E
+            default:
+                break
             }
             
             // apply .after plugins ...

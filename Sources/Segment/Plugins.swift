@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Safely
 
 /**
  PluginType specifies where in the chain a given plugin is to be executed.
@@ -187,7 +188,14 @@ extension Analytics {
      */
     @discardableResult
     public func add(plugin: Plugin) -> Plugin {
-        plugin.configure(analytics: self)
+        let configurePluginError = Safely.call(scenario: Scenarios.failedToConfigurePlugin, context: NoContext()) { context in
+            plugin.configure(analytics: self)
+        }
+
+        if let error = configurePluginError {
+            self.reportInternalError(error)
+        }
+        
         timeline.add(plugin: plugin)
         updateIfNecessary(plugin: plugin)
         return plugin
@@ -203,7 +211,15 @@ extension Analytics {
     @discardableResult
     public func add(enrichment: @escaping EnrichmentClosure) -> Plugin {
         let plugin = ClosureEnrichment(closure: enrichment)
-        plugin.configure(analytics: self)
+        
+        let configurePluginError = Safely.call(scenario: Scenarios.failedToConfigurePlugin, context: NoContext()) { context in
+            plugin.configure(analytics: self)
+        }
+
+        if let error = configurePluginError {
+            self.reportInternalError(error)
+        }
+        
         timeline.add(plugin: plugin)
         return plugin
     }

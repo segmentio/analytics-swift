@@ -21,7 +21,8 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/segmentio/sovran-swift.git", from: "1.1.0"),
-        .package(url: "https://github.com/segmentio/jsonsafeencoder-swift.git", from: "1.0.0")
+        .package(url: "https://github.com/segmentio/jsonsafeencoder-swift.git", from: "1.0.0"),
+        .package(url: "https://github.com/segmentio/safely-swift", from: "1.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -30,7 +31,9 @@ let package = Package(
             name: "Segment",
             dependencies: [
                 .product(name: "Sovran", package: "sovran-swift"),
-                .product(name: "JSONSafeEncoder", package: "jsonsafeencoder-swift")
+                .product(name: "JSONSafeEncoder", package: "jsonsafeencoder-swift"),
+                .product(name: "Safely", package: "safely-swift")
+
             ],
             exclude: ["PrivacyInfo.xcprivacy"]),
         .testTarget(

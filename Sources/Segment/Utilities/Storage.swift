@@ -7,6 +7,7 @@
 
 import Foundation
 import Sovran
+import Safely
 
 internal class Storage: Subscriber {
     let writeKey: String
@@ -21,6 +22,11 @@ internal class Storage: Subscriber {
     
     internal var onFinish: ((URL) -> Void)? = nil
     internal weak var analytics: Analytics? = nil
+    
+    struct StoreEventStruct {
+        let event: RawEvent
+        let eventStoreFile: URL
+    }
     
     init(store: Store, writeKey: String) {
         self.writeKey = writeKey
@@ -39,7 +45,16 @@ internal class Storage: Subscriber {
             case .events:
                 if let event = value as? RawEvent {
                     let eventStoreFile = currentFile(key)
-                    self.storeEvent(toFile: eventStoreFile, event: event)
+                    let context = StoreEventStruct(event: event, eventStoreFile: eventStoreFile)
+
+                    let storeEventError = Safely.call(scenario: Scenarios.failedToWriteEvent, context: context) { context in
+                        self.storeEvent(toFile: eventStoreFile, event: event)
+                    }
+
+                    if let error = storeEventError {
+                        analytics?.reportInternalError(error)
+                    }
+                    
                     if let flushPolicies = analytics?.configuration.values.flushPolicies {
                         for policy in flushPolicies {
                             policy.updateState(event: event)
@@ -54,12 +69,20 @@ internal class Storage: Subscriber {
             default:
                 if isBasicType(value: value) {
                     // we can write it like normal
-                    userDefaults?.set(value, forKey: key.rawValue)
+                    let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: value, keyToWrite: key.rawValue)
+
+                    if let error = userDefaultsError {
+                        analytics?.reportInternalError(error)
+                    }
                 } else {
                     // encode it to a data object to store
                     let encoder = PropertyListEncoder()
                     if let plistValue = try? encoder.encode(value) {
-                        userDefaults?.set(plistValue, forKey: key.rawValue)
+                        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: plistValue, keyToWrite: key.rawValue)
+
+                        if let error = userDefaultsError {
+                            analytics?.reportInternalError(error)
+                        }
                     }
                 }
             }
@@ -198,7 +221,11 @@ extension Storage {
     private func currentFile(_ key: Storage.Constants) -> URL {
         var currentFile = 0
         let index: Int = userDefaults?.integer(forKey: key.rawValue) ?? 0
-        userDefaults?.set(index, forKey: key.rawValue)
+        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: index, keyToWrite: key.rawValue)
+
+         if let error = userDefaultsError {
+             analytics?.reportInternalError(error)
+         }
         currentFile = index
         return self.eventsFile(index: currentFile)
     }
@@ -356,6 +383,31 @@ extension Storage {
         onFinish?(tempFile)
 
         let currentFile: Int = (userDefaults?.integer(forKey: Constants.events.rawValue) ?? 0) + 1
-        userDefaults?.set(currentFile, forKey: Constants.events.rawValue)
+        let userDefaultsError = self.userDefaults?.safelySetUserDefaults(valueToWrite: currentFile, keyToWrite: Constants.events.rawValue)
+
+        if let error = userDefaultsError {
+            analytics?.reportInternalError(error)
+        }
+    }
+}
+
+// MARK: - Set UserDefaults Safely
+
+extension UserDefaults {
+
+    struct UserContext {
+        let UserDefaults: UserDefaults
+        let valueToWrite: Sendable
+        let keyToWrite: String
+    }
+
+    func safelySetUserDefaults( valueToWrite: Sendable, keyToWrite: String) -> Error? {
+        let context = UserContext(UserDefaults: UserDefaults(), valueToWrite: valueToWrite, keyToWrite: keyToWrite)
+
+        let callError = Safely.call(scenario: Scenarios.nullDefaultValues, context: context) { context in
+            context.UserDefaults.set(valueToWrite, forKey: keyToWrite)
+        }
+
+        return callError
     }
 }
