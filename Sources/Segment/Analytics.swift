@@ -68,8 +68,6 @@ public class Analytics {
         
         storage.analytics = self
         
-        
-        checkSharedWriteKeys()
         checkSharedInstance()
         
         // Get everything running
@@ -435,16 +433,6 @@ extension Analytics {
     /// Determines if an instance is dead.
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
-    }
-    
-    private func checkSharedWriteKeys() {
-        if let firstInstance = Self.firstInstance {
-            if firstInstance !== self {
-                if firstInstance.configuration.values.writeKey == configuration.values.writeKey {
-                    fatalError("Cannot initialize multiple instances of Analytics with the same write key")
-                }
-            }
-        }
     }
 }
 

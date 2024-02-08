@@ -69,7 +69,7 @@ class StorageTests: XCTestCase {
     }
 
     func testBasicWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test1"))
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -88,7 +88,7 @@ class StorageTests: XCTestCase {
     }
     
     func testEventWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test2"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
@@ -131,7 +131,7 @@ class StorageTests: XCTestCase {
     }
     
     func testFilePrepAndFinish() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test3"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))

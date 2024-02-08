@@ -28,7 +28,7 @@ class ObjC_Tests: XCTestCase {
      */
 
     func testWrapping() {
-        let a = Analytics(configuration: Configuration(writeKey: "WRITE_KEY"))
+        let a = Analytics(configuration: Configuration(writeKey: "WRITE_KEY0"))
         let objc = ObjCAnalytics(wrapping: a)
         
         XCTAssertTrue(objc.analytics === a)
@@ -47,7 +47,7 @@ class ObjC_Tests: XCTestCase {
     
     func testNonTrivialAnalytics() {
         Storage.hardSettingsReset(writeKey: "WRITE_KEY")
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY1")
         config.defaultSettings = ["integrations": ["Amplitude": true]]
         
         let analytics = ObjCAnalytics(configuration: config)
@@ -72,7 +72,7 @@ class ObjC_Tests: XCTestCase {
     }
     
     func testTraitsAndUserIdOptionality() {
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY2")
         let analytics = ObjCAnalytics(configuration: config)
         analytics.reset()
         
@@ -90,9 +90,9 @@ class ObjC_Tests: XCTestCase {
         var sourceHit: Bool = false
         var destHit: Bool = false
         
-        Storage.hardSettingsReset(writeKey: "WRITE_KEY")
+        Storage.hardSettingsReset(writeKey: "WRITE_KEY2")
         
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY3")
         let analytics = ObjCAnalytics(configuration: config)
         analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
@@ -132,9 +132,9 @@ class ObjC_Tests: XCTestCase {
     }
     
     func testObjCDictionaryPassThru() {
-        Storage.hardSettingsReset(writeKey: "WRITE_KEY2")
+        Storage.hardSettingsReset(writeKey: "WRITE_KEY3")
         
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY2")
+        let config = ObjCConfiguration(writeKey: "WRITE_KEY4")
         let analytics = ObjCAnalytics(configuration: config)
         analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         

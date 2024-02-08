@@ -95,7 +95,7 @@ final class MemoryLeak_Tests: XCTestCase {
     }
     
     func testLeaksSimple() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "12345"))
         
         waitUntilStarted(analytics: analytics)
         analytics.track(name: "test")

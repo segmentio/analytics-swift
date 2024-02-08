@@ -55,7 +55,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testRemoveFlushPolicy() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest1"))
         
         let dummy = DummyFlushPolicy()
         analytics.add(flushPolicy: dummy)
@@ -72,7 +72,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testRemoveAllFlushPolicies() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest2"))
         var policies = analytics.configuration.values.flushPolicies
         
         waitUntilStarted(analytics: analytics)
@@ -87,7 +87,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testFindFlushPolicy() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest3"))
         
         waitUntilStarted(analytics: analytics)
         

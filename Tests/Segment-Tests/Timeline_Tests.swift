@@ -53,14 +53,14 @@ class Timeline_Tests: XCTestCase {
 
         
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test")
+        var settings = Settings(writeKey: "test1")
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: "test1")
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
@@ -89,14 +89,14 @@ class Timeline_Tests: XCTestCase {
 
         
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test")
+        var settings = Settings(writeKey: "test2")
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: "test2")
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
