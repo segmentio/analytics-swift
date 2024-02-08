@@ -68,6 +68,8 @@ public class Analytics {
         
         storage.analytics = self
         
+        
+        checkSharedWriteKeys()
         checkSharedInstance()
         
         // Get everything running
@@ -423,6 +425,7 @@ extension Analytics {
                 Self.firstInstance = self
             }
         }
+        
         // is firstInstance nil?  If so, set it.
         if Self.firstInstance == nil {
             Self.firstInstance = self
@@ -433,7 +436,19 @@ extension Analytics {
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
     }
+    
+    private func checkSharedWriteKeys() {
+        if let firstInstance = Self.firstInstance {
+            if firstInstance !== self {
+                if firstInstance.configuration.values.writeKey == configuration.values.writeKey {
+                    fatalError("Cannot initialize multiple instances of Analytics with the same write key")
+                }
+            }
+        }
+    }
 }
+
+
 
 // MARK: Operating mode based scheduling
 
