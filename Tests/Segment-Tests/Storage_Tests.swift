@@ -54,7 +54,7 @@ class StorageTests: XCTestCase {
         let jsonData = dummySettings.data(using: .utf8)!
         let jsonSettings = try! JSONSerialization.jsonObject(with: jsonData)
         
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_settings_write"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         // this will crash if it fails.
@@ -69,7 +69,7 @@ class StorageTests: XCTestCase {
     }
 
     func testBasicWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test1"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_basic_settings_write"))
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -88,7 +88,7 @@ class StorageTests: XCTestCase {
     }
     
     func testEventWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test2"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_basic_event_write"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
@@ -131,7 +131,7 @@ class StorageTests: XCTestCase {
     }
     
     func testFilePrepAndFinish() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test3"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_file_prep"))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))

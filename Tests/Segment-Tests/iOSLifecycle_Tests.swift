@@ -5,7 +5,7 @@ import XCTest
 final class iOSLifecycle_Tests: XCTestCase {
     
     func testInstallEventCreation() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_install_event_creation"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -27,7 +27,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
 
     func testInstallEventUpdated() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test1"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_install_event_updated"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -49,7 +49,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
     
     func testInstallEventOpened() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test2"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test_install_event_opened"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         

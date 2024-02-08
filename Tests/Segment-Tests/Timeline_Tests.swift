@@ -26,7 +26,7 @@ class Timeline_Tests: XCTestCase {
             return true
         }
 
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: "test_base_event_creation")
         let analytics = Analytics(configuration: configuration)
 
         analytics.add(plugin: firstDestination)
@@ -53,14 +53,14 @@ class Timeline_Tests: XCTestCase {
 
         
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test1")
+        var settings = Settings(writeKey: "test_two_base_event_creation")
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test1")
+        let configuration = Configuration(writeKey: "test_two_base_event_creation")
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
@@ -89,14 +89,14 @@ class Timeline_Tests: XCTestCase {
 
         
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test2")
+        var settings = Settings(writeKey: "test_base_event_creation_first_fail")
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test2")
+        let configuration = Configuration(writeKey: "test_base_event_creation_first_fail")
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
