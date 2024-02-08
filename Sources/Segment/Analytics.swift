@@ -448,8 +448,6 @@ extension Analytics {
     }
 }
 
-
-
 // MARK: Operating mode based scheduling
 
 extension OperatingMode {
