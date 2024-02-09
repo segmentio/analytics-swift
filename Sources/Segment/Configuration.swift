@@ -25,6 +25,10 @@ public enum OperatingMode {
 // MARK: - Internal Configuration
 
 public class Configuration {
+    
+    internal let writeKeyLock: NSLock  = NSLock()
+    static var activeWriteKeys = [String]()
+    
     internal struct Values {
         var writeKey: String
         var application: Any? = nil
@@ -47,7 +51,7 @@ public class Configuration {
     internal var values: Values
 
     /// Initialize a configuration object to pass along to an Analytics instance.
-    /// 
+    ///
     /// - Parameter writeKey: Your Segment write key value
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
@@ -59,6 +63,17 @@ public class Configuration {
         ])
         
         self.defaultSettings(settings)
+        
+        checkActiveWriteKeys(writeKey: writeKey)
+    }
+    
+    deinit {
+        writeKeyLock.lock()
+        defer { writeKeyLock.unlock() }
+        
+        if let index = Configuration.activeWriteKeys.firstIndex(of: values.writeKey) {
+            Configuration.activeWriteKeys.remove(at: index)
+        }
     }
 }
 
@@ -127,7 +142,7 @@ public extension Configuration {
     /// let config = Configuration(writeKey: "1234").defaultSettings(defaults)
     /// ```
     ///
-    /// - Parameter settings: 
+    /// - Parameter settings:
     /// - Returns: The current Configuration.
     @discardableResult
     func defaultSettings(_ settings: Settings?) -> Configuration {
@@ -232,6 +247,20 @@ public extension Configuration {
         values.jsonNonConformingNumberStrategy = strategy
         JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
         return self
+    }
+    
+    func checkActiveWriteKeys(writeKey: String) {
+        writeKeyLock.lock()
+        
+        defer {
+            writeKeyLock.unlock()
+        }
+        
+        if Configuration.activeWriteKeys.contains(writeKey) {
+            fatalError("Cannot initialize multiple instances of Analytics with the same write key")
+        } else {
+            Configuration.activeWriteKeys.append(writeKey)
+        }
     }
 }
 

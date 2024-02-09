@@ -26,7 +26,7 @@ struct MyTraits: Codable {
 
 class GooberPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     init() {
         self.type = .enrichment
@@ -41,7 +41,7 @@ class GooberPlugin: EventPlugin {
 
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     var receivedInitialUpdate: Int = 0
     
     var completion: (() -> Void)?
@@ -79,7 +79,7 @@ class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType
     let key: String
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
     
     let disabled: Bool
@@ -114,7 +114,7 @@ class MyDestination: DestinationPlugin {
 
 class OutputReaderPlugin: Plugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
