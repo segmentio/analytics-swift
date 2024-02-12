@@ -341,14 +341,66 @@ extension ConnectionStatus {
             #else
             self = .online(.wifi)
             #endif
-            
         } else {
             self =  .offline
         }
     }
 }
 
+
+// MARK: -- Connection Status stuff
+
+internal class ConnectionMonitor {
+    private var timer: QueueTimer? = nil
+    
+    static let shared = ConnectionMonitor()
+    
+    @Atomic var connectionStatus: ConnectionStatus = .unknown
+    
+    init() {
+        self.timer = QueueTimer(interval: 300, immediate: true) { [weak self] in
+            guard let self else { return }
+            self.check()
+        }
+    }
+    
+    internal func check() {
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+
+        guard let defaultRouteReachability = (withUnsafePointer(to: &zeroAddress) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
+        }) else {
+            connectionStatus = .unknown
+            return
+        }
+
+        var flags : SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            connectionStatus = .unknown
+            return
+        }
+
+        connectionStatus = ConnectionStatus(reachabilityFlags: flags)
+    }
+}
+
 internal func connectionStatus() -> ConnectionStatus {
+    return ConnectionMonitor.shared.connectionStatus
+}
+
+/*
+/* 5-minute timer to check connection status.  Checking this for
+ every event that comes through seems like overkill. */
+
+private var __segment_connectionStatus: ConnectionStatus = .unknown
+private var __segment_connectionStatusTimer: QueueTimer? = nil
+private var __segment_connectionStatusLock = NSLock()
+
+internal func __segment_connectionStatusCheck() -> ConnectionStatus {
     var zeroAddress = sockaddr_in()
     zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
     zeroAddress.sin_family = sa_family_t(AF_INET)
@@ -369,4 +421,20 @@ internal func connectionStatus() -> ConnectionStatus {
     return ConnectionStatus(reachabilityFlags: flags)
 }
 
+internal func connectionStatus() -> ConnectionStatus {
+    // the locking may seem like overkill since we're updating it in a queue
+    // however, it is necessary since we're polling. :(
+    if __segment_connectionStatusTimer == nil {
+        __segment_connectionStatusTimer = QueueTimer(interval: 300, immediate: true) {
+            __segment_connectionStatusLock.lock()
+            defer { __segment_connectionStatusLock.unlock() }
+            __segment_connectionStatus = __segment_connectionStatusCheck()
+        }
+    }
+    
+    __segment_connectionStatusLock.lock()
+    defer { __segment_connectionStatusLock.unlock() }
+    return __segment_connectionStatus
+}
+*/
 #endif
