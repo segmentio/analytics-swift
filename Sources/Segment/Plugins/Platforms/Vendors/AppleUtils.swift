@@ -341,14 +341,24 @@ extension ConnectionStatus {
             #else
             self = .online(.wifi)
             #endif
-            
         } else {
             self =  .offline
         }
     }
 }
 
-internal func connectionStatus() -> ConnectionStatus {
+
+// MARK: -- Connection Status stuff
+
+/* 10-minute timer to check connection status.  Checking this for
+ every event that comes through seems like overkill. */
+
+private var __segment_connectionStatus: ConnectionStatus = .unknown
+private let __segment_connectionStatusTimer = QueueTimer(interval: 600) {
+    __segment_connectionStatus = __segment_connectionStatusCheck()
+}
+
+internal func __segment_connectionStatusCheck() -> ConnectionStatus {
     var zeroAddress = sockaddr_in()
     zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
     zeroAddress.sin_family = sa_family_t(AF_INET)
@@ -367,6 +377,10 @@ internal func connectionStatus() -> ConnectionStatus {
     }
 
     return ConnectionStatus(reachabilityFlags: flags)
+}
+
+internal func connectionStatus() -> ConnectionStatus {
+    return __segment_connectionStatus
 }
 
 #endif
