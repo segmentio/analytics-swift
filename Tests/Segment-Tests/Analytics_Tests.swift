@@ -13,6 +13,9 @@ final class Analytics_Tests: XCTestCase {
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
+        
+        waitUntilStarted(analytics: analytics)
+        checkIfLeaked(analytics)
     }
     
     func testPluginConfigure() {
@@ -28,6 +31,8 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(ziggy.analytics)
         XCTAssertNotNil(myDestination.analytics)
         XCTAssertNotNil(goober.analytics)
+        
+        waitUntilStarted(analytics: analytics)
     }
     
     func testPluginRemove() {
@@ -91,6 +96,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy2.receivedInitialUpdate, 1)
         
+        checkIfLeaked(analytics)
     }
 
     
@@ -160,6 +166,7 @@ final class Analytics_Tests: XCTestCase {
         
         XCTAssertTrue(anonId != "")
         XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
+        waitUntilStarted(analytics: analytics)
     }
     
     func testContext() {
@@ -560,7 +567,7 @@ final class Analytics_Tests: XCTestCase {
         var timeline: Timeline
         let type: PluginType
         let key: String
-        var analytics: Analytics?
+        weak var analytics: Analytics?
         
         init(key: String) {
             self.key = key

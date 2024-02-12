@@ -47,7 +47,7 @@ public class Configuration {
     internal var values: Values
 
     /// Initialize a configuration object to pass along to an Analytics instance.
-    /// 
+    ///
     /// - Parameter writeKey: Your Segment write key value
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
@@ -127,7 +127,7 @@ public extension Configuration {
     /// let config = Configuration(writeKey: "1234").defaultSettings(defaults)
     /// ```
     ///
-    /// - Parameter settings: 
+    /// - Parameter settings:
     /// - Returns: The current Configuration.
     @discardableResult
     func defaultSettings(_ settings: Settings?) -> Configuration {
