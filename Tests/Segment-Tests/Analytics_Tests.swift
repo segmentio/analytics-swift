@@ -567,7 +567,7 @@ final class Analytics_Tests: XCTestCase {
         var timeline: Timeline
         let type: PluginType
         let key: String
-        var analytics: Analytics?
+        weak var analytics: Analytics?
         
         init(key: String) {
             self.key = key

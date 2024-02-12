@@ -25,10 +25,6 @@ public enum OperatingMode {
 // MARK: - Internal Configuration
 
 public class Configuration {
-    
-    internal let writeKeyLock: NSLock  = NSLock()
-    static var activeWriteKeys = [String]()
-    
     internal struct Values {
         var writeKey: String
         var application: Any? = nil
@@ -63,17 +59,6 @@ public class Configuration {
         ])
         
         self.defaultSettings(settings)
-        
-        checkActiveWriteKeys(writeKey: writeKey)
-    }
-    
-    deinit {
-        writeKeyLock.lock()
-        defer { writeKeyLock.unlock() }
-        
-        if let index = Configuration.activeWriteKeys.firstIndex(of: values.writeKey) {
-            Configuration.activeWriteKeys.remove(at: index)
-        }
     }
 }
 
@@ -247,20 +232,6 @@ public extension Configuration {
         values.jsonNonConformingNumberStrategy = strategy
         JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
         return self
-    }
-    
-    func checkActiveWriteKeys(writeKey: String) {
-        writeKeyLock.lock()
-        
-        defer {
-            writeKeyLock.unlock()
-        }
-        
-        if Configuration.activeWriteKeys.contains(writeKey) {
-            fatalError("Cannot initialize multiple instances of Analytics with the same write key")
-        } else {
-            Configuration.activeWriteKeys.append(writeKey)
-        }
     }
 }
 
