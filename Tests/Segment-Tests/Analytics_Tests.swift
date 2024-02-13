@@ -865,4 +865,41 @@ final class Analytics_Tests: XCTestCase {
         let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
         XCTAssertNil(d)
     }
+    
+    func testFailedSegmentResponse() throws {
+        //register our network blocker (returns 400 response)
+        guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
+            XCTFail(); return }
+        
+        let analytics = Analytics(configuration: Configuration(writeKey: "networkTest").errorHandler( {error in
+            XCTFail("Network Error: \(error)")
+        }))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        //set the httpClient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [FailedNetworkCalls.self]
+        configuration.httpAdditionalHeaders = [
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "Basic test",
+            "User-Agent": "analytics-ios/\(Analytics.version())"
+        ]
+        
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        
+        segment?.httpClient?.session = blockSession
+        
+        var storedFiles = analytics.storage.eventFiles(includeUnfinished: true)
+
+        analytics.track(name: "test track", properties: ["MalformedPaylod": "My Failed Prop"])
+        analytics.flush()
+
+        XCTAssert(storedFiles.count == 0)
+    }
 }
