@@ -866,6 +866,8 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNil(d)
     }
     
+    // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
+    #if !os(Linux) && !os(watchOS)
     func testFailedSegmentResponse() throws {
         //register our network blocker (returns 400 response)
         guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
@@ -902,4 +904,5 @@ final class Analytics_Tests: XCTestCase {
 
         XCTAssert(storedFiles.count == 0)
     }
+    #endif
 }
