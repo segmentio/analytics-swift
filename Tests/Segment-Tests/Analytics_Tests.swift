@@ -873,9 +873,7 @@ final class Analytics_Tests: XCTestCase {
         guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
             XCTFail(); return }
         
-        let analytics = Analytics(configuration: Configuration(writeKey: "networkTest").errorHandler( {error in
-            XCTFail("Network Error: \(error)")
-        }))
+        let analytics = Analytics(configuration: Configuration(writeKey: "networkTest"))
         
         waitUntilStarted(analytics: analytics)
         
@@ -897,12 +895,26 @@ final class Analytics_Tests: XCTestCase {
         
         segment?.httpClient?.session = blockSession
         
-        var storedFiles = analytics.storage.eventFiles(includeUnfinished: true)
-
-        analytics.track(name: "test track", properties: ["MalformedPaylod": "My Failed Prop"])
-        analytics.flush()
-
-        XCTAssert(storedFiles.count == 0)
+        analytics.track(name: "test track", properties: ["Malformed Paylod": "My Failed Prop"])
+        
+        //get fileUrl from track call
+        let storedEvents: [URL]? = analytics.storage.read(.events)
+        let fileURL = storedEvents![0]
+        
+        
+        let expectation = XCTestExpectation()
+        
+        analytics.flush {
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        let newStoredEvents: [URL]? = analytics.storage.read(.events)
+        
+        XCTAssert(!(newStoredEvents?.contains(fileURL))!)
+        
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
     }
     #endif
 }
