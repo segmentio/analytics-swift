@@ -13,6 +13,9 @@ final class Analytics_Tests: XCTestCase {
 
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
+        
+        waitUntilStarted(analytics: analytics)
+        checkIfLeaked(analytics)
     }
 
     func testPluginConfigure() {
@@ -28,6 +31,8 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(ziggy.analytics)
         XCTAssertNotNil(myDestination.analytics)
         XCTAssertNotNil(goober.analytics)
+        
+        waitUntilStarted(analytics: analytics)
     }
 
     func testPluginRemove() {
@@ -90,7 +95,12 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(myDestination.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy2.receivedInitialUpdate, 1)
+<<<<<<< HEAD
 
+=======
+        
+        checkIfLeaked(analytics)
+>>>>>>> main
     }
 
 
@@ -160,6 +170,7 @@ final class Analytics_Tests: XCTestCase {
 
         XCTAssertTrue(anonId != "")
         XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
+        waitUntilStarted(analytics: analytics)
     }
 
     func testContext() {
@@ -560,8 +571,13 @@ final class Analytics_Tests: XCTestCase {
         var timeline: Timeline
         let type: PluginType
         let key: String
+<<<<<<< HEAD
         var analytics: Analytics?
 
+=======
+        weak var analytics: Analytics?
+        
+>>>>>>> main
         init(key: String) {
             self.key = key
             self.type = .destination
@@ -858,4 +874,56 @@ final class Analytics_Tests: XCTestCase {
         let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
         XCTAssertNil(d)
     }
+    
+    // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
+    #if !os(Linux) && !os(watchOS)
+    func testFailedSegmentResponse() throws {
+        //register our network blocker (returns 400 response)
+        guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
+            XCTFail(); return }
+        
+        let analytics = Analytics(configuration: Configuration(writeKey: "networkTest"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        //set the httpClient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [FailedNetworkCalls.self]
+        configuration.httpAdditionalHeaders = [
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "Basic test",
+            "User-Agent": "analytics-ios/\(Analytics.version())"
+        ]
+        
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        
+        segment?.httpClient?.session = blockSession
+        
+        analytics.track(name: "test track", properties: ["Malformed Paylod": "My Failed Prop"])
+        
+        //get fileUrl from track call
+        let storedEvents: [URL]? = analytics.storage.read(.events)
+        let fileURL = storedEvents![0]
+        
+        
+        let expectation = XCTestExpectation()
+        
+        analytics.flush {
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        let newStoredEvents: [URL]? = analytics.storage.read(.events)
+        
+        XCTAssert(!(newStoredEvents?.contains(fileURL))!)
+        
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+    }
+    #endif
 }

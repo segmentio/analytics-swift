@@ -30,8 +30,8 @@ public class ObjCSegmentMixpanel: NSObject, ObjCPlugin, ObjCPluginShim {
 @objc(SEGEventPlugin)
 public class ObjCEventPlugin: NSObject, EventPlugin, ObjCPlugin {
     public var type: PluginType = .enrichment
-    public var analytics: Analytics? = nil
-
+    public weak var analytics: Analytics? = nil
+    
     @objc(executeEvent:)
     public func execute(event: ObjCRawEvent?) -> ObjCRawEvent? {
         #if DEBUG

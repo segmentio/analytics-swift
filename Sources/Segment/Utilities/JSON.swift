@@ -9,9 +9,23 @@ import Foundation
 import JSONSafeEncoder
 
 extension JSONDecoder {
+    enum JSONDecodingError: Error {
+        case couldNotDecodeDate(String)
+    }
+
     static var `default`: JSONDecoder {
         let d = JSONDecoder()
-        d.dateDecodingStrategy = .formatted(DateFormatter.iso8601)
+
+        d.dateDecodingStrategy = .custom({ decoder throws -> Date in
+            let stringDate = try decoder.singleValueContainer().decode(String.self)
+
+            guard let date = stringDate.iso8601() else {
+                throw JSONDecodingError.couldNotDecodeDate(stringDate)
+            }
+
+            return date
+        })
+
         return d
     }
 }
@@ -19,7 +33,13 @@ extension JSONDecoder {
 extension JSONSafeEncoder {
     static var `default`: JSONSafeEncoder {
         let e = JSONSafeEncoder()
-        e.dateEncodingStrategy = .formatted(DateFormatter.iso8601)
+
+        e.dateEncodingStrategy = .custom({ date, encoder in
+            let stringDate = date.iso8601()
+            var container = encoder.singleValueContainer()
+            try container.encode(stringDate)
+        })
+
         e.nonConformingFloatEncodingStrategy = JSON.jsonNonConformingNumberStrategy
         return e
     }
