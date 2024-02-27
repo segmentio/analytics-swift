@@ -95,12 +95,8 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(myDestination.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy2.receivedInitialUpdate, 1)
-<<<<<<< HEAD
-
-=======
         
         checkIfLeaked(analytics)
->>>>>>> main
     }
 
 
@@ -571,13 +567,8 @@ final class Analytics_Tests: XCTestCase {
         var timeline: Timeline
         let type: PluginType
         let key: String
-<<<<<<< HEAD
-        var analytics: Analytics?
-
-=======
         weak var analytics: Analytics?
-        
->>>>>>> main
+
         init(key: String) {
             self.key = key
             self.type = .destination
