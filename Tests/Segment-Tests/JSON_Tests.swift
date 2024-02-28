@@ -411,4 +411,43 @@ class JSONTests: XCTestCase {
             XCTFail()
         }
     }
+    
+    func testJSONCodableDict() throws {
+        enum StringEnum: String, Codable {
+            case test1
+            case test2
+            case test3
+        }
+        
+        enum IntEnum: String, Codable {
+            case test1
+            case test2
+            case test3
+        }
+        
+        struct SubStruct: Codable {
+            var x: Int = 23
+        }
+        
+        struct CodableStruct: Codable {
+            var a: Int = 47
+            var b: String = "hello"
+            var c: SubStruct = SubStruct()
+        }
+        
+        let dict: [String: Any] = [
+            "uuid": UUID(),
+            "strEnum": StringEnum.test2,
+            "struct": CodableStruct()
+        ]
+        
+        do {
+            let json = try JSON(dict)
+            print(json.prettyPrint())
+        } catch {
+            print(error)
+        }
+        
+        
+    }
 }
