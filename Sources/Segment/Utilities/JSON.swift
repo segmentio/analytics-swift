@@ -76,7 +76,7 @@ public enum JSON: Equatable {
     public init<T: Codable>(with value: T) throws {
         let encoder = JSONSafeEncoder.default
         let json = try encoder.encode(value)
-        let output = try JSONSerialization.jsonObject(with: json)
+        let output = try JSONSerialization.jsonObject(with: json, options: .fragmentsAllowed)
         try self.init(output)
     }
     
@@ -113,6 +113,8 @@ public enum JSON: Equatable {
             self = .object(try object.mapValues(JSON.init))
         case let json as JSON:
             self = json
+        case let codable as Codable:
+            self = try Self.init(with: codable)
         // we don't work with whatever is being supplied
         default:
             throw JSONError.nonJSONType(type: "\(value.self)")
