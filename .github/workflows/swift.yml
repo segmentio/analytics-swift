@@ -13,7 +13,7 @@ jobs:
     - uses: styfle/cancel-workflow-action@0.9.1
       with:
         workflow_id: ${{ github.event.workflow.id }}
-        
+
   build_and_test_spm_mac:
     needs: cancel_previous
     runs-on: macos-latest
@@ -45,6 +45,26 @@ jobs:
       run: swift build
     - name: Run tests
       run: swift test --enable-test-discovery
+
+  # Windows support is still very much a work in progress
+  # We use a different action here to be able to use a more
+  # up-to-date toolchain.
+  build_and_test_spm_windows:
+    needs: cancel_previous
+    runs-on: windows-latest
+    steps:
+      - uses: compnerd/gha-setup-swift@main
+        with:
+          release-tag-name: "20231116.2"
+          github-repo: "thebrowsercompany/swift-build"
+          release-asset-name: installer-amd64.exe
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Build
+        run: swift build
+      # Testing disabled until https://github.com/segmentio/analytics-swift/issues/279 is fixed
+      # - name: Run tests
+      #   run: swift test --enable-test-discovery
 
   build_and_test_ios:
     needs: cancel_previous
@@ -85,7 +105,7 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 8 (45mm)'
-    
+
   build_and_test_examples:
     needs: cancel_previous
     runs-on: macos-latest
@@ -117,4 +137,3 @@ jobs:
       run: |
           cd Examples/apps/SegmentUIKitExample
           xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
- 

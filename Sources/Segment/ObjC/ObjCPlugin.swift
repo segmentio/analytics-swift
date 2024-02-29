@@ -1,12 +1,12 @@
 //
 //  ObjCPlugin.swift
-//  
+//
 //
 //  Created by Brandon Sneed on 4/17/23.
 //
 
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 import Foundation
 
@@ -39,7 +39,7 @@ public class ObjCEventPlugin: NSObject, EventPlugin, ObjCPlugin {
         #endif
         return event
     }
-    
+
     public func execute<T>(event: T?) -> T? where T : RawEvent {
         let objcEvent = objcEventFromEvent(event)
         let result = execute(event: objcEvent)
@@ -51,12 +51,12 @@ public class ObjCEventPlugin: NSObject, EventPlugin, ObjCPlugin {
 @objc(SEGBlockPlugin)
 public class ObjCBlockPlugin: ObjCEventPlugin {
     let block: (ObjCRawEvent?) -> ObjCRawEvent?
-    
+
     @objc(executeEvent:)
     public override func execute(event: ObjCRawEvent?) -> ObjCRawEvent? {
         return block(event)
     }
-    
+
     @objc(initWithBlock:)
     public init(block: @escaping (ObjCRawEvent?) -> ObjCRawEvent?) {
         self.block = block
@@ -73,11 +73,11 @@ extension ObjCAnalytics {
             analytics.add(plugin: p)
         }
     }
-    
+
     @objc(addPlugin:destinationKey:)
     public func add(plugin: ObjCPlugin?, destinationKey: String) {
         guard let d = analytics.find(key: destinationKey) else { return }
-        
+
         if let p = plugin as? ObjCPluginShim {
             _ = d.add(plugin: p.instance())
         } else if let p = plugin as? ObjCEventPlugin {
@@ -87,4 +87,3 @@ extension ObjCAnalytics {
 }
 
 #endif
-

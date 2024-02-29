@@ -1,11 +1,11 @@
 //
 //  ObjCConfiguration.swift
-//  
+//
 //
 //  Created by Brandon Sneed on 8/13/21.
 //
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 import Foundation
 import JSONSafeEncoder
@@ -13,7 +13,7 @@ import JSONSafeEncoder
 @objc(SEGConfiguration)
 public class ObjCConfiguration: NSObject {
     internal var configuration: Configuration
-    
+
     /// Sets a reference to your application.  This can be useful in instances
     /// where referring back to your application is necessary, such as within plugins
     /// or async code.  The default value is `nil`.
@@ -26,7 +26,7 @@ public class ObjCConfiguration: NSObject {
             configuration.application(value)
         }
     }
-    
+
     /// Opt-in/out of tracking lifecycle events.  The default value is `false`.
     @objc
     public var trackApplicationLifecycleEvents: Bool {
@@ -37,7 +37,7 @@ public class ObjCConfiguration: NSObject {
             configuration.trackApplicationLifecycleEvents(value)
         }
     }
-    
+
     /// Set the number of events necessary to automatically flush. The default
     /// value is `20`.
     @objc
@@ -49,7 +49,7 @@ public class ObjCConfiguration: NSObject {
             configuration.flushAt(value)
         }
     }
-    
+
     /// Set a time interval (in seconds) by which to trigger an automatic flush.
     /// The default value is `30`.
     @objc
@@ -61,7 +61,7 @@ public class ObjCConfiguration: NSObject {
             configuration.flushInterval(value)
         }
     }
-    
+
     /// Sets a default set of Settings.  Normally these will come from Segment's
     /// api.segment.com/v1/projects/<writekey>/settings, however in instances such
     /// as first app launch, it can be useful to have a pre-set batch of settings to
@@ -98,7 +98,7 @@ public class ObjCConfiguration: NSObject {
             }
         }
     }
-    
+
     /// Enable/Disable the automatic adding of Segment as a destination.
     /// This can be useful in instances such as Consent Management, or in device
     /// mode only setups.  The default value is `true`.
@@ -111,7 +111,7 @@ public class ObjCConfiguration: NSObject {
             configuration.autoAddSegmentDestination(value)
         }
     }
-    
+
     /// Sets an alternative API host.  This is useful when a proxy is in use, or
     /// events need to be routed to certain locales at all times (such as the EU).
     /// The default value is `api.segment.io/v1`.
@@ -137,7 +137,7 @@ public class ObjCConfiguration: NSObject {
             configuration.cdnHost(value)
         }
     }
-    
+
     /// Sets a block to be used when generating outgoing HTTP requests.  Useful in
     /// proxying, or adding additional header information for outbound traffic.
     ///
@@ -163,4 +163,3 @@ public class ObjCConfiguration: NSObject {
 }
 
 #endif
-
