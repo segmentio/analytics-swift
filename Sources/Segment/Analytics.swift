@@ -330,21 +330,20 @@ extension Analytics {
     
     /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
-        return storage.read(Storage.Constants.events)
+        return storage.read(Storage.Constants.events)?.dataFiles
     }
     
     /// Purge all pending event upload files.
     public func purgeStorage() {
-        if let files = pendingUploads {
-            for file in files {
-                purgeStorage(fileURL: file)
-            }
-        }
+        storage.dataStore.reset()
     }
     
     /// Purge a single event upload file.
     public func purgeStorage(fileURL: URL) {
-        try? FileManager.default.removeItem(at: fileURL)
+        guard let dataFiles = storage.read(Storage.Constants.events)?.dataFiles else { return }
+        if dataFiles.contains(fileURL) {
+            try? FileManager.default.removeItem(at: fileURL)
+        }
     }
     
     /// Wait until the Analytics object has completed startup.

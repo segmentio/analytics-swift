@@ -35,7 +35,7 @@ internal class Storage: Subscriber {
                     writeKey: writeKey,
                     storageLocation: storageURL,
                     baseFilename: "segment-events",
-                    maxFileSize: UInt64(Self.MAXFILESIZE),
+                    maxFileSize: Self.MAXFILESIZE,
                     userDefaults: self.userDefaults,
                     indexKey: Storage.Constants.events.rawValue))
             self.dataStore = TransientDB(store: store)
@@ -43,7 +43,8 @@ internal class Storage: Subscriber {
             let store = MemoryStore(
                 configuration: MemoryStore.Configuration(
                     writeKey: writeKey,
-                    maxItems: max))
+                    maxItems: max,
+                    maxFetchSize: Self.MAXFILESIZE))
             self.dataStore = TransientDB(store: store)
         case .custom(let store):
             self.dataStore = TransientDB(store: store)
@@ -86,19 +87,6 @@ internal class Storage: Subscriber {
             }
             userDefaults.synchronize()
         }
-    }
-    
-    func read(_ key: Storage.Constants) -> [URL]? {
-        var result: [URL]? = nil
-        switch key {
-        case .events:
-            if let data = dataStore.fetch()?.dataFiles {
-                result = data
-            }
-        default:
-            break
-        }
-        return result
     }
     
     func read(_ key: Storage.Constants) -> DataResult? {
@@ -171,17 +159,10 @@ internal class Storage: Subscriber {
         return result
     }
     
-    func remove(file: URL) {
-        switch storageMode {
-        case .disk:
-            fallthrough
-        case .diskAtURL(_):
-            dataStore.remove(data: [file.hashValue])
-        default:
-            break
-        }
+    func remove(data: [DataStore.HashValue]?) {
+        guard let data else { return }
+        dataStore.remove(data: data)
     }
-
 }
 
 // MARK: - String Contants

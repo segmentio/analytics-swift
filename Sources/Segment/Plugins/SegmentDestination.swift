@@ -33,7 +33,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     }
 
     internal struct UploadTaskInfo {
-        let url: URL
+        let url: URL?
+        let data: Data?
         let task: URLSessionDataTask
         // set/used via an extension in iOSLifecycleMonitor.swift
         typealias CleanupClosure = () -> Void
@@ -119,7 +120,6 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     public func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
-        guard let httpClient = self.httpClient else { return }
         
         // don't flush if analytics is disabled.
         guard analytics.enabled == true else { return }
@@ -127,8 +127,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // enter for the high level flush, allow us time to run through any existing files..
         group.enter()
         
-        // Read events from file system
-        guard let data: [URL] = storage.read(Storage.Constants.events) else { group.leave(); return }
+        // get our batch(es) ...
+        guard let eventData = storage.read(.events) else { group.leave(); return }
         
         eventCount = 0
         cleanupUploads()
@@ -136,40 +136,13 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         analytics.log(message: "Uploads in-progress: \(pendingUploads)")
         
         if pendingUploads == 0 {
-            for url in data {
-                // enter for this url we're going to kick off
-                group.enter()
-                analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
-                // set up the task
-                let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { (result) in
-                    switch result {
-                        case .success(_):
-                            storage.remove(file: url)
-                            self.cleanupUploads()
-                        
-                        // we don't want to retry events in a given batch when a 400
-                        // response for malformed JSON is returned
-                        case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
-                            storage.remove(file: url)
-                            self.cleanupUploads()
-                        default:
-                            break
-                    }
-                    
-                    analytics.log(message: "Processed: \(url.lastPathComponent)")
-                    // the upload we have here has just finished.
-                    // make sure it gets removed and it's cleanup() called rather
-                    // than waiting on the next flush to come around.
-                    self.cleanupUploads()
-                    // call the completion
-                    completion(self)
-                    // leave for the url we kicked off.
-                    group.leave()
-                }
-                // we have a legit upload in progress now, so add it to our list.
-                if let upload = uploadTask {
-                    add(uploadTask: UploadTaskInfo(url: url, task: upload))
-                }
+            if let data = eventData.dataFiles {
+                flushFiles(group: group, files: data, completion: completion)
+            } else if let data = eventData.data {
+                flushData(group: group, data: data, remove: eventData.removable, completion: completion)
+            } else {
+                // there was nothing to do ...
+                completion(self)
             }
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
@@ -177,6 +150,94 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         
         // leave for the high level flush
         group.leave()
+    }
+}
+
+extension SegmentDestination {
+    private func flushFiles(group: DispatchGroup, files: [URL], completion: @escaping (DestinationPlugin) -> Void) {
+        guard let storage = self.storage else { return }
+        guard let analytics = self.analytics else { return }
+        guard let httpClient = self.httpClient else { return }
+
+        for url in files {
+            // enter for this url we're going to kick off
+            group.enter()
+            analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
+            
+            // set up the task
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { result in
+                switch result {
+                case .success(_):
+                    storage.remove(data: [url.hashValue])
+                    self.cleanupUploads()
+                    
+                    // we don't want to retry events in a given batch when a 400
+                    // response for malformed JSON is returned
+                case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+                    storage.remove(data: [url.hashValue])
+                    self.cleanupUploads()
+                default:
+                    break
+                }
+                
+                analytics.log(message: "Processed: \(url.lastPathComponent)")
+                // the upload we have here has just finished.
+                // make sure it gets removed and it's cleanup() called rather
+                // than waiting on the next flush to come around.
+                self.cleanupUploads()
+                // call the completion
+                completion(self)
+                // leave for the url we kicked off.
+                group.leave()
+            }
+            
+            // we have a legit upload in progress now, so add it to our list.
+            if let upload = uploadTask {
+                add(uploadTask: UploadTaskInfo(url: url, data: nil, task: upload))
+            }
+        }
+    }
+    
+    private func flushData(group: DispatchGroup, data: Data, remove: [DataStore.HashValue]?, completion: @escaping (DestinationPlugin) -> Void) {
+        guard let storage = self.storage else { return }
+        guard let analytics = self.analytics else { return }
+        guard let httpClient = self.httpClient else { return }
+        
+        // enter for this url we're going to kick off
+        group.enter()
+        analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
+        
+        // set up the task
+        let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { result in
+            switch result {
+            case .success(_):
+                storage.remove(data: remove)
+                self.cleanupUploads()
+                
+                // we don't want to retry events in a given batch when a 400
+                // response for malformed JSON is returned
+            case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+                storage.remove(data: remove)
+                self.cleanupUploads()
+            default:
+                break
+            }
+            
+            analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
+            // the upload we have here has just finished.
+            // make sure it gets removed and it's cleanup() called rather
+            // than waiting on the next flush to come around.
+            self.cleanupUploads()
+            // call the completion
+            completion(self)
+            // leave for the url we kicked off.
+            group.leave()
+        }
+        
+        // we have a legit upload in progress now, so add it to our list.
+        if let upload = uploadTask {
+            add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
+        }
     }
 }
 

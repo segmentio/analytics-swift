@@ -13,6 +13,7 @@ public class MemoryStore: DataStore {
     public struct Configuration {
         let writeKey: String
         let maxItems: Int
+        let maxFetchSize: Int
     }
     
     internal var items = [Data]()
@@ -39,6 +40,9 @@ public class MemoryStore: DataStore {
         let encoder = JSONEncoder()
         guard let d = try? encoder.encode(data) else { return }
         items.append(d)
+        if items.count >= config.maxItems {
+            items.removeFirst()
+        }
     }
     
     public func fetch(count: Int?, maxBytes: Int?) -> DataResult? {
@@ -46,8 +50,10 @@ public class MemoryStore: DataStore {
         var accumulatedSize: Int = 0
         var results = [Data]()
         
+        let maxBytes = maxBytes ?? config.maxFetchSize
+        
         for item in items {
-            if let maxBytes, accumulatedSize + item.count > maxBytes {
+            if accumulatedSize + item.count > maxBytes {
                 break
             }
             if let count, accumulatedCount >= count {

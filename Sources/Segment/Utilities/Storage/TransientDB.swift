@@ -41,7 +41,8 @@ internal class TransientDB {
     }
     
     public func append(data: Codable) {
-        syncQueue.sync {
+        syncQueue.async { [weak self] in
+            guard let self else { return }
             countLock.lock()
             store.append(data: data)
             countLock.unlock()

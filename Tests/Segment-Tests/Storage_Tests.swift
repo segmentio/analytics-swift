@@ -105,11 +105,11 @@ class StorageTests: XCTestCase {
         event = IdentifyEvent(userId: "brandon3", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
-        let results: [URL]? = analytics.storage.read(.events)
+        let results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
         
-        let fileURL = results![0]
+        let fileURL = results!.dataFiles![0]
         
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
@@ -126,7 +126,7 @@ class StorageTests: XCTestCase {
         XCTAssertTrue(item2 == "brandon2")
         XCTAssertTrue(item3 == "brandon3")
 
-        analytics.storage.remove(file: fileURL)
+        analytics.storage.remove(data: results!.removable)
 
         // make sure our original and temp files are named correctly, and gone.
         let originalFile = fileURL.deletingPathExtension()
@@ -144,11 +144,11 @@ class StorageTests: XCTestCase {
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
         
-        var results: [URL]? = analytics.storage.read(.events)
+        var results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
         
-        var fileURL = results![0]
+        var fileURL = results!.dataFiles![0]
         
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
@@ -161,7 +161,7 @@ class StorageTests: XCTestCase {
         
         XCTAssertNotNil(results)
         
-        fileURL = results![1]
+        fileURL = results!.dataFiles![1]
         
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "1-segment-events.temp")

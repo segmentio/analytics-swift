@@ -14,7 +14,7 @@ internal class DirectoryStore: DataStore {
         let writeKey: String
         let storageLocation: URL
         let baseFilename: String
-        let maxFileSize: UInt64
+        let maxFileSize: Int
         let userDefaults: UserDefaults
         let indexKey: String
     }

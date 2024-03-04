@@ -432,7 +432,7 @@ final class Analytics_Tests: XCTestCase {
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
-        let currentBatchCount = analytics.storage.read(.events)!.count
+        let currentBatchCount = analytics.storage.read(.events)!.dataFiles!.count
         
         analytics.flush()
         analytics.track(name: "test")
@@ -895,8 +895,8 @@ final class Analytics_Tests: XCTestCase {
         analytics.track(name: "test track", properties: ["Malformed Paylod": "My Failed Prop"])
         
         //get fileUrl from track call
-        let storedEvents: [URL]? = analytics.storage.read(.events)
-        let fileURL = storedEvents![0]
+        let storedEvents = analytics.storage.read(.events)
+        let fileURL = storedEvents!.dataFiles![0]
         
         
         let expectation = XCTestExpectation()
