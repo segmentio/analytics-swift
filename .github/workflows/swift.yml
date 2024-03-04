@@ -16,7 +16,7 @@ jobs:
         
   build_and_test_spm_mac:
     needs: cancel_previous
-    runs-on: macos-14.1
+    runs-on: macos-14
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -48,7 +48,7 @@ jobs:
 
   build_and_test_ios:
     needs: cancel_previous
-    runs-on: macos-14.1
+    runs-on: macos-14
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -62,7 +62,7 @@ jobs:
 
   build_and_test_tvos:
     needs: cancel_previous
-    runs-on: macos-14.1
+    runs-on: macos-14
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -75,7 +75,7 @@ jobs:
 
   build_and_test_watchos:
     needs: cancel_previous
-    runs-on: macos-14.1
+    runs-on: macos-14
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
@@ -88,7 +88,7 @@ jobs:
     
   build_and_test_examples:
     needs: cancel_previous
-    runs-on: macos-14.1
+    runs-on: macos-14
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
