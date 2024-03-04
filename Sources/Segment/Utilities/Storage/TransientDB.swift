@@ -11,8 +11,6 @@ internal class TransientDB {
     internal let store: any DataStore
     // keeps items added in the order given.
     internal let syncQueue = DispatchQueue(label: "transientDB.sync")
-    // makes accessing count safe and mostly accurate.
-    internal let countLock = NSLock()
     
     public var hasData: Bool {
         var result: Bool = false
@@ -43,16 +41,13 @@ internal class TransientDB {
     public func append(data: Codable) {
         syncQueue.async { [weak self] in
             guard let self else { return }
-            countLock.lock()
             store.append(data: data)
-            countLock.unlock()
         }
     }
     
     public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
         var result: DataResult? = nil
-        syncQueue.sync { [weak self] in
-            guard let self else { return }
+        syncQueue.sync {
             result = store.fetch(count: count, maxBytes: maxBytes)
         }
         return result
