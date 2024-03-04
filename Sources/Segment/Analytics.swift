@@ -66,7 +66,7 @@ public class Analytics {
         }
         
         store = Store()
-        storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
+        storage = Storage(store: self.store, writeKey: configuration.values.writeKey, storageMode: configuration.values.storageMode)
         timeline = Timeline()
         
         // provide our default state
@@ -325,13 +325,7 @@ extension Analytics {
             }
         }
 
-        if let files = storage.read(Storage.Constants.events) {
-            if files.count > 0 {
-                return true
-            }
-        }
-            
-        return false
+        return storage.dataStore.hasData
     }
     
     /// Provides a list of finished, but unsent events.

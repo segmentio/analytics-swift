@@ -80,7 +80,7 @@ class StorageTests: XCTestCase {
         // This is a hack that needs to be dealt with
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
         
-        if let userId = analytics.storage.userDefaults?.string(forKey: Storage.Constants.userId.rawValue) {
+        if let userId = analytics.storage.userDefaults.string(forKey: Storage.Constants.userId.rawValue) {
             XCTAssertTrue(userId == "brandon")
         } else {
             XCTFail("Could not read from storage the userId")
@@ -92,6 +92,9 @@ class StorageTests: XCTestCase {
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.waitUntilStarted()
+        
+        let existing = analytics.storage.read(.events)?.dataFiles
+        XCTAssertNil(existing)
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
@@ -158,7 +161,7 @@ class StorageTests: XCTestCase {
         
         XCTAssertNotNil(results)
         
-        fileURL = results![0]
+        fileURL = results![1]
         
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "1-segment-events.temp")

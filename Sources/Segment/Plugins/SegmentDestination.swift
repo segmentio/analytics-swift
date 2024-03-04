@@ -128,7 +128,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         group.enter()
         
         // Read events from file system
-        guard let data = storage.read(Storage.Constants.events) else { group.leave(); return }
+        guard let data: [URL] = storage.read(Storage.Constants.events) else { group.leave(); return }
         
         eventCount = 0
         cleanupUploads()
