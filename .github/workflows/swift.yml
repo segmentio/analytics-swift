@@ -36,7 +36,7 @@ jobs:
     steps:
     - uses: fwal/setup-swift@v1.21.0
       with:
-        swift-version: "5.9"
+        swift-version: "5.8.1"
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.5.3
       with:
