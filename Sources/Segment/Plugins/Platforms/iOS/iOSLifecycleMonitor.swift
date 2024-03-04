@@ -186,8 +186,9 @@ extension SegmentDestination: iOSLifecycle {
 }
 
 extension SegmentDestination.UploadTaskInfo {
-    init(url: URL, task: URLSessionDataTask) {
+    init(url: URL?, data: Data?, task: URLSessionDataTask) {
         self.url = url
+        self.data = data
         self.task = task
         
         if let application = UIApplication.safeShared {
