@@ -141,6 +141,11 @@ extension Analytics {
         }
     }
     
+    /// Returns the writekey in use for this instance.
+    public var writeKey: String {
+        return configuration.values.writeKey
+    }
+    
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
