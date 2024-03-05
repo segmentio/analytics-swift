@@ -34,9 +34,10 @@ jobs:
     needs: cancel_previous
     runs-on: ubuntu-latest
     steps:
-    - uses: fwal/setup-swift@v1.21.0
+    - uses: sersoft-gmbh/swifty-linux-action@v3
       with:
-        swift-version: "5.8"
+        release-version: '5.9.2'
+        github-token: ${{secrets.GITHUB_TOKEN}}
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.5.3
       with:
