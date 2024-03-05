@@ -36,7 +36,7 @@ jobs:
     steps:
     - uses: sersoft-gmbh/swifty-linux-action@v3
       with:
-        release-version: '5.9.2'
+        release-version: '5.9.1'
         github-token: ${{secrets.GITHUB_TOKEN}}
     - uses: actions/checkout@v2
     - uses: webfactory/ssh-agent@v0.5.3
