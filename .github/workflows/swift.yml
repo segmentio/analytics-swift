@@ -22,7 +22,7 @@ jobs:
       with:
         xcode-version: '15.2'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: Build
@@ -39,7 +39,7 @@ jobs:
         release-version: '5.9.2'
         github-token: ${{secrets.GITHUB_TOKEN}}
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: Build
@@ -55,7 +55,7 @@ jobs:
       with:
         xcode-version: '15.2'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
@@ -69,7 +69,7 @@ jobs:
       with:
         xcode-version: '15.2'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
@@ -82,7 +82,7 @@ jobs:
       with:
         xcode-version: '15.2'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 9 (45mm)'
@@ -95,7 +95,7 @@ jobs:
       with:
         xcode-version: '15.2'
     - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@0.9.0
+    - uses: webfactory/ssh-agent@0.8.0
       with:
         ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
     - name: build for ios simulator
