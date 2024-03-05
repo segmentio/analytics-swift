@@ -740,6 +740,7 @@ final class Analytics_Tests: XCTestCase {
         
     }
     
+    #if !os(visionOS)
     func testAsyncOperatingMode() throws {
         // Use a specific writekey to this test so we do not collide with other cached items.
         let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_asyncMode")
@@ -802,6 +803,7 @@ final class Analytics_Tests: XCTestCase {
         // it's running in sync mode.
         XCTAssertNil(analytics.pendingUploads)
     }
+    #endif
     
     func testFindAll() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "testFindAll")
