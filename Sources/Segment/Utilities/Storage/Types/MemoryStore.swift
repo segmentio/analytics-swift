@@ -26,6 +26,10 @@ public class MemoryStore: DataStore {
         return items.count
     }
     
+    public var transactionType: DataTransactionType {
+        return .data
+    }
+    
     internal let config: Configuration
     
     public required init(configuration: Configuration) {

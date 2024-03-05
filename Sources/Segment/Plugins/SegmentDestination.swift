@@ -127,19 +127,20 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // enter for the high level flush, allow us time to run through any existing files..
         group.enter()
         
-        // get our batch(es) ...
-        guard let eventData = storage.read(.events) else { group.leave(); return }
-        
         eventCount = 0
         cleanupUploads()
+        
+        let type = storage.dataStore.transactionType
+        let hasData = storage.dataStore.hasData
         
         analytics.log(message: "Uploads in-progress: \(pendingUploads)")
         
         if pendingUploads == 0 {
-            if let data = eventData.dataFiles {
-                flushFiles(group: group, files: data, completion: completion)
-            } else if let data = eventData.data {
-                flushData(group: group, data: data, remove: eventData.removable, completion: completion)
+            if type == .file, hasData {
+                flushFiles(group: group, completion: completion)
+            } else if type == .data, hasData {
+                // we know it's a data-based transaction as opposed to file I/O
+                flushData(group: group, completion: completion)
             } else {
                 // there was nothing to do ...
                 completion(self)
@@ -154,11 +155,13 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
 }
 
 extension SegmentDestination {
-    private func flushFiles(group: DispatchGroup, files: [URL], completion: @escaping (DestinationPlugin) -> Void) {
+    private func flushFiles(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
 
+        guard let files = storage.dataStore.fetch()?.dataFiles else { return }
+                
         for url in files {
             // enter for this url we're going to kick off
             group.enter()
@@ -198,45 +201,60 @@ extension SegmentDestination {
         }
     }
     
-    private func flushData(group: DispatchGroup, data: Data, remove: [DataStore.HashValue]?, completion: @escaping (DestinationPlugin) -> Void) {
+    private func flushData(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
         
-        // enter for this url we're going to kick off
-        group.enter()
-        analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
+        let totalCount = storage.dataStore.count
+        var currentCount = 0
         
-        // set up the task
-        let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { result in
-            switch result {
-            case .success(_):
-                storage.remove(data: remove)
-                self.cleanupUploads()
+        guard totalCount > 0 else { return }
+        
+        while currentCount < totalCount {
+            // can't imagine why we wouldn't get data at this point, but if we don't, then split.
+            guard let eventData = storage.dataStore.fetch() else { return }
+            guard let data = eventData.data else { return }
+            guard let removable = eventData.removable else { return }
+            guard let dataCount = eventData.removable?.count else { return }
+            
+            currentCount += dataCount
+            
+            // enter for this data we're going to kick off
+            group.enter()
+            analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
+            
+            // set up the task
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { result in
+                switch result {
+                case .success(_):
+                    storage.remove(data: removable)
+                    self.cleanupUploads()
+                    
+                    // we don't want to retry events in a given batch when a 400
+                    // response for malformed JSON is returned
+                case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+                    storage.remove(data: removable)
+                    self.cleanupUploads()
+                default:
+                    break
+                }
                 
-                // we don't want to retry events in a given batch when a 400
-                // response for malformed JSON is returned
-            case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
-                storage.remove(data: remove)
+                analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
+                // the upload we have here has just finished.
+                // make sure it gets removed and it's cleanup() called rather
+                // than waiting on the next flush to come around.
                 self.cleanupUploads()
-            default:
-                break
+                // call the completion
+                completion(self)
+                // leave for the url we kicked off.
+                group.leave()
             }
             
-            analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
-            // the upload we have here has just finished.
-            // make sure it gets removed and it's cleanup() called rather
-            // than waiting on the next flush to come around.
-            self.cleanupUploads()
-            // call the completion
-            completion(self)
-            // leave for the url we kicked off.
-            group.leave()
-        }
-        
-        // we have a legit upload in progress now, so add it to our list.
-        if let upload = uploadTask {
-            add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
+            // we have a legit upload in progress now, so add it to our list.
+            if let upload = uploadTask {
+                add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
+            }
         }
     }
 }

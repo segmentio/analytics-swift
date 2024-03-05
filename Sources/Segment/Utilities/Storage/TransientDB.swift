@@ -11,6 +11,7 @@ internal class TransientDB {
     internal let store: any DataStore
     // keeps items added in the order given.
     internal let syncQueue = DispatchQueue(label: "transientDB.sync")
+    private let asyncAppend: Bool
     
     public var hasData: Bool {
         var result: Bool = false
@@ -28,8 +29,13 @@ internal class TransientDB {
         return result
     }
     
-    public init(store: any DataStore) {
+    public var transactionType: DataTransactionType {
+        return store.transactionType
+    }
+    
+    public init(store: any DataStore, asyncAppend: Bool = true) {
         self.store = store
+        self.asyncAppend = asyncAppend
     }
     
     public func reset() {
@@ -39,9 +45,16 @@ internal class TransientDB {
     }
     
     public func append(data: Codable) {
-        syncQueue.async { [weak self] in
-            guard let self else { return }
-            store.append(data: data)
+        if asyncAppend {
+            syncQueue.async { [weak self] in
+                guard let self else { return }
+                store.append(data: data)
+            }
+        } else {
+            syncQueue.sync { [weak self] in
+                guard let self else { return }
+                store.append(data: data)
+            }
         }
     }
     

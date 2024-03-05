@@ -30,6 +30,10 @@ internal class DirectoryStore: DataStore {
         return 0
     }
     
+    public var transactionType: DataTransactionType {
+        return .file
+    }
+    
     static let tempExtension = "temp"
     internal let config: Configuration
     internal var writer: LineStreamWriter? = nil

@@ -13,7 +13,7 @@ public struct DataResult {
     public let dataFiles: [URL]?
     public let removable: [DataStore.HashValue]?
     
-    public init(data: Data?, dataFiles: [URL]?, removable: [DataStore.HashValue]?) {
+    internal init(data: Data?, dataFiles: [URL]?, removable: [DataStore.HashValue]?) {
         self.data = data
         self.dataFiles = dataFiles
         self.removable = removable
@@ -28,11 +28,17 @@ public struct DataResult {
     }
 }
 
+public enum DataTransactionType {
+    case data
+    case file
+}
+
 public protocol DataStore {
     typealias HashValue = Int
     associatedtype StoreConfiguration
     var hasData: Bool { get }
     var count: Int { get }
+    var transactionType: DataTransactionType { get }
     init(configuration: StoreConfiguration)
     func reset()
     func append<T: Codable>(data: T)

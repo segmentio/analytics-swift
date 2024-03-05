@@ -19,12 +19,13 @@ internal class Storage: Subscriber {
     internal let dataStore: TransientDB
     internal let storageMode: StorageMode
     
-    init(store: Store, writeKey: String, storageMode: StorageMode) {
+    init(store: Store, writeKey: String, storageMode: StorageMode, operatingMode: OperatingMode) {
         self.writeKey = writeKey
         self.storageMode = storageMode
         self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(writeKey)")!
         
         var storageURL = Segment.eventStorageDirectory(writeKey: writeKey)
+        let asyncAppend = (operatingMode == .asynchronous)
         switch storageMode {
         case .diskAtURL(let url):
             storageURL = url
@@ -38,16 +39,16 @@ internal class Storage: Subscriber {
                     maxFileSize: Self.MAXFILESIZE,
                     userDefaults: self.userDefaults,
                     indexKey: Storage.Constants.events.rawValue))
-            self.dataStore = TransientDB(store: store)
+            self.dataStore = TransientDB(store: store, asyncAppend: asyncAppend)
         case .memory(let max):
             let store = MemoryStore(
                 configuration: MemoryStore.Configuration(
                     writeKey: writeKey,
                     maxItems: max,
                     maxFetchSize: Self.MAXFILESIZE))
-            self.dataStore = TransientDB(store: store)
+            self.dataStore = TransientDB(store: store, asyncAppend: asyncAppend)
         case .custom(let store):
-            self.dataStore = TransientDB(store: store)
+            self.dataStore = TransientDB(store: store, asyncAppend: asyncAppend)
         }
         
         store.subscribe(self) { [weak self] (state: UserInfo) in
