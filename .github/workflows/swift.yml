@@ -100,7 +100,7 @@ jobs:
       - run: defaults write com.apple.dt.Xcode AllowUnsupportedVisionOSHost -bool YES
       - run: defaults write com.apple.CoreSimulator AllowUnsupportedVisionOSHost -bool YES
       - run: xcodebuild -downloadPlatform visionOS
-      - run: xcodebuild -scheme Segment test -sdk applevisionsimulator -destination 'generic/platform=visionOS'
+      - run: xcodebuild -scheme Segment test -sdk applevisionsimulator -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
 
   build_and_test_examples:
     needs: cancel_previous
