@@ -218,7 +218,7 @@ class StorageTests: XCTestCase {
         analytics.track(name: "First Event")
         
         // write 475000 bytes worth of events (approx 602) + some extra
-        for i in 0..<700 {
+        for i in 0..<900 {
             analytics.track(name: "Event \(i)")
         }
         
@@ -238,7 +238,7 @@ class StorageTests: XCTestCase {
         // batch counts won't be equal every test.  fields within each event
         // changes like timestamp, os version, userAgent, etc etc.  so this
         // is the best we can really do.  Be sure it's not ALL of them.
-        XCTAssertTrue(batch.count < 700)
+        XCTAssertTrue(batch.count < 900)
         
         // should be sync cuz that's our operating mode
         analytics.flush {
@@ -266,7 +266,7 @@ class StorageTests: XCTestCase {
         analytics.track(name: "First Event")
         
         // write 475000 bytes worth of events (approx 602) + some extra
-        for i in 0..<700 {
+        for i in 0..<900 {
             analytics.track(name: "Event \(i)")
         }
         
@@ -284,7 +284,7 @@ class StorageTests: XCTestCase {
         // batch counts won't be equal every test.  fields within each event
         // changes like timestamp, os version, userAgent, etc etc.  so this
         // is the best we can really do.  Be sure it's not ALL of them.
-        XCTAssertTrue(batch.count < 700)
+        XCTAssertTrue(batch.count < 900)
         
         // should be sync cuz that's our operating mode
         @Atomic var done = false
