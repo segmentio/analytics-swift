@@ -37,7 +37,6 @@ internal class Storage: Subscriber {
                     storageLocation: storageURL,
                     baseFilename: "segment-events",
                     maxFileSize: Self.MAXFILESIZE,
-                    userDefaults: self.userDefaults,
                     indexKey: Storage.Constants.events.rawValue))
             self.dataStore = TransientDB(store: store, asyncAppend: asyncAppend)
         case .memory(let max):
@@ -160,7 +159,7 @@ internal class Storage: Subscriber {
         return result
     }
     
-    func remove(data: [DataStore.HashValue]?) {
+    func remove(data: [DataStore.ItemID]?) {
         guard let data else { return }
         dataStore.remove(data: data)
     }

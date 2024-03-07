@@ -168,4 +168,136 @@ class StorageTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
     }
     
+    func testMemoryStorageRolloff() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .storageMode(.memory(10))
+            .trackApplicationLifecycleEvents(false)
+        )
+        
+        analytics.waitUntilStarted()
+        
+        XCTAssertEqual(analytics.storage.dataStore.count, 0)
+        
+        for i in 0..<9 {
+            analytics.track(name: "Event \(i)")
+        }
+        
+        let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
+        
+        XCTAssertEqual(analytics.storage.dataStore.count, 9)
+        analytics.track(name: "Event 10")
+        XCTAssertEqual(analytics.storage.dataStore.count, 10)
+        analytics.track(name: "Event 11")
+        XCTAssertEqual(analytics.storage.dataStore.count, 10)
+        
+        let events = analytics.storage.read(.events)!
+        // see that the first one "Event 0" went away
+        XCTAssertEqual(events.removable![0] as! UUID, second)
+        
+        let json = try! JSONSerialization.jsonObject(with: events.data!) as! [String: Any]
+        let batch = json["batch"] as! [Any]
+        XCTAssertEqual(batch.count, 10)
+        
+        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 3))
+        waitUntilFinished(analytics: analytics)
+    }
+    
+    func testMemoryStorageSizeLimitsSync() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "testMemorySync")
+            .storageMode(.memory(10000000000))
+            .operatingMode(.synchronous)
+            .trackApplicationLifecycleEvents(false)
+            .flushAt(9999999999)
+            .flushInterval(9999999999)
+        )
+        
+        analytics.waitUntilStarted()
+        
+        XCTAssertEqual(analytics.storage.dataStore.count, 0)
+        
+        analytics.track(name: "First Event")
+        
+        // write 475000 bytes worth of events (approx 602) + some extra
+        for i in 0..<620 {
+            analytics.track(name: "Event \(i)")
+        }
+        
+        let dataCount = analytics.storage.read(.events)!.removable!.count
+        let totalCount = analytics.storage.dataStore.count
+        
+        print(dataCount)
+        print(totalCount)
+        
+        let events = analytics.storage.read(.events)!
+        XCTAssertTrue(events.data!.count < 476000)
+        
+        let json = try! JSONSerialization.jsonObject(with: events.data!) as! [String: Any]
+        let batch = json["batch"] as! [Any]
+        
+        // batch counts won't be equal every test.  fields within each event
+        // changes like timestamp, os version, userAgent, etc etc.  so this
+        // is the best we can really do.  Be sure it's not ALL of them.
+        XCTAssertTrue(batch.count < 605)
+        
+        // should be sync cuz that's our operating mode
+        analytics.flush {
+            print("flush completed")
+        }
+        
+        // we flushed them all
+        let remaining = analytics.storage.read(.events)
+        XCTAssertNil(remaining)
+    }
+    
+    func testMemoryStorageSizeLimitsAsync() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "testMemoryAsync")
+            .storageMode(.memory(10000000000))
+            .operatingMode(.asynchronous)
+            .trackApplicationLifecycleEvents(false)
+            .flushAt(9999999999)
+            .flushInterval(9999999999)
+        )
+        
+        analytics.waitUntilStarted()
+        
+        XCTAssertEqual(analytics.storage.dataStore.count, 0)
+        
+        analytics.track(name: "First Event")
+        
+        // write 475000 bytes worth of events (approx 602) + some extra
+        for i in 0..<620 {
+            analytics.track(name: "Event \(i)")
+        }
+        
+        let dataCount = analytics.storage.read(.events)!.removable!.count
+        let totalCount = analytics.storage.dataStore.count
+        
+        print(dataCount)
+        print(totalCount)
+        
+        let events = analytics.storage.read(.events)!
+        XCTAssertTrue(events.data!.count < 476000)
+        
+        let json = try! JSONSerialization.jsonObject(with: events.data!) as! [String: Any]
+        let batch = json["batch"] as! [Any]
+        // batch counts won't be equal every test.  fields within each event
+        // changes like timestamp, os version, userAgent, etc etc.  so this
+        // is the best we can really do.  Be sure it's not ALL of them.
+        XCTAssertTrue(batch.count < 605)
+        
+        // should be sync cuz that's our operating mode
+        @Atomic var done = false
+        analytics.flush {
+            print("flush completed")
+            done = true
+        }
+        
+        while !done {
+            RunLoop.main.run(until: .distantPast)
+        }
+        
+        // we flushed them all
+        let remaining = analytics.storage.read(.events)
+        XCTAssertNil(remaining)
+    }
 }

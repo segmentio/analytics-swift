@@ -168,17 +168,18 @@ extension SegmentDestination {
             analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
             
             // set up the task
-            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { result in
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success(_):
-                    storage.remove(data: [url.hashValue])
-                    self.cleanupUploads()
+                    storage.remove(data: [url])
+                    cleanupUploads()
                     
                     // we don't want to retry events in a given batch when a 400
                     // response for malformed JSON is returned
                 case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
-                    storage.remove(data: [url.hashValue])
-                    self.cleanupUploads()
+                    storage.remove(data: [url])
+                    cleanupUploads()
                 default:
                     break
                 }
@@ -187,7 +188,7 @@ extension SegmentDestination {
                 // the upload we have here has just finished.
                 // make sure it gets removed and it's cleanup() called rather
                 // than waiting on the next flush to come around.
-                self.cleanupUploads()
+                cleanupUploads()
                 // call the completion
                 completion(self)
                 // leave for the url we kicked off.
@@ -202,6 +203,8 @@ extension SegmentDestination {
     }
     
     private func flushData(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
+        // DO NOT CALL THIS FROM THE MAIN THREAD, IT BLOCKS!
+        // Don't make me add a check here; i'll be sad you didn't follow directions.
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
@@ -224,18 +227,23 @@ extension SegmentDestination {
             group.enter()
             analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
             
+            // we're already on a separate thread.
+            // lets let this task complete so we can get all the values out.
+            let semaphore = DispatchSemaphore(value: 0)
+            
             // set up the task
-            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { result in
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success(_):
                     storage.remove(data: removable)
-                    self.cleanupUploads()
+                    cleanupUploads()
                     
                     // we don't want to retry events in a given batch when a 400
                     // response for malformed JSON is returned
                 case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
                     storage.remove(data: removable)
-                    self.cleanupUploads()
+                    cleanupUploads()
                 default:
                     break
                 }
@@ -244,17 +252,20 @@ extension SegmentDestination {
                 // the upload we have here has just finished.
                 // make sure it gets removed and it's cleanup() called rather
                 // than waiting on the next flush to come around.
-                self.cleanupUploads()
+                cleanupUploads()
                 // call the completion
                 completion(self)
                 // leave for the url we kicked off.
                 group.leave()
+                semaphore.signal()
             }
             
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
             }
+            
+            _ = semaphore.wait(timeout: .distantFuture)
         }
     }
 }

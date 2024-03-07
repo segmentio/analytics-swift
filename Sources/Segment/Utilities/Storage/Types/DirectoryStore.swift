@@ -15,7 +15,6 @@ internal class DirectoryStore: DataStore {
         let storageLocation: URL
         let baseFilename: String
         let maxFileSize: Int
-        let userDefaults: UserDefaults
         let indexKey: String
     }
     
@@ -37,23 +36,24 @@ internal class DirectoryStore: DataStore {
     static let tempExtension = "temp"
     internal let config: Configuration
     internal var writer: LineStreamWriter? = nil
+    internal let userDefaults: UserDefaults
     
     public required init(configuration: Configuration) {
         try? FileManager.default.createDirectory(at: configuration.storageLocation, withIntermediateDirectories: true)
         self.config = configuration
+        self.userDefaults = UserDefaults(suiteName: "com.segment.storage.\(config.writeKey)")!
     }
     
     public func reset() {
-        let files = sortedFiles(includeUnfinished: true).hashValues
+        let files = sortedFiles(includeUnfinished: true)
         remove(data: files)
     }
     
-    public func append<T>(data: T) where T : Decodable, T : Encodable {
+    public func append(data: RawEvent) {
         let started = startFileIfNeeded()
         guard let writer else { return }
         
-        let encoder = JSONEncoder()
-        guard let d = try? encoder.encode(data) else { return }
+        let line = data.toString()
         
         // check if we're good on size ...
         if writer.bytesWritten >= config.maxFileSize {
@@ -64,7 +64,6 @@ internal class DirectoryStore: DataStore {
             return
         }
         
-        guard let line = String(data: d, encoding: .utf8) else { return }
         do {
             if started {
                 try writer.writeLine(line)
@@ -92,17 +91,15 @@ internal class DirectoryStore: DataStore {
         }
         
         if data.count > 0 {
-            return DataResult(dataFiles: data, removable: data.hashValues)
+            return DataResult(dataFiles: data, removable: data)
         }
         return nil
     }
     
-    public func remove(data: [DataStore.HashValue]) {
-        let urls = sortedFiles(includeUnfinished: true)
+    public func remove(data: [DataStore.ItemID]) {
+        guard let urls = data as? [URL] else { return }
         for file in urls {
-            if data.contains(file.hashValue) {
-                try? FileManager.default.removeItem(at: file)
-            }
+            try? FileManager.default.removeItem(at: file)
         }
     }
 }
@@ -178,12 +175,13 @@ extension DirectoryStore {
 
 extension DirectoryStore {
     func getIndex() -> Int {
-        let index: Int = config.userDefaults.integer(forKey: config.indexKey)
+        let index: Int = userDefaults.integer(forKey: config.indexKey)
         return index
     }
     
     func incrementIndex() {
-        let index: Int = config.userDefaults.integer(forKey: config.indexKey) + 1
-        config.userDefaults.set(index, forKey: config.indexKey)
+        let index: Int = userDefaults.integer(forKey: config.indexKey) + 1
+        userDefaults.set(index, forKey: config.indexKey)
+        userDefaults.synchronize()
     }
 }

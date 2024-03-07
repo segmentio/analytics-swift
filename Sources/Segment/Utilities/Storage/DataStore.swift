@@ -11,19 +11,19 @@ import Foundation
 public struct DataResult {
     public let data: Data?
     public let dataFiles: [URL]?
-    public let removable: [DataStore.HashValue]?
+    public let removable: [DataStore.ItemID]?
     
-    internal init(data: Data?, dataFiles: [URL]?, removable: [DataStore.HashValue]?) {
+    internal init(data: Data?, dataFiles: [URL]?, removable: [DataStore.ItemID]?) {
         self.data = data
         self.dataFiles = dataFiles
         self.removable = removable
     }
     
-    public init(data: Data?, removable: [DataStore.HashValue]?) {
+    public init(data: Data?, removable: [DataStore.ItemID]?) {
         self.init(data: data, dataFiles: nil, removable: removable)
     }
     
-    public init(dataFiles: [URL]?, removable: [DataStore.HashValue]?) {
+    public init(dataFiles: [URL]?, removable: [DataStore.ItemID]?) {
         self.init(data: nil, dataFiles: dataFiles, removable: removable)
     }
 }
@@ -34,24 +34,14 @@ public enum DataTransactionType {
 }
 
 public protocol DataStore {
-    typealias HashValue = Int
+    typealias ItemID = any Equatable
     associatedtype StoreConfiguration
     var hasData: Bool { get }
     var count: Int { get }
     var transactionType: DataTransactionType { get }
     init(configuration: StoreConfiguration)
     func reset()
-    func append<T: Codable>(data: T)
+    func append(data: RawEvent)
     func fetch(count: Int?, maxBytes: Int?) -> DataResult?
-    func remove(data: [HashValue])
-}
-
-extension Array where Element: Hashable {
-    var hashValues: [DataStore.HashValue] {
-        var result = [DataStore.HashValue]()
-        for item in self {
-            result.append(item.hashValue)
-        }
-        return result
-    }
+    func remove(data: [ItemID])
 }

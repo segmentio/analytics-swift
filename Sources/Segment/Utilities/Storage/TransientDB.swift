@@ -44,7 +44,7 @@ internal class TransientDB {
         }
     }
     
-    public func append(data: Codable) {
+    public func append(data: RawEvent) {
         if asyncAppend {
             syncQueue.async { [weak self] in
                 guard let self else { return }
@@ -66,7 +66,7 @@ internal class TransientDB {
         return result
     }
     
-    public func remove(data: [DataStore.HashValue]) {
+    public func remove(data: [DataStore.ItemID]) {
         syncQueue.sync {
             store.remove(data: data)
         }

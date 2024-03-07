@@ -189,7 +189,6 @@ class StressTests: XCTestCase {
             queue2Done = true
         }
         
-        let semaphore = DispatchSemaphore(value: 0)
         flushQueue.async {
             while (ready == false) { usleep(1) }
             var counter = 0
@@ -203,12 +202,14 @@ class StressTests: XCTestCase {
                 counter += 1
             }
             print("flushed \(counter) times.")
-            semaphore.signal()
+            ready = false
         }
         
         ready = true
         
-        _ = semaphore.wait(timeout: .distantFuture)
+        while (ready) {
+            RunLoop.main.run(until: Date.distantPast)
+        }
     }
     #endif
 }
