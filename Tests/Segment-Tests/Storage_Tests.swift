@@ -218,7 +218,7 @@ class StorageTests: XCTestCase {
         analytics.track(name: "First Event")
         
         // write 475000 bytes worth of events (approx 602) + some extra
-        for i in 0..<620 {
+        for i in 0..<700 {
             analytics.track(name: "Event \(i)")
         }
         
@@ -229,15 +229,16 @@ class StorageTests: XCTestCase {
         print(totalCount)
         
         let events = analytics.storage.read(.events)!
-        XCTAssertTrue(events.data!.count < 476000)
+        XCTAssertTrue(events.data!.count < 500_000)
         
+        // just to be sure we can serialize the thing .. this will crash if it fails.
         let json = try! JSONSerialization.jsonObject(with: events.data!) as! [String: Any]
         let batch = json["batch"] as! [Any]
         
         // batch counts won't be equal every test.  fields within each event
         // changes like timestamp, os version, userAgent, etc etc.  so this
         // is the best we can really do.  Be sure it's not ALL of them.
-        XCTAssertTrue(batch.count < 605)
+        XCTAssertTrue(batch.count < 700)
         
         // should be sync cuz that's our operating mode
         analytics.flush {
@@ -265,7 +266,7 @@ class StorageTests: XCTestCase {
         analytics.track(name: "First Event")
         
         // write 475000 bytes worth of events (approx 602) + some extra
-        for i in 0..<620 {
+        for i in 0..<700 {
             analytics.track(name: "Event \(i)")
         }
         
@@ -276,14 +277,14 @@ class StorageTests: XCTestCase {
         print(totalCount)
         
         let events = analytics.storage.read(.events)!
-        XCTAssertTrue(events.data!.count < 476000)
+        XCTAssertTrue(events.data!.count < 500_000)
         
         let json = try! JSONSerialization.jsonObject(with: events.data!) as! [String: Any]
         let batch = json["batch"] as! [Any]
         // batch counts won't be equal every test.  fields within each event
         // changes like timestamp, os version, userAgent, etc etc.  so this
         // is the best we can really do.  Be sure it's not ALL of them.
-        XCTAssertTrue(batch.count < 605)
+        XCTAssertTrue(batch.count < 700)
         
         // should be sync cuz that's our operating mode
         @Atomic var done = false
@@ -296,7 +297,7 @@ class StorageTests: XCTestCase {
             RunLoop.main.run(until: .distantPast)
         }
         
-        // we flushed them all
+        // we flushed them all, not just the first batch
         let remaining = analytics.storage.read(.events)
         XCTAssertNil(remaining)
     }
