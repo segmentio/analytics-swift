@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = "AnalyticsSwiftCIO"
-    s.version = "1.0.1"
+    s.version = "1.5.5"
     s.license = { :type => 'MIT', :file => './LICENSE' }
     s.summary = "Customer.io Data Pipelines analytics client for Swift app (iOS/tvOS/watchOS/macOS/Linux)."
     s.homepage = "https://github.com/customerio/cdp-analytics-swift"
@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
 
     s.source_files = "Sources/**/*.swift"
 
-    s.dependency 'Sovran', '~> 1.0.2'
+    s.dependency 'Sovran', '~> 1.1.1'
 end
