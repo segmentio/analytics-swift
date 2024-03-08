@@ -17,4 +17,5 @@ Pod::Spec.new do |s|
     s.source_files = "Sources/**/*.swift"
 
     s.dependency 'Sovran', '~> 1.1.1'
+    s.dependency 'JSONSafeEncoder', '~> 1.0.0'
 end
