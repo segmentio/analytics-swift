@@ -8,6 +8,7 @@
 #if !os(Linux)
 
 import Foundation
+import JSONSafeEncoder
 
 @objc(SEGConfiguration)
 public class ObjCConfiguration: NSObject {
@@ -75,7 +76,7 @@ public class ObjCConfiguration: NSObject {
         get {
             var result = [String: Any]()
             do {
-                let encoder = JSONEncoder.default
+                let encoder = JSONSafeEncoder.default
                 let json = try encoder.encode(configuration.values.defaultSettings)
                 if let r = try JSONSerialization.jsonObject(with: json) as? [String: Any] {
                     result = r

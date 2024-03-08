@@ -26,7 +26,7 @@ struct MyTraits: Codable {
 
 class GooberPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     init() {
         self.type = .enrichment
@@ -41,7 +41,7 @@ class GooberPlugin: EventPlugin {
 
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     var receivedInitialUpdate: Int = 0
     
     var completion: (() -> Void)?
@@ -79,7 +79,7 @@ class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType
     let key: String
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
     
     let disabled: Bool
@@ -114,7 +114,7 @@ class MyDestination: DestinationPlugin {
 
 class OutputReaderPlugin: Plugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
@@ -171,6 +171,29 @@ class BlockNetworkCalls: URLProtocol {
     
     override func startLoading() {
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 200, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    override func stopLoading() {
+        
+    }
+}
+
+class FailedNetworkCalls: URLProtocol {
+    var initialURL: URL? = nil
+    override class func canInit(with request: URLRequest) -> Bool {
+        
+        return true
+    }
+    
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    
+    override var cachedResponse: CachedURLResponse? { return nil }
+    
+    override func startLoading() {
+        client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 400, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
     

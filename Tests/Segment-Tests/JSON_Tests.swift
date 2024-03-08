@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import JSONSafeEncoder
 @testable import Segment
 
 struct Personal: Codable {
@@ -39,7 +40,7 @@ class JSONTests: XCTestCase {
         let traits = try? JSON(["email": "blah@blah.com"])
         let userInfo = UserInfo(anonymousId: "1234", userId: "brandon", traits: traits, referrer: nil)
         
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -55,28 +56,42 @@ class JSONTests: XCTestCase {
         struct TestStruct: Codable {
             let myDate: Date
         }
-        
-        let now = Date(timeIntervalSinceNow: 0)
-        
-        let test = TestStruct(myDate: now)
+
+        let expectedDateString = "2023-12-14T16:03:14.300Z"
+        let expectedDate = try XCTUnwrap(expectedDateString.iso8601())
+
+        let test = TestStruct(myDate: expectedDate)
         let object = try JSON(with: test)
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
-        
+
         do {
             let json = try encoder.encode(object)
             XCTAssertNotNil(json)
             let newTest = try! JSONDecoder.default.decode(TestStruct.self, from: json)
-            XCTAssertEqual(newTest.myDate.toString(), now.toString())
+            XCTAssertEqual(newTest.myDate.toString(), "\"\(expectedDateString)\"")
         } catch {
             print(error)
             XCTFail()
         }
-        
-        let dummyProps = ["myDate": now] // <- conforms to Codable
+
+        let dummyProps = ["myDate": expectedDate] // <- conforms to Codable
         let j = try! JSON(dummyProps)
         let anotherTest: TestStruct! = j.codableValue()
-        XCTAssertEqual(anotherTest.myDate.toString(), now.toString())
+        XCTAssertEqual(anotherTest.myDate.toString(), "\"\(expectedDateString)\"")
+
+        // Non-Codable (e.g., Objective-C) interface
+
+        let dictWithDate = ["myDate": expectedDate]
+        let json = try JSON(dictWithDate)
+        let value = json["myDate"]
+
+        guard case .string(let actualDateString) = value else {
+            XCTFail()
+            return
+        }
+
+        XCTAssertEqual(expectedDateString, actualDateString)
     }
     
     func testJSONCollectionTypes() throws {
@@ -91,7 +106,7 @@ class JSONTests: XCTestCase {
     
     func testJSONNil() throws {
         let traits = try JSON(["type": NSNull(), "preferences": ["bwack"], "key": nil] as [String : Any?])
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -109,7 +124,7 @@ class JSONTests: XCTestCase {
         
         let test = TestStruct(blah: "hello")
         let object = try JSON(with: test)
-        let encoder = JSONEncoder.default
+        let encoder = JSONSafeEncoder.default
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -323,4 +338,132 @@ class JSONTests: XCTestCase {
         XCTAssertThrowsError(try json?.remove(key: "merchant"))
     }
     
+    func testJSONNaNZero() throws {
+        struct TestStruct: Codable {
+            let str: String
+            let decimal: Double
+            let nando: Double
+        }
+        let nan = NSNumber.FloatLiteralType(nan: 1, signaling: true)
+        
+        JSON.jsonNonConformingNumberStrategy = .zero
+        
+        do {
+            let o = try JSON(nan)
+            XCTAssertNotNil(o)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+        let test = TestStruct(
+            str: "hello",
+            decimal: 333.9999,
+            nando: nan
+        )
+        
+        do {
+            let o = try JSON(with: test)
+            XCTAssertNotNil(o)
+            
+            let t: TestStruct? = o.codableValue()
+            XCTAssertNotNil(t)
+            XCTAssertTrue(t!.nando == 0)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+    }
+    
+    func testJSONNaNNull() throws {
+        struct TestStruct: Codable {
+            let str: String
+            let decimal: Double
+            let nando: Double?
+        }
+        let nan = NSNumber.FloatLiteralType(nan: 1, signaling: true)
+        
+        JSON.jsonNonConformingNumberStrategy = .null
+        
+        do {
+            let o = try JSON(nan)
+            XCTAssertNotNil(o)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+        
+        let test = TestStruct(
+            str: "hello",
+            decimal: 333.9999,
+            nando: nan
+        )
+        
+        do {
+            let o = try JSON(with: test)
+            XCTAssertNotNil(o)
+            
+            let t: TestStruct? = o.codableValue()
+            XCTAssertNotNil(t)
+            XCTAssertNil(t!.nando)
+        } catch {
+            print(error)
+            XCTFail()
+        }
+    }
+    
+    func testJSONCodableDict() throws {
+        enum StringEnum: String, Codable {
+            case test1
+            case test2
+            case test3
+        }
+        
+        enum IntEnum: Int, Codable {
+            case test1
+            case test2
+            case test3
+        }
+        
+        struct SubStruct: Codable {
+            var x: Int = 23
+        }
+        
+        struct CodableStruct: Codable {
+            var a: Int = 47
+            var b: String = "hello"
+            var c: SubStruct = SubStruct()
+        }
+        
+        let dict: [String: Any] = [
+            "uuid": UUID(),
+            "strEnum": StringEnum.test2,
+            "intEnum": IntEnum.test2,
+            "struct": CodableStruct()
+        ]
+        
+        do {
+            let json = try JSON(dict)
+            print(json.prettyPrint())
+            
+            let strEnum: String? = json[keyPath: "strEnum"]
+            XCTAssertEqual(strEnum, "test2")
+            
+            let intEnum: Int? = json[keyPath: "intEnum"]
+            XCTAssertEqual(intEnum, 1)
+            
+            let b: String? = json[keyPath: "struct.b"]
+            XCTAssertEqual(b, "hello")
+            
+            let x: Int? = json[keyPath: "struct.c.x"]
+            XCTAssertEqual(x, 23)
+            
+            let uuid: String? = json[keyPath: "uuid"]
+            XCTAssertEqual(uuid!.count, 36)
+            
+        } catch {
+            print(error)
+            XCTFail()
+        }
+    }
 }

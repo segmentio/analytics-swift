@@ -28,6 +28,7 @@ public class Analytics {
     
     static internal let deadInstance = "DEADINSTANCE"
     static internal weak var firstInstance: Analytics? = nil
+    @Atomic static internal var activeWriteKeys = [String]()
     
     /**
      This method isn't a traditional singleton implementation.  It's provided here
@@ -58,6 +59,12 @@ public class Analytics {
     /// - Parameters:
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
+        if Self.isActiveWriteKey(configuration.values.writeKey) {
+            fatalError("Cannot initialize multiple instances of Analytics with the same write key")
+        } else {
+            Self.addActiveWriteKey(configuration.values.writeKey)
+        }
+        
         store = Store()
         storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
         timeline = Timeline()
@@ -72,6 +79,10 @@ public class Analytics {
         
         // Get everything running
         platformStartup()
+    }
+    
+    deinit {
+        Self.removeActiveWriteKey(configuration.values.writeKey)
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
@@ -128,6 +139,11 @@ extension Analytics {
         set(value) {
             store.dispatch(action: System.ToggleEnabledAction(enabled: value))
         }
+    }
+    
+    /// Returns the writekey in use for this instance.
+    public var writeKey: String {
+        return configuration.values.writeKey
     }
     
     /// Returns the anonymousId currently in use.
@@ -428,10 +444,25 @@ extension Analytics {
             Self.firstInstance = self
         }
     }
-        
+    
     /// Determines if an instance is dead.
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
+    }
+    
+    /// Manage active writekeys.  It's wrapped in @atomic
+    internal static func isActiveWriteKey(_ writeKey: String) -> Bool {
+        Self.activeWriteKeys.contains(writeKey)
+    }
+    
+    internal static func addActiveWriteKey(_ writeKey: String) {
+        Self.activeWriteKeys.append(writeKey)
+    }
+    
+    internal static func removeActiveWriteKey(_ writeKey: String) {
+        Self.activeWriteKeys.removeAll { key in
+            writeKey == key
+        }
     }
 }
 

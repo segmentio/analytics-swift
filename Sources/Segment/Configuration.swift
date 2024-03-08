@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 #if os(Linux)
 import FoundationNetworking
 #endif
@@ -37,19 +38,20 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
-
         var operatingMode: OperatingMode = .asynchronous
         var flushQueue: DispatchQueue = OperatingMode.defaultQueue
         var userAgent: String? = nil
+        var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
     }
     
     internal var values: Values
 
     /// Initialize a configuration object to pass along to an Analytics instance.
-    /// 
+    ///
     /// - Parameter writeKey: Your Segment write key value
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
+        JSON.jsonNonConformingNumberStrategy = self.values.jsonNonConformingNumberStrategy
         // enable segment destination by default
         var settings = Settings(writeKey: writeKey)
         settings.integrations = try? JSON([
@@ -125,7 +127,7 @@ public extension Configuration {
     /// let config = Configuration(writeKey: "1234").defaultSettings(defaults)
     /// ```
     ///
-    /// - Parameter settings: 
+    /// - Parameter settings:
     /// - Returns: The current Configuration.
     @discardableResult
     func defaultSettings(_ settings: Settings?) -> Configuration {
@@ -216,9 +218,19 @@ public extension Configuration {
         return self
     }
 
+    /// Specify a custom UserAgent string.  This bypasses the OS dependent check entirely.
     @discardableResult
     func userAgent(_ userAgent: String) -> Configuration {
         values.userAgent = userAgent
+        return self
+    }
+    
+    /// This option specifies how NaN/Infinity are handled when encoding JSON.
+    /// The default is .zero.  See JSONSafeEncoder.NonConformingFloatEncodingStrategy for more informatino.
+    @discardableResult
+    func jsonNonConformingNumberStrategy(_ strategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy) -> Configuration {
+        values.jsonNonConformingNumberStrategy = strategy
+        JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
         return self
     }
 }
