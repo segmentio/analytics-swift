@@ -60,13 +60,20 @@ public class Analytics {
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
         if Self.isActiveWriteKey(configuration.values.writeKey) {
+            // If you're hitting this in testing, it could be a memory leak, or something async is still running
+            // and holding a reference.  You can use XCTest.waitUntilFinished(...) to wait for things to complete.
             fatalError("Cannot initialize multiple instances of Analytics with the same write key")
         } else {
             Self.addActiveWriteKey(configuration.values.writeKey)
         }
         
         store = Store()
-        storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
+        storage = Storage(
+            store: self.store,
+            writeKey: configuration.values.writeKey,
+            storageMode: configuration.values.storageMode,
+            operatingMode: configuration.values.operatingMode
+        )
         timeline = Timeline()
         
         // provide our default state
@@ -330,32 +337,25 @@ extension Analytics {
             }
         }
 
-        if let files = storage.read(Storage.Constants.events) {
-            if files.count > 0 {
-                return true
-            }
-        }
-            
-        return false
+        return storage.dataStore.hasData
     }
     
     /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
-        return storage.read(Storage.Constants.events)
+        return storage.read(Storage.Constants.events)?.dataFiles
     }
     
     /// Purge all pending event upload files.
     public func purgeStorage() {
-        if let files = pendingUploads {
-            for file in files {
-                purgeStorage(fileURL: file)
-            }
-        }
+        storage.dataStore.reset()
     }
     
     /// Purge a single event upload file.
     public func purgeStorage(fileURL: URL) {
-        try? FileManager.default.removeItem(at: fileURL)
+        guard let dataFiles = storage.read(Storage.Constants.events)?.dataFiles else { return }
+        if dataFiles.contains(fileURL) {
+            try? FileManager.default.removeItem(at: fileURL)
+        }
     }
     
     /// Wait until the Analytics object has completed startup.

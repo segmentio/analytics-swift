@@ -69,40 +69,18 @@ extension Optional: Flattenable {
     }
 }
 
-/* for dev testing only
-#if DEBUG
-class TrackingDispatchGroup: CustomStringConvertible {
-    internal let group = DispatchGroup()
+internal func eventStorageDirectory(writeKey: String) -> URL {
+    #if os(tvOS) || os(macOS)
+    let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
+    #else
+    let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
+    #endif
     
-    var description: String {
-        return "DispatchGroup Enters: \(enters), Leaves: \(leaves)"
-    }
-    
-    var enters: Int = 0
-    var leaves: Int = 0
-    var current: Int = 0
-    
-    func enter() {
-        enters += 1
-        current += 1
-        group.enter()
-    }
-    
-    func leave() {
-        leaves += 1
-        current -= 1
-        group.leave()
-    }
-    
-    init() { }
-    
-    func wait() {
-        group.wait()
-    }
-    
-    public func notify(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], queue: DispatchQueue, execute work: @escaping @convention(block) () -> Void) {
-        group.notify(qos: qos, flags: flags, queue: queue, execute: work)
-    }
+    let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
+    let docURL = urls[0]
+    let segmentURL = docURL.appendingPathComponent("segment/\(writeKey)/")
+    // try to create it, will fail if already exists, nbd.
+    // tvOS, watchOS regularly clear out data.
+    try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
+    return segmentURL
 }
-#endif
-*/
