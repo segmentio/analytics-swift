@@ -70,10 +70,10 @@ extension Optional: Flattenable {
 }
 
 internal func eventStorageDirectory(writeKey: String) -> URL {
-    #if os(tvOS) || os(macOS)
-    let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
-    #else
+    #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
     let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
+    #else
+    let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
     #endif
     
     let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
