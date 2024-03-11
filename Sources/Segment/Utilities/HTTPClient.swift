@@ -10,7 +10,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-enum HTTPClientErrors: Error {
+public enum HTTPClientErrors: Error {
     case badSession
     case failedToOpenBatch
     case statusCode(code: Int)

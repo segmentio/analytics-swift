@@ -14,6 +14,12 @@ public class MemoryStore: DataStore {
         let writeKey: String
         let maxItems: Int
         let maxFetchSize: Int
+        
+        public init(writeKey: String, maxItems: Int, maxFetchSize: Int) {
+            self.writeKey = writeKey
+            self.maxItems = maxItems
+            self.maxFetchSize = maxFetchSize
+        }
     }
     
     internal struct ItemData {

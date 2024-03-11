@@ -7,8 +7,8 @@
 
 import Foundation
 
-internal class DirectoryStore: DataStore {
-    typealias StoreConfiguration = Configuration
+public class DirectoryStore: DataStore {
+    public typealias StoreConfiguration = Configuration
     
     public struct Configuration {
         let writeKey: String
@@ -16,6 +16,14 @@ internal class DirectoryStore: DataStore {
         let baseFilename: String
         let maxFileSize: Int
         let indexKey: String
+        
+        public init(writeKey: String, storageLocation: URL, baseFilename: String, maxFileSize: Int, indexKey: String) {
+            self.writeKey = writeKey
+            self.storageLocation = storageLocation
+            self.baseFilename = baseFilename
+            self.maxFileSize = maxFileSize
+            self.indexKey = indexKey
+        }
     }
     
     public var hasData: Bool {

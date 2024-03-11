@@ -6,7 +6,7 @@
 //
 import Foundation
 
-internal class TransientDB {
+public class TransientDB {
     // our data store
     internal let store: any DataStore
     // keeps items added in the order given.
