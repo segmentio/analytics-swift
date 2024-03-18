@@ -4,6 +4,11 @@
 <dict>
 	<key>NSPrivacyTracking</key>
 	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array>
+		<string>cdn-settings.segment.com/v1/projects/&lt;writekey&gt;/settings</string>
+		<string>https://api.segment.io/v1/b </string>
+	</array>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
 		<dict>
@@ -66,11 +71,6 @@
 				<string>NSPrivacyCollectedDataTypePurposeDeveloperAdvertising</string>
 			</array>
 		</dict>
-	</array>
-	<key>NSPrivacyTrackingDomains</key>
-	<array>
-		<string>cdn-settings.segment.com/v1/projects/&lt;writekey&gt;/settings</string>
-		<string>https://api.segment.io/v1/b </string>
 	</array>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
