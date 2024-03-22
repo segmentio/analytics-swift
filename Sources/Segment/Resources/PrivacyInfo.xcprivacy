@@ -6,8 +6,8 @@
 	<false/>
 	<key>NSPrivacyTrackingDomains</key>
 	<array>
-		<string>cdn-settings.segment.com/v1/projects/&lt;writekey&gt;/settings</string>
-		<string>https://api.segment.io/v1/b </string>
+		<string>cdn-settings.segment.com</string>
+		<string>api.segment.io</string>
 	</array>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
@@ -38,18 +38,6 @@
 		<dict>
 			<key>NSPrivacyCollectedDataType</key>
 			<string>App Version</string>
-			<key>NSPrivacyCollectedDataTypeLinked</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypeTracking</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypePurposes</key>
-			<array>
-				<string>NSPrivacyCollectedDataTypePurposeDeveloperAdvertising</string>
-			</array>
-		</dict>
-		<dict>
-			<key>NSPrivacyCollectedDataType</key>
-			<string>NSPrivacyCollectedDataTypePreciseLocation</string>
 			<key>NSPrivacyCollectedDataTypeLinked</key>
 			<false/>
 			<key>NSPrivacyCollectedDataTypeTracking</key>
