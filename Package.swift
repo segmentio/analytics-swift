@@ -33,7 +33,7 @@ let package = Package(
                 .product(name: "Sovran", package: "sovran-swift"),
                 .product(name: "JSONSafeEncoder", package: "jsonsafeencoder-swift")
             ],
-            exclude: ["PrivacyInfo.xcprivacy"]),
+            resources: [.process("Resources")]),
         .testTarget(
             name: "Segment-Tests",
             dependencies: ["Segment"]),

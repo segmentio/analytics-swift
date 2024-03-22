@@ -249,11 +249,8 @@ internal class MacOSVendorSystem: VendorSystem {
         // It has to be fetched on the main thread, so we've spun it off
         // async and cache it when it comes back.
         if Self.asyncUserAgent == nil {
-            // it's failing tests because it never comes back; they get stuck.
-            if isUnitTesting == false {
-                DispatchQueue.main.async {
-                    Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
-                }
+            DispatchQueue.main.async {
+                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
             }
         }
         return Self.asyncUserAgent

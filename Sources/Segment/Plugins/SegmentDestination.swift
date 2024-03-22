@@ -81,7 +81,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
          */
         // if customer specifies a different apiHost (ie: eu1.segmentapis.com) at app.segment.com ...
         if let host = segmentInfo?[Self.Constants.apiHost.rawValue] as? String, host.isEmpty == false {
-            if host != analytics.configuration.values.writeKey {
+            if host != analytics.configuration.values.apiHost {
                 analytics.configuration.values.apiHost = host
                 httpClient = HTTPClient(analytics: analytics)
             }
