@@ -4,11 +4,6 @@
 <dict>
 	<key>NSPrivacyTracking</key>
 	<false/>
-	<key>NSPrivacyTrackingDomains</key>
-	<array>
-		<string>cdn-settings.segment.com</string>
-		<string>api.segment.io</string>
-	</array>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
 		<dict>
