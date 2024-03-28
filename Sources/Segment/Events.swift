@@ -14,6 +14,11 @@ extension Analytics {
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
     
+    /// Tracks an event performed by a user, including some additional event properties.
+    /// - Parameters:
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
+    ///   - properties: Properties specific to the named event. For example, an event with
+    ///     the name 'Purchased a Shirt' might have properties like revenue or size.
     public func track<P: Codable>(name: String, properties: P?) {
         do {
             if let properties = properties {
@@ -29,6 +34,9 @@ extension Analytics {
         }
     }
     
+    /// Tracks an event performed by a user.
+    /// - Parameters:
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
     public func track(name: String) {
         track(name: name, properties: nil as TrackEvent?)
     }
@@ -133,15 +141,12 @@ extension Analytics {
 // MARK: - Untyped Event Signatures
 
 extension Analytics {
-    /// Associate a user with their unique ID and record traits about them.
+    /// Tracks an event performed by a user, including some additional event properties.
     /// - Parameters:
-    ///   - userId: A database ID for this user. If you don't have a userId
-    ///     but want to record traits, just pass traits into the event and they will be associated
-    ///     with the anonymousId of that user.  In the case when user logs out, make sure to
-    ///     call ``reset()`` to clear the user's identity info. For more information on how we
-    ///     generate the UUID and Apple's policies on IDs, see
-    ///      https://segment.io/libraries/ios#ids
-    ///   - properties: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
+    ///   - properties: A dictionary or properties specific to the named event.
+    ///     For example, an event with the name 'Purchased a Shirt' might have properties
+    ///     like revenue or size.
     public func track(name: String, properties: [String: Any]? = nil) {
         var props: JSON? = nil
         if let properties = properties {
