@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array>
 		<dict>
@@ -42,18 +44,6 @@
 		</dict>
 		<dict>
 			<key>NSPrivacyCollectedDataType</key>
-			<string>NSPrivacyCollectedDataTypePreciseLocation</string>
-			<key>NSPrivacyCollectedDataTypeLinked</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypeTracking</key>
-			<false/>
-			<key>NSPrivacyCollectedDataTypePurposes</key>
-			<array>
-				<string>NSPrivacyCollectedDataTypePurposeDeveloperAdvertising</string>
-			</array>
-		</dict>
-		<dict>
-			<key>NSPrivacyCollectedDataType</key>
 			<string>NSPrivacyCollectedDataTypeAdvertisingData</string>
 			<key>NSPrivacyCollectedDataTypeLinked</key>
 			<false/>
@@ -65,10 +55,16 @@
 			</array>
 		</dict>
 	</array>
-	<key>NSPrivacyTrackingDomains</key>
+	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
-		<string>cdn-settings.segment.com/v1/projects/&lt;writekey&gt;/settings</string>
-		<string>https://api.segment.io/v1/b </string>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>1C8F.1</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

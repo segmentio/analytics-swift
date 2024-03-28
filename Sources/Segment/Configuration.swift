@@ -22,6 +22,19 @@ public enum OperatingMode {
     static internal let defaultQueue = DispatchQueue(label: "com.segment.operatingModeQueue", qos: .utility)
 }
 
+// MARK: - Storage Mode
+/// Specifies the storage mode to be used for events
+public enum StorageMode {
+    /// Store events to disk (default).
+    case disk
+    /// Store events to disk in the given a directory URL.
+    case diskAtURL(URL)
+    /// Store events to memory and specify a max count before they roll off.
+    case memory(Int)
+    /// Some custom, user-defined storage mechanism conforming to `DataStore`.
+    case custom(any DataStore)
+}
+
 // MARK: - Internal Configuration
 
 public class Configuration {
@@ -42,6 +55,7 @@ public class Configuration {
         var flushQueue: DispatchQueue = OperatingMode.defaultQueue
         var userAgent: String? = nil
         var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
+        var storageMode: StorageMode = .disk
     }
     
     internal var values: Values
@@ -231,6 +245,12 @@ public extension Configuration {
     func jsonNonConformingNumberStrategy(_ strategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy) -> Configuration {
         values.jsonNonConformingNumberStrategy = strategy
         JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
+        return self
+    }
+    
+    @discardableResult
+    func storageMode(_ mode: StorageMode) -> Configuration {
+        values.storageMode = mode
         return self
     }
 }

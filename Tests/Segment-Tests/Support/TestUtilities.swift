@@ -143,6 +143,29 @@ func waitUntilStarted(analytics: Analytics?) {
     }
 }
 
+struct TimedOutError: Error, Equatable {}
+
+public func waitForTaskCompletion<R>(
+    withTimeoutInSeconds timeout: UInt64,
+    _ task: @escaping () async throws -> R
+) async throws -> R {
+    return try await withThrowingTaskGroup(of: R.self) { group in
+        await withUnsafeContinuation { continuation in
+            group.addTask {
+                continuation.resume()
+                return try await task()
+            }
+        }
+        group.addTask {
+            await Task.yield()
+            try await Task.sleep(nanoseconds: timeout * 1_000_000_000)
+            throw TimedOutError()
+        }
+        defer { group.cancelAll() }
+        return try await group.next()!
+    }
+}
+
 extension XCTestCase {
     func checkIfLeaked(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
         addTeardownBlock { [weak instance] in
@@ -150,6 +173,20 @@ extension XCTestCase {
                 print("Instance \(String(describing: instance)) is not nil")
             }
             XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak!", file: file, line: line)
+        }
+    }
+    
+    func waitUntilFinished(analytics: Analytics?, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak analytics] in
+            let instance = try await waitForTaskCompletion(withTimeoutInSeconds: 3) {
+                while analytics != nil {
+                    DispatchQueue.main.sync {
+                        RunLoop.current.run(until: .distantPast)
+                    }
+                }
+                return analytics
+            }
+            XCTAssertNil(instance, "Analytics should have been deallocated. It's likely a memory leak!", file: file, line: line)
         }
     }
 }
