@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = "AnalyticsSwiftCIO"
-    s.version = "1.5.9+cio.1"
+    s.version = "1.5.9+cio.2"
     s.license = { :type => 'MIT', :file => './LICENSE' }
     s.summary = "Customer.io Data Pipelines analytics client for Swift app (iOS/tvOS/watchOS/macOS/Linux)."
     s.homepage = "https://github.com/customerio/cdp-analytics-swift"
@@ -17,6 +17,9 @@ Pod::Spec.new do |s|
     s.module_name = "Segment"
 
     s.source_files = "Sources/**/*.swift"
+    s.resource_bundles = {
+        "Segment_Privacy" => "Sources/Segment/Resources/PrivacyInfo.xcprivacy"
+    }
 
     s.dependency 'Sovran', '~> 1.1.1'
     s.dependency 'JSONSafeEncoder', '~> 1.0.2'
