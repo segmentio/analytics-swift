@@ -17,6 +17,8 @@ import FoundationNetworking
 #endif
 
 open class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion {
+    public init() { }
+
     internal enum Constants: String {
         case integrationName = "Customer.io Data Pipelines"
         case apiHost = "apiHost"
