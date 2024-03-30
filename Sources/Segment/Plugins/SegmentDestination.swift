@@ -16,9 +16,9 @@ import Sovran
 import FoundationNetworking
 #endif
 
-public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion {
+open class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion {
     internal enum Constants: String {
-        case integrationName = "Segment.io"
+        case integrationName = "Customer.io Data Pipelines"
         case apiHost = "apiHost"
         case apiKey = "apiKey"
     }
