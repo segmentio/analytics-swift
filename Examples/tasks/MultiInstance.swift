@@ -30,7 +30,7 @@
 // SOFTWARE.
 
 import Foundation
-import Segment
+import CDPAnalyticsSwift
 
 /**
  An example of implementing multiple Analytics instances in a single application.

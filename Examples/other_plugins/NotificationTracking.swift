@@ -36,7 +36,7 @@
 #if !os(Linux) && !os(macOS)
 
 import Foundation
-import Segment
+import CDPAnalyticsSwift
 
 class NotificationTracking: Plugin {
     var type: PluginType = .utility

@@ -33,7 +33,7 @@
 // SOFTWARE.
 
 import Foundation
-import Segment
+import CDPAnalyticsSwift
 import UIKit
 
 /**

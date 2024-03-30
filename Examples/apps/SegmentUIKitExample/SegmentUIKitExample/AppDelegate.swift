@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Segment
+import CDPAnalyticsSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
