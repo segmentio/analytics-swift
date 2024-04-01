@@ -7,6 +7,7 @@ Pod::Spec.new do |s|
     s.authors = "Customer.io"
 
     # Make sure the tag is the same as what SPM customers are using.
+    # TODO: update it to version, once we decide to release it.
     s.source = { :git => 'https://github.com/customerio/cdp-analytics-swift.git', :branch => 'shahroz/different-target' }
 
     s.ios.deployment_target = "13.0"
