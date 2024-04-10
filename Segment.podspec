@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = 'Segment'
   s.module_name      = 'Segment'
-  s.version          = '1.4.7'
+  s.version          = '1.4.8'
   s.summary          = 'analytics-swift Cocoapods support.'
   s.homepage         = 'https://github.com/flocasts/analytics-swift'
   s.license          = { :type => 'MIT', :file => './LICENSE' }
