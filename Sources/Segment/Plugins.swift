@@ -62,13 +62,17 @@ public protocol VersionedPlugin {
     static func version() -> String
 }
 
+public protocol FlushCompletion {
+    func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void)
+}
+
 // For internal platform-specific bits
 internal protocol PlatformPlugin: Plugin { }
 
 public typealias EnrichmentClosure = (_ event: RawEvent?) -> RawEvent?
 public class ClosureEnrichment: Plugin {
     public var type: PluginType = .enrichment
-    public var analytics: Analytics? = nil
+    public weak var analytics: Analytics? = nil
     
     internal let closure: EnrichmentClosure
     
@@ -88,7 +92,6 @@ extension Plugin {
         self.analytics = analytics
     }
 }
-
 
 // MARK: - Adding/Removing Plugins
 
@@ -123,6 +126,7 @@ extension DestinationPlugin {
             plugin.configure(analytics: analytics)
         }
         timeline.add(plugin: plugin)
+        analytics?.updateIfNecessary(plugin: plugin)
         return plugin
     }
     
@@ -152,6 +156,14 @@ extension DestinationPlugin {
         timeline.remove(plugin: plugin)
     }
 
+    public func find<T: Plugin>(pluginType: T.Type) -> T? {
+        return timeline.find(pluginType: pluginType)
+    }
+    
+    public func findAll<T: Plugin>(pluginType: T.Type) -> [T]? {
+        return timeline.findAll(pluginType: pluginType)
+    }
+
 }
 
 extension Analytics {
@@ -177,6 +189,7 @@ extension Analytics {
     public func add(plugin: Plugin) -> Plugin {
         plugin.configure(analytics: self)
         timeline.add(plugin: plugin)
+        updateIfNecessary(plugin: plugin)
         return plugin
     }
     
@@ -206,6 +219,10 @@ extension Analytics {
     
     public func find<T: Plugin>(pluginType: T.Type) -> T? {
         return timeline.find(pluginType: pluginType)
+    }
+    
+    public func findAll<T: Plugin>(pluginType: T.Type) -> [T]? {
+        return timeline.findAll(pluginType: pluginType)
     }
     
     public func find(key: String) -> DestinationPlugin? {

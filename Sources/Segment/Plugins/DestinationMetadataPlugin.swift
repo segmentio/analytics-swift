@@ -14,12 +14,7 @@ import Foundation
 public class DestinationMetadataPlugin: Plugin {
     public let type: PluginType = PluginType.enrichment
     public weak var analytics: Analytics?
-    private var analyticsSettings: Settings? = nil
-    
-    public func update(settings: Settings, type: UpdateType) {
-        analyticsSettings = settings
-    }
-    
+
     public func execute<T: RawEvent>(event: T?) -> T? {
         guard var modified = event else {
             return event

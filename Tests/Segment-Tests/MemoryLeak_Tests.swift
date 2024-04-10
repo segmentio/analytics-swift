@@ -35,7 +35,7 @@ final class MemoryLeak_Tests: XCTestCase {
         #if !os(Linux)
         let deviceToken = analytics.find(pluginType: DeviceToken.self)!
         #endif
-        #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+        #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
         let iosLifecycle = analytics.find(pluginType: iOSLifecycleEvents.self)!
         let iosMonitor = analytics.find(pluginType: iOSLifecycleMonitor.self)!
         #elseif os(watchOS)
@@ -45,6 +45,11 @@ final class MemoryLeak_Tests: XCTestCase {
         let macLifecycle = analytics.find(pluginType: macOSLifecycleEvents.self)!
         let macMonitor = analytics.find(pluginType: macOSLifecycleMonitor.self)!
         #endif
+        
+        // test that enrichment closure isn't leaked.  was previously a retain loop.
+        analytics.add { event in
+            return event
+        }
 
         analytics.remove(plugin: startupQueue)
         analytics.remove(plugin: segmentDest)
@@ -54,7 +59,7 @@ final class MemoryLeak_Tests: XCTestCase {
         #if !os(Linux)
         analytics.remove(plugin: deviceToken)
         #endif
-        #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+        #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
         analytics.remove(plugin: iosLifecycle)
         analytics.remove(plugin: iosMonitor)
         #elseif os(watchOS)
@@ -75,7 +80,7 @@ final class MemoryLeak_Tests: XCTestCase {
         #if !os(Linux)
         checkIfLeaked(deviceToken)
         #endif
-        #if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+        #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
         checkIfLeaked(iosLifecycle)
         checkIfLeaked(iosMonitor)
         #elseif os(watchOS)

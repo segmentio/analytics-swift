@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 
 enum SegmentISO8601DateFormatter {
-    
     static let shared: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions.update(with: .withFractionalSeconds)
@@ -17,7 +17,6 @@ enum SegmentISO8601DateFormatter {
 }
 
 internal extension Date {
-    // TODO: support nanoseconds
     func iso8601() -> String {
         return SegmentISO8601DateFormatter.shared.string(from: self)
     }

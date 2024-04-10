@@ -8,6 +8,7 @@
 #if !os(Linux)
 
 import Foundation
+import JSONSafeEncoder
 
 @objc(SEGConfiguration)
 public class ObjCConfiguration: NSObject {
@@ -75,7 +76,7 @@ public class ObjCConfiguration: NSObject {
         get {
             var result = [String: Any]()
             do {
-                let encoder = JSONEncoder()
+                let encoder = JSONSafeEncoder.default
                 let json = try encoder.encode(configuration.values.defaultSettings)
                 if let r = try JSONSerialization.jsonObject(with: json) as? [String: Any] {
                     result = r
@@ -89,7 +90,7 @@ public class ObjCConfiguration: NSObject {
         set(value) {
             do {
                 let json = try JSONSerialization.data(withJSONObject: value, options: .prettyPrinted)
-                let decoder = JSONDecoder()
+                let decoder = JSONDecoder.default
                 let settings = try decoder.decode(Settings.self, from: json)
                 configuration.defaultSettings(settings)
             } catch {

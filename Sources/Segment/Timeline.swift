@@ -55,9 +55,6 @@ public class Timeline {
 internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
-        if let settings = plugin.analytics?.settings() {
-            plugin.update(settings: settings, type: .initial)
-        }
     }
     
     internal func remove(plugin: Plugin) {
@@ -134,6 +131,18 @@ extension Timeline {
             }
         }
         return found.first as? T
+    }
+    
+    internal func findAll<T: Plugin>(pluginType: T.Type) -> [T]? {
+        var found = [Plugin]()
+        for type in PluginType.allCases {
+            if let mediator = plugins[type] {
+                found.append(contentsOf: mediator.plugins.filter { (plugin) -> Bool in
+                    return plugin is T
+                })
+            }
+        }
+        return found as? [T]
     }
     
     internal func find(key: String) -> DestinationPlugin? {

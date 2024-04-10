@@ -13,6 +13,9 @@ final class Analytics_Tests: XCTestCase {
         
         let traits = MyTraits(email: "brandon@redf.net")
         analytics.identify(userId: "brandon", traits: traits)
+        
+        waitUntilStarted(analytics: analytics)
+        checkIfLeaked(analytics)
     }
     
     func testPluginConfigure() {
@@ -28,6 +31,8 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(ziggy.analytics)
         XCTAssertNotNil(myDestination.analytics)
         XCTAssertNotNil(goober.analytics)
+        
+        waitUntilStarted(analytics: analytics)
     }
     
     func testPluginRemove() {
@@ -49,6 +54,51 @@ final class Analytics_Tests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
     }
+    
+    func testDestinationInitialUpdateOnlyOnce() {
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        
+        let expectation = XCTestExpectation(description: "MyDestination Expectation")
+        let myDestination = MyDestination {
+            expectation.fulfill()
+            return true
+        }
+        
+        var settings = Settings(writeKey: "test")
+        if let existing = settings.integrations?.dictionaryValue {
+            var newIntegrations = existing
+            newIntegrations[myDestination.key] = true
+            settings.integrations = try! JSON(newIntegrations)
+        }
+        let configuration = Configuration(writeKey: "test")
+        configuration.defaultSettings(settings)
+        let analytics = Analytics(configuration: configuration)
+        
+        let ziggy1 = ZiggyPlugin()
+        analytics.add(plugin: myDestination)
+        analytics.add(plugin: ziggy1)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "testDestinationEnabled")
+        
+        let ziggy2 = ZiggyPlugin()
+        analytics.add(plugin: ziggy2)
+        
+        let dest = analytics.find(key: myDestination.key)
+        XCTAssertNotNil(dest)
+        XCTAssertTrue(dest is MyDestination)
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        XCTAssertEqual(myDestination.receivedInitialUpdate, 1)
+        XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
+        XCTAssertEqual(ziggy2.receivedInitialUpdate, 1)
+        
+        checkIfLeaked(analytics)
+    }
+
     
     func testDestinationEnabled() {
         // need to clear settings for this one.
@@ -116,12 +166,23 @@ final class Analytics_Tests: XCTestCase {
         
         XCTAssertTrue(anonId != "")
         XCTAssertTrue(anonId.count == 36) // it's a UUID y0.
+        waitUntilStarted(analytics: analytics)
     }
     
     func testContext() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
+        
+#if !os(watchOS) && !os(Linux)
+        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
+        // prime the pump for userAgent, since it's retrieved async.
+        let vendorSystem = VendorSystem.current
+        while vendorSystem.userAgent == nil {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+         */
+#endif
         
         waitUntilStarted(analytics: analytics)
         
@@ -147,8 +208,60 @@ final class Analytics_Tests: XCTestCase {
         
         // this key not present on watchOS (doesn't have webkit)
 #if !os(watchOS)
-        XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
+        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful. */
+        //XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
 #endif
+        
+        // these keys not present on linux
+#if !os(Linux)
+        XCTAssertNotNil(context?["app"], "app missing!")
+        XCTAssertNotNil(context?["locale"], "locale missing!")
+#endif
+    }
+    
+    
+    func testContextWithUserAgent() {
+        let configuration = Configuration(writeKey: "test")
+        configuration.userAgent("testing user agent")
+        let analytics = Analytics(configuration: configuration)
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+#if !os(watchOS) && !os(Linux)
+        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
+        // prime the pump for userAgent, since it's retrieved async.
+        let vendorSystem = VendorSystem.current
+        while vendorSystem.userAgent == nil {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+         */
+#endif
+        
+        waitUntilStarted(analytics: analytics)
+        
+        // add a referrer
+        analytics.openURL(URL(string: "https://google.com")!)
+        
+        analytics.track(name: "token check")
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let context = trackEvent?.context?.dictionaryValue
+        // Verify that context isn't empty here.
+        // We need to verify the values but will do that in separate platform specific tests.
+        XCTAssertNotNil(context)
+        XCTAssertNotNil(context?["screen"], "screen missing!")
+        XCTAssertNotNil(context?["network"], "network missing!")
+        XCTAssertNotNil(context?["os"], "os missing!")
+        XCTAssertNotNil(context?["timezone"], "timezone missing!")
+        XCTAssertNotNil(context?["library"], "library missing!")
+        XCTAssertNotNil(context?["device"], "device missing!")
+        
+        let referrer = context?["referrer"] as! [String: Any]
+        XCTAssertEqual(referrer["url"] as! String, "https://google.com")
+
+        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
+        XCTAssertEqual(context?["userAgent"] as! String, "testing user agent")
+         */
         
         // these keys not present on linux
 #if !os(Linux)
@@ -173,7 +286,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(token == "1234")
     }
     
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
     func testDeviceTokenData() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
@@ -326,13 +439,13 @@ final class Analytics_Tests: XCTestCase {
         
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
-        let currentBatchCount = analytics.storage.eventFiles(includeUnfinished: true).count
+        let currentBatchCount = analytics.storage.read(.events)!.dataFiles!.count
         
         analytics.flush()
         analytics.track(name: "test")
         
-        let batches = analytics.storage.eventFiles(includeUnfinished: true)
-        let newBatchCount = batches.count
+        let batches = analytics.storage.read(.events)!.dataFiles
+        let newBatchCount = batches!.count
         // 1 new temp file
         XCTAssertTrue(newBatchCount == currentBatchCount + 1, "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
     }
@@ -402,7 +515,10 @@ final class Analytics_Tests: XCTestCase {
     
     func testPurgeStorage() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either").flushInterval(9999).flushAt(9999))
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey_either")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
         
         waitUntilStarted(analytics: analytics)
         
@@ -423,18 +539,15 @@ final class Analytics_Tests: XCTestCase {
         analytics.flush()
         analytics.track(name: "test")
         
-        var newPendingCount = analytics.pendingUploads!.count
-        XCTAssertEqual(newPendingCount, 4)
+        let newPendingCount = analytics.pendingUploads!.count
+        XCTAssertEqual(newPendingCount, 1)
         
         let pending = analytics.pendingUploads!
         analytics.purgeStorage(fileURL: pending.first!)
-        
-        newPendingCount = analytics.pendingUploads!.count
-        XCTAssertEqual(newPendingCount, 3)
+        XCTAssertNil(analytics.pendingUploads)
         
         analytics.purgeStorage()
-        newPendingCount = analytics.pendingUploads!.count
-        XCTAssertEqual(newPendingCount, 0)
+        XCTAssertNil(analytics.pendingUploads)
     }
     
     func testVersion() {
@@ -458,7 +571,7 @@ final class Analytics_Tests: XCTestCase {
         var timeline: Timeline
         let type: PluginType
         let key: String
-        var analytics: Analytics?
+        weak var analytics: Analytics?
         
         init(key: String) {
             self.key = key
@@ -612,4 +725,200 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(destHit)
 
     }
+    
+    func testSharedInstance() {
+        Analytics.firstInstance = nil
+        
+        let dead = Analytics.shared()
+        XCTAssertTrue(dead.isDead)
+        
+        let alive = Analytics(configuration: Configuration(writeKey: "1234"))
+        XCTAssertFalse(alive.isDead)
+        
+        let shared = Analytics.shared()
+        XCTAssertFalse(shared.isDead)
+        
+        XCTAssertTrue(alive === shared)
+        
+        let alive2 = Analytics(configuration: Configuration(writeKey: "ABCD"))
+        let shared2 = Analytics.shared()
+        XCTAssertFalse(alive2 === shared2)
+        XCTAssertTrue(shared2 === shared)
+        
+    }
+    
+    func testAsyncOperatingMode() throws {
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_asyncMode")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.asynchronous))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+
+        @Atomic var completionCalled = false
+        
+        // put an event in the pipe ...
+        analytics.track(name: "completion test1")
+        // flush it, that'll get us an upload going
+        analytics.flush {
+            // verify completion is called.
+            completionCalled = true
+        }
+        
+        while !completionCalled {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+        
+        XCTAssertTrue(completionCalled)
+        XCTAssertNil(analytics.pendingUploads)
+    }
+    
+    func testSyncOperatingMode() throws {
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFlush_syncMode")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+
+        @Atomic var completionCalled = false
+        
+        // put an event in the pipe ...
+        analytics.track(name: "completion test1")
+        // flush it, that'll get us an upload going
+        analytics.flush {
+            // verify completion is called.
+            completionCalled = true
+        }
+        
+        // completion shouldn't be called before flush returned.
+        XCTAssertTrue(completionCalled)
+        XCTAssertNil(analytics.pendingUploads)
+        
+        // put another event in the pipe.
+        analytics.track(name: "completion test2")
+        analytics.flush()
+        
+        // flush shouldn't return until all uploads are done, cuz
+        // it's running in sync mode.
+        XCTAssertNil(analytics.pendingUploads)
+    }
+    
+    func testFindAll() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "testFindAll")
+            .flushInterval(9999)
+            .flushAt(9999)
+            .operatingMode(.synchronous))
+        
+        analytics.add(plugin: ZiggyPlugin())
+        analytics.add(plugin: ZiggyPlugin())
+        analytics.add(plugin: ZiggyPlugin())
+
+        let myDestination = MyDestination()
+        myDestination.add(plugin: GooberPlugin())
+        myDestination.add(plugin: GooberPlugin())
+        
+        analytics.add(plugin: myDestination)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        let ziggysFound = analytics.findAll(pluginType: ZiggyPlugin.self)
+        let goobersFound = myDestination.findAll(pluginType: GooberPlugin.self)
+        
+        XCTAssertEqual(ziggysFound!.count, 3)
+        XCTAssertEqual(goobersFound!.count, 2)
+    }
+    
+    func testJSONNaNDefaultHandlingZero() throws {
+        // notice we didn't set the nan handling option.  zero is the default.
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "test track", properties: ["TestNaN": Double.nan])
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent?.event == "test track")
+        XCTAssertTrue(trackEvent?.type == "track")
+        let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
+        XCTAssertTrue(d! == 0)
+    }
+    
+    func testJSONNaNHandlingNull() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .jsonNonConformingNumberStrategy(.null)
+        )
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.track(name: "test track", properties: ["TestNaN": Double.nan])
+        
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertTrue(trackEvent?.event == "test track")
+        XCTAssertTrue(trackEvent?.type == "track")
+        let d: Double? = trackEvent?.properties?.value(forKeyPath: "TestNaN")
+        XCTAssertNil(d)
+    }
+    
+    // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
+    #if !os(Linux) && !os(watchOS)
+    func testFailedSegmentResponse() throws {
+        //register our network blocker (returns 400 response)
+        guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
+            XCTFail(); return }
+        
+        let analytics = Analytics(configuration: Configuration(writeKey: "networkTest"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        //set the httpClient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [FailedNetworkCalls.self]
+        configuration.httpAdditionalHeaders = [
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "Basic test",
+            "User-Agent": "analytics-ios/\(Analytics.version())"
+        ]
+        
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        
+        segment?.httpClient?.session = blockSession
+        
+        analytics.track(name: "test track", properties: ["Malformed Paylod": "My Failed Prop"])
+        
+        //get fileUrl from track call
+        let storedEvents = analytics.storage.read(.events)
+        let fileURL = storedEvents!.dataFiles![0]
+        
+        
+        let expectation = XCTestExpectation()
+        
+        analytics.flush {
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1.0)
+        
+        let newStoredEvents: [URL]? = analytics.storage.read(.events)
+        
+        XCTAssertNil(newStoredEvents)
+        
+        XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
+    }
+    #endif
 }

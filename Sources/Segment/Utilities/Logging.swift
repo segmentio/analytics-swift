@@ -8,12 +8,15 @@
 import Foundation
 
 extension Analytics {
-    internal enum LogKind {
+    internal enum LogKind: CustomStringConvertible, CustomDebugStringConvertible {
         case error
         case warning
         case debug
         case none
         
+        var description: String { return string }
+        var debugDescription: String { return string }
+
         var string: String {
             switch self {
             case .error:
@@ -23,7 +26,7 @@ extension Analytics {
             case .debug:
                 return "SEG_DEBUG: "
             case .none:
-                return ""
+                return "SEG_INFO: "
             }
         }
     }

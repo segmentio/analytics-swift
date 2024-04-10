@@ -6,9 +6,34 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 #if os(Linux)
 import FoundationNetworking
 #endif
+
+// MARK: - Operating Mode
+/// Specifies the operating mode/context
+public enum OperatingMode {
+    /// The operation of the Analytics client are synchronous.
+    case synchronous
+    /// The operation of the Analytics client are asynchronous.
+    case asynchronous
+    
+    static internal let defaultQueue = DispatchQueue(label: "com.segment.operatingModeQueue", qos: .utility)
+}
+
+// MARK: - Storage Mode
+/// Specifies the storage mode to be used for events
+public enum StorageMode {
+    /// Store events to disk (default).
+    case disk
+    /// Store events to disk in the given a directory URL.
+    case diskAtURL(URL)
+    /// Store events to memory and specify a max count before they roll off.
+    case memory(Int)
+    /// Some custom, user-defined storage mechanism conforming to `DataStore`.
+    case custom(any DataStore)
+}
 
 // MARK: - Internal Configuration
 
@@ -26,15 +51,21 @@ public class Configuration {
         var requestFactory: ((URLRequest) -> URLRequest)? = nil
         var errorHandler: ((Error) -> Void)? = nil
         var flushPolicies: [FlushPolicy] = [CountBasedFlushPolicy(), IntervalBasedFlushPolicy()]
+        var operatingMode: OperatingMode = .asynchronous
+        var flushQueue: DispatchQueue = OperatingMode.defaultQueue
+        var userAgent: String? = nil
+        var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
+        var storageMode: StorageMode = .disk
     }
     
     internal var values: Values
 
     /// Initialize a configuration object to pass along to an Analytics instance.
-    /// 
+    ///
     /// - Parameter writeKey: Your Segment write key value
     public init(writeKey: String) {
         self.values = Values(writeKey: writeKey)
+        JSON.jsonNonConformingNumberStrategy = self.values.jsonNonConformingNumberStrategy
         // enable segment destination by default
         var settings = Settings(writeKey: writeKey)
         settings.integrations = try? JSON([
@@ -110,7 +141,7 @@ public extension Configuration {
     /// let config = Configuration(writeKey: "1234").defaultSettings(defaults)
     /// ```
     ///
-    /// - Parameter settings: 
+    /// - Parameter settings:
     /// - Returns: The current Configuration.
     @discardableResult
     func defaultSettings(_ settings: Settings?) -> Configuration {
@@ -180,6 +211,46 @@ public extension Configuration {
     @discardableResult
     func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
         values.flushPolicies = policies
+        return self
+    }
+    
+    /// Informs the Analytics instance of its operating mode/context.
+    /// Use `.server` when operating in a web service, or when synchronous operation
+    /// is desired.  Use `.client` when operating in a long lived process,
+    /// desktop/mobile application.
+    @discardableResult
+    func operatingMode(_ mode: OperatingMode) -> Configuration {
+        values.operatingMode = mode
+        return self
+    }
+    
+    /// Specify a custom queue to use when performing a flush operation.  The default
+    /// value is a Segment owned background queue.
+    @discardableResult
+    func flushQueue(_ queue: DispatchQueue) -> Configuration {
+        values.flushQueue = queue
+        return self
+    }
+
+    /// Specify a custom UserAgent string.  This bypasses the OS dependent check entirely.
+    @discardableResult
+    func userAgent(_ userAgent: String) -> Configuration {
+        values.userAgent = userAgent
+        return self
+    }
+    
+    /// This option specifies how NaN/Infinity are handled when encoding JSON.
+    /// The default is .zero.  See JSONSafeEncoder.NonConformingFloatEncodingStrategy for more informatino.
+    @discardableResult
+    func jsonNonConformingNumberStrategy(_ strategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy) -> Configuration {
+        values.jsonNonConformingNumberStrategy = strategy
+        JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
+        return self
+    }
+    
+    @discardableResult
+    func storageMode(_ mode: StorageMode) -> Configuration {
+        values.storageMode = mode
         return self
     }
 }

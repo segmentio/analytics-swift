@@ -15,6 +15,7 @@ struct System: State {
     let settings: Settings?
     let running: Bool
     let enabled: Bool
+    let initializedPlugins: [Plugin]
     
     struct UpdateSettingsAction: Action {
         let settings: Settings
@@ -23,7 +24,8 @@ struct System: State {
             let result = System(configuration: state.configuration,
                                 settings: settings,
                                 running: state.running,
-                                enabled: state.enabled)
+                                enabled: state.enabled,
+                                initializedPlugins: state.initializedPlugins)
             return result
         }
     }
@@ -35,7 +37,8 @@ struct System: State {
             return System(configuration: state.configuration,
                           settings: state.settings,
                           running: running,
-                          enabled: state.enabled)
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins)
         }
     }
     
@@ -46,7 +49,8 @@ struct System: State {
             return System(configuration: state.configuration,
                           settings: state.settings,
                           running: state.running,
-                          enabled: enabled)
+                          enabled: enabled,
+                          initializedPlugins: state.initializedPlugins)
         }
     }
     
@@ -57,7 +61,8 @@ struct System: State {
             return System(configuration: configuration,
                           settings: state.settings,
                           running: state.running,
-                          enabled: state.enabled)
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins)
         }
     }
     
@@ -73,7 +78,26 @@ struct System: State {
             return System(configuration: state.configuration,
                           settings: settings,
                           running: state.running,
-                          enabled: state.enabled)
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins)
+        }
+    }
+    
+    struct AddPluginToInitialized: Action {
+        let plugin: Plugin
+        
+        func reduce(state: System) -> System {
+            var initializedPlugins = state.initializedPlugins
+            if !initializedPlugins.contains(where: { p in
+                return plugin === p
+            }) {
+                initializedPlugins.append(plugin)
+            }
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: state.enabled,
+                          initializedPlugins: initializedPlugins)
         }
     }
 }
@@ -147,7 +171,7 @@ extension System {
                 settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
-        return System(configuration: configuration, settings: settings, running: false, enabled: true)
+        return System(configuration: configuration, settings: settings, running: false, enabled: true, initializedPlugins: [Plugin]())
     }
 }
 

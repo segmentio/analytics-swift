@@ -2,7 +2,10 @@
 ![](https://github.com/segmentio/analytics-swift/actions/workflows/swift.yml/badge.svg)
 ![](https://img.shields.io/github/license/segmentio/analytics-swift)
 
-The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS/macOS/Linux/iPadOS). Analytics helps you measure your users, product, and business. It unlocks insights into your app's funnel, core business metrics, and whether you have product-market fit.
+### 🎉 Flagship 🎉
+This library is one of Segment’s most popular Flagship libraries. It is actively maintained by Segment, benefitting from new feature releases and ongoing support.
+
+The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/visionOS/watchOS/macOS/Linux/iPadOS). Analytics helps you measure your users, product, and business. It unlocks insights into your app's funnel, core business metrics, and whether you have product-market fit.
 
 ## How to get started
 1. **Collect analytics data** from your app(s).
@@ -49,6 +52,7 @@ The hassle-free way to add Segment analytics to your Swift app (iOS/tvOS/watchOS
 | Facebook | https://github.com/segment-integrations/analytics-swift-facebook-app-events |
 | Firebase | https://github.com/segment-integrations/analytics-swift-firebase |
 | Mixpanel | https://github.com/segment-integrations/analytics-swift-mixpanel |
+| Survicate | https://github.com/Survicate/analytics-swift-survicate |
 
 ## Documentation
 

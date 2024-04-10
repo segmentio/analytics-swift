@@ -7,9 +7,9 @@
 
 import Foundation
 
-// MARK: - iOS, tvOS, Catalyst
+// MARK: - iOS, tvOS, visionOS, Catalyst
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
 import SystemConfiguration
 import UIKit
@@ -19,6 +19,7 @@ import WebKit
 
 internal class iOSVendorSystem: VendorSystem {
     private let device = UIDevice.current
+    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -29,6 +30,8 @@ internal class iOSVendorSystem: VendorSystem {
         return "ios"
         #elseif os(tvOS)
         return "tvos"
+        #elseif os(visionOS)
+        return "visionos"
         #elseif targetEnvironment(macCatalyst)
         return "macos"
         #else
@@ -59,23 +62,26 @@ internal class iOSVendorSystem: VendorSystem {
     }
     
     override var screenSize: ScreenSize {
+        #if os(iOS) || os(tvOS)
         let screenSize = UIScreen.main.bounds.size
         return ScreenSize(width: Double(screenSize.width), height: Double(screenSize.height))
+        #elseif os(visionOS)
+        let windowSize = UIApplication.shared.delegate?.window??.bounds.size
+        return windowSize.map { ScreenSize(width: $0.width, height: $0.height) } ?? ScreenSize(width: 1280, height: 720)
+        #endif
     }
     
     override var userAgent: String? {
         #if !os(tvOS)
-        var userAgent: String?
-        
-        if Thread.isMainThread {
-            userAgent = WKWebView().value(forKey: "userAgent") as? String
-        } else {
-            DispatchQueue.main.sync {
-              userAgent = WKWebView().value(forKey: "userAgent") as? String
+        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
+        // It has to be fetched on the main thread, so we've spun it off
+        // async and cache it when it comes back.
+        if Self.asyncUserAgent == nil {
+            DispatchQueue.main.async {
+                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
             }
         }
-
-        return userAgent
+        return Self.asyncUserAgent
         #else
         // webkit isn't on tvos
         return "unknown"
@@ -198,6 +204,7 @@ import WebKit
 
 internal class MacOSVendorSystem: VendorSystem {
     private let device = ProcessInfo.processInfo
+    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -238,16 +245,15 @@ internal class MacOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        var userAgent: String?
-        if Thread.isMainThread {
-            userAgent = WKWebView().value(forKey: "userAgent") as? String
-        } else {
-            DispatchQueue.main.sync {
-              userAgent = WKWebView().value(forKey: "userAgent") as? String
+        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
+        // It has to be fetched on the main thread, so we've spun it off
+        // async and cache it when it comes back.
+        if Self.asyncUserAgent == nil {
+            DispatchQueue.main.async {
+                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
             }
         }
-        
-        return userAgent
+        return Self.asyncUserAgent
     }
     
     override var connection: ConnectionStatus {
@@ -311,7 +317,7 @@ internal class MacOSVendorSystem: VendorSystem {
 
 // MARK: - Reachability
 
-#if os(iOS) || os(tvOS) || os(macOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || os(macOS) || targetEnvironment(macCatalyst)
 
 #if os(macOS)
 import SystemConfiguration
@@ -335,14 +341,66 @@ extension ConnectionStatus {
             #else
             self = .online(.wifi)
             #endif
-            
         } else {
             self =  .offline
         }
     }
 }
 
+
+// MARK: -- Connection Status stuff
+
+internal class ConnectionMonitor {
+    private var timer: QueueTimer? = nil
+    
+    static let shared = ConnectionMonitor()
+    
+    @Atomic var connectionStatus: ConnectionStatus = .unknown
+    
+    init() {
+        self.timer = QueueTimer(interval: 300, immediate: true) { [weak self] in
+            guard let self else { return }
+            self.check()
+        }
+    }
+    
+    internal func check() {
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+
+        guard let defaultRouteReachability = (withUnsafePointer(to: &zeroAddress) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
+        }) else {
+            connectionStatus = .unknown
+            return
+        }
+
+        var flags : SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            connectionStatus = .unknown
+            return
+        }
+
+        connectionStatus = ConnectionStatus(reachabilityFlags: flags)
+    }
+}
+
 internal func connectionStatus() -> ConnectionStatus {
+    return ConnectionMonitor.shared.connectionStatus
+}
+
+/*
+/* 5-minute timer to check connection status.  Checking this for
+ every event that comes through seems like overkill. */
+
+private var __segment_connectionStatus: ConnectionStatus = .unknown
+private var __segment_connectionStatusTimer: QueueTimer? = nil
+private var __segment_connectionStatusLock = NSLock()
+
+internal func __segment_connectionStatusCheck() -> ConnectionStatus {
     var zeroAddress = sockaddr_in()
     zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
     zeroAddress.sin_family = sa_family_t(AF_INET)
@@ -363,4 +421,20 @@ internal func connectionStatus() -> ConnectionStatus {
     return ConnectionStatus(reachabilityFlags: flags)
 }
 
+internal func connectionStatus() -> ConnectionStatus {
+    // the locking may seem like overkill since we're updating it in a queue
+    // however, it is necessary since we're polling. :(
+    if __segment_connectionStatusTimer == nil {
+        __segment_connectionStatusTimer = QueueTimer(interval: 300, immediate: true) {
+            __segment_connectionStatusLock.lock()
+            defer { __segment_connectionStatusLock.unlock() }
+            __segment_connectionStatus = __segment_connectionStatusCheck()
+        }
+    }
+    
+    __segment_connectionStatusLock.lock()
+    defer { __segment_connectionStatusLock.unlock() }
+    return __segment_connectionStatus
+}
+*/
 #endif

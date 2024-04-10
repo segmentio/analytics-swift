@@ -5,7 +5,7 @@
 //  Created by Cody Garvin on 12/4/20.
 //
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
 import Foundation
 import UIKit
@@ -186,8 +186,9 @@ extension SegmentDestination: iOSLifecycle {
 }
 
 extension SegmentDestination.UploadTaskInfo {
-    init(url: URL, task: URLSessionDataTask) {
+    init(url: URL?, data: Data?, task: URLSessionDataTask) {
         self.url = url
+        self.data = data
         self.task = task
         
         if let application = UIApplication.safeShared {

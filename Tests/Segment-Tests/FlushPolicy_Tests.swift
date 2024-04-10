@@ -119,4 +119,33 @@ class FlushPolicyTests: XCTestCase {
         // we now have ONE HA HA.  TWO HA HA .. 3 ... HA HA THREE!  Items to flush!  <flys aways>
         XCTAssertTrue(countFlush.shouldFlush())
     }
+
+    func testIntervalBasedFlushPolicy() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "intervalFlushPolicy"))
+        
+        //remove default flush policies
+        analytics.removeAllFlushPolicies()
+        
+        // make sure storage has no old events
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        let intervalFlush = IntervalBasedFlushPolicy(interval: 2)
+        analytics.add(flushPolicy: intervalFlush)
+        
+        waitUntilStarted(analytics: analytics)
+        analytics.track(name: "blah", properties: nil)
+        
+        XCTAssertTrue(analytics.hasUnsentEvents)
+        
+        @Atomic var flushSent = false
+        while !flushSent {
+            RunLoop.main.run(until: Date.distantPast)
+            if analytics.pendingUploads!.count > 0 {
+                // flush was triggered
+                flushSent = true
+            }
+        }
+        
+        XCTAssertTrue(flushSent)
+    }
 }

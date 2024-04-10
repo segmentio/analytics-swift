@@ -26,7 +26,7 @@ struct MyTraits: Codable {
 
 class GooberPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     init() {
         self.type = .enrichment
@@ -41,12 +41,17 @@ class GooberPlugin: EventPlugin {
 
 class ZiggyPlugin: EventPlugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
+    var receivedInitialUpdate: Int = 0
     
     var completion: (() -> Void)?
     
     required init() {
         self.type = .enrichment
+    }
+    
+    func update(settings: Settings, type: UpdateType) {
+        if type == .initial { receivedInitialUpdate += 1 }
     }
     
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
@@ -74,10 +79,11 @@ class MyDestination: DestinationPlugin {
     var timeline: Timeline
     let type: PluginType
     let key: String
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
     
     let disabled: Bool
+    var receivedInitialUpdate: Int = 0
     
     init(disabled: Bool = false, trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
@@ -88,6 +94,7 @@ class MyDestination: DestinationPlugin {
     }
     
     func update(settings: Settings, type: UpdateType) {
+        if type == .initial { receivedInitialUpdate += 1 }
         if disabled == false {
             // add ourselves to the settings
             analytics?.manuallyEnableDestination(plugin: self)
@@ -107,7 +114,7 @@ class MyDestination: DestinationPlugin {
 
 class OutputReaderPlugin: Plugin {
     let type: PluginType
-    var analytics: Analytics?
+    weak var analytics: Analytics?
     
     var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
@@ -136,6 +143,29 @@ func waitUntilStarted(analytics: Analytics?) {
     }
 }
 
+struct TimedOutError: Error, Equatable {}
+
+public func waitForTaskCompletion<R>(
+    withTimeoutInSeconds timeout: UInt64,
+    _ task: @escaping () async throws -> R
+) async throws -> R {
+    return try await withThrowingTaskGroup(of: R.self) { group in
+        await withUnsafeContinuation { continuation in
+            group.addTask {
+                continuation.resume()
+                return try await task()
+            }
+        }
+        group.addTask {
+            await Task.yield()
+            try await Task.sleep(nanoseconds: timeout * 1_000_000_000)
+            throw TimedOutError()
+        }
+        defer { group.cancelAll() }
+        return try await group.next()!
+    }
+}
+
 extension XCTestCase {
     func checkIfLeaked(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
         addTeardownBlock { [weak instance] in
@@ -143,6 +173,20 @@ extension XCTestCase {
                 print("Instance \(String(describing: instance)) is not nil")
             }
             XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak!", file: file, line: line)
+        }
+    }
+    
+    func waitUntilFinished(analytics: Analytics?, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak analytics] in
+            let instance = try await waitForTaskCompletion(withTimeoutInSeconds: 3) {
+                while analytics != nil {
+                    DispatchQueue.main.sync {
+                        RunLoop.current.run(until: .distantPast)
+                    }
+                }
+                return analytics
+            }
+            XCTAssertNil(instance, "Analytics should have been deallocated. It's likely a memory leak!", file: file, line: line)
         }
     }
 }
@@ -164,6 +208,29 @@ class BlockNetworkCalls: URLProtocol {
     
     override func startLoading() {
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 200, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    override func stopLoading() {
+        
+    }
+}
+
+class FailedNetworkCalls: URLProtocol {
+    var initialURL: URL? = nil
+    override class func canInit(with request: URLRequest) -> Bool {
+        
+        return true
+    }
+    
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    
+    override var cachedResponse: CachedURLResponse? { return nil }
+    
+    override func startLoading() {
+        client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 400, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
     

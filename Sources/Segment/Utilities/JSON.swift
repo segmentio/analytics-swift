@@ -6,7 +6,44 @@
 //
 
 import Foundation
+import JSONSafeEncoder
 
+extension JSONDecoder {
+    enum JSONDecodingError: Error {
+        case couldNotDecodeDate(String)
+    }
+
+    static var `default`: JSONDecoder {
+        let d = JSONDecoder()
+
+        d.dateDecodingStrategy = .custom({ decoder throws -> Date in
+            let stringDate = try decoder.singleValueContainer().decode(String.self)
+
+            guard let date = stringDate.iso8601() else {
+                throw JSONDecodingError.couldNotDecodeDate(stringDate)
+            }
+
+            return date
+        })
+
+        return d
+    }
+}
+
+extension JSONSafeEncoder {
+    static var `default`: JSONSafeEncoder {
+        let e = JSONSafeEncoder()
+
+        e.dateEncodingStrategy = .custom({ date, encoder in
+            let stringDate = date.iso8601()
+            var container = encoder.singleValueContainer()
+            try container.encode(stringDate)
+        })
+
+        e.nonConformingFloatEncodingStrategy = JSON.jsonNonConformingNumberStrategy
+        return e
+    }
+}
 
 // MARK: - JSON Definition
 
@@ -17,6 +54,8 @@ public enum JSON: Equatable {
     case string(String)
     case array([JSON])
     case object([String: JSON])
+    
+    static var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
     
     internal enum JSONError: Error {
         case unknown
@@ -35,9 +74,9 @@ public enum JSON: Equatable {
     
     // For Value types
     public init<T: Codable>(with value: T) throws {
-        let encoder = JSONEncoder()
+        let encoder = JSONSafeEncoder.default
         let json = try encoder.encode(value)
-        let output = try JSONSerialization.jsonObject(with: json)
+        let output = try JSONSerialization.jsonObject(with: json, options: .fragmentsAllowed)
         try self.init(output)
     }
     
@@ -58,6 +97,8 @@ public enum JSON: Equatable {
         // handle swift types
         case Optional<Any>.none:
             self = .null
+        case let date as Date:
+            self = .string(date.iso8601())
         case let url as URL:
             self = .string(url.absoluteString)
         case let string as String:
@@ -72,6 +113,8 @@ public enum JSON: Equatable {
             self = .object(try object.mapValues(JSON.init))
         case let json as JSON:
             self = json
+        case let codable as Codable:
+            self = try Self.init(with: codable)
         // we don't work with whatever is being supplied
         default:
             throw JSONError.nonJSONType(type: "\(value.self)")
@@ -134,7 +177,7 @@ extension Encodable {
     public func toString(pretty: Bool) -> String {
         var returnString = ""
         do {
-            let encoder = JSONEncoder()
+            let encoder = JSONSafeEncoder.default
             if pretty {
                 encoder.outputFormatting = .prettyPrinted
             }
@@ -182,7 +225,11 @@ extension JSON {
     public func codableValue<T: Codable>() -> T? {
         var result: T? = nil
         if let dict = dictionaryValue, let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
-            result = try? JSONDecoder().decode(T.self, from: jsonData)
+            do {
+                result = try JSONDecoder.default.decode(T.self, from: jsonData)
+            } catch {
+                print(error)
+            }
         }
         return result
     }
@@ -402,7 +449,7 @@ extension JSON {
                     if let v = value as? [String: Any] {
                         if let jsonData = try? JSONSerialization.data(withJSONObject: v) {
                             do {
-                                result = try JSONDecoder().decode(T.self, from: jsonData)
+                                result = try JSONDecoder.default.decode(T.self, from: jsonData)
                             } catch {
                                 Analytics.segmentLog(message: "Unable to decode object (\(keyPath)) to a Codable: \(error)", kind: .error)
                             }

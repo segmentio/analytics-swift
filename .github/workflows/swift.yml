@@ -2,119 +2,135 @@ name: Swift
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   cancel_previous:
     runs-on: ubuntu-latest
     steps:
-    - uses: styfle/cancel-workflow-action@0.9.1
-      with:
-        workflow_id: ${{ github.event.workflow.id }}
-        
+      - uses: styfle/cancel-workflow-action@0.12.0
+        with:
+          workflow_id: ${{ github.event.workflow.id }}
+
   build_and_test_spm_mac:
     needs: cancel_previous
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - name: Build
-      run: swift build
-    - name: Run tests
-      run: swift test
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test
 
   build_and_test_spm_linux:
     needs: cancel_previous
     runs-on: ubuntu-latest
     steps:
-    - uses: fwal/setup-swift@v1.21.0
-      with:
-        swift-version: "5.7.2"
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - name: Build
-      run: swift build
-    - name: Run tests
-      run: swift test --enable-test-discovery
+      - uses: sersoft-gmbh/swifty-linux-action@v3
+        with:
+          release-version: "5.9.2"
+          github-token: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test --enable-test-discovery
 
   build_and_test_ios:
     needs: cancel_previous
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13'
-
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15'
 
   build_and_test_tvos:
     needs: cancel_previous
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
   build_and_test_watchos:
     needs: cancel_previous
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - run: xcodebuild -scheme Segment-Package test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 8 (45mm)'
-    
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 9 (45mm)'
+
+  build_and_test_visionos:
+    needs: cancel_previous
+    runs-on: macos-14
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - run: defaults write com.apple.dt.Xcode AllowUnsupportedVisionOSHost -bool YES
+      - run: defaults write com.apple.CoreSimulator AllowUnsupportedVisionOSHost -bool YES
+      - run: xcodebuild -downloadPlatform visionOS
+      - run: echo - skip until apple fixes this - xcodebuild -scheme Segment test -sdk xrsimulator -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
+      - run: xcodebuild -scheme Segment -sdk xrsimulator -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
+
   build_and_test_examples:
     needs: cancel_previous
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-    - uses: actions/checkout@v2
-    - uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-    - name: build for ios simulator
-      run: |
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - name: build for ios simulator
+        run: |
           cd Examples/apps/BasicExample
           xcodebuild -workspace "BasicExample.xcworkspace" -scheme "BasicExample" -sdk iphonesimulator
-    - name: build for ios simulator
-      run: |
+      - name: build for ios simulator
+        run: |
           cd Examples/apps/ObjCExample
           xcodebuild -workspace "ObjCExample.xcworkspace" -scheme "ObjCExample" -sdk iphonesimulator
-    - name: build for ios simulator
-      run: |
+      - name: build for ios simulator
+        run: |
           cd Examples/apps/SegmentUIKitExample
           xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -sdk iphonesimulator
-    - name: build for ios simulator
-      run: |
+      - name: build for ios simulator
+        run: |
           cd Examples/apps/SegmentWeatherWidget
           xcodebuild -workspace "SegmentWeatherWidget.xcworkspace" -scheme "SegmentWeatherWidget" -sdk iphonesimulator
-    - name: build for mac catalyst
-      run: |
+      - name: build for mac catalyst
+        run: |
           cd Examples/apps/SegmentUIKitExample
           xcodebuild -workspace "SegmentUIKitExample.xcworkspace" -scheme "SegmentUIKitExample" -destination 'platform=macOS,variant=Mac Catalyst'
- 

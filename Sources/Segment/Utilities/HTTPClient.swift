@@ -10,7 +10,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-enum HTTPClientErrors: Error {
+public enum HTTPClientErrors: Error {
     case badSession
     case failedToOpenBatch
     case statusCode(code: Int)
@@ -62,30 +62,60 @@ public class HTTPClient {
         let urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
-            if let error = error {
-                self?.analytics?.log(message: "Error uploading request \(error.localizedDescription).")
-                self?.analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
-                completion(.failure(HTTPClientErrors.unknown(error: error)))
-            } else if let httpResponse = response as? HTTPURLResponse {
-                switch (httpResponse.statusCode) {
-                case 1..<300:
-                    completion(.success(true))
-                    return
-                case 300..<400:
-                    self?.analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
-                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
-                case 429:
-                    self?.analytics?.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
-                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
-                default:
-                    self?.analytics?.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))
-                    completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
-                }
-            }
+            guard let self else { return }
+            handleResponse(data: data, response: response, error: error, completion: completion)
         }
         
         dataTask.resume()
         return dataTask
+    }
+    
+    /// Starts an upload of events. Responds appropriately if successful or not. If not, lets the respondant
+    /// know if the task should be retried or not based on the response.
+    /// - Parameters:
+    ///   - key: The write key the events are assocaited with.
+    ///   - batch: The array of the events, considered a batch of events.
+    ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
+    @discardableResult
+    func startBatchUpload(writeKey: String, data: Data, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
+        guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
+            self.analytics?.reportInternalError(HTTPClientErrors.failedToOpenBatch)
+            completion(.failure(HTTPClientErrors.failedToOpenBatch))
+            return nil
+        }
+          
+        let urlRequest = configuredRequest(for: uploadURL, method: "POST")
+
+        let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
+            guard let self else { return }
+            handleResponse(data: data, response: response, error: error, completion: completion)
+        }
+        
+        dataTask.resume()
+        return dataTask
+    }
+    
+    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
+        if let error = error {
+            analytics?.log(message: "Error uploading request \(error.localizedDescription).")
+            analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
+            completion(.failure(HTTPClientErrors.unknown(error: error)))
+        } else if let httpResponse = response as? HTTPURLResponse {
+            switch (httpResponse.statusCode) {
+            case 1..<300:
+                completion(.success(true))
+                return
+            case 300..<400:
+                analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
+                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
+            case 429:
+                analytics?.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
+                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
+            default:
+                analytics?.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))
+                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
+            }
+        }
     }
     
     func settingsFor(writeKey: String, completion: @escaping (Bool, Settings?) -> Void) {
@@ -118,7 +148,7 @@ public class HTTPClient {
             }
             
             do {
-                let responseJSON = try JSONDecoder().decode(Settings.self, from: data)
+                let responseJSON = try JSONDecoder.default.decode(Settings.self, from: data)
                 completion(true, responseJSON)
             } catch {
                 self?.analytics?.reportInternalError(AnalyticsError.jsonUnableToDeserialize(error))

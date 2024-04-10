@@ -73,7 +73,7 @@ public class Context: PlatformPlugin {
         }
         if app.count != 0 {
             staticContext["app"] = [
-                "name": app["CFBundleDisplayName"] ?? "",
+                "name": app["CFBundleDisplayName"] ?? app["CFBundleName"] ?? "" ,
                 "version": app["CFBundleShortVersionString"] ?? "",
                 "build": app["CFBundleVersion"] ?? "",
                 "namespace": Bundle.main.bundleIdentifier ?? ""
@@ -108,9 +108,6 @@ public class Context: PlatformPlugin {
             "width": screen.width,
             "height": screen.height
         ]
-        // user-agent
-        let userAgent = device.userAgent
-        context["userAgent"] = userAgent
         // locale
         if Locale.preferredLanguages.count > 0 {
             context["locale"] = Locale.preferredLanguages[0]
@@ -147,6 +144,13 @@ public class Context: PlatformPlugin {
             "wifi": wifi
         ]
         
+        // user-agent
+        // BKS: This use to be in the static section, however it was discovered that on some platforms
+        // there can be a delay in retrieval.  It has to be fetched on the main thread, so we've spun it off
+        // async and cache it when it comes back.
+        let userAgent = analytics?.configuration.values.userAgent ?? device.userAgent
+        context["userAgent"] = userAgent
+
         // other stuff?? ...
     }
 

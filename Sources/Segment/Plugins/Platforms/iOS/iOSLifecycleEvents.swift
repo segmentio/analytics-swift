@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+#if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
 
 import UIKit
 
@@ -77,18 +77,20 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
-        analytics?.track(name: "Application Opened", properties: [
-            "from_background": true,
-            "version": currentVersion ?? "",
-            "build": currentBuild ?? ""
-        ])
+        if didFinishLaunching == false {
+            analytics?.track(name: "Application Opened", properties: [
+                "from_background": true,
+                "version": currentVersion ?? "",
+                "build": currentBuild ?? ""
+            ])
+        }
     }
     
     func applicationDidEnterBackground(application: UIApplication?) {
+        didFinishLaunching = false
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
-        
         analytics?.track(name: "Application Backgrounded")
     }
     
@@ -96,15 +98,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }
-        
         analytics?.track(name: "Application Foregrounded")
-        
-        // Lets check if we skipped application:didFinishLaunchingWithOptions,
-        // if so, lets call it.
-        if didFinishLaunching == false {
-            // Call application did finish launching
-            self.application(nil, didFinishLaunchingWithOptions: nil)
-        }
     }
 }
 

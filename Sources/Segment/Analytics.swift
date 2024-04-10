@@ -26,12 +26,54 @@ public class Analytics {
     
     public var timeline: Timeline
     
+    static internal let deadInstance = "DEADINSTANCE"
+    static internal weak var firstInstance: Analytics? = nil
+    @Atomic static internal var activeWriteKeys = [String]()
+    
+    /**
+     This method isn't a traditional singleton implementation.  It's provided here
+     to ease migration from analytics-ios to analytics-swift.  Rather than return a
+     singleton, it returns the first instance of Analytics created, OR an instance
+     who's writekey is "DEADINSTANCE".
+     
+     In the case of a dead instance, an assert will be thrown when in DEBUG builds to
+     assist developers in knowning that `shared()` is being called too soon.
+     */
+    static func shared() -> Analytics {
+        if let a = firstInstance {
+            if a.isDead == false {
+                return a
+            }
+        }
+        
+        #if DEBUG
+        if isUnitTesting == false {
+            assert(true == false, "An instance of Analytice does not exist!")
+        }
+        #endif
+        
+        return Analytics(configuration: Configuration(writeKey: deadInstance))
+    }
+    
     /// Initialize this instance of Analytics with a given configuration setup.
     /// - Parameters:
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
+        if Self.isActiveWriteKey(configuration.values.writeKey) {
+            // If you're hitting this in testing, it could be a memory leak, or something async is still running
+            // and holding a reference.  You can use XCTest.waitUntilFinished(...) to wait for things to complete.
+            fatalError("Cannot initialize multiple instances of Analytics with the same write key")
+        } else {
+            Self.addActiveWriteKey(configuration.values.writeKey)
+        }
+        
         store = Store()
-        storage = Storage(store: self.store, writeKey: configuration.values.writeKey)
+        storage = Storage(
+            store: self.store,
+            writeKey: configuration.values.writeKey,
+            storageMode: configuration.values.storageMode,
+            operatingMode: configuration.values.operatingMode
+        )
         timeline = Timeline()
         
         // provide our default state
@@ -40,8 +82,14 @@ public class Analytics {
         
         storage.analytics = self
         
+        checkSharedInstance()
+        
         // Get everything running
         platformStartup()
+    }
+    
+    deinit {
+        Self.removeActiveWriteKey(configuration.values.writeKey)
     }
     
     internal func process<E: RawEvent>(incomingEvent: E) {
@@ -100,6 +148,11 @@ extension Analytics {
         }
     }
     
+    /// Returns the writekey in use for this instance.
+    public var writeKey: String {
+        return configuration.values.writeKey
+    }
+    
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
@@ -114,6 +167,11 @@ extension Analytics {
             return userInfo.userId
         }
         return nil
+    }
+    
+    /// Returns the current operating mode this instance was given.
+    public var operatingMode: OperatingMode {
+        return configuration.values.operatingMode
     }
     
     /// Adjusts the flush interval post configuration.
@@ -142,8 +200,8 @@ extension Analytics {
         }
     }
     
+    /// Returns a list of currently active flush policies.
     public var flushPolicies: [FlushPolicy] {
-        
         get {
             configuration.values.flushPolicies
         }
@@ -166,14 +224,59 @@ extension Analytics {
     }
     
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
-    /// be sent to each plugin present in the system.
-    public func flush() {
+    /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
+    /// called when flush has completed.
+    public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { return }
         
+        let flushGroup = DispatchGroup()
+        // gotta call enter at least once before we ask to be notified.
+        flushGroup.enter()
+        
         apply { plugin in
-            if let p = plugin as? EventPlugin {
-                p.flush()
+            // we want to enter as soon as possible.  waiting to do it from
+            // another queue just takes too long.
+            operatingMode.run(queue: configuration.values.flushQueue) {
+                if let p = plugin as? FlushCompletion {
+                    // flush handles the groups enter/leave calls
+                    p.flush(group: flushGroup) { plugin in
+                        // we don't really care about the plugin value .. yet.
+                    }
+                } else if let p = plugin as? EventPlugin {
+                    flushGroup.enter()
+                    // we have no idea if this will be async or not, assume it's sync.
+                    p.flush()
+                    flushGroup.leave()
+                }
+            }
+        }
+        
+        flushGroup.leave() // matches our initial enter().
+        
+        // if we ARE in sync mode, we need to wait on the group.
+        // This effectively ends up being a `sync` operation.
+        if operatingMode == .synchronous {
+            flushGroup.wait()
+            // we need to call completion on our own since
+            // we skipped setting up notify.  we don't need to do it on
+            // .main since we are in synchronous mode.
+            if let completion { completion() }
+        } else if operatingMode == .asynchronous {
+            // if we're not, flip over to our serial queue, tell it to wait on the flush
+            // group to complete if we have a completion to hit.  Otherwise, no need to
+            // wait on completion.
+            if let completion {
+                // NOTE: DispatchGroup's `notify` method on linux ended up getting called
+                // before the tasks have actually completed, so we went with this instead.
+                OperatingMode.defaultQueue.async { [weak self] in
+                    let timedOut = flushGroup.wait(timeout: .now() + 15 /*seconds*/)
+                    if timedOut == .timedOut {
+                        self?.log(message: "flush(completion:) timed out waiting for completion.")
+                    }
+                    completion()
+                    //DispatchQueue.main.async { completion() }
+                }
             }
         }
     }
@@ -234,32 +337,25 @@ extension Analytics {
             }
         }
 
-        if let files = storage.read(Storage.Constants.events) {
-            if files.count > 0 {
-                return true
-            }
-        }
-            
-        return false
+        return storage.dataStore.hasData
     }
     
     /// Provides a list of finished, but unsent events.
     public var pendingUploads: [URL]? {
-        return storage.read(Storage.Constants.events)
+        return storage.read(Storage.Constants.events)?.dataFiles
     }
     
     /// Purge all pending event upload files.
     public func purgeStorage() {
-        if let files = pendingUploads {
-            for file in files {
-                purgeStorage(fileURL: file)
-            }
-        }
+        storage.dataStore.reset()
     }
     
     /// Purge a single event upload file.
     public func purgeStorage(fileURL: URL) {
-        try? FileManager.default.removeItem(at: fileURL)
+        guard let dataFiles = storage.read(Storage.Constants.events)?.dataFiles else { return }
+        if dataFiles.contains(fileURL) {
+            try? FileManager.default.removeItem(at: fileURL)
+        }
     }
     
     /// Wait until the Analytics object has completed startup.
@@ -332,3 +428,60 @@ extension Analytics {
         track(name: "Deep Link Opened", properties: jsonProperties)
     }
 }
+
+// MARK: Private Stuff
+
+extension Analytics {
+    private func checkSharedInstance() {
+        // is firstInstance a dead one?  If so, override it.
+        if let firstInstance = Self.firstInstance {
+            if firstInstance.isDead {
+                Self.firstInstance = self
+            }
+        }
+        // is firstInstance nil?  If so, set it.
+        if Self.firstInstance == nil {
+            Self.firstInstance = self
+        }
+    }
+    
+    /// Determines if an instance is dead.
+    internal var isDead: Bool {
+        return configuration.values.writeKey == Self.deadInstance
+    }
+    
+    /// Manage active writekeys.  It's wrapped in @atomic
+    internal static func isActiveWriteKey(_ writeKey: String) -> Bool {
+        Self.activeWriteKeys.contains(writeKey)
+    }
+    
+    internal static func addActiveWriteKey(_ writeKey: String) {
+        Self.activeWriteKeys.append(writeKey)
+    }
+    
+    internal static func removeActiveWriteKey(_ writeKey: String) {
+        Self.activeWriteKeys.removeAll { key in
+            writeKey == key
+        }
+    }
+}
+
+// MARK: Operating mode based scheduling
+
+extension OperatingMode {
+    func run(queue: DispatchQueue, task: @escaping () -> Void) {
+        //
+        switch self {
+        case .asynchronous:
+            queue.async {
+                task()
+            }
+        case .synchronous:
+            // in synchronous mode, always use our own queue to
+            // prevent deadlocks.
+            let workItem = DispatchWorkItem(block: task)
+            OperatingMode.defaultQueue.asyncAndWait(execute: workItem)
+        }
+    }
+}
+

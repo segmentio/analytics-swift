@@ -7,6 +7,17 @@
 
 import Foundation
 
+#if os(Linux)
+extension DispatchQueue {
+    func asyncAndWait(execute workItem: DispatchWorkItem) {
+        async {
+            workItem.perform()
+        }
+        workItem.wait()
+    }
+}
+#endif
+
 /// Inquire as to whether we are within a Unit Testing environment.
 #if DEBUG
 internal var isUnitTesting: Bool = {
@@ -58,3 +69,18 @@ extension Optional: Flattenable {
     }
 }
 
+internal func eventStorageDirectory(writeKey: String) -> URL {
+    #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
+    let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
+    #else
+    let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
+    #endif
+    
+    let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
+    let docURL = urls[0]
+    let segmentURL = docURL.appendingPathComponent("segment/\(writeKey)/")
+    // try to create it, will fail if already exists, nbd.
+    // tvOS, watchOS regularly clear out data.
+    try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
+    return segmentURL
+}
