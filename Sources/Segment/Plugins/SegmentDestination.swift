@@ -132,6 +132,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
 
         // enter for the high level flush, allow us time to run through any existing files..
         group.enter()
+        print("flush entering group")
         
         eventCount = 0
         cleanupUploads()
@@ -156,6 +157,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         }
         
         // leave for the high level flush
+        print("flush leaving group")
         group.leave()
     }
 }
@@ -171,6 +173,7 @@ extension SegmentDestination {
         for url in files {
             // enter for this url we're going to kick off
             group.enter()
+            print("flushFiles entered group \(url)")
             analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
             
             // set up the task
@@ -198,6 +201,7 @@ extension SegmentDestination {
                 // call the completion
                 completion(self)
                 // leave for the url we kicked off.
+                print("flushFiles leaving group \(url)")
                 group.leave()
             }
             

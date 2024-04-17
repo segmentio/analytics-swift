@@ -745,7 +745,6 @@ final class Analytics_Tests: XCTestCase {
         let shared2 = Analytics.shared()
         XCTAssertFalse(alive2 === shared2)
         XCTAssertTrue(shared2 === shared)
-        
     }
     
     func testAsyncOperatingMode() throws {
@@ -758,10 +757,6 @@ final class Analytics_Tests: XCTestCase {
         // set the httpclient to use our blocker session
         let segment = analytics.find(pluginType: SegmentDestination.self)
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = true
-        configuration.timeoutIntervalForResource = 30
-        configuration.timeoutIntervalForRequest = 60
-        configuration.httpMaximumConnectionsPerHost = 2
         configuration.protocolClasses = [BlockNetworkCalls.self]
         configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                "Authorization": "Basic test",
@@ -783,7 +778,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 1)
         
         XCTAssertNil(analytics.pendingUploads)
     }
@@ -798,10 +793,6 @@ final class Analytics_Tests: XCTestCase {
         // set the httpclient to use our blocker session
         let segment = analytics.find(pluginType: SegmentDestination.self)
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = true
-        configuration.timeoutIntervalForResource = 30
-        configuration.timeoutIntervalForRequest = 60
-        configuration.httpMaximumConnectionsPerHost = 2
         configuration.protocolClasses = [BlockNetworkCalls.self]
         configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
                                                "Authorization": "Basic test",
