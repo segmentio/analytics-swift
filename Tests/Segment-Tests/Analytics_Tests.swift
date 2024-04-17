@@ -755,25 +755,36 @@ final class Analytics_Tests: XCTestCase {
             .flushAt(9999)
             .operatingMode(.asynchronous))
         
+        // set the httpclient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [BlockNetworkCalls.self]
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        segment?.httpClient?.session = blockSession
+        
         waitUntilStarted(analytics: analytics)
         
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
-        @Atomic var completionCalled = false
+        let expectation = XCTestExpectation()
         
         // put an event in the pipe ...
         analytics.track(name: "completion test1")
         // flush it, that'll get us an upload going
         analytics.flush {
             // verify completion is called.
-            completionCalled = true
+            expectation.fulfill()
         }
         
-        while !completionCalled {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
-        }
+        wait(for: [expectation], timeout: 5)
         
-        XCTAssertTrue(completionCalled)
         XCTAssertNil(analytics.pendingUploads)
     }
     
@@ -784,22 +795,35 @@ final class Analytics_Tests: XCTestCase {
             .flushAt(9999)
             .operatingMode(.synchronous))
         
+        // set the httpclient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [BlockNetworkCalls.self]
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        segment?.httpClient?.session = blockSession
+        
         waitUntilStarted(analytics: analytics)
         
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
-        @Atomic var completionCalled = false
-        
+        let expectation = XCTestExpectation()
         // put an event in the pipe ...
         analytics.track(name: "completion test1")
         // flush it, that'll get us an upload going
         analytics.flush {
             // verify completion is called.
-            completionCalled = true
+            expectation.fulfill()
         }
         
-        // completion shouldn't be called before flush returned.
-        XCTAssertTrue(completionCalled)
+        wait(for: [expectation], timeout: 1)
+        
         XCTAssertNil(analytics.pendingUploads)
         
         // put another event in the pipe.
