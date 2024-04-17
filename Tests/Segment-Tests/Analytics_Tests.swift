@@ -142,10 +142,11 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination(disabled: true) {
             expectation.fulfill()
+            print("called")
             return true
         }
         
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: "testDestNotEnabled")
         let analytics = Analytics(configuration: configuration)
         
         analytics.add(plugin: myDestination)
@@ -936,6 +937,7 @@ final class Analytics_Tests: XCTestCase {
         analytics?.storage.hardReset(doYouKnowHowToUseThis: true)
         // get rid of any anonId we my have had left over
         analytics?.reset()
+        RunLoop.main.run(until: .distantPast)
         
         let outputReader = OutputReaderPlugin()
         analytics?.add(plugin: outputReader)
@@ -955,6 +957,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
 
         analytics?.reset()
+        RunLoop.main.run(until: .distantPast)
         
         analytics?.track(name: "Test3")
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
@@ -967,6 +970,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
         
         analytics?.reset()
+        RunLoop.main.run(until: .distantPast)
         
         analytics?.screen(title: "Screen")
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
@@ -975,7 +979,7 @@ final class Analytics_Tests: XCTestCase {
         
         // get rid of this instance, leave it time to go away ...
         // ... also let any state updates happen as handlers get called async
-        RunLoop.main.run(until: Date.distantPast)
+        RunLoop.main.run(until: .distantPast)
         analytics = nil
         // ... give it some time to release all it's stuff.
         RunLoop.main.run(until: .distantPast)
