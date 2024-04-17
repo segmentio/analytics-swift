@@ -762,6 +762,9 @@ final class Analytics_Tests: XCTestCase {
         
         // put an event in the pipe ...
         analytics.track(name: "completion test1")
+        
+        RunLoop.main.run(until: .distantPast)
+        
         // flush it, that'll get us an upload going
         analytics.flush {
             // verify completion is called.
