@@ -228,7 +228,7 @@ extension Analytics {
     /// called when flush has completed.
     public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
-        guard enabled == true else { return }
+        guard enabled == true else { completion?(); return }
         
         let completionGroup = CompletionGroup(queue: configuration.values.flushQueue)
         apply { plugin in

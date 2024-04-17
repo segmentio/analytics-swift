@@ -167,6 +167,16 @@ extension SegmentDestination {
             group.enter()
             analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
             
+            /*#if DEBUG
+            if isUnitTesting {
+                storage.remove(data: [url])
+                analytics.log(message: "Processed: \(url.lastPathComponent)")
+                cleanupUploads()
+                group.leave()
+                continue
+            }
+            #endif*/
+            
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in
                 defer {
@@ -197,6 +207,9 @@ extension SegmentDestination {
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: url, data: nil, task: upload))
+            } else {
+                // we couldn't get a task, so we need to leave the group or things will hang.
+                group.leave()
             }
         }
     }
@@ -263,6 +276,10 @@ extension SegmentDestination {
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
+            } else {
+                // we couldn't get a task, so we need to leave the group or things will hang.
+                group.leave()
+                semaphore.signal()
             }
             
             _ = semaphore.wait(timeout: .distantFuture)

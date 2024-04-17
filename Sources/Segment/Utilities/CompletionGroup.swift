@@ -51,9 +51,4 @@ class CompletionGroup {
             }
         }
     }
-    
-    /*func runAndWait(completion: @escaping () -> Void) {
-        run(completion: completion)
-        group.wait()
-    }*/
 }
