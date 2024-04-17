@@ -167,7 +167,7 @@ extension SegmentDestination {
             group.enter()
             analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
             
-            #if DEBUG
+            /*#if DEBUG
             if isUnitTesting {
                 storage.remove(data: [url])
                 analytics.log(message: "Processed: \(url.lastPathComponent)")
@@ -175,7 +175,7 @@ extension SegmentDestination {
                 group.leave()
                 continue
             }
-            #endif
+            #endif*/
             
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in

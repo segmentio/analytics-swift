@@ -771,9 +771,9 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation])
         
-        //XCTAssertNil(analytics.pendingUploads)
+        XCTAssertNil(analytics.pendingUploads)
     }
     
     func testSyncOperatingMode() throws {
