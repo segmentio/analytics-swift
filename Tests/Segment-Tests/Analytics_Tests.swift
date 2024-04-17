@@ -142,10 +142,11 @@ final class Analytics_Tests: XCTestCase {
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination(disabled: true) {
             expectation.fulfill()
+            print("called")
             return true
         }
         
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: "testDestNotEnabled")
         let analytics = Analytics(configuration: configuration)
         
         analytics.add(plugin: myDestination)
@@ -754,25 +755,36 @@ final class Analytics_Tests: XCTestCase {
             .flushAt(9999)
             .operatingMode(.asynchronous))
         
+        // set the httpclient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [BlockNetworkCalls.self]
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        segment?.httpClient?.session = blockSession
+        
         waitUntilStarted(analytics: analytics)
         
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
-        @Atomic var completionCalled = false
+        let expectation = XCTestExpectation()
         
         // put an event in the pipe ...
         analytics.track(name: "completion test1")
         // flush it, that'll get us an upload going
         analytics.flush {
             // verify completion is called.
-            completionCalled = true
+            expectation.fulfill()
         }
         
-        while !completionCalled {
-            RunLoop.main.run(until: Date.distantPast)
-        }
+        wait(for: [expectation], timeout: 5)
         
-        XCTAssertTrue(completionCalled)
         XCTAssertNil(analytics.pendingUploads)
     }
     
@@ -783,22 +795,35 @@ final class Analytics_Tests: XCTestCase {
             .flushAt(9999)
             .operatingMode(.synchronous))
         
+        // set the httpclient to use our blocker session
+        let segment = analytics.find(pluginType: SegmentDestination.self)
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.protocolClasses = [BlockNetworkCalls.self]
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
+        segment?.httpClient?.session = blockSession
+        
         waitUntilStarted(analytics: analytics)
         
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
-        @Atomic var completionCalled = false
-        
+        let expectation = XCTestExpectation()
         // put an event in the pipe ...
         analytics.track(name: "completion test1")
         // flush it, that'll get us an upload going
         analytics.flush {
             // verify completion is called.
-            completionCalled = true
+            expectation.fulfill()
         }
         
-        // completion shouldn't be called before flush returned.
-        XCTAssertTrue(completionCalled)
+        wait(for: [expectation], timeout: 1)
+        
         XCTAssertNil(analytics.pendingUploads)
         
         // put another event in the pipe.
@@ -921,4 +946,74 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
     }
     #endif
+    
+    func testAnonIDGenerator() throws {
+        class MyAnonIdGenerator: AnonymousIdGenerator {
+            var currentId: String = "blah-"
+            func newAnonymousId() -> String {
+                currentId = currentId + "1"
+                return currentId
+            }
+        }
+        
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.anonIdGenerator")
+        
+        let anonIdGenerator = MyAnonIdGenerator()
+        var analytics: Analytics? = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
+        let outputReader = OutputReaderPlugin()
+        analytics?.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        XCTAssertEqual(analytics?.anonymousId, "blah-1")
+        
+        analytics?.track(name: "Test1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-1")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        analytics?.track(name: "Test2")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-1")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+
+        analytics?.reset()
+        
+        analytics?.track(name: "Test3")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-11")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+
+        analytics?.identify(userId: "Roger")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-11")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        analytics?.reset()
+        
+        analytics?.screen(title: "Screen")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-111")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        // get rid of this instance, leave it time to go away ...
+        // ... also let any state updates happen as handlers get called async
+        RunLoop.main.run(until: .distantPast)
+        analytics = nil
+        // ... give it some time to release all it's stuff.
+        RunLoop.main.run(until: .distantPast)
+        
+        // make sure it makes it to the next instance
+        analytics = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
+        analytics?.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        // same anonId as last time, yes?
+        analytics?.screen(title: "Screen")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-111")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+    }
 }

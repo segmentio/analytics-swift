@@ -111,9 +111,17 @@ struct UserInfo: Codable, State {
     let traits: JSON?
     let referrer: URL?
     
+    @Noncodable var anonIdGenerator: AnonymousIdGenerator?
+    
     struct ResetAction: Action {
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil, referrer: nil)
+            var anonId: String
+            if let id = state.anonIdGenerator?.newAnonymousId() {
+                anonId = id
+            } else {
+                anonId = UUID().uuidString
+            }
+            return UserInfo(anonymousId: anonId, userId: nil, traits: nil, referrer: nil, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -121,7 +129,7 @@ struct UserInfo: Codable, State {
         let userId: String
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: state.traits, referrer: state.referrer)
+            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: state.traits, referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -129,7 +137,7 @@ struct UserInfo: Codable, State {
         let traits: JSON?
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: traits, referrer: state.referrer)
+            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: traits, referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -138,15 +146,7 @@ struct UserInfo: Codable, State {
         let traits: JSON?
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits, referrer: state.referrer)
-        }
-    }
-    
-    struct SetAnonymousIdAction: Action {
-        let anonymousId: String
-        
-        func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: anonymousId, userId: state.userId, traits: state.traits, referrer: state.referrer)
+            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits, referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -154,7 +154,7 @@ struct UserInfo: Codable, State {
         let url: URL
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: state.traits, referrer: url)
+            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: state.traits, referrer: url, anonIdGenerator: state.anonIdGenerator)
         }
     }
 }
@@ -176,13 +176,15 @@ extension System {
 }
 
 extension UserInfo {
-    static func defaultState(from storage: Storage) -> UserInfo {
+    static func defaultState(from storage: Storage, anonIdGenerator: AnonymousIdGenerator) -> UserInfo {
         let userId: String? = storage.read(.userId)
         let traits: JSON? = storage.read(.traits)
-        var anonymousId: String = UUID().uuidString
+        var anonymousId: String
         if let existingId: String = storage.read(.anonymousId) {
             anonymousId = existingId
+        } else {
+            anonymousId = anonIdGenerator.newAnonymousId()
         }
-        return UserInfo(anonymousId: anonymousId, userId: userId, traits: traits, referrer: nil)
+        return UserInfo(anonymousId: anonymousId, userId: userId, traits: traits, referrer: nil, anonIdGenerator: anonIdGenerator)
     }
 }

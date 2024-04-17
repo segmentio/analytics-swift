@@ -78,7 +78,7 @@ public class Analytics {
         
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
-        store.provide(state: UserInfo.defaultState(from: storage))
+        store.provide(state: UserInfo.defaultState(from: storage, anonIdGenerator: configuration.values.anonymousIdGenerator))
         
         storage.analytics = self
         

@@ -16,6 +16,12 @@ import Sovran
 import FoundationNetworking
 #endif
 
+public class SegmentAnonymousId: AnonymousIdGenerator {
+    public func newAnonymousId() -> String {
+        return UUID().uuidString
+    }
+}
+
 public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion {
     internal enum Constants: String {
         case integrationName = "Segment.io"

@@ -84,3 +84,5 @@ internal func eventStorageDirectory(writeKey: String) -> URL {
     try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
     return segmentURL
 }
+
+
