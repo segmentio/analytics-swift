@@ -937,13 +937,14 @@ final class Analytics_Tests: XCTestCase {
         analytics?.storage.hardReset(doYouKnowHowToUseThis: true)
         // get rid of any anonId we my have had left over
         analytics?.reset()
-        RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
+        print("AnonId = \(analytics?.anonymousId)")
         
         let outputReader = OutputReaderPlugin()
         analytics?.add(plugin: outputReader)
         
         waitUntilStarted(analytics: analytics)
-        
+        print("AnonId = \(analytics?.anonymousId)")
         XCTAssertEqual(analytics?.anonymousId, "blah-1")
         
         analytics?.track(name: "Test1")
@@ -957,7 +958,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
 
         analytics?.reset()
-        RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         
         analytics?.track(name: "Test3")
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
@@ -970,7 +971,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
         
         analytics?.reset()
-        RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         
         analytics?.screen(title: "Screen")
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
@@ -979,10 +980,10 @@ final class Analytics_Tests: XCTestCase {
         
         // get rid of this instance, leave it time to go away ...
         // ... also let any state updates happen as handlers get called async
-        RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         analytics = nil
         // ... give it some time to release all it's stuff.
-        RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         
         // make sure it makes it to the next instance
         analytics = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
