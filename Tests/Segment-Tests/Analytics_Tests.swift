@@ -754,16 +754,6 @@ final class Analytics_Tests: XCTestCase {
             .flushAt(9999)
             .operatingMode(.asynchronous))
         
-        // set the httpclient to use our blocker session
-        let segment = analytics.find(pluginType: SegmentDestination.self)
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.protocolClasses = [BlockNetworkCalls.self]
-        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                               "Authorization": "Basic test",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        segment?.httpClient?.session = blockSession
-        
         waitUntilStarted(analytics: analytics)
         
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -789,16 +779,6 @@ final class Analytics_Tests: XCTestCase {
             .flushInterval(9999)
             .flushAt(9999)
             .operatingMode(.synchronous))
-        
-        // set the httpclient to use our blocker session
-        let segment = analytics.find(pluginType: SegmentDestination.self)
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.protocolClasses = [BlockNetworkCalls.self]
-        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                               "Authorization": "Basic test",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        segment?.httpClient?.session = blockSession
         
         waitUntilStarted(analytics: analytics)
         

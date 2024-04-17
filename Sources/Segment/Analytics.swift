@@ -223,6 +223,9 @@ extension Analytics {
         return nil
     }
     
+    /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
+    /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
+    /// called when flush has completed.
     public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { return }
@@ -231,9 +234,7 @@ extension Analytics {
         apply { plugin in
             completionGroup.add { group in
                 if let p = plugin as? FlushCompletion {
-                    p.flush(group: group) { plugin in
-                        // we don't really care about the plugin value .. yet.
-                    }
+                    p.flush(group: group)
                 } else if let p = plugin as? EventPlugin {
                     group.enter()
                     p.flush()
@@ -244,64 +245,6 @@ extension Analytics {
         
         completionGroup.run(mode: operatingMode) {
             completion?()
-        }
-    }
-    
-    /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
-    /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
-    /// called when flush has completed.
-    public func flush2(completion: (() -> Void)? = nil) {
-        // only flush if we're enabled.
-        guard enabled == true else { return }
-        
-        let flushGroup = DispatchGroup()
-        // gotta call enter at least once before we ask to be notified.
-        flushGroup.enter()
-        
-        apply { plugin in
-            // we want to enter as soon as possible.  waiting to do it from
-            // another queue just takes too long.
-            operatingMode.run(queue: configuration.values.flushQueue) {
-                if let p = plugin as? FlushCompletion {
-                    // flush handles the groups enter/leave calls
-                    p.flush(group: flushGroup) { plugin in
-                        // we don't really care about the plugin value .. yet.
-                    }
-                } else if let p = plugin as? EventPlugin {
-                    flushGroup.enter()
-                    // we have no idea if this will be async or not, assume it's sync.
-                    p.flush()
-                    flushGroup.leave()
-                }
-            }
-        }
-        
-        flushGroup.leave() // matches our initial enter().
-        
-        // if we ARE in sync mode, we need to wait on the group.
-        // This effectively ends up being a `sync` operation.
-        if operatingMode == .synchronous {
-            flushGroup.wait()
-            // we need to call completion on our own since
-            // we skipped setting up notify.  we don't need to do it on
-            // .main since we are in synchronous mode.
-            if let completion { completion() }
-        } else if operatingMode == .asynchronous {
-            // if we're not, flip over to our serial queue, tell it to wait on the flush
-            // group to complete if we have a completion to hit.  Otherwise, no need to
-            // wait on completion.
-            if let completion {
-                // NOTE: DispatchGroup's `notify` method on linux ended up getting called
-                // before the tasks have actually completed, so we went with this instead.
-                OperatingMode.defaultQueue.async { [weak self] in
-                    let timedOut = flushGroup.wait(timeout: .now() + 15 /*seconds*/)
-                    if timedOut == .timedOut {
-                        self?.log(message: "flush(completion:) timed out waiting for completion.")
-                    }
-                    completion()
-                    //DispatchQueue.main.async { completion() }
-                }
-            }
         }
     }
     

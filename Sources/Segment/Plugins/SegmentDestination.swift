@@ -123,16 +123,15 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // unused .. see flush(group:completion:)
     }
     
-    public func flush(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
+    public func flush(group: DispatchGroup) {
+        group.enter()
+        defer { group.leave() }
+        
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         
         // don't flush if analytics is disabled.
         guard analytics.enabled == true else { return }
-
-        // enter for the high level flush, allow us time to run through any existing files..
-        group.enter()
-        print("flush entering group")
         
         eventCount = 0
         cleanupUploads()
@@ -144,26 +143,19 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         
         if pendingUploads == 0 {
             if type == .file, hasData {
-                flushFiles(group: group, completion: completion)
+                flushFiles(group: group)
             } else if type == .data, hasData {
                 // we know it's a data-based transaction as opposed to file I/O
-                flushData(group: group, completion: completion)
-            } else {
-                // there was nothing to do ...
-                completion(self)
+                flushData(group: group)
             }
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
         }
-        
-        // leave for the high level flush
-        print("flush leaving group")
-        group.leave()
     }
 }
 
 extension SegmentDestination {
-    private func flushFiles(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
+    private func flushFiles(group: DispatchGroup) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
@@ -173,11 +165,13 @@ extension SegmentDestination {
         for url in files {
             // enter for this url we're going to kick off
             group.enter()
-            print("flushFiles entered group \(url)")
             analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
             
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in
+                defer {
+                    group.leave()
+                }
                 guard let self else { return }
                 switch result {
                 case .success(_):
@@ -198,11 +192,6 @@ extension SegmentDestination {
                 // make sure it gets removed and it's cleanup() called rather
                 // than waiting on the next flush to come around.
                 cleanupUploads()
-                // call the completion
-                completion(self)
-                // leave for the url we kicked off.
-                print("flushFiles leaving group \(url)")
-                group.leave()
             }
             
             // we have a legit upload in progress now, so add it to our list.
@@ -212,7 +201,7 @@ extension SegmentDestination {
         }
     }
     
-    private func flushData(group: DispatchGroup, completion: @escaping (DestinationPlugin) -> Void) {
+    private func flushData(group: DispatchGroup) {
         // DO NOT CALL THIS FROM THE MAIN THREAD, IT BLOCKS!
         // Don't make me add a check here; i'll be sad you didn't follow directions.
         guard let storage = self.storage else { return }
@@ -243,6 +232,12 @@ extension SegmentDestination {
             
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { [weak self] result in
+                defer {
+                    // leave for the url we kicked off.
+                    group.leave()
+                    semaphore.signal()
+                }
+                
                 guard let self else { return }
                 switch result {
                 case .success(_):
@@ -263,11 +258,6 @@ extension SegmentDestination {
                 // make sure it gets removed and it's cleanup() called rather
                 // than waiting on the next flush to come around.
                 cleanupUploads()
-                // call the completion
-                completion(self)
-                // leave for the url we kicked off.
-                group.leave()
-                semaphore.signal()
             }
             
             // we have a legit upload in progress now, so add it to our list.
