@@ -770,7 +770,7 @@ final class Analytics_Tests: XCTestCase {
         }
         
         while !completionCalled {
-            RunLoop.main.run(until: Date.distantPast)
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         }
         
         XCTAssertTrue(completionCalled)
