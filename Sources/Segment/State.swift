@@ -106,6 +106,8 @@ struct System: State {
 // MARK: - User information
 
 struct UserInfo: Codable, State {
+    static var anonIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
+    
     let anonymousId: String
     let userId: String?
     let traits: JSON?
@@ -113,7 +115,8 @@ struct UserInfo: Codable, State {
     
     struct ResetAction: Action {
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: UUID().uuidString, userId: nil, traits: nil, referrer: nil)
+            let anonId = UserInfo.anonIdGenerator.newAnonymousId()
+            return UserInfo(anonymousId: anonId, userId: nil, traits: nil, referrer: nil)
         }
     }
     
@@ -139,14 +142,6 @@ struct UserInfo: Codable, State {
         
         func reduce(state: UserInfo) -> UserInfo {
             return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits, referrer: state.referrer)
-        }
-    }
-    
-    struct SetAnonymousIdAction: Action {
-        let anonymousId: String
-        
-        func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: anonymousId, userId: state.userId, traits: state.traits, referrer: state.referrer)
         }
     }
     
@@ -179,9 +174,11 @@ extension UserInfo {
     static func defaultState(from storage: Storage) -> UserInfo {
         let userId: String? = storage.read(.userId)
         let traits: JSON? = storage.read(.traits)
-        var anonymousId: String = UUID().uuidString
+        var anonymousId: String
         if let existingId: String = storage.read(.anonymousId) {
             anonymousId = existingId
+        } else {
+            anonymousId = UserInfo.anonIdGenerator.newAnonymousId()
         }
         return UserInfo(anonymousId: anonymousId, userId: userId, traits: traits, referrer: nil)
     }

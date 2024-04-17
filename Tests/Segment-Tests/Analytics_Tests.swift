@@ -921,4 +921,76 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: fileURL.path))
     }
     #endif
+    
+    func testAnonIDGenerator() throws {
+        class MyAnonIdGenerator: AnonymousIdGenerator {
+            var currentId: String = "blah-"
+            func newAnonymousId() -> String {
+                currentId = currentId + "1"
+                return currentId
+            }
+        }
+        
+        let anonIdGenerator = MyAnonIdGenerator()
+        var analytics: Analytics? = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
+        analytics?.storage.hardReset(doYouKnowHowToUseThis: true)
+        // get rid of any anonId we my have had left over
+        analytics?.reset()
+        
+        let outputReader = OutputReaderPlugin()
+        analytics?.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        XCTAssertEqual(analytics?.anonymousId, "blah-1")
+        
+        analytics?.track(name: "Test1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-1")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        analytics?.track(name: "Test2")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-1")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-1")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+
+        analytics?.reset()
+        
+        analytics?.track(name: "Test3")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-11")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+
+        analytics?.identify(userId: "Roger")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-11")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-11")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        analytics?.reset()
+        
+        analytics?.screen(title: "Screen")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-111")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+        // get rid of this instance, leave it time to go away ...
+        // ... also let any state updates happen as handlers get called async
+        RunLoop.main.run(until: Date.distantPast)
+        analytics = nil
+        // ... give it some time to release all it's stuff.
+        RunLoop.main.run(until: .distantPast)
+        
+        // make sure it makes it to the next instance
+        analytics = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
+        analytics?.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        // same anonId as last time, yes?
+        analytics?.screen(title: "Screen")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
+        XCTAssertEqual(anonIdGenerator.currentId, "blah-111")
+        XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+        
+    }
 }
