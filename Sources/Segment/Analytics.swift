@@ -223,10 +223,34 @@ extension Analytics {
         return nil
     }
     
+    public func flush(completion: (() -> Void)? = nil) {
+        // only flush if we're enabled.
+        guard enabled == true else { return }
+        
+        let completionGroup = CompletionGroup(queue: configuration.values.flushQueue)
+        apply { plugin in
+            completionGroup.add { group in
+                if let p = plugin as? FlushCompletion {
+                    p.flush(group: group) { plugin in
+                        // we don't really care about the plugin value .. yet.
+                    }
+                } else if let p = plugin as? EventPlugin {
+                    group.enter()
+                    p.flush()
+                    group.leave()
+                }
+            }
+        }
+        
+        completionGroup.run(mode: operatingMode) {
+            completion?()
+        }
+    }
+    
     /// Tells this instance of Analytics to flush any queued events up to Segment.com.  This command will also
     /// be sent to each plugin present in the system.  A completion handler can be optionally given and will be
     /// called when flush has completed.
-    public func flush(completion: (() -> Void)? = nil) {
+    public func flush2(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { return }
         

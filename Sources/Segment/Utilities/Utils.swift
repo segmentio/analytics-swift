@@ -85,4 +85,3 @@ internal func eventStorageDirectory(writeKey: String) -> URL {
     return segmentURL
 }
 
-
