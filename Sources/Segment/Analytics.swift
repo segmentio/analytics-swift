@@ -234,7 +234,7 @@ extension Analytics {
         apply { plugin in
             completionGroup.add { group in
                 if let p = plugin as? FlushCompletion {
-                    p.flush(group: group)
+                    //p.flush(group: group)
                 } else if let p = plugin as? EventPlugin {
                     group.enter()
                     p.flush()
