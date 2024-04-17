@@ -932,11 +932,11 @@ final class Analytics_Tests: XCTestCase {
             }
         }
         
+        // need to clear settings for this one.
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.anonIdGenerator")
+        
         let anonIdGenerator = MyAnonIdGenerator()
         var analytics: Analytics? = Analytics(configuration: Configuration(writeKey: "anonIdGenerator").anonymousIdGenerator(anonIdGenerator))
-        analytics?.storage.hardReset(doYouKnowHowToUseThis: true)
-        // get rid of any anonId we my have had left over
-        analytics?.reset()
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
         print("AnonId = \(analytics?.anonymousId)")
         
