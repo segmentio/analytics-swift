@@ -234,12 +234,10 @@ extension Analytics {
         apply { plugin in
             completionGroup.add { group in
                 if let p = plugin as? FlushCompletion {
-                    print("flushingCompletion \(plugin.self)")
-                    //p.flush(group: group)
+                    p.flush(group: group)
                 } else if let p = plugin as? EventPlugin {
                     group.enter()
-                    print("flushing \(plugin.self)")
-                    //p.flush()
+                    p.flush()
                     group.leave()
                 }
             }
