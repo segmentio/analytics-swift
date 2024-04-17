@@ -13,7 +13,7 @@ import FoundationNetworking
 
 // MARK: - Custom AnonymousId generator
 /// Conform to this protocol to generate your own AnonymousID
-public protocol AnonymousIdGenerator: AnyObject {
+public protocol AnonymousIdGenerator: AnyObject, Codable {
     /// Returns a new anonymousId.  Segment still manages storage and retrieval of the
     /// current anonymousId and will call this method when new id's are needed.
     ///

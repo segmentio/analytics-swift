@@ -67,9 +67,6 @@ public class Analytics {
             Self.addActiveWriteKey(configuration.values.writeKey)
         }
         
-        // Set the anonId generator to use.
-        UserInfo.anonIdGenerator = configuration.values.anonymousIdGenerator
-        
         store = Store()
         storage = Storage(
             store: self.store,
@@ -81,7 +78,7 @@ public class Analytics {
         
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
-        store.provide(state: UserInfo.defaultState(from: storage))
+        store.provide(state: UserInfo.defaultState(from: storage, anonIdGenerator: configuration.values.anonymousIdGenerator))
         
         storage.analytics = self
         
