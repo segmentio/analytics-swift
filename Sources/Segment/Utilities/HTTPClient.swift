@@ -62,7 +62,6 @@ public class HTTPClient {
         let urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
-            if self == nil { print("UPLOAD TASK SELF IS FREAKIN NIL!!!") }
             guard let self else { return }
             handleResponse(data: data, response: response, error: error, completion: completion)
         }
