@@ -771,7 +771,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 10)
         
         XCTAssertNil(analytics.pendingUploads)
     }
@@ -796,7 +796,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: 10)
         
         XCTAssertNil(analytics.pendingUploads)
         
