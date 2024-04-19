@@ -147,8 +147,8 @@ rm $tempFile
 gh release upload $newVersion ${PRODUCT_NAME}.zip
 gh release upload $newVersion ${PRODUCT_NAME}.sha256
 
-# SPECIAL CASE: We need to upload Sovran and JSONSafeEncoder to save them time.
+# SPECIAL CASE: We need to upload Sovran and JSONSafeEncoding to save them time.
 gh release upload $newVersion Sovran.zip
 gh release upload $newVersion Sovran.sha256
-gh release upload $newVersion JSONSafeEncoder.zip
-gh release upload $newVersion JSONSafeEncoder.sha256
+gh release upload $newVersion JSONSafeEncoding.zip
+gh release upload $newVersion JSONSafeEncoding.sha256

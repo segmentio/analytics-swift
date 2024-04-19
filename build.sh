@@ -18,11 +18,11 @@ rm Segment.zip
 rm Sovran.zip
 rm Segment.sha256
 rm Sovran.sha256
-rm JSONSafeEncoder.zip
-rm JSONSafeEncoder.sha256
+rm JSONSafeEncoding.zip
+rm JSONSafeEncoding.sha256
 
 echo "Building XCFrameworks ..."
 
-swift create-xcframework --clean --platform ios --platform macos --platform maccatalyst --platform tvos --platform watchos --stack-evolution --zip Segment Sovran JSONSafeEncoder
+swift create-xcframework --clean --platform ios --platform macos --platform maccatalyst --platform tvos --platform watchos --stack-evolution --zip Segment Sovran JSONSafeEncoding
 
 echo "Done."
