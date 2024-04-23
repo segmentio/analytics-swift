@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/segmentio/jsonsafeencoding-swift.git",
       "state" : {
-        "revision" : "13449de3474c97ca6b7a25b3288f188b7417b34a",
-        "version" : "1.0.2"
+        "revision" : "af6a8b360984085e36c6341b21ecb35c12f47ebd",
+        "version" : "2.0.0"
       }
     },
     {
