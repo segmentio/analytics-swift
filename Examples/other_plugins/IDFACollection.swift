@@ -82,7 +82,8 @@ extension IDFACollection: iOSLifecycle {
             if status == .notDetermined && !alreadyAsked {
                 // we don't know, so should ask the user.
                 alreadyAsked = true
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
                     askForPermission()
                 }
             }
