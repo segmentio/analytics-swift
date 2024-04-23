@@ -16,6 +16,11 @@ extension DispatchQueue {
         workItem.wait()
     }
 }
+
+// Linux doesn't have autoreleasepool.
+func autoreleasepool(closure: () -> Void) {
+    closure()
+}
 #endif
 
 /// Inquire as to whether we are within a Unit Testing environment.
@@ -84,4 +89,3 @@ internal func eventStorageDirectory(writeKey: String) -> URL {
     try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
     return segmentURL
 }
-
