@@ -116,7 +116,9 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         guard let storage = self.storage else { return }
         // Send Event to File System
         storage.write(.events, value: event)
-        eventCount += 1
+        self._eventCount.withValue { count in
+            count += 1
+        }
     }
     
     public func flush() {

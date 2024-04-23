@@ -29,4 +29,12 @@ public class Atomic<T> {
         get { return queue.sync { return value } }
         set { queue.sync { value = newValue } }
     }
+
+    @discardableResult
+    public func withValue(_ operation: (inout T) -> Void) -> T {
+        queue.sync {
+            operation(&self.value)
+            return self.value
+        }
+    }
 }

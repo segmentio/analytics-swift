@@ -76,6 +76,9 @@ internal class iOSVendorSystem: VendorSystem {
         // BKS: It was discovered that on some platforms there can be a delay in retrieval.
         // It has to be fetched on the main thread, so we've spun it off
         // async and cache it when it comes back.
+        // Note that due to how the `@Atomic` wrapper works, this boolean check may pass twice or more
+        // times before the value is updated, fetching the user agent multiple times as the result.
+        // This is not a big deal as the `userAgent` value is not expected to change often.
         if Self.asyncUserAgent == nil {
             DispatchQueue.main.async {
                 Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
@@ -248,6 +251,9 @@ internal class MacOSVendorSystem: VendorSystem {
         // BKS: It was discovered that on some platforms there can be a delay in retrieval.
         // It has to be fetched on the main thread, so we've spun it off
         // async and cache it when it comes back.
+        // Note that due to how the `@Atomic` wrapper works, this boolean check may pass twice or more
+        // times before the value is updated, fetching the user agent multiple times as the result.
+        // This is not a big deal as the `userAgent` value is not expected to change often.
         if Self.asyncUserAgent == nil {
             DispatchQueue.main.async {
                 Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
