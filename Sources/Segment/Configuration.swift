@@ -6,10 +6,20 @@
 //
 
 import Foundation
-import JSONSafeEncoder
+import JSONSafeEncoding
 #if os(Linux)
 import FoundationNetworking
 #endif
+
+// MARK: - Custom AnonymousId generator
+/// Conform to this protocol to generate your own AnonymousID
+public protocol AnonymousIdGenerator: AnyObject, Codable {
+    /// Returns a new anonymousId.  Segment still manages storage and retrieval of the
+    /// current anonymousId and will call this method when new id's are needed.
+    ///
+    /// - Returns: A new anonymousId.
+    func newAnonymousId() -> String
+}
 
 // MARK: - Operating Mode
 /// Specifies the operating mode/context
@@ -56,6 +66,7 @@ public class Configuration {
         var userAgent: String? = nil
         var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
         var storageMode: StorageMode = .disk
+        var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
     }
     
     internal var values: Values
@@ -248,9 +259,17 @@ public extension Configuration {
         return self
     }
     
+    /// Specify the storage mode to use.  The default is `.disk`.
     @discardableResult
     func storageMode(_ mode: StorageMode) -> Configuration {
         values.storageMode = mode
+        return self
+    }
+    
+    /// Specify a custom anonymousId generator.  The default is and instance of `SegmentAnonymousId`.
+    @discardableResult
+    func anonymousIdGenerator(_ generator: AnonymousIdGenerator) -> Configuration {
+        values.anonymousIdGenerator = generator
         return self
     }
 }

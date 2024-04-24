@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import JSONSafeEncoder
 
 enum SegmentISO8601DateFormatter {
     static let shared: ISO8601DateFormatter = {

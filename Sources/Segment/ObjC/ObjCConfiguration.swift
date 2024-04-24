@@ -8,7 +8,7 @@
 #if !os(Linux)
 
 import Foundation
-import JSONSafeEncoder
+import JSONSafeEncoding
 
 @objc(SEGConfiguration)
 public class ObjCConfiguration: NSObject {

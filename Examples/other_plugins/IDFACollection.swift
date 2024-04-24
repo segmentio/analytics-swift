@@ -77,10 +77,16 @@ class IDFACollection: Plugin {
 extension IDFACollection: iOSLifecycle {
     func applicationDidBecomeActive(application: UIApplication?) {
         let status = ATTrackingManager.trackingAuthorizationStatus
-        if status == .notDetermined && !alreadyAsked {
-            // we don't know, so should ask the user.
-            alreadyAsked = true
-            askForPermission()
+
+        _alreadyAsked.withValue { alreadyAsked in
+            if status == .notDetermined && !alreadyAsked {
+                // we don't know, so should ask the user.
+                alreadyAsked = true
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    askForPermission()
+                }
+            }
         }
     }
 }

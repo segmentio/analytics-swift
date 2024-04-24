@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "jsonsafeencoder-swift",
+      "identity" : "jsonsafeencoding-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/segmentio/jsonsafeencoder-swift.git",
+      "location" : "https://github.com/segmentio/jsonsafeencoding-swift.git",
       "state" : {
-        "revision" : "75ad40f07d4e0b938e3afb80811244d6b7acd4ba",
-        "version" : "1.0.0"
+        "revision" : "af6a8b360984085e36c6341b21ecb35c12f47ebd",
+        "version" : "2.0.0"
       }
     },
     {

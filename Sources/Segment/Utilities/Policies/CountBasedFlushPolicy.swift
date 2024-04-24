@@ -37,7 +37,9 @@ public class CountBasedFlushPolicy: FlushPolicy {
     }
     
    public func updateState(event: RawEvent) {
-        count += 1
+       _count.withValue { value in
+           value += 1
+       }
     }
     
     public func reset() {
