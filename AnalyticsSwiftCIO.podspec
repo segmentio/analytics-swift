@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
         "Segment_Privacy" => "Sources/Segment/Resources/PrivacyInfo.xcprivacy"
     }
 
-    s.dependency 'Sovran', '~> 1.1.1'
-    s.dependency 'JSONSafeEncoder', '~> 1.0.2'
+    s.dependency 'Sovran', '1.1.1'
+    s.dependency 'JSONSafeEncoder', '2.0.0'
 end
