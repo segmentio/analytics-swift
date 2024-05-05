@@ -34,35 +34,36 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
             return
         }
         
-        let previousVersion = UserDefaults.standard.string(forKey: Self.versionKey)
-        let previousBuild = UserDefaults.standard.string(forKey: Self.buildKey)
-        
-        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-        
-        if previousBuild == nil {
-            analytics?.track(name: "Application Installed", properties: [
-                "version": currentVersion ?? "",
-                "build": currentBuild ?? ""
-            ])
-        } else if currentBuild != previousBuild {
+        let previousVersion: String? = UserDefaults.standard.string(forKey: Self.versionKey)
+        let previousBuild: String? = UserDefaults.standard.string(forKey: Self.buildKey)
+
+        let currentVersion: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        let currentBuild: String = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
+
+        if let previousBuild,
+           currentBuild != previousBuild {
             analytics?.track(name: "Application Updated", properties: [
                 "previous_version": previousVersion ?? "",
-                "previous_build": previousBuild ?? "",
-                "version": currentVersion ?? "",
-                "build": currentBuild ?? ""
+                "previous_build": previousBuild,
+                "version": currentVersion,
+                "build": currentBuild
+            ])
+        } else {
+            analytics?.track(name: "Application Installed", properties: [
+                "version": currentVersion,
+                "build": currentBuild
             ])
         }
-        
-        let sourceApp: String? = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
-        let url: String? = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String ?? ""
+
+        let sourceApp: String = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
+        let url: String = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String ?? ""
         
         analytics?.track(name: "Application Opened", properties: [
             "from_background": false,
-            "version": currentVersion ?? "",
-            "build": currentBuild ?? "",
-            "referring_application": sourceApp ?? "",
-            "url": url ?? ""
+            "version": currentVersion,
+            "build": currentBuild,
+            "referring_application": sourceApp,
+            "url": url
         ])
         
         UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)
