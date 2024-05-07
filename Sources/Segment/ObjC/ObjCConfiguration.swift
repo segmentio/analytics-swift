@@ -10,7 +10,7 @@
 import Foundation
 import JSONSafeEncoding
 
-@objc(SEGConfiguration)
+@objc(CIOConfiguration)
 public class ObjCConfiguration: NSObject {
     internal var configuration: Configuration
     

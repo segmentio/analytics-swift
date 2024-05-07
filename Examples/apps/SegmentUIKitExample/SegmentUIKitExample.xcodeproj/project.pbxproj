@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30678B7F2BE982DC000C3E2D /* CioAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 30678B7E2BE982DC000C3E2D /* CioAnalytics */; };
 		46022785261F860100A9E913 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022784261F860100A9E913 /* AppDelegate.swift */; };
 		46022787261F860100A9E913 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022786261F860100A9E913 /* SceneDelegate.swift */; };
 		46022789261F860100A9E913 /* Tab1ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46022788261F860100A9E913 /* Tab1ViewController.swift */; };
@@ -19,7 +20,6 @@
 		46E3834E26582D9E00BA2502 /* IDFACollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3834A26582D9E00BA2502 /* IDFACollection.swift */; };
 		46E3835326582DA400BA2502 /* CustomScreenTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3835126582DA400BA2502 /* CustomScreenTracking.swift */; };
 		46E3835426582DA400BA2502 /* MultiInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E3835226582DA400BA2502 /* MultiInstance.swift */; };
-		46E383572658307800BA2502 /* Segment in Frameworks */ = {isa = PBXBuildFile; productRef = 46E383562658307800BA2502 /* Segment */; };
 		46E73DA326F531320021042C /* NotificationTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E73DA226F531320021042C /* NotificationTracking.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,7 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46E383572658307800BA2502 /* Segment in Frameworks */,
+				30678B7F2BE982DC000C3E2D /* CioAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,7 +138,7 @@
 			);
 			name = SegmentUIKitExample;
 			packageProductDependencies = (
-				46E383562658307800BA2502 /* Segment */,
+				30678B7E2BE982DC000C3E2D /* CioAnalytics */,
 			);
 			productName = SegmentUIKitExample;
 			productReference = 46022781261F860100A9E913 /* SegmentUIKitExample.app */;
@@ -439,13 +439,13 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		30678B7E2BE982DC000C3E2D /* CioAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CioAnalytics;
+		};
 		460227A0261F887C00A9E913 /* Segment */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4602279B261F884600A9E913 /* XCRemoteSwiftPackageReference "analytics-swift" */;
-			productName = Segment;
-		};
-		46E383562658307800BA2502 /* Segment */ = {
-			isa = XCSwiftPackageProductDependency;
 			productName = Segment;
 		};
 /* End XCSwiftPackageProductDependency section */

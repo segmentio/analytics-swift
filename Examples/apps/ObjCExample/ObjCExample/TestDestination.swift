@@ -8,7 +8,7 @@
 import Foundation
 import Segment
 
-@objc(SEGTestDestination)
+@objc(CIOTestDestination)
 public class ObjCTestDestination: NSObject, ObjCPlugin, ObjCPluginShim {
     public func instance() -> EventPlugin { return TestDestination() }
 }

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Segment
+import CioAnalytics
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {

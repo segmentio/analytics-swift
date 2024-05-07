@@ -30,7 +30,7 @@
 // SOFTWARE.
 
 import Foundation
-import Segment
+import CioAnalytics
 
 /**
  An example of implementing multiple Analytics instances in a single application.

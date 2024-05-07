@@ -12,7 +12,7 @@ import JSONSafeEncoding
 
 // MARK: - ObjC Compatibility
 
-@objc(SEGAnalytics)
+@objc(CIOAnalytics)
 public class ObjCAnalytics: NSObject {
     /// The underlying Analytics object we're working with
     public let analytics: Analytics
