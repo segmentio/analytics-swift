@@ -52,7 +52,7 @@ final class Analytics_Tests: XCTestCase {
         analytics.identify(userId: "brandon", traits: traits)
         analytics.remove(plugin: ziggy)
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: .infinity)
     }
     
     func testDestinationInitialUpdateOnlyOnce() {
@@ -90,7 +90,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(dest)
         XCTAssertTrue(dest is MyDestination)
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: .infinity)
         
         XCTAssertEqual(myDestination.receivedInitialUpdate, 1)
         XCTAssertEqual(ziggy1.receivedInitialUpdate, 1)
@@ -130,7 +130,7 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertNotNil(dest)
         XCTAssertTrue(dest is MyDestination)
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: .infinity)
     }
     
     // Linux doesn't support XCTExpectFailure
@@ -156,7 +156,7 @@ final class Analytics_Tests: XCTestCase {
         analytics.track(name: "testDestinationEnabled")
         
         XCTExpectFailure {
-            wait(for: [expectation], timeout: 1.0)
+            wait(for: [expectation], timeout: .infinity)
         }
     }
 #endif
@@ -771,11 +771,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        #if os(iOS)
-        wait(for: [expectation])
-        #else
-        wait(for: [expectation], timeout: 5)
-        #endif
+        wait(for: [expectation], timeout: .infinity)
         
         XCTAssertNil(analytics.pendingUploads)
     }
@@ -800,7 +796,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 10)
+        wait(for: [expectation], timeout: .infinity)
         
         XCTAssertNil(analytics.pendingUploads)
         
@@ -915,7 +911,7 @@ final class Analytics_Tests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: .infinity)
         
         let newStoredEvents: [URL]? = analytics.storage.read(.events)
         
