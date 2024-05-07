@@ -13,9 +13,6 @@ import Foundation
 
 import SystemConfiguration
 import UIKit
-#if !os(tvOS)
-import WebKit
-#endif
 
 internal class iOSVendorSystem: VendorSystem {
     private let device = UIDevice.current
