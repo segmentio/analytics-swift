@@ -19,7 +19,6 @@ import WebKit
 
 internal class iOSVendorSystem: VendorSystem {
     private let device = UIDevice.current
-    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -72,23 +71,7 @@ internal class iOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        #if !os(tvOS)
-        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
-        // It has to be fetched on the main thread, so we've spun it off
-        // async and cache it when it comes back.
-        // Note that due to how the `@Atomic` wrapper works, this boolean check may pass twice or more
-        // times before the value is updated, fetching the user agent multiple times as the result.
-        // This is not a big deal as the `userAgent` value is not expected to change often.
-        if Self.asyncUserAgent == nil {
-            DispatchQueue.main.async {
-                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
-            }
-        }
-        return Self.asyncUserAgent
-        #else
-        // webkit isn't on tvos
-        return "unknown"
-        #endif
+        return UserAgent.value
     }
     
     override var connection: ConnectionStatus {
@@ -156,7 +139,7 @@ internal class watchOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        return nil
+        return UserAgent.value
     }
     
     override var connection: ConnectionStatus {
@@ -207,7 +190,6 @@ import WebKit
 
 internal class MacOSVendorSystem: VendorSystem {
     private let device = ProcessInfo.processInfo
-    @Atomic private static var asyncUserAgent: String? = nil
     
     override var manufacturer: String {
         return "Apple"
@@ -248,18 +230,7 @@ internal class MacOSVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        // BKS: It was discovered that on some platforms there can be a delay in retrieval.
-        // It has to be fetched on the main thread, so we've spun it off
-        // async and cache it when it comes back.
-        // Note that due to how the `@Atomic` wrapper works, this boolean check may pass twice or more
-        // times before the value is updated, fetching the user agent multiple times as the result.
-        // This is not a big deal as the `userAgent` value is not expected to change often.
-        if Self.asyncUserAgent == nil {
-            DispatchQueue.main.async {
-                Self.asyncUserAgent = WKWebView().value(forKey: "userAgent") as? String
-            }
-        }
-        return Self.asyncUserAgent
+        return UserAgent.value
     }
     
     override var connection: ConnectionStatus {
