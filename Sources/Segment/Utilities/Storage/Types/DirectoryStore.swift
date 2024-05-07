@@ -8,6 +8,8 @@
 import Foundation
 
 public class DirectoryStore: DataStore {
+    internal static var fileValidator: ((URL) -> Void)? = nil
+    
     public typealias StoreConfiguration = Configuration
     
     public struct Configuration {
@@ -178,6 +180,8 @@ extension DirectoryStore {
         try? FileManager.default.moveItem(at: url, to: newURL)
         self.writer = nil
         incrementIndex()
+        
+        DirectoryStore.fileValidator?(newURL)
     }
 }
 
