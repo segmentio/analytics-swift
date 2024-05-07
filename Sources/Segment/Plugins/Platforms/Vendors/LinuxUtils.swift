@@ -43,7 +43,7 @@ class LinuxVendorSystem: VendorSystem {
     }
     
     override var userAgent: String? {
-        return "unknown"
+        return UserAgent.value
     }
     
     override var connection: ConnectionStatus {
