@@ -13,7 +13,6 @@ internal class Storage: Subscriber {
     let userDefaults: UserDefaults
     static let MAXFILESIZE = 475000 // Server accepts max 500k per batch
 
-    internal var onFinish: ((URL) -> Void)? = nil
     internal weak var analytics: Analytics? = nil
     
     internal let dataStore: TransientDB
