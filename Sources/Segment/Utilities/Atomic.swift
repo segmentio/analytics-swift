@@ -22,19 +22,29 @@ import Foundation
 
 @propertyWrapper
 public class Atomic<T> {
+    #if os(Linux)
+    let lock: NSLock
+    #else
     internal typealias os_unfair_lock_t = UnsafeMutablePointer<os_unfair_lock_s>
     internal var unfairLock: os_unfair_lock_t
+    #endif
     
     internal var value: T
     
     public init(wrappedValue value: T) {
+        #if os(Linux)
+        self.lock = NSLock()
+        #else
         self.unfairLock = UnsafeMutablePointer<os_unfair_lock_s>.allocate(capacity: 1)
         self.unfairLock.initialize(to: os_unfair_lock())
+        #endif
         self.value = value
     }
     
     deinit {
+        #if !os(Linux)
         unfairLock.deallocate()
+        #endif
     }
     
     public var wrappedValue: T {
@@ -59,10 +69,18 @@ public class Atomic<T> {
 
 extension Atomic {
     internal func lock() {
+        #if os(Linux)
+        self.lock.lock()
+        #else
         os_unfair_lock_lock(unfairLock)
+        #endif
     }
     
     internal func unlock() {
+        #if os(Linux)
+        self.lock.unlock()
+        #else
         os_unfair_lock_unlock(unfairLock)
+        #endif
     }
 }

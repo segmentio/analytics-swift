@@ -78,7 +78,7 @@ extension IDFACollection: iOSLifecycle {
     func applicationDidBecomeActive(application: UIApplication?) {
         let status = ATTrackingManager.trackingAuthorizationStatus
 
-        _alreadyAsked.withValue { alreadyAsked in
+        _alreadyAsked.mutate { alreadyAsked in
             if status == .notDetermined && !alreadyAsked {
                 // we don't know, so should ask the user.
                 alreadyAsked = true
