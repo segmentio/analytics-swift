@@ -23,7 +23,7 @@ import Foundation
 @propertyWrapper
 public class Atomic<T> {
     #if os(Linux)
-    let lock: NSLock
+    let swiftLock: NSLock
     #else
     internal typealias os_unfair_lock_t = UnsafeMutablePointer<os_unfair_lock_s>
     internal var unfairLock: os_unfair_lock_t
@@ -33,7 +33,7 @@ public class Atomic<T> {
     
     public init(wrappedValue value: T) {
         #if os(Linux)
-        self.lock = NSLock()
+        self.swiftLock = NSLock()
         #else
         self.unfairLock = UnsafeMutablePointer<os_unfair_lock_s>.allocate(capacity: 1)
         self.unfairLock.initialize(to: os_unfair_lock())
@@ -70,7 +70,7 @@ public class Atomic<T> {
 extension Atomic {
     internal func lock() {
         #if os(Linux)
-        self.lock.lock()
+        swiftLock.lock()
         #else
         os_unfair_lock_lock(unfairLock)
         #endif
@@ -78,7 +78,7 @@ extension Atomic {
     
     internal func unlock() {
         #if os(Linux)
-        self.lock.unlock()
+        swiftLock.unlock()
         #else
         os_unfair_lock_unlock(unfairLock)
         #endif
