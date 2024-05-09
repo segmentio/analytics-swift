@@ -176,12 +176,15 @@ extension DirectoryStore {
         try? writer.writeLine(fileEnding)
         
         let url = writer.url
+        
+        // do validation before we rename to prevent the file disappearing out from under us.
+        DirectoryStore.fileValidator?(url)
+        
+        // move it to make availble for flushing ...
         let newURL = url.appendingPathExtension(Self.tempExtension)
         try? FileManager.default.moveItem(at: url, to: newURL)
         self.writer = nil
         incrementIndex()
-        
-        DirectoryStore.fileValidator?(newURL)
     }
 }
 
