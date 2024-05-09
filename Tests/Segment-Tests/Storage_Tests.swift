@@ -290,7 +290,7 @@ class StorageTests: XCTestCase {
         @Atomic var done = false
         analytics.flush {
             print("flush completed")
-            done = true
+            _done.set(true)
         }
         
         while !done {

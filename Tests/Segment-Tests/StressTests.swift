@@ -24,19 +24,11 @@ class StressTests: XCTestCase {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
-        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest").errorHandler({ error in
+        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2").errorHandler({ error in
             XCTFail("Storage Error: \(error)")
         }))
+        analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
-        analytics.storage.onFinish = { url in
-            // check that each one is valid json
-            do {
-                let json = try Data(contentsOf: url)
-                _ = try JSONSerialization.jsonObject(with: json)
-            } catch {
-                XCTFail("\(error) in \(url)")
-            }
-        }
         
         DirectoryStore.fileValidator = { url in
             do {
@@ -83,22 +75,22 @@ class StressTests: XCTestCase {
         
         // schedule a bunch of events to go out
         for i in 0..<1_000_000 {
-            let randomInt = Int.random(in: 0..<30)
-            let queue = queues[randomInt]
-            group.enter()
-            queue.async {
-                writeBlock(randomInt)
-                group.leave()
-            }
+                let randomInt = Int.random(in: 0..<30)
+                let queue = queues[randomInt]
+                group.enter()
+                queue.async {
+                    writeBlock(randomInt)
+                    group.leave()
+                }
         }
                 
         group.notify(queue: DispatchQueue.main) {
-            ready = false
+            _ready.set(false)
             print("\(eventsWritten) events written, across 30 queues.")
             print("all queues finished.")
         }
         
-        ready = true
+        _ready.set(true)
         
         group.leave()
         
@@ -117,15 +109,6 @@ class StressTests: XCTestCase {
             XCTFail("Storage Error: \(error)")
         }))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
-        analytics.storage.onFinish = { url in
-            // check that each one is valid json
-            do {
-                let json = try Data(contentsOf: url)
-                _ = try JSONSerialization.jsonObject(with: json)
-            } catch {
-                XCTFail("\(error) in \(url)")
-            }
-        }
         
         DirectoryStore.fileValidator = { url in
             do {
@@ -175,7 +158,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 1 wrote \(eventsWritten) events.")
-            queue1Done = true
+            _queue1Done.set(true)
         }
         
         writeQueue2.async {
@@ -189,7 +172,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 2 wrote \(eventsWritten) events.")
-            queue2Done = true
+            _queue2Done.set(true)
         }
         
         writeQueue3.async {
@@ -203,7 +186,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 3 wrote \(eventsWritten) events.")
-            queue3Done = true
+            _queue3Done.set(true)
         }
         
         writeQueue4.async {
@@ -217,7 +200,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 4 wrote \(eventsWritten) events.")
-            queue4Done = true
+            _queue4Done.set(true)
         }
         
         flushQueue.async {
@@ -233,10 +216,10 @@ class StressTests: XCTestCase {
                 counter += 1
             }
             print("flushed \(counter) times.")
-            ready = false
+            _ready.set(false)
         }
         
-        ready = true
+        _ready.set(true)
         
         while (ready) {
             RunLoop.main.run(until: Date.distantPast)
@@ -257,15 +240,6 @@ class StressTests: XCTestCase {
             XCTFail("Storage Error: \(error)")
         }))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
-        analytics.storage.onFinish = { url in
-            // check that each one is valid json
-            do {
-                let json = try Data(contentsOf: url)
-                _ = try JSONSerialization.jsonObject(with: json)
-            } catch {
-                XCTFail("\(error) in \(url)")
-            }
-        }
 
         waitUntilStarted(analytics: analytics)
         
@@ -302,7 +276,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 1 wrote \(eventsWritten) events.")
-            queue1Done = true
+            _queue1Done.set(true)
         }
         
         writeQueue2.async {
@@ -316,7 +290,7 @@ class StressTests: XCTestCase {
                 RunLoop.main.run(until: Date.distantPast)
             }
             print("queue 2 wrote \(eventsWritten) events.")
-            queue2Done = true
+            _queue2Done.set(true)
         }
         
         flushQueue.async {
@@ -332,10 +306,10 @@ class StressTests: XCTestCase {
                 counter += 1
             }
             print("flushed \(counter) times.")
-            ready = false
+            _ready.set(false)
         }
         
-        ready = true
+        _ready.set(true)
         
         while (ready) {
             RunLoop.main.run(until: Date.distantPast)

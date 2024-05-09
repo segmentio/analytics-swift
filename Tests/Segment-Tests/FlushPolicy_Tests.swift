@@ -142,7 +142,7 @@ class FlushPolicyTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
             if analytics.pendingUploads!.count > 0 {
                 // flush was triggered
-                flushSent = true
+                _flushSent.set(true)
             }
         }
         

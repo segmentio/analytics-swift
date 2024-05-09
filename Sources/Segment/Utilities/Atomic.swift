@@ -7,34 +7,62 @@
 
 import Foundation
 
-// NOTE: Revised from previous implementation which used a struct and NSLock's.
-// Thread Sanitizer was *correctly* capturing this issue, which was a little obscure
-// given the property wrapper PLUS the semantics of a struct.  Moving to `class`
-// removes the semantics problem and lets TSan approve of what's happening.
-//
-// Additionally, moving to a lock free version is just desirable, so moved to a queue.
-//
-// Also see thread here: https://github.com/apple/swift-evolution/pull/1387
+/*
+ Revised the implementation yet again.  Tiziano Coriano noticed that this wrapper
+ can be misleading about it's atomicity.  A single set would be atomic, but a compound
+ operation like += would cause an atomic read, and a separate atomic write, in which
+ point another thread could've changed the value we're now working off of.
+ 
+ This implementation removes the ability to set wrappedValue, and callers now must use
+ the set() or mutate() functions explicitly to ensure a proper atomic mutation.
+ 
+ The use of a dispatch queue was also removed in favor of an unfair lock (yes, it's
+ implemented correctly).
+ */
 
 @propertyWrapper
 public class Atomic<T> {
-    private var value: T
-    private let queue = DispatchQueue(label: "com.segment.atomic.\(UUID().uuidString)")
-
+    internal typealias os_unfair_lock_t = UnsafeMutablePointer<os_unfair_lock_s>
+    internal var unfairLock: os_unfair_lock_t
+    
+    internal var value: T
+    
     public init(wrappedValue value: T) {
+        self.unfairLock = UnsafeMutablePointer<os_unfair_lock_s>.allocate(capacity: 1)
+        self.unfairLock.initialize(to: os_unfair_lock())
         self.value = value
     }
-
-    public var wrappedValue: T {
-        get { return queue.sync { return value } }
-        set { queue.sync { value = newValue } }
+    
+    deinit {
+        unfairLock.deallocate()
     }
-
-    @discardableResult
-    public func withValue(_ operation: (inout T) -> Void) -> T {
-        queue.sync {
-            operation(&self.value)
-            return self.value
+    
+    public var wrappedValue: T {
+        get {
+            lock()
+            defer { unlock() }
+            return value
         }
+        // set is not allowed, use set() or mutate()
+    }
+    
+    public func set(_ newValue: T) {
+        mutate { $0 = newValue }
+    }
+    
+    public func mutate(_ mutation: (inout T) -> Void) {
+        lock()
+        defer { unlock() }
+        mutation(&value)
+    }
+}
+
+extension Atomic {
+    internal func lock() {
+        os_unfair_lock_lock(unfairLock)
+    }
+    
+    internal func unlock() {
+        os_unfair_lock_unlock(unfairLock)
     }
 }

@@ -28,7 +28,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         
         // Make sure we aren't double calling application:didFinishLaunchingWithOptions
         // by resetting the check at the start
-        didFinishLaunching = true
+        _didFinishLaunching.set(true)
         
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
@@ -88,7 +88,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     }
     
     func applicationDidEnterBackground(application: UIApplication?) {
-        didFinishLaunching = false
+        _didFinishLaunching.set(false)
         if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
             return
         }

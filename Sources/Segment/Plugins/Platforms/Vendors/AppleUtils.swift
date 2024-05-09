@@ -348,17 +348,17 @@ internal class ConnectionMonitor {
                 SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
             }
         }) else {
-            connectionStatus = .unknown
+            _connectionStatus.set(.unknown)
             return
         }
 
         var flags : SCNetworkReachabilityFlags = []
         if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
-            connectionStatus = .unknown
+            _connectionStatus.set(.unknown)
             return
         }
 
-        connectionStatus = ConnectionStatus(reachabilityFlags: flags)
+        _connectionStatus.set(ConnectionStatus(reachabilityFlags: flags))
     }
 }
 
