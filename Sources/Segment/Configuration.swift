@@ -67,6 +67,7 @@ public class Configuration {
         var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
+        var httpSession: (() -> any HTTPSession)? = nil
     }
     
     internal var values: Values
@@ -245,8 +246,8 @@ public extension Configuration {
 
     /// Specify a custom UserAgent string.  This bypasses the OS dependent check entirely.
     @discardableResult
-    func userAgent(_ userAgent: String) -> Configuration {
-        values.userAgent = userAgent
+    func httpSession(_ httpSession: @escaping @autoclosure () -> HTTPSession) -> Configuration {
+        values.httpSession = httpSession
         return self
     }
     
