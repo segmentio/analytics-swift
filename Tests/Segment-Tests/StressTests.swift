@@ -98,6 +98,11 @@ class StressTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
         }
         
+        // wait for everything to settle down flush-wise...
+        while (analytics.hasUnsentEvents) {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: .seconds(5)))
+        }
+        
         analytics.purgeStorage()
     }
     
