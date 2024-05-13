@@ -18,8 +18,8 @@ class StressTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
-    #if !os(Linux) && !os(watchOS)
+    // Linux doesn't know what URLProtocol is and on tvOS/watchOS it somehow works differently and isn't hit.
+    #if !os(Linux) && !os(tvOS) && !os(watchOS)
     func testDirectoryStorageStress2() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
@@ -230,10 +230,7 @@ class StressTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
         }
     }
-    #endif
-     
-    // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
-    #if !os(Linux) && !os(watchOS)
+    
     func testMemoryStorageStress() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
