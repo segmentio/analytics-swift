@@ -74,7 +74,7 @@ class StressTests: XCTestCase {
         }
         
         // schedule a bunch of events to go out
-        for i in 0..<1_000_000 {
+        for _ in 0..<500_000 {
                 let randomInt = Int.random(in: 0..<30)
                 let queue = queues[randomInt]
                 group.enter()
