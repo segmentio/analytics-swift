@@ -246,8 +246,8 @@ public extension Configuration {
 
     /// Specify a custom UserAgent string.  This bypasses the OS dependent check entirely.
     @discardableResult
-    func httpSession(_ httpSession: @escaping @autoclosure () -> HTTPSession) -> Configuration {
-        values.httpSession = httpSession
+    func userAgent(_ userAgent: String) -> Configuration {
+        values.userAgent = userAgent
         return self
     }
     
@@ -271,6 +271,16 @@ public extension Configuration {
     @discardableResult
     func anonymousIdGenerator(_ generator: AnonymousIdGenerator) -> Configuration {
         values.anonymousIdGenerator = generator
+        return self
+    }
+    
+    /// Use a custom HTTP session; Useful for non-apple platforms where Swift networking isn't as mature
+    /// or has issues to work around.
+    /// - Parameter httpSession: A class conforming to the HTTPSession protocol
+    /// - Returns: The current configuration
+    @discardableResult
+    func httpSession(_ httpSession: @escaping @autoclosure () -> any HTTPSession) -> Configuration {
+        values.httpSession = httpSession
         return self
     }
 }
