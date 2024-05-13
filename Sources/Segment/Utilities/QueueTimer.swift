@@ -57,7 +57,7 @@ internal class QueueTimer {
         if state == .suspended {
             return
         }
-        state = .suspended
+        _state.set(.suspended)
         timer.suspend()
     }
     
@@ -65,7 +65,7 @@ internal class QueueTimer {
         if state == .resumed {
             return
         }
-        state = .resumed
+        _state.set(.resumed)
         timer.resume()
     }
 }

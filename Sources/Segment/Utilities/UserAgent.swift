@@ -35,13 +35,18 @@ internal struct UserAgent {
     private static let defaultWebKitAppName = ""
     #endif
     
-    internal static var _value: String = ""
+    @Atomic internal static var _value: String = ""
+    internal static let lock = NSLock()
     
     public static var value: String {
+        lock.lock()
+        defer { lock.unlock() }
+        
         if _value.isEmpty {
-            _value = value(applicationName: defaultWebKitAppName)
+            __value.set(value(applicationName: defaultWebKitAppName))
         }
         return _value
+        //return "someUserAgent"
     }
     
     private static func version() -> String {

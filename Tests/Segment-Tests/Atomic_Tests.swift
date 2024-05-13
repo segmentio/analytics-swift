@@ -13,7 +13,7 @@ final class Atomic_Tests: XCTestCase {
             // `queue.sync { counter = oldValue + 1 }`
             // And the threads are free to suspend in between the two calls to `queue.sync`.
 
-            _counter.withValue { value in
+            _counter.mutate { value in
                 value += 1
             }
         }

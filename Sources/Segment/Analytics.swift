@@ -423,12 +423,16 @@ extension Analytics {
     }
     
     internal static func addActiveWriteKey(_ writeKey: String) {
-        Self.activeWriteKeys.append(writeKey)
+        Self._activeWriteKeys.mutate { keys in
+            keys.append(writeKey)
+        }
     }
     
     internal static func removeActiveWriteKey(_ writeKey: String) {
-        Self.activeWriteKeys.removeAll { key in
-            writeKey == key
+        Self._activeWriteKeys.mutate { keys in
+            keys.removeAll { key in
+                writeKey == key
+            }
         }
     }
 }
