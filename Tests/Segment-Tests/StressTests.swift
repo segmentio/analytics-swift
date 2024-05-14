@@ -12,6 +12,7 @@ class StressTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
+        RestrictedHTTPSession.reset()
     }
 
     override func tearDownWithError() throws {
@@ -24,9 +25,13 @@ class StressTests: XCTestCase {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
-        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2").errorHandler({ error in
-            XCTFail("Storage Error: \(error)")
-        }))
+        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
+            .errorHandler({ error in
+                XCTFail("Storage Error: \(error)")
+            })
+            .httpSession(RestrictedHTTPSession())
+        )
+                                  
         analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
@@ -40,20 +45,6 @@ class StressTests: XCTestCase {
         }
 
         waitUntilStarted(analytics: analytics)
-        
-        // set the httpclient to use our blocker session
-        let segment = analytics.find(pluginType: SegmentDestination.self)
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = true
-        configuration.timeoutIntervalForResource = 30
-        configuration.timeoutIntervalForRequest = 60
-        configuration.httpMaximumConnectionsPerHost = 2
-        configuration.protocolClasses = [BlockNetworkCalls.self]
-        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                               "Authorization": "Basic test",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        segment?.httpClient?.session = blockSession
         
         @Atomic var ready = false
         var queues = [DispatchQueue]()
@@ -110,9 +101,12 @@ class StressTests: XCTestCase {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
-        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest").errorHandler({ error in
-            XCTFail("Storage Error: \(error)")
-        }))
+        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
+            .errorHandler({ error in
+                XCTFail("Storage Error: \(error)")
+            })
+            .httpSession(RestrictedHTTPSession())
+        )
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         DirectoryStore.fileValidator = { url in
@@ -125,20 +119,6 @@ class StressTests: XCTestCase {
         }
 
         waitUntilStarted(analytics: analytics)
-        
-        // set the httpclient to use our blocker session
-        let segment = analytics.find(pluginType: SegmentDestination.self)
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = true
-        configuration.timeoutIntervalForResource = 30
-        configuration.timeoutIntervalForRequest = 60
-        configuration.httpMaximumConnectionsPerHost = 2
-        configuration.protocolClasses = [BlockNetworkCalls.self]
-        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
-                                               "Authorization": "Basic test",
-                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
-        let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        segment?.httpClient?.session = blockSession
         
         let writeQueue1 = DispatchQueue(label: "write queue 1", attributes: .concurrent)
         let writeQueue2 = DispatchQueue(label: "write queue 2", attributes: .concurrent)

@@ -35,7 +35,7 @@ public class HTTPClient {
         self.apiHost = analytics.configuration.values.apiHost
         self.cdnHost = analytics.configuration.values.cdnHost
         
-        self.session = Self.configuredSession(for: self.apiKey)
+        self.session = analytics.configuration.values.httpSession()
     }
     
     func segmentURL(for host: String, path: String) -> URL? {
@@ -198,12 +198,5 @@ extension HTTPClient {
         }
         
         return request
-    }
-    
-    internal static func configuredSession(for writeKey: String) -> URLSession {
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.httpMaximumConnectionsPerHost = 2
-        let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        return session
     }
 }

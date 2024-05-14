@@ -193,6 +193,61 @@ extension XCTestCase {
 
 #if !os(Linux)
 
+class RestrictedHTTPSession: HTTPSession {
+    let sesh: URLSession
+    static var fileUploads: Int = 0
+    static var dataUploads: Int = 0
+    static var dataTasks: Int = 0
+    static var invalidated: Int = 0
+    
+    init(blocking: Bool = true, failing: Bool = false) {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        
+        var protos = [URLProtocol.Type]()
+        if blocking { protos.append(BlockNetworkCalls.self) }
+        if failing { protos.append(FailedNetworkCalls.self) }
+        configuration.protocolClasses = protos
+        
+        sesh = URLSession(configuration: configuration)
+    }
+    
+    static func reset() {
+        fileUploads = 0
+        dataUploads = 0
+        dataTasks = 0
+        invalidated = 0
+    }
+    
+    func uploadTask(with request: URLRequest, fromFile file: URL, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionUploadTask {
+        defer { Self.fileUploads += 1 }
+        return sesh.uploadTask(with: request, fromFile: file, completionHandler: completionHandler)
+    }
+    
+    func uploadTask(with request: URLRequest, from bodyData: Data?, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionUploadTask {
+        defer { Self.dataUploads += 1 }
+        return sesh.uploadTask(with: request, from: bodyData, completionHandler: completionHandler)
+    }
+    
+    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask {
+        defer { Self.dataTasks += 1 }
+        return sesh.dataTask(with: request, completionHandler: completionHandler)
+    }
+    
+    func finishTasksAndInvalidate() {
+        defer { Self.invalidated += 1 }
+        sesh.finishTasksAndInvalidate()
+    }
+}
+
+
+
 class BlockNetworkCalls: URLProtocol {
     var initialURL: URL? = nil
     override class func canInit(with request: URLRequest) -> Bool {

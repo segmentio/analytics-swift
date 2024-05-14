@@ -67,7 +67,7 @@ public class Configuration {
         var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
-        var httpSession: (() -> any HTTPSession)? = nil
+        var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
     }
     
     internal var values: Values
