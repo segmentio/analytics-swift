@@ -5,6 +5,8 @@
 //  Created by Brandon Sneed on 11/4/21.
 //
 
+#if !os(Linux) && !os(tvOS) && !os(watchOS)
+
 import XCTest
 @testable import Segment
 
@@ -20,7 +22,6 @@ class StressTests: XCTestCase {
     }
     
     // Linux doesn't know what URLProtocol is and on tvOS/watchOS it somehow works differently and isn't hit.
-    #if !os(Linux) && !os(tvOS) && !os(watchOS)
     func testDirectoryStorageStress2() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
@@ -297,5 +298,6 @@ class StressTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
         }
     }
-    #endif
 }
+
+#endif
