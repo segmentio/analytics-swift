@@ -67,6 +67,7 @@ public class Configuration {
         var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
+        var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
     }
     
     internal var values: Values
@@ -270,6 +271,16 @@ public extension Configuration {
     @discardableResult
     func anonymousIdGenerator(_ generator: AnonymousIdGenerator) -> Configuration {
         values.anonymousIdGenerator = generator
+        return self
+    }
+    
+    /// Use a custom HTTP session; Useful for non-apple platforms where Swift networking isn't as mature
+    /// or has issues to work around.
+    /// - Parameter httpSession: A class conforming to the HTTPSession protocol
+    /// - Returns: The current configuration
+    @discardableResult
+    func httpSession(_ httpSession: @escaping @autoclosure () -> any HTTPSession) -> Configuration {
+        values.httpSession = httpSession
         return self
     }
 }
