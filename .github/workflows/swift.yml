@@ -51,10 +51,9 @@ jobs:
     needs: cancel_previous
     runs-on: windows-latest
     steps:
-      - uses: compnerd/gha-setup-swift@main
+      - uses: SwiftyLab/setup-swift@latest
         with:
-          branch: swift-5.10-release
-          tag: 5.10-RELEASE
+          swift-version: "5.10"
       - uses: actions/checkout@v2
       - name: Build
         run: swift build
