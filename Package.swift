@@ -3,6 +3,13 @@
 
 import PackageDescription
 
+#if os(Windows)
+// refer to this thread: https://forums.swift.org/t/linker-warnings-on-windows-with-swift-argument-parser/71443
+let libraryType: Product.Library.LibraryType = .dynamic
+#else
+let libraryType: Product.Library.LibraryType = .static
+#endif
+
 let package = Package(
     name: "Segment",
     platforms: [
@@ -16,6 +23,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "Segment",
+            type: libraryType,
             targets: ["Segment"]),
     ],
     dependencies: [
