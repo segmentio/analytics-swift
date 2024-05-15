@@ -39,7 +39,7 @@ public class Analytics {
      In the case of a dead instance, an assert will be thrown when in DEBUG builds to
      assist developers in knowning that `shared()` is being called too soon.
      */
-    static func shared() -> Analytics {
+    public static func shared() -> Analytics {
         if let a = firstInstance {
             if a.isDead == false {
                 return a
