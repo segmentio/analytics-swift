@@ -840,7 +840,7 @@ final class Analytics_Tests: XCTestCase {
     }
     
     // Linux doesn't know what URLProtocol is and on watchOS it somehow works differently and isn't hit.
-    #if !os(Linux) && !os(watchOS)
+    #if !os(Linux) && !os(watchOS) && !os(Windows)
     func testFailedSegmentResponse() throws {
         //register our network blocker (returns 400 response)
         guard URLProtocol.registerClass(FailedNetworkCalls.self) else {
