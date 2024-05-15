@@ -7,7 +7,7 @@
 
 import Foundation
 
-#if os(Linux)
+#if os(Linux) || os(Windows)
 extension DispatchQueue {
     func asyncAndWait(execute workItem: DispatchWorkItem) {
         async {

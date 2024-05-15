@@ -8,8 +8,8 @@
 import Foundation
 import Sovran
 
-#if os(Linux)
-// Whoever is doing swift/linux development over there
+#if os(Linux) || os(Windows)
+// Whoever is doing swift/linux/Windows development over there
 // decided that it'd be a good idea to split out a TON
 // of stuff into another framework that NO OTHER PLATFORM
 // has; I guess to be special.  :man-shrugging:
@@ -28,7 +28,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         case apiHost = "apiHost"
         case apiKey = "apiKey"
     }
-    
+
     public let type = PluginType.destination
     public let key: String = Constants.integrationName.rawValue
     public let timeline = Timeline()
@@ -46,23 +46,23 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         typealias CleanupClosure = () -> Void
         var cleanup: CleanupClosure? = nil
     }
-    
+
     internal var httpClient: HTTPClient?
     private var uploads = [UploadTaskInfo]()
     private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?
-    
+
     @Atomic internal var eventCount: Int = 0
-    
+
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
         storage = analytics.storage
         httpClient = HTTPClient(analytics: analytics)
-        
+
         // Add DestinationMetadata enrichment plugin
         add(plugin: DestinationMetadataPlugin())
     }
-    
+
     public func update(settings: Settings, type: UpdateType) {
         guard let analytics = analytics else { return }
         let segmentInfo = settings.integrationSettings(forKey: self.key)
@@ -93,7 +93,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
             }
         }
     }
-    
+
     // MARK: - Event Handling Methods
     public func execute<T: RawEvent>(event: T?) -> T? {
         guard let event = event else { return nil }
@@ -103,14 +103,14 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         }
         return result
     }
-    
+
     // MARK: - Abstracted Lifecycle Methods
     internal func enterForeground() { }
-    
+
     internal func enterBackground() {
         flush()
     }
-    
+
     // MARK: - Event Parsing Methods
     private func queueEvent<T: RawEvent>(event: T) {
         guard let storage = self.storage else { return }
@@ -120,7 +120,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
             count += 1
         }
     }
-    
+
     public func flush() {
         // unused .. see flush(group:completion:)
     }
@@ -142,7 +142,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         let hasData = storage.dataStore.hasData
         
         analytics.log(message: "Uploads in-progress: \(pendingUploads)")
-        
+
         if pendingUploads == 0 {
             if type == .file, hasData {
                 flushFiles(group: group)
@@ -309,7 +309,7 @@ extension SegmentDestination {
             analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
         }
     }
-    
+
     internal var pendingUploads: Int {
         var uploadsCount = 0
         uploadsQueue.sync {
@@ -317,7 +317,7 @@ extension SegmentDestination {
         }
         return uploadsCount
     }
-    
+
     internal func add(uploadTask: UploadTaskInfo) {
         uploadsQueue.sync {
             uploads.append(uploadTask)

@@ -1,6 +1,6 @@
 //
 //  OutputFileStream.swift
-//  
+//
 //
 //  Created by Brandon Sneed on 10/15/22.
 //
@@ -11,6 +11,8 @@ import Foundation
 
 #if os(Linux)
 import Glibc
+#elseif os(Windows)
+import WinSDK
 #else
 import Darwin.C
 #endif
@@ -23,16 +25,16 @@ internal class OutputFileStream {
         case unableToCreate(String)
         case unableToClose(String)
     }
-    
+
     var fileHandle: FileHandle? = nil
     let fileURL: URL
-    
+
     init(fileURL: URL) throws {
         self.fileURL = fileURL
         let path = fileURL.path
         guard path.isEmpty == false else { throw OutputStreamError.invalidPath(path) }
     }
-    
+
     /// Create attempts to create + open
     func create() throws {
         let path = fileURL.path
@@ -47,7 +49,7 @@ internal class OutputFileStream {
             }
         }
     }
-    
+
     /// Open simply opens the file, no attempt at creation is made.
     func open() throws {
         if fileHandle != nil { return }
@@ -65,7 +67,7 @@ internal class OutputFileStream {
             throw OutputStreamError.unableToOpen(fileURL.path)
         }
     }
-    
+
     func write(_ data: Data) throws {
         guard data.isEmpty == false else { return }
         if #available(macOS 10.15.4, iOS 13.4, macCatalyst 13.4, tvOS 13.4, watchOS 13.4, *) {
@@ -79,14 +81,14 @@ internal class OutputFileStream {
             fileHandle?.write(data)
         }
     }
-    
+
     func write(_ string: String) throws {
         guard string.isEmpty == false else { return }
         if let data = string.data(using: .utf8) {
             try write(data)
         }
     }
-    
+
     func close() throws {
         do {
             let existing = fileHandle
