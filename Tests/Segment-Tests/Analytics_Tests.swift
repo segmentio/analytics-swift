@@ -175,16 +175,6 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
-#if !os(watchOS) && !os(Linux)
-        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
-        // prime the pump for userAgent, since it's retrieved async.
-        let vendorSystem = VendorSystem.current
-        while vendorSystem.userAgent == nil {
-            RunLoop.main.run(until: Date.distantPast)
-        }
-         */
-#endif
-
         waitUntilStarted(analytics: analytics)
 
         // add a referrer
@@ -206,12 +196,6 @@ final class Analytics_Tests: XCTestCase {
 
         let referrer = context?["referrer"] as! [String: Any]
         XCTAssertEqual(referrer["url"] as! String, "https://google.com")
-
-        // this key not present on watchOS (doesn't have webkit)
-#if !os(watchOS)
-        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful. */
-        //XCTAssertNotNil(context?["userAgent"], "userAgent missing!")
-#endif
 
         // these keys not present on linux or Windows
 #if !os(Linux) && !os(Windows)
@@ -228,16 +212,6 @@ final class Analytics_Tests: XCTestCase {
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
-#if !os(watchOS) && !os(Linux)
-        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
-        // prime the pump for userAgent, since it's retrieved async.
-        let vendorSystem = VendorSystem.current
-        while vendorSystem.userAgent == nil {
-            RunLoop.main.run(until: Date.distantPast)
-        }
-         */
-#endif
-
         waitUntilStarted(analytics: analytics)
 
         // add a referrer
@@ -259,10 +233,6 @@ final class Analytics_Tests: XCTestCase {
 
         let referrer = context?["referrer"] as! [String: Any]
         XCTAssertEqual(referrer["url"] as! String, "https://google.com")
-
-        /* Disabling this for now; Newer SDKs, it's getting even more delay-ful.
-        XCTAssertEqual(context?["userAgent"] as! String, "testing user agent")
-         */
         
         // these keys not present on linux
 #if !os(Linux) && !os(Windows)
