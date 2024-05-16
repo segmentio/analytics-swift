@@ -61,6 +61,8 @@ jobs:
       # Disable tests right now.  There's an SPM issue where link errors generate
       # a bad exit code even though the tests run/work properly.
       #
+      # See: https://forums.swift.org/t/linker-warnings-on-windows-with-swift-argument-parser/71443/2
+      #
       # - name: Run tests
       #   run: swift test --enable-test-discovery
 
