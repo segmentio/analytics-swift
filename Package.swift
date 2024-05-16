@@ -44,6 +44,13 @@ let package = Package(
             resources: [.process("Resources")]),
         .testTarget(
             name: "Segment-Tests",
-            dependencies: ["Segment"]),
+            dependencies: ["Segment"],
+            swiftSettings: [
+              .unsafeFlags([
+                "-I", "sdk/include",
+                "-Xcc", "-DDECLSPEC=__declspec(dllimport)",
+              ], .when(platforms: [.windows]))
+            ]
+        ),
     ]
 )
