@@ -3,13 +3,6 @@
 
 import PackageDescription
 
-#if os(Windows)
-// refer to this thread: https://forums.swift.org/t/linker-warnings-on-windows-with-swift-argument-parser/71443
-let libraryType: Product.Library.LibraryType = .dynamic
-#else
-let libraryType: Product.Library.LibraryType = .static
-#endif
-
 let package = Package(
     name: "Segment",
     platforms: [
@@ -23,7 +16,6 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "Segment",
-            type: libraryType,
             targets: ["Segment"]),
     ],
     dependencies: [
@@ -41,12 +33,7 @@ let package = Package(
                 .product(name: "Sovran", package: "sovran-swift"),
                 .product(name: "JSONSafeEncoding", package: "jsonsafeencoding-swift")
             ],
-            resources: [.process("Resources")],
-            swiftSettings: [
-              .unsafeFlags([
-                "-Xcc", "-DDECLSPEC=__declspec(dllimport)",
-              ], .when(platforms: [.windows]))
-            ]
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "Segment-Tests",
