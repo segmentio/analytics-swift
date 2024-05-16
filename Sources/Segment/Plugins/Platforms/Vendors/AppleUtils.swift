@@ -80,13 +80,14 @@ internal class iOSVendorSystem: VendorSystem {
     }
     
     private func deviceModel() -> String {
-        var name: [Int32] = [CTL_HW, HW_MACHINE]
-        var size: Int = 2
-        sysctl(&name, 2, nil, &size, nil, 0)
-        var hw_machine = [CChar](repeating: 0, count: Int(size))
-        sysctl(&name, 2, &hw_machine, &size, nil, 0)
-        let model = String(cString: hw_machine)
-        return model
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        return identifier
     }
 }
 
