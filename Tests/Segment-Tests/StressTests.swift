@@ -5,7 +5,7 @@
 //  Created by Brandon Sneed on 11/4/21.
 //
 
-#if !os(Linux) && !os(tvOS) && !os(watchOS)
+#if !os(Linux) && !os(tvOS) && !os(watchOS) && !os(Windows)
 
 import XCTest
 @testable import Segment
@@ -239,15 +239,15 @@ class StressTests: XCTestCase {
                                                "User-Agent": "analytics-ios/\(Analytics.version())"]
         let blockSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
         segment?.httpClient?.session = blockSession
-        
+
         let writeQueue1 = DispatchQueue(label: "write queue 1")
         let writeQueue2 = DispatchQueue(label: "write queue 2")
         let flushQueue = DispatchQueue(label: "flush queue")
-        
+
         @Atomic var ready = false
         @Atomic var queue1Done = false
         @Atomic var queue2Done = false
-        
+
         writeQueue1.async {
             while (ready == false) { usleep(1) }
             var eventsWritten = 0
@@ -261,7 +261,7 @@ class StressTests: XCTestCase {
             print("queue 1 wrote \(eventsWritten) events.")
             _queue1Done.set(true)
         }
-        
+
         writeQueue2.async {
             while (ready == false) { usleep(1) }
             var eventsWritten = 0
@@ -275,7 +275,7 @@ class StressTests: XCTestCase {
             print("queue 2 wrote \(eventsWritten) events.")
             _queue2Done.set(true)
         }
-        
+
         flushQueue.async {
             while (ready == false) { usleep(1) }
             var counter = 0

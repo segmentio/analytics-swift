@@ -33,7 +33,7 @@
 
 // MARK: Common
 
-#if !os(Linux) && !os(macOS)
+#if !os(Linux) && !os(macOS) && !os(Windows)
 
 import Foundation
 import Segment
@@ -41,7 +41,7 @@ import Segment
 class NotificationTracking: Plugin {
     var type: PluginType = .utility
     weak var analytics: Analytics?
-    
+
     func trackNotification(_ properties: [String: Codable], fromLaunch launch: Bool) {
         if launch {
             analytics?.track(name: "Push Notification Tapped", properties: properties)
@@ -95,4 +95,3 @@ extension NotificationTracking: iOSLifecycle {
 }
 
 #endif
-
