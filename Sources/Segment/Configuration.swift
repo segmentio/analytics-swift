@@ -7,7 +7,7 @@
 
 import Foundation
 import JSONSafeEncoding
-#if os(Linux)
+#if os(Linux) || os(Windows)
 import FoundationNetworking
 #endif
 
@@ -28,7 +28,7 @@ public enum OperatingMode {
     case synchronous
     /// The operation of the Analytics client are asynchronous.
     case asynchronous
-    
+
     static internal let defaultQueue = DispatchQueue(label: "com.segment.operatingModeQueue", qos: .utility)
 }
 
@@ -69,7 +69,7 @@ public class Configuration {
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
         var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
     }
-    
+
     internal var values: Values
 
     /// Initialize a configuration object to pass along to an Analytics instance.
@@ -83,7 +83,7 @@ public class Configuration {
         settings.integrations = try? JSON([
             "Segment.io": true
         ])
-        
+
         self.defaultSettings(settings)
     }
 }
@@ -92,7 +92,7 @@ public class Configuration {
 // MARK: - Analytics Configuration
 
 public extension Configuration {
-    
+
     /// Sets a reference to your application.  This can be useful in instances
     /// where referring back to your application is necessary, such as within plugins
     /// or async code.  The default value is `nil`.
@@ -104,7 +104,7 @@ public extension Configuration {
         values.application = value
         return self
     }
-    
+
     /// Opt-in/out of tracking lifecycle events.  The default value is `false`.
     ///
     /// - Parameter enabled: A bool value
@@ -114,7 +114,7 @@ public extension Configuration {
         values.trackApplicationLifecycleEvents = enabled
         return self
     }
-    
+
     /// Set the number of events necessary to automatically flush. The default
     /// value is `20`.
     ///
@@ -125,7 +125,7 @@ public extension Configuration {
         values.flushAt = count
         return self
     }
-    
+
     /// Set a time interval (in seconds) by which to trigger an automatic flush.
     /// The default value is `30`.
     ///
@@ -136,7 +136,7 @@ public extension Configuration {
         values.flushInterval = interval
         return self
     }
-    
+
     /// Sets a default set of Settings.  Normally these will come from Segment's
     /// api.segment.com/v1/projects/<writekey>/settings, however in instances such
     /// as first app launch, it can be useful to have a pre-set batch of settings to
@@ -160,7 +160,7 @@ public extension Configuration {
         values.defaultSettings = settings
         return self
     }
-    
+
     /// Enable/Disable the automatic adding of Segment as a destination.
     /// This can be useful in instances such as Consent Management, or in device
     /// mode only setups.  The default value is `true`.
@@ -172,7 +172,7 @@ public extension Configuration {
         values.autoAddSegmentDestination = value
         return self
     }
-    
+
     /// Sets an alternative API host.  This is useful when a proxy is in use, or
     /// events need to be routed to certain locales at all times (such as the EU).
     /// The default value is `api.segment.io/v1`.
@@ -184,7 +184,7 @@ public extension Configuration {
         values.apiHost = value
         return self
     }
-    
+
     /// Sets an alternative CDN host for settings retrieval. This is useful when
     /// a proxy is in use, or settings need to be queried from certain locales at
     /// all times (such as the EU). The default value is `cdn-settings.segment.com/v1`.
@@ -196,7 +196,7 @@ public extension Configuration {
         values.cdnHost = value
         return self
     }
-    
+
     /// Sets a block to be used when generating outgoing HTTP requests.  Useful in
     /// proxying, or adding additional header information for outbound traffic.
     ///
@@ -207,7 +207,7 @@ public extension Configuration {
         values.requestFactory = value
         return self
     }
-    
+
     /// Sets an error handler to be called when errors are encountered by the Segment
     /// library.  See `AnalyticsError` for a list of possible errors that can be
     /// encountered.
@@ -219,13 +219,13 @@ public extension Configuration {
         values.errorHandler = value
         return self
     }
-    
+
     @discardableResult
     func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
         values.flushPolicies = policies
         return self
     }
-    
+
     /// Informs the Analytics instance of its operating mode/context.
     /// Use `.server` when operating in a web service, or when synchronous operation
     /// is desired.  Use `.client` when operating in a long lived process,
@@ -235,7 +235,7 @@ public extension Configuration {
         values.operatingMode = mode
         return self
     }
-    
+
     /// Specify a custom queue to use when performing a flush operation.  The default
     /// value is a Segment owned background queue.
     @discardableResult
@@ -250,7 +250,7 @@ public extension Configuration {
         values.userAgent = userAgent
         return self
     }
-    
+
     /// This option specifies how NaN/Infinity are handled when encoding JSON.
     /// The default is .zero.  See JSONSafeEncoder.NonConformingFloatEncodingStrategy for more informatino.
     @discardableResult

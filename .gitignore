@@ -92,11 +92,13 @@ iOSInjectionProject/
 Package.resolved
 *.xcuserdatad
 /.swiftpm/xcode/xcshareddata
-
-# XCFramework
 Segment-Package_XCFramework
 *.zip
 Segment.xcframework.zip
 Segment.xcframework
 XCFrameworkOutput
 *.sha256
+.fleet
+.idea
+.vscode
+.editorconfig

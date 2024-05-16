@@ -33,9 +33,11 @@ let package = Package(
                 .product(name: "Sovran", package: "sovran-swift"),
                 .product(name: "JSONSafeEncoding", package: "jsonsafeencoding-swift")
             ],
-            resources: [.process("Resources")]),
+            resources: [.process("Resources")]
+        ),
         .testTarget(
             name: "Segment-Tests",
-            dependencies: ["Segment"]),
+            dependencies: ["Segment"]
+        ),
     ]
 )

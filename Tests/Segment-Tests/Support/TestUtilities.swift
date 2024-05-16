@@ -31,7 +31,7 @@ class GooberPlugin: EventPlugin {
     init() {
         self.type = .enrichment
     }
-    
+
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "goober"
@@ -43,30 +43,30 @@ class ZiggyPlugin: EventPlugin {
     let type: PluginType
     weak var analytics: Analytics?
     var receivedInitialUpdate: Int = 0
-    
+
     var completion: (() -> Void)?
-    
+
     required init() {
         self.type = .enrichment
     }
-    
+
     func update(settings: Settings, type: UpdateType) {
         if type == .initial { receivedInitialUpdate += 1 }
     }
-    
+
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "ziggy"
         return newEvent
         //return nil
     }
-    
+
     func shutdown() {
         completion?()
     }
 }
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 @objc(SEGMyDestination)
 public class ObjCMyDestination: NSObject, ObjCPlugin, ObjCPluginShim {
@@ -81,10 +81,10 @@ class MyDestination: DestinationPlugin {
     let key: String
     weak var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
-    
+
     let disabled: Bool
     var receivedInitialUpdate: Int = 0
-    
+
     init(disabled: Bool = false, trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
         self.type = .destination
@@ -92,7 +92,7 @@ class MyDestination: DestinationPlugin {
         self.trackCompletion = trackCompletion
         self.disabled = disabled
     }
-    
+
     func update(settings: Settings, type: UpdateType) {
         if type == .initial { receivedInitialUpdate += 1 }
         if disabled == false {
@@ -100,7 +100,7 @@ class MyDestination: DestinationPlugin {
             analytics?.manuallyEnableDestination(plugin: self)
         }
     }
-    
+
     func track(event: TrackEvent) -> TrackEvent? {
         var returnEvent: TrackEvent? = event
         if let completion = trackCompletion {
@@ -118,11 +118,11 @@ class OutputReaderPlugin: Plugin {
     
     var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
-    
+
     init() {
         self.type = .after
     }
-    
+
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
         if let t = lastEvent as? TrackEvent {
@@ -191,7 +191,7 @@ extension XCTestCase {
     }
 }
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 class RestrictedHTTPSession: HTTPSession {
     let sesh: URLSession
@@ -251,23 +251,23 @@ class RestrictedHTTPSession: HTTPSession {
 class BlockNetworkCalls: URLProtocol {
     var initialURL: URL? = nil
     override class func canInit(with request: URLRequest) -> Bool {
-        
+
         return true
     }
-    
+
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-    
+
     override var cachedResponse: CachedURLResponse? { return nil }
-    
+
     override func startLoading() {
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 200, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
-    
+
     override func stopLoading() {
-        
+
     }
 }
 

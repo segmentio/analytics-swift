@@ -12,7 +12,7 @@
     {
       "identity" : "sovran-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/segmentio/Sovran-Swift.git",
+      "location" : "https://github.com/segmentio/sovran-swift.git",
       "state" : {
         "revision" : "a342b905f6baa64499cabdf61ccc185ec476b7b2",
         "version" : "1.1.1"
