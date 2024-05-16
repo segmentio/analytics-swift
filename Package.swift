@@ -41,16 +41,16 @@ let package = Package(
                 .product(name: "Sovran", package: "sovran-swift"),
                 .product(name: "JSONSafeEncoding", package: "jsonsafeencoding-swift")
             ],
-            resources: [.process("Resources")]),
-        .testTarget(
-            name: "Segment-Tests",
-            dependencies: ["Segment"],
+            resources: [.process("Resources")],
             swiftSettings: [
               .unsafeFlags([
-                "-I", "sdk/include",
                 "-Xcc", "-DDECLSPEC=__declspec(dllimport)",
               ], .when(platforms: [.windows]))
             ]
+        ),
+        .testTarget(
+            name: "Segment-Tests",
+            dependencies: ["Segment"]
         ),
     ]
 )
