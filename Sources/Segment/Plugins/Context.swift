@@ -160,4 +160,11 @@ public class Context: PlatformPlugin {
         // other stuff?? ...
     }
 
+    public static func insertOrigin(event: RawEvent?, data: [String: Any]) -> RawEvent? {
+        guard var working = event else { return event }
+        if let newContext = try? working.context?.add(value: data, forKey: "__eventOrigin") {
+            working.context = newContext
+        }
+        return working
+    }
 }

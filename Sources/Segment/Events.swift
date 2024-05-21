@@ -224,3 +224,57 @@ extension Analytics {
         process(incomingEvent: event)
     }
 }
+
+// MARK: - Enrichment event signatures
+
+extension Analytics {
+    // Tracks an event performed by a user, including some additional event properties.
+    /// - Parameters:
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
+    ///   - properties: Properties specific to the named event. For example, an event with
+    ///     the name 'Purchased a Shirt' might have properties like revenue or size.
+    ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
+    public func track<P: Codable>(name: String, properties: P?, enrichments: [EnrichmentClosure]?) {
+        do {
+            if let properties = properties {
+                let jsonProperties = try JSON(with: properties)
+                let event = TrackEvent(event: name, properties: jsonProperties)
+                process(incomingEvent: event, enrichments: enrichments)
+            } else {
+                let event = TrackEvent(event: name, properties: nil)
+                process(incomingEvent: event, enrichments: enrichments)
+            }
+        } catch {
+            reportInternalError(error, fatal: true)
+        }
+    }
+    
+    /// Tracks an event performed by a user.
+    /// - Parameters:
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
+    ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
+    public func track(name: String, enrichments: [EnrichmentClosure]?) {
+        track(name: name, properties: nil as TrackEvent?, enrichments: enrichments)
+    }
+    
+    /// Tracks an event performed by a user, including some additional event properties.
+    /// - Parameters:
+    ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
+    ///   - properties: A dictionary or properties specific to the named event.
+    ///     For example, an event with the name 'Purchased a Shirt' might have properties
+    ///     like revenue or size.
+    ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
+    public func track(name: String, properties: [String: Any]?, enrichments: [EnrichmentClosure]?) {
+        var props: JSON? = nil
+        if let properties = properties {
+            do {
+                props = try JSON(properties)
+            } catch {
+                reportInternalError(error, fatal: true)
+            }
+        }
+        let event = TrackEvent(event: name, properties: props)
+        process(incomingEvent: event, enrichments: enrichments)
+    }
+
+}
