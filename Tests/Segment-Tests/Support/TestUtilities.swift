@@ -31,7 +31,7 @@ class GooberPlugin: EventPlugin {
     init() {
         self.type = .enrichment
     }
-    
+
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "goober"
@@ -43,30 +43,30 @@ class ZiggyPlugin: EventPlugin {
     let type: PluginType
     weak var analytics: Analytics?
     var receivedInitialUpdate: Int = 0
-    
+
     var completion: (() -> Void)?
-    
+
     required init() {
         self.type = .enrichment
     }
-    
+
     func update(settings: Settings, type: UpdateType) {
         if type == .initial { receivedInitialUpdate += 1 }
     }
-    
+
     func identify(event: IdentifyEvent) -> IdentifyEvent? {
         var newEvent = IdentifyEvent(existing: event)
         newEvent.userId = "ziggy"
         return newEvent
         //return nil
     }
-    
+
     func shutdown() {
         completion?()
     }
 }
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
 
 @objc(CIOMyDestination)
 public class ObjCMyDestination: NSObject, ObjCPlugin, ObjCPluginShim {
@@ -81,10 +81,10 @@ class MyDestination: DestinationPlugin {
     let key: String
     weak var analytics: Analytics?
     let trackCompletion: (() -> Bool)?
-    
+
     let disabled: Bool
     var receivedInitialUpdate: Int = 0
-    
+
     init(disabled: Bool = false, trackCompletion: (() -> Bool)? = nil) {
         self.key = "MyDestination"
         self.type = .destination
@@ -92,7 +92,7 @@ class MyDestination: DestinationPlugin {
         self.trackCompletion = trackCompletion
         self.disabled = disabled
     }
-    
+
     func update(settings: Settings, type: UpdateType) {
         if type == .initial { receivedInitialUpdate += 1 }
         if disabled == false {
@@ -100,7 +100,7 @@ class MyDestination: DestinationPlugin {
             analytics?.manuallyEnableDestination(plugin: self)
         }
     }
-    
+
     func track(event: TrackEvent) -> TrackEvent? {
         var returnEvent: TrackEvent? = event
         if let completion = trackCompletion {
@@ -118,11 +118,11 @@ class OutputReaderPlugin: Plugin {
     
     var events = [RawEvent]()
     var lastEvent: RawEvent? = nil
-    
+
     init() {
         self.type = .after
     }
-    
+
     func execute<T>(event: T?) -> T? where T : RawEvent {
         lastEvent = event
         if let t = lastEvent as? TrackEvent {
@@ -191,28 +191,83 @@ extension XCTestCase {
     }
 }
 
-#if !os(Linux)
+#if !os(Linux) && !os(Windows)
+
+class RestrictedHTTPSession: HTTPSession {
+    let sesh: URLSession
+    static var fileUploads: Int = 0
+    static var dataUploads: Int = 0
+    static var dataTasks: Int = 0
+    static var invalidated: Int = 0
+    
+    init(blocking: Bool = true, failing: Bool = false) {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.allowsCellularAccess = true
+        configuration.timeoutIntervalForResource = 30
+        configuration.timeoutIntervalForRequest = 60
+        configuration.httpMaximumConnectionsPerHost = 2
+        configuration.httpAdditionalHeaders = ["Content-Type": "application/json; charset=utf-8",
+                                               "Authorization": "Basic test",
+                                               "User-Agent": "analytics-ios/\(Analytics.version())"]
+        
+        var protos = [URLProtocol.Type]()
+        if blocking { protos.append(BlockNetworkCalls.self) }
+        if failing { protos.append(FailedNetworkCalls.self) }
+        configuration.protocolClasses = protos
+        
+        sesh = URLSession(configuration: configuration)
+    }
+    
+    static func reset() {
+        fileUploads = 0
+        dataUploads = 0
+        dataTasks = 0
+        invalidated = 0
+    }
+    
+    func uploadTask(with request: URLRequest, fromFile file: URL, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionUploadTask {
+        defer { Self.fileUploads += 1 }
+        return sesh.uploadTask(with: request, fromFile: file, completionHandler: completionHandler)
+    }
+    
+    func uploadTask(with request: URLRequest, from bodyData: Data?, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionUploadTask {
+        defer { Self.dataUploads += 1 }
+        return sesh.uploadTask(with: request, from: bodyData, completionHandler: completionHandler)
+    }
+    
+    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionDataTask {
+        defer { Self.dataTasks += 1 }
+        return sesh.dataTask(with: request, completionHandler: completionHandler)
+    }
+    
+    func finishTasksAndInvalidate() {
+        defer { Self.invalidated += 1 }
+        sesh.finishTasksAndInvalidate()
+    }
+}
+
+
 
 class BlockNetworkCalls: URLProtocol {
     var initialURL: URL? = nil
     override class func canInit(with request: URLRequest) -> Bool {
-        
+
         return true
     }
-    
+
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
-    
+
     override var cachedResponse: CachedURLResponse? { return nil }
-    
+
     override func startLoading() {
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 200, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
-    
+
     override func stopLoading() {
-        
+
     }
 }
 

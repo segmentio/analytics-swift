@@ -1,6 +1,6 @@
 //
 //  MemoryLeak_Tests.swift
-//  
+//
 //
 //  Created by Brandon Sneed on 10/17/22.
 //
@@ -20,19 +20,19 @@ final class MemoryLeak_Tests: XCTestCase {
 
     func testLeaksVerbose() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
-        
+
         waitUntilStarted(analytics: analytics)
         analytics.track(name: "test")
-        
+
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
-        
+
         let segmentDest = analytics.find(pluginType: SegmentDestination.self)!
         let destMetadata = segmentDest.timeline.find(pluginType: DestinationMetadataPlugin.self)!
         let startupQueue = analytics.find(pluginType: StartupQueue.self)!
-         
+
         let context = analytics.find(pluginType: Context.self)!
-        
-        #if !os(Linux)
+
+        #if !os(Linux) && !os(Windows)
         let deviceToken = analytics.find(pluginType: DeviceToken.self)!
         #endif
         #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
@@ -45,7 +45,7 @@ final class MemoryLeak_Tests: XCTestCase {
         let macLifecycle = analytics.find(pluginType: macOSLifecycleEvents.self)!
         let macMonitor = analytics.find(pluginType: macOSLifecycleMonitor.self)!
         #endif
-        
+
         // test that enrichment closure isn't leaked.  was previously a retain loop.
         analytics.add { event in
             return event
@@ -54,9 +54,9 @@ final class MemoryLeak_Tests: XCTestCase {
         analytics.remove(plugin: startupQueue)
         analytics.remove(plugin: segmentDest)
         segmentDest.remove(plugin: destMetadata)
-         
+
         analytics.remove(plugin: context)
-        #if !os(Linux)
+        #if !os(Linux) && !os(Windows)
         analytics.remove(plugin: deviceToken)
         #endif
         #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
@@ -75,9 +75,9 @@ final class MemoryLeak_Tests: XCTestCase {
         checkIfLeaked(segmentDest)
         checkIfLeaked(destMetadata)
         checkIfLeaked(startupQueue)
-        
+
         checkIfLeaked(context)
-        #if !os(Linux)
+        #if !os(Linux) && !os(Windows)
         checkIfLeaked(deviceToken)
         #endif
         #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
@@ -90,16 +90,16 @@ final class MemoryLeak_Tests: XCTestCase {
         checkIfLeaked(macLifecycle)
         checkIfLeaked(macMonitor)
         #endif
-        
+
         checkIfLeaked(analytics)
     }
-    
+
     func testLeaksSimple() throws {
         let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
-        
+
         waitUntilStarted(analytics: analytics)
         analytics.track(name: "test")
-        
+
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 1))
 
         checkIfLeaked(analytics)

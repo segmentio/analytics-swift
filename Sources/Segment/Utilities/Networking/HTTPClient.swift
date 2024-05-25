@@ -6,7 +6,7 @@
 //
 
 import Foundation
-#if os(Linux)
+#if os(Linux) || os(Windows)
 import FoundationNetworking
 #endif
 
@@ -20,31 +20,31 @@ public enum HTTPClientErrors: Error {
 public class HTTPClient {
     private static let defaultAPIHost = "api.segment.io/v1"
     private static let defaultCDNHost = "cdn-settings.segment.com/v1"
-    
-    internal var session: URLSession
+
+    internal var session: any HTTPSession
     private var apiHost: String
     private var apiKey: String
     private var cdnHost: String
-    
+
     private weak var analytics: Analytics?
-    
+
     init(analytics: Analytics) {
         self.analytics = analytics
-        
+
         self.apiKey = analytics.configuration.values.writeKey
         self.apiHost = analytics.configuration.values.apiHost
         self.cdnHost = analytics.configuration.values.cdnHost
         
-        self.session = Self.configuredSession(for: self.apiKey)
+        self.session = analytics.configuration.values.httpSession()
     }
-    
+
     func segmentURL(for host: String, path: String) -> URL? {
         let s = "https://\(host)\(path)"
         let result = URL(string: s)
         return result
     }
-    
-    
+
+
     /// Starts an upload of events. Responds appropriately if successful or not. If not, lets the respondant
     /// know if the task should be retried or not based on the response.
     /// - Parameters:
@@ -52,20 +52,20 @@ public class HTTPClient {
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
-    func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
+    func startBatchUpload(writeKey: String, batch: URL, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> (any DataTask)? {
         guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
             self.analytics?.reportInternalError(HTTPClientErrors.failedToOpenBatch)
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
-          
+
         let urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             guard let self else { return }
             handleResponse(data: data, response: response, error: error, completion: completion)
         }
-        
+
         dataTask.resume()
         return dataTask
     }
@@ -77,7 +77,7 @@ public class HTTPClient {
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
-    func startBatchUpload(writeKey: String, data: Data, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> URLSessionDataTask? {
+    func startBatchUpload(writeKey: String, data: Data, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> (any UploadTask)? {
         guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
             self.analytics?.reportInternalError(HTTPClientErrors.failedToOpenBatch)
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
@@ -123,9 +123,9 @@ public class HTTPClient {
             completion(false, nil)
             return
         }
-        
+
         let urlRequest = configuredRequest(for: settingsURL, method: "GET")
-        
+
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
                 self?.analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
@@ -146,7 +146,7 @@ public class HTTPClient {
                 completion(false, nil)
                 return
             }
-            
+
             do {
                 let responseJSON = try JSONDecoder.default.decode(Settings.self, from: data)
                 completion(true, responseJSON)
@@ -155,12 +155,12 @@ public class HTTPClient {
                 completion(false, nil)
                 return
             }
-            
+
         }
-        
+
         dataTask.resume()
     }
-    
+
     deinit {
         // finish any tasks that may be processing
         session.finishTasksAndInvalidate()
@@ -177,33 +177,26 @@ extension HTTPClient {
         }
         return returnHeader
     }
-    
+
     internal static func getDefaultAPIHost() -> String {
         return Self.defaultAPIHost
     }
-    
+
     internal static func getDefaultCDNHost() -> String {
         return Self.defaultCDNHost
     }
-    
+
     internal func configuredRequest(for url: URL, method: String) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 60)
         request.httpMethod = method
         request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         request.addValue("analytics-ios/\(Analytics.version())", forHTTPHeaderField: "User-Agent")
         request.addValue("gzip", forHTTPHeaderField: "Accept-Encoding")
-        
+
         if let requestFactory = analytics?.configuration.values.requestFactory {
             request = requestFactory(request)
         }
-        
+
         return request
-    }
-    
-    internal static func configuredSession(for writeKey: String) -> URLSession {
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.httpMaximumConnectionsPerHost = 2
-        let session = URLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        return session
     }
 }
