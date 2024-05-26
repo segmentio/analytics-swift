@@ -1,0 +1,46 @@
+name: Release with Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create and deploy'
+        required: true
+
+permissions:
+    contents: write
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+      - name: Install fastlane
+        run: gem install fastlane
+
+      - name: Create and push tag
+        uses: rickstaa/action-create-tag@v1
+        id: tag_create
+        with:
+            tag: ${{ github.event.inputs.tag }}
+
+      - name: Bump version in podspec
+        run: |
+         fastlane run version_bump_podspec path:"AnalyticsSwiftCIO.podspec" version_number:"${{ github.event.inputs.tag }}"
+
+      - name: Commit and push podspec
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Bump podspec version to ${{ github.event.inputs.tag }}"
+          file_pattern: AnalyticsSwiftCIO.podspec
+
+      - name: Deploy to cocoapoads
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+            pod trunk push AnalyticsSwiftCIO.podspec --allow-warnings
