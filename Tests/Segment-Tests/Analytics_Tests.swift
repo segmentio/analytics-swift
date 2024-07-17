@@ -958,6 +958,24 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, "blah-111")
         XCTAssertEqual(anonIdGenerator.currentId, "blah-111")
         XCTAssertEqual(outputReader.lastEvent?.anonymousId, anonIdGenerator.currentId)
+    }
+    
+    func testSingularEnrichment() throws {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
         
+        let addEventOrigin: EnrichmentClosure = { event in
+            return Context.insertOrigin(event: event, data: [
+                "type": "mobile"
+            ])
+        }
+
+        analytics.track(name: "enrichment check", enrichments: [addEventOrigin])
+
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertEqual(trackEvent?.context?.value(forKeyPath: "__eventOrigin.type"), "mobile")
     }
 }
