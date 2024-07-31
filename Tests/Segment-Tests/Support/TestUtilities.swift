@@ -200,7 +200,7 @@ class RestrictedHTTPSession: HTTPSession {
     static var dataTasks: Int = 0
     static var invalidated: Int = 0
     
-    init(blocking: Bool = true, failing: Bool = false) {
+    init(blocking: Bool = true, failing: Bool = false, offline: Bool = false) {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.allowsCellularAccess = true
         configuration.timeoutIntervalForResource = 30
@@ -213,6 +213,7 @@ class RestrictedHTTPSession: HTTPSession {
         var protos = [URLProtocol.Type]()
         if blocking { protos.append(BlockNetworkCalls.self) }
         if failing { protos.append(FailedNetworkCalls.self) }
+        if offline { protos.append(OfflineNetworkCalls.self) }
         configuration.protocolClasses = protos
         
         sesh = URLSession(configuration: configuration)
@@ -286,6 +287,30 @@ class FailedNetworkCalls: URLProtocol {
     
     override func startLoading() {
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 400, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    
+    override func stopLoading() {
+        
+    }
+}
+
+class OfflineNetworkCalls: URLProtocol {
+    var initialURL: URL? = nil
+    override class func canInit(with request: URLRequest) -> Bool {
+        
+        return true
+    }
+    
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    
+    override var cachedResponse: CachedURLResponse? { return nil }
+    
+    override func startLoading() {
+        // using code 540 to activate our logic since we can't simulate offline effectively.
+        client?.urlProtocol(self, didReceive: HTTPURLResponse(url: URL(string: "http://api.segment.com")!, statusCode: 540, httpVersion: nil, headerFields: ["blocked": "true"])!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocolDidFinishLoading(self)
     }
     

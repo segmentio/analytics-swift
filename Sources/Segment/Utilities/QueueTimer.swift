@@ -16,18 +16,17 @@ internal class QueueTimer {
     let interval: TimeInterval
     let timer: DispatchSourceTimer
     let queue: DispatchQueue
-    let handler: () -> Void
+    let handler: (QueueTimer?) -> Void
     
     @Atomic var state: State = .suspended
     
-    static var timers = [QueueTimer]()
-    
-    static func schedule(interval: TimeInterval, immediate: Bool = false, queue: DispatchQueue = .main, handler: @escaping () -> Void) {
+    static func schedule(interval: TimeInterval, immediate: Bool = false, queue: DispatchQueue = .main, handler: @escaping (QueueTimer?) -> Void) -> QueueTimer {
         let timer = QueueTimer(interval: interval, queue: queue, handler: handler)
-        Self.timers.append(timer)
+        //Self.timers.append(timer)
+        return timer
     }
 
-    init(interval: TimeInterval, immediate: Bool = false, queue: DispatchQueue = .main, handler: @escaping () -> Void) {
+    init(interval: TimeInterval, immediate: Bool = false, queue: DispatchQueue = .main, handler: @escaping (QueueTimer?) -> Void) {
         self.interval = interval
         self.queue = queue
         self.handler = handler
@@ -39,7 +38,7 @@ internal class QueueTimer {
             timer.schedule(deadline: .now() + self.interval, repeating: self.interval)
         }
         timer.setEventHandler { [weak self] in
-            self?.handler()
+            self?.handler(self)
         }
         resume()
     }
@@ -51,6 +50,10 @@ internal class QueueTimer {
         // if timer is suspended, we must resume if we're going to cancel.
         timer.cancel()
         resume()
+    }
+    
+    func cancel() {
+        
     }
     
     func suspend() {

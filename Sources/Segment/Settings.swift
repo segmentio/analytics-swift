@@ -149,7 +149,11 @@ extension Analytics {
         }
     }
     
-    internal func checkSettings() {
+    /**
+     Stops the analytics timeline and begins to fetch settings from Segment. Upon
+     completion, all plugins will be notified, and the timeline started again.
+     */
+    public func checkSettings() {
         #if DEBUG
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...

@@ -27,6 +27,9 @@ public class HTTPClient {
     private var cdnHost: String
 
     private weak var analytics: Analytics?
+    
+    // say segment is reachable until we know otherwise.
+    @Atomic internal var segmentReachable: Bool = true
 
     init(analytics: Analytics) {
         self.analytics = analytics
@@ -110,6 +113,8 @@ public class HTTPClient {
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             case 429:
                 analytics?.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
+                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
+            case 540: // used to test offline mode
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             default:
                 analytics?.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))

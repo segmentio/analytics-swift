@@ -20,6 +20,52 @@ class HTTPClientTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+    
+    func testNetworkPathMonitoring() throws {
+        guard URLProtocol.registerClass(OfflineNetworkCalls.self) else { XCTFail(); return }
+        
+        // Use a specific writekey to this test so we do not collide with other cached items.
+        let analytics = Analytics(
+            configuration: Configuration(writeKey: "testCustomSesh")
+                .flushInterval(9999)
+                .flushAt(9999)
+                .httpSession(RestrictedHTTPSession(blocking: false, offline: true))
+                .monitorNetworkPath(.onInterval(resetTime: 5))
+        )
+        
+        waitUntilStarted(analytics: analytics)
+        
+        let seg = analytics.find(pluginType: SegmentDestination.self)!
+        XCTAssertTrue(seg.segmentReachable)
+        
+        analytics.storage.hardReset(doYouKnowHowToUseThis: true)
+        
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+        
+        let flushDone = XCTestExpectation(description: "flush done")
+        analytics.flush {
+            flushDone.fulfill()
+        }
+    
+        wait(for: [flushDone])
+        
+        XCTAssertFalse(seg.segmentReachable)
+        
+        RunLoop.main.run(until: Date.init(timeIntervalSinceNow: 10))
+        
+        XCTAssertTrue(seg.segmentReachable)
+        
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+        
+        let anotherFlushDone = XCTestExpectation(description: "flush 2 done")
+        analytics.flush {
+            anotherFlushDone.fulfill()
+        }
+    
+        wait(for: [anotherFlushDone])
+        
+        XCTAssertFalse(seg.segmentReachable)
+    }
 
     func testCustomHTTPSessionUpload() throws {
         // Use a specific writekey to this test so we do not collide with other cached items.

@@ -333,7 +333,7 @@ internal class ConnectionMonitor {
     @Atomic var connectionStatus: ConnectionStatus = .unknown
     
     init() {
-        self.timer = QueueTimer(interval: 300, immediate: true) { [weak self] in
+        self.timer = QueueTimer(interval: 300, immediate: true) { [weak self] _ in
             guard let self else { return }
             self.check()
         }

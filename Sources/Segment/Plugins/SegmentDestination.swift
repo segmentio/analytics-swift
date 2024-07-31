@@ -16,6 +16,11 @@ import Sovran
 import FoundationNetworking
 #endif
 
+public enum NetworkPathMonitor: Equatable {
+    case none
+    case onInterval(resetTime: TimeInterval)
+}
+
 public class SegmentAnonymousId: AnonymousIdGenerator {
     public func newAnonymousId() -> String {
         return UUID().uuidString
@@ -51,6 +56,10 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     private var uploads = [UploadTaskInfo]()
     private let uploadsQueue = DispatchQueue(label: "uploadsQueue.segment.com")
     private var storage: Storage?
+    
+    private var monitor: NetworkPathMonitor = .none
+    internal var monitorTimer: QueueTimer? = nil
+    @Atomic internal var segmentReachable: Bool = true
 
     @Atomic internal var eventCount: Int = 0
 
@@ -92,6 +101,10 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
                 httpClient = HTTPClient(analytics: analytics)
             }
         }
+        
+        // Set the monitor value given by the configuration
+        monitor = analytics.configuration.values.monitorNetworkPath
+        updateMonitoring(available: true)
     }
 
     // MARK: - Event Handling Methods
@@ -126,6 +139,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     }
     
     public func flush(group: DispatchGroup) {
+        guard httpClient?.segmentReachable == true else { return }
+        
         group.enter()
         defer { group.leave() }
         
@@ -157,6 +172,26 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
 }
 
 extension SegmentDestination {
+    private func updateMonitoring(available: Bool) {
+        var value = available
+        if monitor == .none { value = true }
+        print("SegmentReachable = \(value)")
+        _segmentReachable.set(value)
+        if value == true {
+            monitorTimer = nil
+        } else {
+            switch monitor {
+            case .none:
+                break
+            case .onInterval(let resetTime):
+                monitorTimer = QueueTimer.schedule(interval: resetTime, handler: { [weak self] timer in
+                    guard let self else { return }
+                    updateMonitoring(available: true)
+                })
+            }
+        }
+    }
+    
     private func flushFiles(group: DispatchGroup) {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
@@ -185,12 +220,20 @@ extension SegmentDestination {
                         case .success(_):
                             storage.remove(data: [url])
                             cleanupUploads()
-                            
+                            updateMonitoring(available: true)
                             // we don't want to retry events in a given batch when a 400
                             // response for malformed JSON is returned
-                        case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+                        case .failure(HTTPClientErrors.statusCode(code: 400)):
                             storage.remove(data: [url])
                             cleanupUploads()
+                            // while it did fail, we did reach the server.
+                            updateMonitoring(available: true)
+                        case .failure(HTTPClientErrors.statusCode(code: 540)):
+                            // simulating not making it over the wire.
+                            updateMonitoring(available: false)
+                        case .failure(HTTPClientErrors.unknown):
+                            // we didn't even make it over the wire. :(
+                            updateMonitoring(available: false)
                         default:
                             break
                         }
@@ -256,12 +299,20 @@ extension SegmentDestination {
                 case .success(_):
                     storage.remove(data: removable)
                     cleanupUploads()
-                    
+                    updateMonitoring(available: true)
                     // we don't want to retry events in a given batch when a 400
                     // response for malformed JSON is returned
-                case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+                case .failure(HTTPClientErrors.statusCode(code: 400)):
                     storage.remove(data: removable)
                     cleanupUploads()
+                    // while it did fail, we did reach the server.
+                    updateMonitoring(available: true)
+                case .failure(HTTPClientErrors.statusCode(code: 540)):
+                    // simulating not making it over the wire.
+                    updateMonitoring(available: false)
+                case .failure(HTTPClientErrors.unknown):
+                    // we didn't even make it over the wire. :(
+                    updateMonitoring(available: false)
                 default:
                     break
                 }

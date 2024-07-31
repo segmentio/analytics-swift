@@ -68,6 +68,7 @@ public class Configuration {
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
         var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
+        var monitorNetworkPath: NetworkPathMonitor = .none
     }
 
     internal var values: Values
@@ -281,6 +282,14 @@ public extension Configuration {
     @discardableResult
     func httpSession(_ httpSession: @escaping @autoclosure () -> any HTTPSession) -> Configuration {
         values.httpSession = httpSession
+        return self
+    }
+    
+    /// Monitors the network path.  When set to `true`, segment must be reachable for event batches to be uploaded.
+    /// Setting to `false` preserves existing behavior and is the default.
+    @discardableResult
+    func monitorNetworkPath(_ value: NetworkPathMonitor) -> Configuration {
+        values.monitorNetworkPath = value
         return self
     }
 }

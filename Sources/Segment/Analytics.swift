@@ -30,6 +30,8 @@ public class Analytics {
     static internal weak var firstInstance: Analytics? = nil
 
     @Atomic static internal var activeWriteKeys = [String]()
+    
+    internal var settingsRefreshTimer: QueueTimer? = nil
 
     /**
      This method isn't a traditional singleton implementation.  It's provided here

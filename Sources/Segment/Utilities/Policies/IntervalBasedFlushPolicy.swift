@@ -40,7 +40,7 @@ public class IntervalBasedFlushPolicy: FlushPolicy,
             guard let self = self else { return }
             guard let a = self.analytics else { return }
             guard let system: System = a.store.currentState() else { return }
-            self.flushTimer = QueueTimer(interval: system.configuration.values.flushInterval) { [weak self] in
+            self.flushTimer = QueueTimer(interval: system.configuration.values.flushInterval) { [weak self] _ in
                 self?.analytics?.flush()
             }
         }

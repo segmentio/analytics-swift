@@ -106,7 +106,7 @@ extension Analytics {
         // now set up a timer to do it every 24 hrs.
         // mac apps change focus a lot more than iOS apps, so this
         // seems more appropriate here.
-        QueueTimer.schedule(interval: .days(1), queue: .main) { [weak self] in
+        settingsRefreshTimer = QueueTimer.schedule(interval: .days(1), queue: .main) { [weak self] _ in
             self?.checkSettings()
         }
     }
