@@ -5,7 +5,7 @@
 //  Created by Brandon Sneed on 1/21/21.
 //
 
-#if !os(Linux) && !os(Windows)
+#if !os(Linux) && !os(Windows) && !os(watchOS)
 
 import XCTest
 @testable import Segment
