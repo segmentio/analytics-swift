@@ -27,9 +27,6 @@ public class HTTPClient {
     private var cdnHost: String
 
     private weak var analytics: Analytics?
-    
-    // say segment is reachable until we know otherwise.
-    @Atomic internal var segmentReachable: Bool = true
 
     init(analytics: Analytics) {
         self.analytics = analytics
