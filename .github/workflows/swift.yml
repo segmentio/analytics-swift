@@ -61,9 +61,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - name: Build
-        run: swift build
-      - name: Run tests
+      - name: Build & Run tests
         run: swift test --enable-test-discovery
 
   build_and_test_spm_windows:
