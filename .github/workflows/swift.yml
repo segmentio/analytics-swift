@@ -14,6 +14,27 @@ jobs:
         with:
           workflow_id: ${{ github.event.workflow.id }}
 
+  generate_code_coverage:
+    needs: cancel_previous
+    runs-on: macos-14
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "15.2"
+      - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+      - name: Build & Run tests
+        run: swift test --enable-code-coverage
+      - name: Convert coverage report
+        run: xcrun llvm-cov export -format="lcov" .build/debug/SegmentPackageTests.xctest/Contents/MacOS/SegmentPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage.lcov
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: segmentio/analytics-swift
+
   build_and_test_spm_mac:
     needs: cancel_previous
     runs-on: macos-14
@@ -25,9 +46,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - name: Build
-        run: swift build
-      - name: Run tests
+      - name: Build & Run tests
         run: swift test
 
   build_and_test_spm_linux:
