@@ -275,6 +275,59 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(token?.count == 32) // it's a uuid w/o the dashes.  36 becomes 32.
     }
 #endif
+    
+    func testOpenURL() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+
+        waitUntilStarted(analytics: analytics)
+        
+        let url = URL(string: "https://blah.com")!
+        
+        // you ain't got no options Lt. Dan!
+        analytics.openURL(url)
+        let urlEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertEqual(urlEvent?.properties?.dictionaryValue!["url"] as! String, "https://blah.com")
+        
+        // Anyway, like I was sayin' ...
+        let options = [
+            "Shrimp": [
+                "Description": "Fruit of the sea",
+                "CookingMethods": [
+                    "barbecue",
+                    "boil",
+                    "broil",
+                    "bake",
+                    "saute",
+                    "fried (implied)"
+                ],
+                "Types": [
+                    "shrimp kabobs",
+                    "shrimp gumbo",
+                    "pan fried",
+                    "deep fried",
+                    "stir fried",
+                    "pineapple shrimp",
+                    "lemon shrimp",
+                    "coconut shrimp",
+                    "pepper shrimp",
+                    "shrimp soup",
+                    "shrimp stew",
+                    "shrimp salad",
+                    "shrimp and potatoes",
+                    "shrimp burger",
+                    "shrimp sandwich",
+                    "That- that's about it"
+                ]
+            ]
+        ]
+        
+        analytics.openURL(url, options: options)
+        let urlOptionEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertEqual(urlOptionEvent?.properties?.dictionaryValue!["url"] as! String, "https://blah.com")
+        XCTAssertNotNil(urlOptionEvent?.properties?.dictionaryValue!["Shrimp"])
+    }
 
     func testTrack() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
