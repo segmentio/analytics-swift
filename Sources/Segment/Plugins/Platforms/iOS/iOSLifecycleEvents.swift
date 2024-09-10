@@ -40,19 +40,19 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         let currentVersion: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         let currentBuild: String = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
 
-        if let previousBuild,
+        if previousBuild == nil {
+            analytics?.track(name: "Application Installed", properties: [
+                "version": currentVersion,
+                "build": currentBuild
+            ])
+        } else if let previousBuild,
            currentBuild != previousBuild {
             analytics?.track(name: "Application Updated", properties: [
                 "previous_version": previousVersion ?? "",
                 "previous_build": previousBuild,
                 "version": currentVersion,
                 "build": currentBuild
-            ])
-        } else {
-            analytics?.track(name: "Application Installed", properties: [
-                "version": currentVersion,
-                "build": currentBuild
-            ])
+            ])            
         }
 
         let sourceApp: String = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
