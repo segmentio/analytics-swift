@@ -99,7 +99,7 @@ public class Analytics {
 
         _ = timeline.process(incomingEvent: event, enrichments: enrichments)
 
-        let flushPolicies = configuration.values.flushPolicies
+        /*let flushPolicies = configuration.values.flushPolicies
         for policy in flushPolicies {
             policy.updateState(event: event)
 
@@ -107,6 +107,27 @@ public class Analytics {
                 flush()
                 policy.reset()
             }
+        }*/
+        
+        let flushPolicies = configuration.values.flushPolicies
+        
+        var shouldFlush = false
+        // if any policy says to flush, make note of that
+        for policy in flushPolicies {
+            policy.updateState(event: event)
+            if policy.shouldFlush() {
+                shouldFlush = true
+                // we don't need to updateState on any others since we're gonna reset it below.
+                break
+            }
+        }
+        // if we were told to flush do it.
+        if shouldFlush {
+            // reset all the policies if one decided to flush.
+            flushPolicies.forEach {
+                $0.reset()
+            }
+            flush()
         }
     }
 
