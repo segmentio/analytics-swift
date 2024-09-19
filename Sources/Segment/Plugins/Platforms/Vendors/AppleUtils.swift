@@ -201,10 +201,6 @@ internal class MacOSVendorSystem: VendorSystem {
         return deviceModel()
     }
     
-    override var name: String {
-        return device.hostName
-    }
-    
     override var identifierForVendor: String? {
         // apple suggested to use this for receipt validation
         // in MAS, works for this too.
