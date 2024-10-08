@@ -29,6 +29,8 @@ public enum AnalyticsError: Error {
     case pluginError(Error)
     
     case enrichmentError(String)
+
+    case settingsFetchError(Error)
 }
 
 extension Analytics {
