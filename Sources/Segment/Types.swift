@@ -19,6 +19,7 @@ public struct DestinationMetadata: Codable {
 // MARK: - Event Types
 
 public protocol RawEvent: Codable {
+    var enrichments: [EnrichmentClosure]? { get set }
     var type: String? { get set }
     var anonymousId: String? { get set }
     var messageId: String? { get set }
@@ -32,6 +33,7 @@ public protocol RawEvent: Codable {
 }
 
 public struct TrackEvent: RawEvent {
+    @Noncodable public var enrichments: [EnrichmentClosure]? = nil
     public var type: String? = "track"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
@@ -57,6 +59,7 @@ public struct TrackEvent: RawEvent {
 }
 
 public struct IdentifyEvent: RawEvent {
+    @Noncodable public var enrichments: [EnrichmentClosure]? = nil
     public var type: String? = "identify"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
@@ -82,6 +85,7 @@ public struct IdentifyEvent: RawEvent {
 }
 
 public struct ScreenEvent: RawEvent {
+    @Noncodable public var enrichments: [EnrichmentClosure]? = nil
     public var type: String? = "screen"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
@@ -109,6 +113,7 @@ public struct ScreenEvent: RawEvent {
 }
 
 public struct GroupEvent: RawEvent {
+    @Noncodable public var enrichments: [EnrichmentClosure]? = nil
     public var type: String? = "group"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
@@ -134,6 +139,7 @@ public struct GroupEvent: RawEvent {
 }
 
 public struct AliasEvent: RawEvent {
+    @Noncodable public var enrichments: [EnrichmentClosure]? = nil
     public var type: String? = "alias"
     public var anonymousId: String? = nil
     public var messageId: String? = nil
@@ -289,11 +295,12 @@ extension RawEvent {
         }
     }
 
-    internal func applyRawEventData(store: Store) -> Self {
+    internal func applyRawEventData(store: Store, enrichments: [EnrichmentClosure]?) -> Self {
         var result: Self = self
         
         guard let userInfo: UserInfo = store.currentState() else { return self }
         
+        result.enrichments = enrichments
         result.anonymousId = userInfo.anonymousId
         result.userId = userInfo.userId
         result.messageId = UUID().uuidString

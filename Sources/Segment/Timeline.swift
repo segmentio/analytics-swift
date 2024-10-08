@@ -25,13 +25,13 @@ public class Timeline {
     }
     
     @discardableResult
-    internal func process<E: RawEvent>(incomingEvent: E, enrichments: [EnrichmentClosure]? = nil) -> E? {
+    internal func process<E: RawEvent>(incomingEvent: E) -> E? {
         // apply .before and .enrichment types first ...
         let beforeResult = applyPlugins(type: .before, event: incomingEvent)
         // .enrichment here is akin to source middleware in the old analytics-ios.
         var enrichmentResult = applyPlugins(type: .enrichment, event: beforeResult)
         
-        if let enrichments {
+        if let enrichments = enrichmentResult?.enrichments {
             for closure in enrichments {
                 if let result = closure(enrichmentResult) as? E {
                     enrichmentResult = result

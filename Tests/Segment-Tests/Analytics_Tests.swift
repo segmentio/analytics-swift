@@ -1017,18 +1017,23 @@ final class Analytics_Tests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
-
-        waitUntilStarted(analytics: analytics)
         
         let addEventOrigin: EnrichmentClosure = { event in
             return Context.insertOrigin(event: event, data: [
                 "type": "mobile"
             ])
         }
+        
+        analytics.track(name: "enrichment check pre startup", enrichments: [addEventOrigin])
+
+        waitUntilStarted(analytics: analytics)
+        
+        let trackEvent1: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertEqual(trackEvent1?.context?.value(forKeyPath: "__eventOrigin.type"), "mobile")
 
         analytics.track(name: "enrichment check", enrichments: [addEventOrigin])
 
-        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
-        XCTAssertEqual(trackEvent?.context?.value(forKeyPath: "__eventOrigin.type"), "mobile")
+        let trackEvent2: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        XCTAssertEqual(trackEvent2?.context?.value(forKeyPath: "__eventOrigin.type"), "mobile")
     }
 }
