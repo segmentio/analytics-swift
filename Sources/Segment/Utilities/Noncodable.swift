@@ -8,7 +8,7 @@
 import Foundation
 
 @propertyWrapper
-internal struct Noncodable<T>: Codable {
+public struct Noncodable<T>: Codable {
     public var wrappedValue: T?
     public init(wrappedValue: T?) {
         self.wrappedValue = wrappedValue
