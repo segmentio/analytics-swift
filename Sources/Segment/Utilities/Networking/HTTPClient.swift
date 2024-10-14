@@ -63,7 +63,7 @@ public class HTTPClient {
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, urlRequest: urlRequest, completion: completion)
+            handleResponse(data: data, response: response, error: error, url: uploadURL, completion: completion)
         }
 
         dataTask.resume()
@@ -88,17 +88,17 @@ public class HTTPClient {
 
         let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, urlRequest: urlRequest, completion: completion)
+            handleResponse(data: data, response: response, error: error, url: uploadURL, completion: completion)
         }
         
         dataTask.resume()
         return dataTask
     }
     
-    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, urlRequest: URLRequest, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
+    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, url: URL?, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
         if let error = error {
             analytics?.log(message: "Error uploading request \(error.localizedDescription).")
-            analytics?.reportInternalError(AnalyticsError.networkUnknown(urlRequest.url, error))
+            analytics?.reportInternalError(AnalyticsError.networkUnknown(url, error))
             completion(.failure(HTTPClientErrors.unknown(error: error)))
         } else if let httpResponse = response as? HTTPURLResponse {
             switch (httpResponse.statusCode) {
@@ -106,13 +106,13 @@ public class HTTPClient {
                 completion(.success(true))
                 return
             case 300..<400:
-                analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(urlRequest.url, httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             case 429:
-                analytics?.reportInternalError(AnalyticsError.networkServerLimited(urlRequest.url, httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkServerLimited(url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             default:
-                analytics?.reportInternalError(AnalyticsError.networkServerRejected(urlRequest.url, httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkServerRejected(url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             }
         }
