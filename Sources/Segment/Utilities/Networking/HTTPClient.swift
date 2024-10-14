@@ -63,7 +63,7 @@ public class HTTPClient {
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, completion: completion)
+            handleResponse(data: data, response: response, error: error, urlRequest: urlRequest, completion: completion)
         }
 
         dataTask.resume()
@@ -88,17 +88,17 @@ public class HTTPClient {
 
         let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, completion: completion)
+            handleResponse(data: data, response: response, error: error, urlRequest: urlRequest, completion: completion)
         }
         
         dataTask.resume()
         return dataTask
     }
     
-    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
+    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, urlRequest: URLRequest, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
         if let error = error {
             analytics?.log(message: "Error uploading request \(error.localizedDescription).")
-            analytics?.reportInternalError(AnalyticsError.networkUnknown(error))
+            analytics?.reportInternalError(AnalyticsError.networkUnknown(urlRequest.url, error))
             completion(.failure(HTTPClientErrors.unknown(error: error)))
         } else if let httpResponse = response as? HTTPURLResponse {
             switch (httpResponse.statusCode) {
@@ -106,13 +106,13 @@ public class HTTPClient {
                 completion(.success(true))
                 return
             case 300..<400:
-                analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(urlRequest.url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             case 429:
-                analytics?.reportInternalError(AnalyticsError.networkServerLimited(httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkServerLimited(urlRequest.url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             default:
-                analytics?.reportInternalError(AnalyticsError.networkServerRejected(httpResponse.statusCode))
+                analytics?.reportInternalError(AnalyticsError.networkServerRejected(urlRequest.url, httpResponse.statusCode))
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             }
         }
@@ -128,21 +128,21 @@ public class HTTPClient {
 
         let dataTask = session.dataTask(with: urlRequest) { [weak self] (data, response, error) in
             if let error = error {
-                self?.analytics?.reportInternalError(AnalyticsError.settingsFetchError(AnalyticsError.networkUnknown(error)))
+                self?.analytics?.reportInternalError(AnalyticsError.settingsFail(AnalyticsError.networkUnknown(settingsURL, error)))
                 completion(false, nil)
                 return
             }
 
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode > 300 {
-                    self?.analytics?.reportInternalError(AnalyticsError.settingsFetchError(AnalyticsError.networkUnexpectedHTTPCode(httpResponse.statusCode)))
+                    self?.analytics?.reportInternalError(AnalyticsError.settingsFail(AnalyticsError.networkUnexpectedHTTPCode(settingsURL, httpResponse.statusCode)))
                     completion(false, nil)
                     return
                 }
             }
 
             guard let data = data else {
-                self?.analytics?.reportInternalError(AnalyticsError.settingsFetchError(AnalyticsError.networkInvalidData))
+                self?.analytics?.reportInternalError(AnalyticsError.settingsFail(AnalyticsError.networkInvalidData))
                 completion(false, nil)
                 return
             }
@@ -151,7 +151,7 @@ public class HTTPClient {
                 let responseJSON = try JSONDecoder.default.decode(Settings.self, from: data)
                 completion(true, responseJSON)
             } catch {
-                self?.analytics?.reportInternalError(AnalyticsError.settingsFetchError(AnalyticsError.jsonUnableToDeserialize(error)))
+                self?.analytics?.reportInternalError(AnalyticsError.settingsFail(AnalyticsError.jsonUnableToDeserialize(error)))
                 completion(false, nil)
                 return
             }
