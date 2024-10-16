@@ -69,7 +69,7 @@ public class Telemetry: Subscriber {
     private var telemetryTimer: Timer?
 
     func start() {
-        guard enable, !started, sampleRate != 0.0 else { return }
+        guard enable, !started, sampleRate > 0.0 && sampleRate <= 1.0 else { return }
         started = true
 
         if Double.random(in: 0...1) > sampleRate {
@@ -97,7 +97,7 @@ public class Telemetry: Subscriber {
         var tags = [String: String]()
         buildTags(&tags)
 
-        guard enable, sampleRate != 0.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         addRemoteMetric(metric: metric, tags: tags)
@@ -107,7 +107,7 @@ public class Telemetry: Subscriber {
         var tags = [String: String]()
         buildTags(&tags)
 
-        guard enable, sampleRate != 0.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
 
         var filteredTags = tags
         if !sendWriteKeyOnError {
@@ -156,7 +156,7 @@ public class Telemetry: Subscriber {
     }
 
 private func send() throws {
-        guard sampleRate != 0.0 else { return }
+        guard sampleRate > 0.0 && sampleRate <= 1.0 else { return }
 
         var sendQueue = [RemoteMetric]()
         while !queue.isEmpty {
@@ -261,11 +261,11 @@ private func addRemoteMetric(metric: String, tags: [String: String], value: Int 
     }
 
     private func queueHasSpace() -> Bool {
-        var over = false
+        var under = false
         telemetryQueue.sync {
-            over = queue.count < maxQueueSize
+            under = queue.count < maxQueueSize
         }
-        return over
+        return under
     }
 
     private func resetQueue() {

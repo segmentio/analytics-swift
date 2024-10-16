@@ -2,7 +2,6 @@ import XCTest
 @testable import Segment
 
 class TelemetryTests: XCTestCase {
-
     var errors: [String] = []
 
     override func setUpWithError() throws {
@@ -162,6 +161,6 @@ class URLSessionMock: RestrictedHTTPSession {
 }
 
 // Mock URLSessionDataTask
-class URLSessionDataTaskMock: URLSessionDataTask {
+class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Sendable {
     override func resume() {}
 }

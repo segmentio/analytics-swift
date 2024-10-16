@@ -3,7 +3,10 @@ import XCTest
 
 #if os(iOS) || os(tvOS) || os(visionOS)
 final class iOSLifecycle_Tests: XCTestCase {
-    
+    override func setUpWithError() throws {
+        Telemetry.shared.enable = false
+    }
+
     func testInstallEventCreation() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
