@@ -94,6 +94,7 @@ public class Analytics {
             it["cdnhost"] = configuration.values.cdnHost
             it["flush"] =
                 "at:\(configuration.values.flushAt) int:\(configuration.values.flushInterval) pol:\(configuration.values.flushPolicies.count)"
+            it["config"] = "seg:\(configuration.values.autoAddSegmentDestination) ua:\(configuration.values.userAgent ?? "N/A")"
         }
     }
     

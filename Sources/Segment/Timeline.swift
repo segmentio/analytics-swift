@@ -74,6 +74,11 @@ internal class Mediator {
     
     internal func remove(plugin: Plugin) {
         plugins.removeAll { (storedPlugin) -> Bool in
+            Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+                (_ it: inout [String: String]) in
+                it["message"] = "removed"
+                it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+            }
             return plugin === storedPlugin
         }
     }
