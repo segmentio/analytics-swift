@@ -65,10 +65,20 @@ public class Timeline {
 internal class Mediator {
     internal func add(plugin: Plugin) {
         plugins.append(plugin)
+        Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+            (_ it: inout [String: String]) in
+            it["message"] = "added"
+            it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+        }
     }
     
     internal func remove(plugin: Plugin) {
         plugins.removeAll { (storedPlugin) -> Bool in
+            Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+                (_ it: inout [String: String]) in
+                it["message"] = "removed"
+                it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+            }
             return plugin === storedPlugin
         }
     }
@@ -85,6 +95,11 @@ internal class Mediator {
                     _ = plugin.execute(event: r)
                 } else {
                     result = plugin.execute(event: r)
+                }
+                Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+                    (_ it: inout [String: String]) in
+                    it["message"] = "event-\(r.type ?? "unknown")"
+                    it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
                 }
             }
         }
