@@ -74,6 +74,7 @@ extension Analytics {
                 (_ it: inout [String: String]) in
                 it["error"] = "\(translatedError)"
                 it["writekey"] = configuration.values.writeKey
+                it["caller"] = Thread.callStackSymbols[3]
             }
     }
     
