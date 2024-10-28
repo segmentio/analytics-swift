@@ -35,6 +35,8 @@ public class Telemetry: Subscriber {
         self.session = session
     }
 
+    /// A Boolean value indicating whether to enable telemetry.
+    #if DEBUG
     public var enable: Bool = false {
         didSet {
             if enable {
@@ -42,14 +44,28 @@ public class Telemetry: Subscriber {
             }
         }
     }
-    internal var session: any HTTPSession
-    public var host: String = HTTPClient.getDefaultAPIHost()
-    var sampleRate: Double = 0.10
-    public var flushTimer: Int = 30 * 1000
+    #else
+    public var enable: Bool = true {
+        didSet {
+            if enable {
+                start()
+            }
+        }
+    }
+    #endif
+
+    /// A Boolean value indicating whether to send the write key with error metrics.
     public var sendWriteKeyOnError: Bool = true
+    /// A Boolean value indicating whether to send the error log data with error metrics.
     public var sendErrorLogData: Bool = false
+    /// A Callback for reporting errors that occur during telemetry.
     public var errorHandler: ((Error) -> Void)? = logError
-    public var maxQueueSize: Int = 20
+
+    internal var session: any HTTPSession
+    internal var host: String = HTTPClient.getDefaultAPIHost()
+    var sampleRate: Double = 0.10
+    private var flushTimer: Int = 30 * 1000
+    internal var maxQueueSize: Int = 20
     var errorLogSizeMax: Int = 4000
 
     static private let MAX_QUEUE_BYTES = 28000
@@ -59,15 +75,16 @@ public class Telemetry: Subscriber {
         }
     }
 
-    public var queue = [RemoteMetric]()
+    internal var queue = [RemoteMetric]()
     private var queueBytes = 0
     private var queueSizeExceeded = false
     private var seenErrors = [String: Int]()
-    public var started = false
+    internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
     private var telemetryTimer: Timer?
 
+    /// Starts the Telemetry send loop. Requires both `enable` to be set and a configuration to be retrieved from Segment.
     func start() {
         guard enable, !started, sampleRate > 0.0 && sampleRate <= 1.0 else { return }
         started = true
@@ -85,6 +102,7 @@ public class Telemetry: Subscriber {
         }
     }
 
+    /// Resets the telemetry state, including the queue and seen errors.
     func reset() {
         telemetryTimer?.invalidate()
         resetQueue()
@@ -93,6 +111,10 @@ public class Telemetry: Subscriber {
         rateLimitEndTime = 0
     }
 
+    /// Increments a metric with the provided tags.
+    /// - Parameters:
+    ///   - metric: The metric name.
+    ///   - buildTags: A closure to build the tags dictionary.
     func increment(metric: String, buildTags: (inout [String: String]) -> Void) {
         var tags = [String: String]()
         buildTags(&tags)
@@ -103,6 +125,11 @@ public class Telemetry: Subscriber {
         addRemoteMetric(metric: metric, tags: tags)
     }
 
+    /// Logs an error metric with the provided log data and tags.
+    /// - Parameters:
+    ///   - metric: The metric name.
+    ///   - log: The log data.
+    ///   - buildTags: A closure to build the tags dictionary.
     func error(metric: String, log: String, buildTags: (inout [String: String]) -> Void) {
         var tags = [String: String]()
         buildTags(&tags)
@@ -110,12 +137,12 @@ public class Telemetry: Subscriber {
         guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
 
         var filteredTags = tags
-        if !sendWriteKeyOnError {
+        if (!sendWriteKeyOnError) {
             filteredTags = tags.filter { $0.key.lowercased() != "writekey" }
         }
 
         var logData: String? = nil
-        if sendErrorLogData {
+        if (sendErrorLogData) {
             logData = String(log.prefix(errorLogSizeMax))
         }
 
@@ -135,7 +162,8 @@ public class Telemetry: Subscriber {
         }
     }
 
-    @objc func flush() {
+    /// Flushes the telemetry queue, sending the metrics to the server.
+    internal func flush() {
         guard enable else { return }
 
         telemetryQueue.sync {
@@ -155,7 +183,7 @@ public class Telemetry: Subscriber {
         }
     }
 
-private func send() throws {
+    private func send() throws {
         guard sampleRate > 0.0 && sampleRate <= 1.0 else { return }
 
         var sendQueue = [RemoteMetric]()
@@ -211,7 +239,7 @@ private func send() throws {
         ]
     }
 
-private func addRemoteMetric(metric: String, tags: [String: String], value: Int = 1, log: String? = nil) {
+    private func addRemoteMetric(metric: String, tags: [String: String], value: Int = 1, log: String? = nil) {
         let fullTags = tags.merging(additionalTags) { (_, new) in new }
 
         telemetryQueue.sync {
@@ -237,7 +265,9 @@ private func addRemoteMetric(metric: String, tags: [String: String], value: Int 
         }
     }
 
-    func subscribe(_ store: Store) {
+    /// Subscribes to the given store to receive system updates.
+    /// - Parameter store: The store on which a sampleRate setting is expected.
+    public func subscribe(_ store: Store) {
         store.subscribe(self,
             initialState: true,
             queue: telemetryQueue,
