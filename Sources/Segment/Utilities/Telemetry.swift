@@ -23,8 +23,13 @@ func logError(_ error: Error) {
     Analytics.reportInternalError(error)
 }
 
+/// A class for sending telemetry data to Segment.
+/// This system is used to gather usage and error data from the SDK for the purpose of improving the SDK.
+/// It can be disabled at any time by setting Telemetry.shared.enable to false.
+/// Errors are sent with a write key, which can be disabled by setting Telemetry.shared.sendWriteKeyOnError to false.
+/// All data is downsampled and no PII is collected.
 public class Telemetry: Subscriber {
-    public static let shared = Telemetry(session: URLSession.shared)
+    public static let shared = Telemetry(session: HTTPSessions.urlSession())
     private static let METRICS_BASE_TAG = "analytics_mobile"
     public static let INVOKE_METRIC = "\(METRICS_BASE_TAG).invoke"
     public static let INVOKE_ERROR_METRIC = "\(METRICS_BASE_TAG).invoke.error"
@@ -37,7 +42,7 @@ public class Telemetry: Subscriber {
 
     /// A Boolean value indicating whether to enable telemetry.
     #if DEBUG
-    public var enable: Bool = false {
+    public var enable: Bool = false { // Don't collect data in debug mode (i.e. test environments)
         didSet {
             if enable {
                 start()
