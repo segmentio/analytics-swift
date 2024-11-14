@@ -2,6 +2,9 @@ import XCTest
 @testable import Segment
 
 final class Analytics_Tests: XCTestCase {
+    override func setUpWithError() throws {
+        Telemetry.shared.enable = false
+    }
 
     func testBaseEventCreation() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))

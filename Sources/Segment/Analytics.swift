@@ -87,6 +87,15 @@ public class Analytics {
 
         // Get everything running
         platformStartup()
+
+        Telemetry.shared.increment(metric: Telemetry.INVOKE_METRIC) {it in 
+            it["message"] = "configured"
+            it["apihost"] = configuration.values.apiHost
+            it["cdnhost"] = configuration.values.cdnHost
+            it["flush"] =
+                "at:\(configuration.values.flushAt) int:\(configuration.values.flushInterval) pol:\(configuration.values.flushPolicies.count)"
+            it["config"] = "seg:\(configuration.values.autoAddSegmentDestination) ua:\(configuration.values.userAgent ?? "N/A")"
+        }
     }
     
     deinit {
