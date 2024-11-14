@@ -15,4 +15,4 @@
 // Use release.sh's automation.
 
 // BREAKING.FEATURE.FIX
-internal let __segment_version = "1.6.2"
+internal let __segment_version = "1.7.0"

@@ -5,6 +5,9 @@
       location = "group:../../..">
    </FileRef>
    <FileRef
+      location = "group:../../../../analytics-swift-amplitude">
+   </FileRef>
+   <FileRef
       location = "container:DestinationsExample.xcodeproj">
    </FileRef>
 </Workspace>

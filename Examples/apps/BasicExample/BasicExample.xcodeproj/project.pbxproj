@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -133,6 +133,7 @@
 			mainGroup = 46E38358265837EA00BA2502;
 			packageReferences = (
 				46E383782658387D00BA2502 /* XCRemoteSwiftPackageReference "Sovran-Swift" */,
+				7BE804C72CB59AE70062B64E /* XCLocalSwiftPackageReference "../../../../analytics-swift" */,
 			);
 			productRefGroup = 46E38362265837EA00BA2502 /* Products */;
 			projectDirPath = "";
@@ -372,6 +373,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7BE804C72CB59AE70062B64E /* XCLocalSwiftPackageReference "../../../../analytics-swift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../../analytics-swift";
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		46E383782658387D00BA2502 /* XCRemoteSwiftPackageReference "Sovran-Swift" */ = {
