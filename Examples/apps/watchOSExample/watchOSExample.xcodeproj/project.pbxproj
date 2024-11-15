@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		465879B22685058800180335 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B12685058800180335 /* ConsoleLogger.swift */; };
 		465879B4268641B900180335 /* SomeScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465879B3268641B900180335 /* SomeScreenController.swift */; };
 		469ECD4D2684F9080028BE9A /* watchOSExample WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 469ECD4C2684F9080028BE9A /* watchOSExample WatchKit App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		469ECD532684F9080028BE9A /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 469ECD512684F9080028BE9A /* Interface.storyboard */; };
@@ -65,7 +64,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		465879B12685058800180335 /* ConsoleLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConsoleLogger.swift; path = ../../../other_plugins/ConsoleLogger.swift; sourceTree = "<group>"; };
 		465879B3268641B900180335 /* SomeScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeScreenController.swift; sourceTree = "<group>"; };
 		469ECD482684F9080028BE9A /* watchOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = watchOSExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		469ECD4C2684F9080028BE9A /* watchOSExample WatchKit App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "watchOSExample WatchKit App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,7 +127,6 @@
 		469ECD5F2684F9090028BE9A /* watchOSExample WatchKit Extension */ = {
 			isa = PBXGroup;
 			children = (
-				465879B12685058800180335 /* ConsoleLogger.swift */,
 				469ECD602684F9090028BE9A /* InterfaceController.swift */,
 				465879B3268641B900180335 /* SomeScreenController.swift */,
 				469ECD622684F9090028BE9A /* ExtensionDelegate.swift */,
@@ -291,7 +288,6 @@
 				469ECD672684F9090028BE9A /* ComplicationController.swift in Sources */,
 				469ECD632684F9090028BE9A /* ExtensionDelegate.swift in Sources */,
 				46E73DA626F5389E0021042C /* NotificationTracking.swift in Sources */,
-				465879B22685058800180335 /* ConsoleLogger.swift in Sources */,
 				469ECD612684F9090028BE9A /* InterfaceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

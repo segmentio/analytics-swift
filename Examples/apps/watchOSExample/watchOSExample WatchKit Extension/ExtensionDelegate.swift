@@ -18,7 +18,6 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
             .flushInterval(10)
         
         analytics = Analytics(configuration: configuration)
-        analytics?.add(plugin: ConsoleLogger(name: "consoleLogger"))
         analytics?.add(plugin: NotificationTracking())
     }
 
