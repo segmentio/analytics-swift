@@ -16,15 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let configuration = Configuration(writeKey: "eHitWfSPZKoXF8c6iVb6QRlIPA6P9X8G")
+        let configuration = Configuration(writeKey: "WRITE KEY")
             .trackApplicationLifecycleEvents(true)
             .flushInterval(10)
             .flushAt(2)
         
-        Telemetry.shared.flushTimer = 5 * 1000
-        Telemetry.shared.enable = true
-//        Telemetry.shared.sendErrorLogData = true
-//        Telemetry.shared.host = "webhook.site/8d339731-c5a7-45b5-9b82-d545b6e48e6c"
         analytics = Analytics(configuration: configuration)
         
         return true
