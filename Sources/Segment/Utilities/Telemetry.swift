@@ -69,7 +69,7 @@ public class Telemetry: Subscriber {
     internal var session: any HTTPSession
     internal var host: String = HTTPClient.getDefaultAPIHost()
     var sampleRate: Double = 1.0 // inital sample rate should be 1.0, will be downsampled on start
-    private var flushTimer: Double = 30.0
+    private var flushTimer: Int = 30
     internal var maxQueueSize: Int = 20
     var errorLogSizeMax: Int = 4000
 
@@ -88,7 +88,7 @@ public class Telemetry: Subscriber {
     private var rateLimitEndTime: TimeInterval = 0
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
     private var updateQueue = DispatchQueue(label: "updateQueue")
-    private var telemetryTimer: Timer?
+    private var telemetryTimer: QueueTimer?
 
     /// Starts the Telemetry send loop. Requires both `enable` to be set and a configuration to be retrieved from Segment.
     func start() {
@@ -106,21 +106,18 @@ public class Telemetry: Subscriber {
             }
         }
 
-        DispatchQueue.main.async {
-            self.telemetryTimer = Timer.scheduledTimer(withTimeInterval: self.flushTimer, repeats: true) { [weak self] _ in
+        self.telemetryTimer = QueueTimer(interval: .seconds(self.flushTimer), queue: .main) { [weak self] in
             if (!(self?.enable ?? false)) {
                 self?.started = false
-                self?.telemetryTimer?.invalidate()
+                self?.telemetryTimer?.suspend()
             }
             self?.flush()
-            }
-            self.telemetryTimer?.tolerance = self.flushTimer / 10.0 // 10% tolerance
         }
     }
 
     /// Resets the telemetry state, including the queue and seen errors.
     func reset() {
-        telemetryTimer?.invalidate()
+        telemetryTimer?.suspend()
         resetQueue()
         seenErrors.removeAll()
         started = false
