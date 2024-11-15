@@ -1,5 +1,8 @@
 import Foundation
 import Sovran
+#if os(Linux) || os(Windows)
+import FoundationNetworking
+#endif
 
 public struct RemoteMetric: Codable {
     let type: String
