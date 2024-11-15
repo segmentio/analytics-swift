@@ -1,4 +1,8 @@
 import XCTest
+#if os(Linux) || os(Windows)
+import FoundationNetworking
+#endif
+
 @testable import Segment
 
 class TelemetryTests: XCTestCase {
