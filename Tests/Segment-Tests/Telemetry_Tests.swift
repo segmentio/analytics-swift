@@ -1,7 +1,5 @@
+#if !os(Linux) && !os(Windows)
 import XCTest
-#if os(Linux) || os(Windows)
-import FoundationNetworking
-#endif
 
 @testable import Segment
 
@@ -168,3 +166,5 @@ class URLSessionMock: RestrictedHTTPSession {
 class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Sendable {
     override func resume() {}
 }
+
+#endif
