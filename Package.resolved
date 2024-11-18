@@ -1,12 +1,30 @@
 {
   "pins" : [
     {
+      "identity" : "analytics-swift-mixpanel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segment-integrations/analytics-swift-mixpanel",
+      "state" : {
+        "revision" : "bc6a9628af225e679a581cc9ac2316eaf42f23a8",
+        "version" : "1.1.7"
+      }
+    },
+    {
       "identity" : "jsonsafeencoding-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/segmentio/jsonsafeencoding-swift.git",
       "state" : {
         "revision" : "af6a8b360984085e36c6341b21ecb35c12f47ebd",
         "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "mixpanel-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mixpanel/mixpanel-swift",
+      "state" : {
+        "revision" : "48d6668ceaaefc338f94e2b084c3cf77b90182f8",
+        "version" : "4.3.0"
       }
     },
     {
