@@ -1,4 +1,6 @@
+#if !os(Linux) && !os(Windows)
 import XCTest
+
 @testable import Segment
 
 class TelemetryTests: XCTestCase {
@@ -164,3 +166,5 @@ class URLSessionMock: RestrictedHTTPSession {
 class URLSessionDataTaskMock: URLSessionDataTask, @unchecked Sendable {
     override func resume() {}
 }
+
+#endif

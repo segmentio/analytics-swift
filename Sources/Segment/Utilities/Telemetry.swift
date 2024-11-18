@@ -1,5 +1,8 @@
 import Foundation
 import Sovran
+#if os(Linux) || os(Windows)
+import FoundationNetworking
+#endif
 
 public struct RemoteMetric: Codable {
     let type: String
@@ -68,8 +71,8 @@ public class Telemetry: Subscriber {
 
     internal var session: any HTTPSession
     internal var host: String = HTTPClient.getDefaultAPIHost()
-    var sampleRate: Double = 0.10
-    private var flushTimer: Int = 30 * 1000
+    var sampleRate: Double = 1.0 // inital sample rate should be 1.0, will be downsampled on start
+    private var flushTimer: Int = 30
     internal var maxQueueSize: Int = 20
     var errorLogSizeMax: Int = 4000
 
@@ -87,7 +90,8 @@ public class Telemetry: Subscriber {
     internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
-    private var telemetryTimer: Timer?
+    private var updateQueue = DispatchQueue(label: "updateQueue")
+    private var telemetryTimer: QueueTimer?
 
     /// Starts the Telemetry send loop. Requires both `enable` to be set and a configuration to be retrieved from Segment.
     func start() {
@@ -96,12 +100,19 @@ public class Telemetry: Subscriber {
 
         if Double.random(in: 0...1) > sampleRate {
             resetQueue()
+        } else {
+            telemetryQueue.async {
+                self.queue = self.queue.map { var metric = $0
+                    metric.value = Int(Double(metric.value) / self.sampleRate)
+                    return metric
+                }
+            }
         }
 
-        telemetryTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(flushTimer) / 1000.0, repeats: true) { [weak self] _ in
+        self.telemetryTimer = QueueTimer(interval: .seconds(self.flushTimer), queue: .main) { [weak self] in
             if (!(self?.enable ?? false)) {
                 self?.started = false
-                self?.telemetryTimer?.invalidate()
+                self?.telemetryTimer?.suspend()
             }
             self?.flush()
         }
@@ -109,7 +120,7 @@ public class Telemetry: Subscriber {
 
     /// Resets the telemetry state, including the queue and seen errors.
     func reset() {
-        telemetryTimer?.invalidate()
+        telemetryTimer?.suspend()
         resetQueue()
         seenErrors.removeAll()
         started = false
@@ -121,10 +132,12 @@ public class Telemetry: Subscriber {
     ///   - metric: The metric name.
     ///   - buildTags: A closure to build the tags dictionary.
     func increment(metric: String, buildTags: (inout [String: String]) -> Void) {
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+
         var tags = [String: String]()
         buildTags(&tags)
+        guard !tags.isEmpty else { return }
 
-        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         addRemoteMetric(metric: metric, tags: tags)
@@ -136,10 +149,11 @@ public class Telemetry: Subscriber {
     ///   - log: The log data.
     ///   - buildTags: A closure to build the tags dictionary.
     func error(metric: String, log: String, buildTags: (inout [String: String]) -> Void) {
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+
         var tags = [String: String]()
         buildTags(&tags)
-
-        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), !tags.isEmpty, queueHasSpace() else { return }
+        guard !tags.isEmpty else { return }
 
         var filteredTags = tags
         if (!sendWriteKeyOnError) {
@@ -248,8 +262,8 @@ public class Telemetry: Subscriber {
         let fullTags = tags.merging(additionalTags) { (_, new) in new }
 
         telemetryQueue.sync {
-            if var found = queue.first(where: { $0.metric == metric && $0.tags == fullTags }) {
-                found.value += value
+            if let index = queue.firstIndex(where: { $0.metric == metric && $0.tags == fullTags }) {
+                queue[index].value += value
                 return
             }
 
@@ -275,7 +289,7 @@ public class Telemetry: Subscriber {
     public func subscribe(_ store: Store) {
         store.subscribe(self,
             initialState: true,
-            queue: telemetryQueue,
+            queue: updateQueue,
             handler: systemUpdate
         )
     }
