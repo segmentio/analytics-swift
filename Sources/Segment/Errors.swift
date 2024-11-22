@@ -92,6 +92,7 @@ extension Analytics {
         Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: Thread.callStackSymbols.joined(separator: "\n")) { 
                 (_ it: inout [String: String]) in
                 it["error"] = "\(translatedError)"
+                it["caller"] = Thread.callStackSymbols[3]
             }
     }
 }
