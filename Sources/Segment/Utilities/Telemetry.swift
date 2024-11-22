@@ -89,6 +89,7 @@ public class Telemetry: Subscriber {
     private var seenErrors = [String: Int]()
     internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
+    internal var flushFirstError = true
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
     private var updateQueue = DispatchQueue(label: "updateQueue")
     private var telemetryTimer: QueueTimer?
@@ -98,15 +99,10 @@ public class Telemetry: Subscriber {
         guard enable, !started, sampleRate > 0.0 && sampleRate <= 1.0 else { return }
         started = true
 
+        // Queue contents were sampled at the default 100%
+        // the values on flush will be adjusted in the send function
         if Double.random(in: 0...1) > sampleRate {
             resetQueue()
-        } else {
-            telemetryQueue.async {
-                self.queue = self.queue.map { var metric = $0
-                    metric.value = Int(Double(metric.value) / self.sampleRate)
-                    return metric
-                }
-            }
         }
 
         self.telemetryTimer = QueueTimer(interval: .seconds(self.flushTimer), queue: .main) { [weak self] in
@@ -133,12 +129,11 @@ public class Telemetry: Subscriber {
     ///   - buildTags: A closure to build the tags dictionary.
     func increment(metric: String, buildTags: (inout [String: String]) -> Void) {
         guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+        if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
         buildTags(&tags)
         guard !tags.isEmpty else { return }
-
-        if Double.random(in: 0...1) > sampleRate { return }
 
         addRemoteMetric(metric: metric, tags: tags)
     }
@@ -150,6 +145,7 @@ public class Telemetry: Subscriber {
     ///   - buildTags: A closure to build the tags dictionary.
     func error(metric: String, log: String, buildTags: (inout [String: String]) -> Void) {
         guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+        if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
         buildTags(&tags)
@@ -165,19 +161,11 @@ public class Telemetry: Subscriber {
             logData = String(log.prefix(errorLogSizeMax))
         }
 
-        if let errorKey = tags["error"] {
-            if let count = seenErrors[errorKey] {
-                seenErrors[errorKey] = count + 1
-                if Double.random(in: 0...1) > sampleRate { return }
-                addRemoteMetric(metric: metric, tags: filteredTags, value: Int(Double(count) * sampleRate), log: logData)
-                seenErrors[errorKey] = 0
-            } else {
-                addRemoteMetric(metric: metric, tags: filteredTags, log: logData)
-                flush()
-                seenErrors[errorKey] = 0
-            }
-        } else {
-            addRemoteMetric(metric: metric, tags: filteredTags, log: logData)
+        addRemoteMetric(metric: metric, tags: filteredTags, log: logData)
+
+        if (flushFirstError) {
+            flushFirstError = false
+            flush()
         }
     }
 

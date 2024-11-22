@@ -116,6 +116,7 @@ class TelemetryTests: XCTestCase {
 
     func testHTTPException() {
         mockTelemetryHTTPClient(shouldThrow: true)
+        Telemetry.shared.flushFirstError = true
         Telemetry.shared.enable = true
         Telemetry.shared.start()
         Telemetry.shared.error(metric: Telemetry.INVOKE_METRIC, log: "log") { $0["error"] = "test" }

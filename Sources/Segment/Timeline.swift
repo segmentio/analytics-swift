@@ -68,7 +68,11 @@ internal class Mediator {
         Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
             (_ it: inout [String: String]) in
             it["message"] = "added"
-            it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+            if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
+                it["plugin"] = "\(plugin.type)-\(plugin.key)"
+            } else {
+                it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+            }
         }
     }
     
@@ -77,8 +81,11 @@ internal class Mediator {
             Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
                 (_ it: inout [String: String]) in
                 it["message"] = "removed"
-                it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
-            }
+                if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
+                    it["plugin"] = "\(plugin.type)-\(plugin.key)"
+                } else {
+                    it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+                }            }
             return plugin === storedPlugin
         }
     }
@@ -99,8 +106,11 @@ internal class Mediator {
                 Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
                     (_ it: inout [String: String]) in
                     it["message"] = "event-\(r.type ?? "unknown")"
-                    it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
-                }
+                    if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
+                        it["plugin"] = "\(plugin.type)-\(plugin.key)"
+                    } else {
+                        it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+                    }                }
             }
         }
         
