@@ -89,7 +89,7 @@ public class Telemetry: Subscriber {
     private var seenErrors = [String: Int]()
     internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
-    private var flushFirstError = true
+    internal var flushFirstError = true
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
     private var updateQueue = DispatchQueue(label: "updateQueue")
     private var telemetryTimer: QueueTimer?
