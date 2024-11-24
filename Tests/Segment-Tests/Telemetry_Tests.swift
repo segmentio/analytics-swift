@@ -141,7 +141,16 @@ class TelemetryTests: XCTestCase {
         Telemetry.shared.sendWriteKeyOnError = false
         Telemetry.shared.sendErrorLogData = false
         Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: longString) { $0["writekey"] = longString }
-        XCTAssertTrue(Telemetry.shared.queue.count < 1000)
+        XCTAssertTrue(Telemetry.shared.queueBytes < 1000)
+    }
+    
+    func testBadBuildTagsClosure() {
+        Telemetry.shared.enable = true
+        Telemetry.shared.start()
+        Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: "none") {
+            throw Error
+        }
+        XCTAssertTrue(Telemetry.shared.queue.count == 0)
     }
 }
 

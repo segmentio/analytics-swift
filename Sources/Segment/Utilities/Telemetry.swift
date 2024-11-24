@@ -127,12 +127,16 @@ public class Telemetry: Subscriber {
     /// - Parameters:
     ///   - metric: The metric name.
     ///   - buildTags: A closure to build the tags dictionary.
-    func increment(metric: String, buildTags: (inout [String: String]) -> Void) {
+    func increment(metric: String, buildTags: (inout [String: String]) throws -> Void) {
         guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
-        buildTags(&tags)
+        do {
+            try buildTags(&tags)
+        } catch {
+          return
+        }
         guard !tags.isEmpty else { return }
 
         addRemoteMetric(metric: metric, tags: tags)
@@ -143,12 +147,16 @@ public class Telemetry: Subscriber {
     ///   - metric: The metric name.
     ///   - log: The log data.
     ///   - buildTags: A closure to build the tags dictionary.
-    func error(metric: String, log: String, buildTags: (inout [String: String]) -> Void) {
+    func error(metric: String, log: String, buildTags: (inout [String: String]) throws -> Void) {
         guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
-        buildTags(&tags)
+        do {
+            try buildTags(&tags)
+        } catch {
+            return
+        }
         guard !tags.isEmpty else { return }
 
         var filteredTags = tags
