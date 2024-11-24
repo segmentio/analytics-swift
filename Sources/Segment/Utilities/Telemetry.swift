@@ -86,7 +86,6 @@ public class Telemetry: Subscriber {
     internal var queue = [RemoteMetric]()
     private var queueBytes = 0
     private var queueSizeExceeded = false
-    private var seenErrors = [String: Int]()
     internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
     internal var flushFirstError = true
@@ -118,7 +117,6 @@ public class Telemetry: Subscriber {
     func reset() {
         telemetryTimer?.suspend()
         resetQueue()
-        seenErrors.removeAll()
         started = false
         rateLimitEndTime = 0
     }
