@@ -143,6 +143,39 @@ class TelemetryTests: XCTestCase {
         Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: longString) { $0["writekey"] = longString }
         XCTAssertTrue(Telemetry.shared.queue.count < 1000)
     }
+    
+    func testConcurrentErrorReporting() {
+        Telemetry.shared.enable = true
+        Telemetry.shared.start()
+        let operationCount = 200
+
+        var concurrentExpectation = XCTestExpectation(description: "High pressure operations")
+        concurrentExpectation.expectedFulfillmentCount = operationCount
+
+        // Use multiple dispatch queues to increase concurrency
+        let queues = [
+            DispatchQueue.global(qos: .userInitiated),
+            DispatchQueue.global(qos: .default),
+            DispatchQueue.global(qos: .utility)
+        ]
+        for i in 0..<operationCount {
+            // Round-robin between different queues
+            let queue = queues[i % queues.count]
+            queue.async {
+                Telemetry.shared.error(
+                    metric: Telemetry.INVOKE_ERROR_METRIC,
+                    log: "High pressure test \(i)"
+                ) { tags in
+                    tags["error"] = "pressure_test_key"
+                    tags["queue"] = "\(i % queues.count)"
+                    tags["iteration"] = "\(i)"
+                }
+                concurrentExpectation.fulfill()
+            }
+        }
+        wait(for: [concurrentExpectation], timeout: 15.0)
+        XCTAssertTrue(Telemetry.shared.queue.count == Telemetry.shared.maxQueueSize)
+    }
 }
 
 // Mock URLSession
