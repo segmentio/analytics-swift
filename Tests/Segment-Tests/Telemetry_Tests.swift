@@ -146,10 +146,9 @@ class TelemetryTests: XCTestCase {
     
     func testConcurrentErrorReporting() {
         Telemetry.shared.enable = true
-        Telemetry.shared.start()
         let operationCount = 200
 
-        var concurrentExpectation = XCTestExpectation(description: "High pressure operations")
+        let concurrentExpectation = XCTestExpectation(description: "High pressure operations")
         concurrentExpectation.expectedFulfillmentCount = operationCount
 
         // Use multiple dispatch queues to increase concurrency
@@ -187,12 +186,13 @@ class URLSessionMock: RestrictedHTTPSession {
     var shouldThrow = false
     
     override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        let task = URLSession.shared.dataTask(with: request) { _, _, _ in }
         if shouldThrow {
             completionHandler(nil, nil, NSError(domain: "Test", code: 1, userInfo: nil))
         } else {
             completionHandler(nil, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil), nil)
         }
-        return URLSessionDataTaskMock()
+        return task
     }
 }
 

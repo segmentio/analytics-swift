@@ -85,7 +85,6 @@ public class Telemetry: Subscriber {
 
     internal var queue = [RemoteMetric]()
     private var queueBytes = 0
-    private var queueSizeExceeded = false
     internal var started = false
     private var rateLimitEndTime: TimeInterval = 0
     internal var flushFirstError = true
@@ -126,7 +125,7 @@ public class Telemetry: Subscriber {
     ///   - metric: The metric name.
     ///   - buildTags: A closure to build the tags dictionary.
     func increment(metric: String, buildTags: (inout [String: String]) -> Void) {
-        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG) else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
@@ -142,7 +141,7 @@ public class Telemetry: Subscriber {
     ///   - log: The log data.
     ///   - buildTags: A closure to build the tags dictionary.
     func error(metric: String, log: String, buildTags: (inout [String: String]) -> Void) {
-        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG), queueHasSpace() else { return }
+        guard enable, sampleRate > 0.0 && sampleRate <= 1.0, metric.hasPrefix(Telemetry.METRICS_BASE_TAG) else { return }
         if Double.random(in: 0...1) > sampleRate { return }
 
         var tags = [String: String]()
@@ -198,7 +197,6 @@ public class Telemetry: Subscriber {
             sendQueue.append(metric)
         }
         queueBytes = 0
-        queueSizeExceeded = false
 
         let payload = try JSONEncoder().encode(["series": sendQueue])
         var request = upload(apiHost: host)
@@ -253,6 +251,8 @@ public class Telemetry: Subscriber {
                 return
             }
 
+            guard queue.count < maxQueueSize else { return }
+
             let newMetric = RemoteMetric(
                 type: METRIC_TYPE,
                 metric: metric,
@@ -264,8 +264,6 @@ public class Telemetry: Subscriber {
             if queueBytes + newMetricSize <= maxQueueBytes {
                 queue.append(newMetric)
                 queueBytes += newMetricSize
-            } else {
-                queueSizeExceeded = true
             }
         }
     }
@@ -295,19 +293,10 @@ public class Telemetry: Subscriber {
         return request
     }
 
-    private func queueHasSpace() -> Bool {
-        var under = false
-        telemetryQueue.sync {
-            under = queue.count < maxQueueSize
-        }
-        return under
-    }
-
     private func resetQueue() {
         telemetryQueue.sync {
             queue.removeAll()
             queueBytes = 0
-            queueSizeExceeded = false
         }
     }
 }
