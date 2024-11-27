@@ -71,7 +71,8 @@ public class Telemetry: Subscriber {
 
     internal var session: any HTTPSession
     internal var host: String = HTTPClient.getDefaultAPIHost()
-    @Atomic var sampleRate: Double = 1.0 // inital sample rate should be 1.0, will be downsampled on start
+    @Atomic internal var sampleRate: Double = 1.0 // inital sample rate should be 1.0, will be downsampled on start
+    internal var sampleRateTest: Atomic<Double> { _sampleRate }
     private var flushTimer: Int = 30
     internal var maxQueueSize: Int = 20
     var errorLogSizeMax: Int = 4000
@@ -88,6 +89,7 @@ public class Telemetry: Subscriber {
     @Atomic internal var started = false
     @Atomic private var rateLimitEndTime: TimeInterval = 0
     @Atomic internal var flushFirstError = true
+    internal var flushFirstErrorTest: Atomic<Bool> { _flushFirstError }
     private var telemetryQueue = DispatchQueue(label: "telemetryQueue")
     private var updateQueue = DispatchQueue(label: "updateQueue")
     private var telemetryTimer: QueueTimer?

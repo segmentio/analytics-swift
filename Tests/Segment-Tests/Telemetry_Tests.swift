@@ -12,7 +12,7 @@ class TelemetryTests: XCTestCase {
             self.errors.append("\(error)")
         }
         errors.removeAll()
-        Telemetry.shared.sampleRate = 1.0
+        Telemetry.shared.sampleRateTest.set(1.0)
         mockTelemetryHTTPClient()
     }
 
@@ -29,12 +29,12 @@ class TelemetryTests: XCTestCase {
     }
 
     func testTelemetryStart() {
-        Telemetry.shared.sampleRate = 0.0
+        Telemetry.shared.sampleRateTest.set(0.0)
         Telemetry.shared.enable = true
         Telemetry.shared.start()
         XCTAssertFalse(Telemetry.shared.started)
         
-        Telemetry.shared.sampleRate = 1.0
+        Telemetry.shared.sampleRateTest.set(1.0)
         Telemetry.shared.start()
         XCTAssertTrue(Telemetry.shared.started)
         XCTAssertTrue(errors.isEmpty)
@@ -116,7 +116,7 @@ class TelemetryTests: XCTestCase {
 
     func testHTTPException() {
         mockTelemetryHTTPClient(shouldThrow: true)
-        Telemetry.shared.flushFirstError = true
+        Telemetry.shared.flushFirstErrorTest.set(true)
         Telemetry.shared.enable = true
         Telemetry.shared.start()
         Telemetry.shared.error(metric: Telemetry.INVOKE_METRIC, log: "log") { $0["error"] = "test" }
