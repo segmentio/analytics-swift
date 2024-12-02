@@ -73,12 +73,11 @@ extension Analytics {
         if fatal {
             exceptionFailure("A critical error occurred: \(translatedError)")
         }
-        Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: Thread.callStackSymbols.joined(separator: "\n")) { 
-                (_ it: inout [String: String]) in
-                it["error"] = "\(translatedError)"
-                it["writekey"] = configuration.values.writeKey
-                it["caller"] = Thread.callStackSymbols[3]
-            }
+        Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: Thread.callStackSymbols.joined(separator: "\n")) {
+            (_ it: inout [String: String]) in
+            it["error"] = "\(translatedError)"
+            it["writekey"] = configuration.values.writeKey
+        }
     }
     
     static public func reportInternalError(_ error: Error, fatal: Bool = false) {
@@ -90,9 +89,8 @@ extension Analytics {
             exceptionFailure("A critical error occurred: \(translatedError)")
         }
         Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: Thread.callStackSymbols.joined(separator: "\n")) { 
-                (_ it: inout [String: String]) in
-                it["error"] = "\(translatedError)"
-                it["caller"] = Thread.callStackSymbols[3]
-            }
+            (_ it: inout [String: String]) in
+            it["error"] = "\(translatedError)"
+        }
     }
 }

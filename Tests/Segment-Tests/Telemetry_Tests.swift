@@ -12,7 +12,7 @@ class TelemetryTests: XCTestCase {
             self.errors.append("\(error)")
         }
         errors.removeAll()
-        Telemetry.shared.sampleRate = 1.0
+        Telemetry.shared.sampleRateTest.set(1.0)
         mockTelemetryHTTPClient()
     }
 
@@ -29,12 +29,12 @@ class TelemetryTests: XCTestCase {
     }
 
     func testTelemetryStart() {
-        Telemetry.shared.sampleRate = 0.0
+        Telemetry.shared.sampleRateTest.set(0.0)
         Telemetry.shared.enable = true
         Telemetry.shared.start()
         XCTAssertFalse(Telemetry.shared.started)
         
-        Telemetry.shared.sampleRate = 1.0
+        Telemetry.shared.sampleRateTest.set(1.0)
         Telemetry.shared.start()
         XCTAssertTrue(Telemetry.shared.started)
         XCTAssertTrue(errors.isEmpty)
@@ -116,7 +116,7 @@ class TelemetryTests: XCTestCase {
 
     func testHTTPException() {
         mockTelemetryHTTPClient(shouldThrow: true)
-        Telemetry.shared.flushFirstError = true
+        Telemetry.shared.flushFirstErrorTest.set(true)
         Telemetry.shared.enable = true
         Telemetry.shared.start()
         Telemetry.shared.error(metric: Telemetry.INVOKE_METRIC, log: "log") { $0["error"] = "test" }
@@ -143,6 +143,38 @@ class TelemetryTests: XCTestCase {
         Telemetry.shared.error(metric: Telemetry.INVOKE_ERROR_METRIC, log: longString) { $0["writekey"] = longString }
         XCTAssertTrue(Telemetry.shared.queue.count < 1000)
     }
+    
+    func testConcurrentErrorReporting() {
+        Telemetry.shared.enable = true
+        let operationCount = 200
+
+        let concurrentExpectation = XCTestExpectation(description: "High pressure operations")
+        concurrentExpectation.expectedFulfillmentCount = operationCount
+
+        // Use multiple dispatch queues to increase concurrency
+        let queues = [
+            DispatchQueue.global(qos: .userInitiated),
+            DispatchQueue.global(qos: .default),
+            DispatchQueue.global(qos: .utility)
+        ]
+        for i in 0..<operationCount {
+            // Round-robin between different queues
+            let queue = queues[i % queues.count]
+            queue.async {
+                Telemetry.shared.error(
+                    metric: Telemetry.INVOKE_ERROR_METRIC,
+                    log: "High pressure test \(i)"
+                ) { tags in
+                    tags["error"] = "pressure_test_key"
+                    tags["queue"] = "\(i % queues.count)"
+                    tags["iteration"] = "\(i)"
+                }
+                concurrentExpectation.fulfill()
+            }
+        }
+        wait(for: [concurrentExpectation], timeout: 15.0)
+        XCTAssertTrue(Telemetry.shared.queue.count == Telemetry.shared.maxQueueSize)
+    }
 }
 
 // Mock URLSession
@@ -154,12 +186,13 @@ class URLSessionMock: RestrictedHTTPSession {
     var shouldThrow = false
     
     override func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        let task = URLSession.shared.dataTask(with: request) { _, _, _ in }
         if shouldThrow {
             completionHandler(nil, nil, NSError(domain: "Test", code: 1, userInfo: nil))
         } else {
             completionHandler(nil, HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil), nil)
         }
-        return URLSessionDataTaskMock()
+        return task
     }
 }
 
