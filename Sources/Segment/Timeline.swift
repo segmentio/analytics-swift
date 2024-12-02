@@ -71,7 +71,7 @@ internal class Mediator {
             if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
                 it["plugin"] = "\(plugin.type)-\(plugin.key)"
             } else {
-                it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+                it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
             }
         }
     }
@@ -84,7 +84,7 @@ internal class Mediator {
                 if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
                     it["plugin"] = "\(plugin.type)-\(plugin.key)"
                 } else {
-                    it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+                    it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
                 }            }
             return plugin === storedPlugin
         }
@@ -109,7 +109,7 @@ internal class Mediator {
                     if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
                         it["plugin"] = "\(plugin.type)-\(plugin.key)"
                     } else {
-                        it["plugin"] = "\(plugin.type)-\(String(describing: plugin))"
+                        it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
                     }                }
             }
         }
