@@ -60,14 +60,14 @@ public class Analytics {
     /// - Parameters:
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
-        /*if Self.isActiveWriteKey(configuration.values.writeKey) {
+        if Self.isActiveWriteKey(configuration.values.writeKey) {
             // If you're hitting this in testing, it could be a memory leak, or something async is still running
             // and holding a reference.  You can use XCTest.waitUntilFinished(...) to wait for things to complete.
             fatalError("Cannot initialize multiple instances of Analytics with the same write key")
         } else {
             Self.addActiveWriteKey(configuration.values.writeKey)
-        }*/
-        
+        }
+
         store = Store()
         storage = Storage(
             store: self.store,
@@ -80,7 +80,7 @@ public class Analytics {
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
         store.provide(state: UserInfo.defaultState(from: storage, anonIdGenerator: configuration.values.anonymousIdGenerator))
-        
+
         storage.analytics = self
 
         checkSharedInstance()
@@ -88,7 +88,7 @@ public class Analytics {
         // Get everything running
         platformStartup()
 
-        Telemetry.shared.increment(metric: Telemetry.INVOKE_METRIC) {it in 
+        Telemetry.shared.increment(metric: Telemetry.INVOKE_METRIC) {it in
             it["message"] = "configured"
             it["apihost"] = configuration.values.apiHost
             it["cdnhost"] = configuration.values.cdnHost
@@ -97,7 +97,7 @@ public class Analytics {
             it["config"] = "seg:\(configuration.values.autoAddSegmentDestination) ua:\(configuration.values.userAgent ?? "N/A")"
         }
     }
-    
+
     deinit {
         Self.removeActiveWriteKey(configuration.values.writeKey)
     }
@@ -117,9 +117,9 @@ public class Analytics {
                 policy.reset()
             }
         }*/
-        
+
         let flushPolicies = configuration.values.flushPolicies
-        
+
         var shouldFlush = false
         // if any policy says to flush, make note of that
         for policy in flushPolicies {
@@ -178,12 +178,12 @@ extension Analytics {
             store.dispatch(action: System.ToggleEnabledAction(enabled: value))
         }
     }
-    
+
     /// Returns the writekey in use for this instance.
     public var writeKey: String {
         return configuration.values.writeKey
     }
-    
+
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
@@ -260,7 +260,7 @@ extension Analytics {
     public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
         guard enabled == true else { completion?(); return }
-        
+
         let completionGroup = CompletionGroup(queue: configuration.values.flushQueue)
         apply { plugin in
             completionGroup.add { group in
@@ -273,7 +273,7 @@ extension Analytics {
                 }
             }
         }
-        
+
         completionGroup.run(mode: operatingMode) {
             completion?()
         }
@@ -450,18 +450,18 @@ extension Analytics {
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
     }
-    
+
     /// Manage active writekeys.  It's wrapped in @atomic
     internal static func isActiveWriteKey(_ writeKey: String) -> Bool {
         Self.activeWriteKeys.contains(writeKey)
     }
-    
+
     internal static func addActiveWriteKey(_ writeKey: String) {
         Self._activeWriteKeys.mutate { keys in
             keys.append(writeKey)
         }
     }
-    
+
     internal static func removeActiveWriteKey(_ writeKey: String) {
         Self._activeWriteKeys.mutate { keys in
             keys.removeAll { key in
