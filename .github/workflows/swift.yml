@@ -51,10 +51,11 @@ jobs:
 
   build_and_test_spm_linux:
     needs: cancel_previous
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: sersoft-gmbh/swifty-linux-action@v3
         with:
+          platform: ubuntu-24.04
           release-version: "5.9.2"
           github-token: ${{secrets.GITHUB_TOKEN}}
       - uses: actions/checkout@v2
