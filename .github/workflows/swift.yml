@@ -51,7 +51,7 @@ jobs:
 
   build_and_test_spm_linux:
     needs: cancel_previous
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: sersoft-gmbh/swifty-linux-action@v3
         with:
