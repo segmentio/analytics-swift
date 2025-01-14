@@ -55,7 +55,7 @@ jobs:
     steps:
       - uses: sersoft-gmbh/swifty-linux-action@v3
         with:
-          platform: ubuntu-24.04
+          platform: ubuntu-22.04
           release-version: "5.9.2"
           github-token: ${{secrets.GITHUB_TOKEN}}
       - uses: actions/checkout@v2
