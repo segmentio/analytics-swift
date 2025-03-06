@@ -1,0 +1,11 @@
+[
+    { "comment": "The most generic of tests"},
+    { "action": "configure"},
+    { "action": "identify", "userId": "user123", "traits": {"email": "test@example.com", "plan": "premium"} },
+    { "action": "track", "event": "Item Purchased", "properties": {"item": "Book", "price": 10} },
+    { "action": "page", "name": "Home", "category": "Landing", "properties": {"title": "Welcome"} },
+    { "action": "wait", "seconds": 3},
+    { "action": "group", "groupId": "group123", "traits": {"name": "Initech", "employees": 125} },
+    { "action": "alias", "newId": "user456" },
+    { "action": "flush", "wait": true}
+]
