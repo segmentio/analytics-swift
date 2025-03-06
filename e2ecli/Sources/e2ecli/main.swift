@@ -101,6 +101,15 @@ func processConfigure(_ action: [String: Any]) {
     }
 
     analytics = Analytics(configuration: config)
+    
+    var messageIds = [String]()
+    analytics?.add { event in
+        if let eventMessageId = event?.messageId {
+            messageIds.append(eventMessageId)
+        }
+        return event
+    }
+    
     if waitUntilStarted {
         analytics?.waitUntilStarted()
     }
