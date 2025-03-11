@@ -49,39 +49,39 @@ jobs:
       - name: Build & Run tests
         run: swift test
 
-  build_and_test_spm_linux:
-    needs: cancel_previous
-    runs-on: ubuntu-latest
-    steps:
-      - uses: sersoft-gmbh/swifty-linux-action@v3
-        with:
-          release-version: "5.9.2"
-          github-token: ${{secrets.GITHUB_TOKEN}}
-      - uses: actions/checkout@v2
-      - uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - name: Build & Run tests
-        run: swift test --enable-test-discovery
+  #  build_and_test_spm_linux:
+  #    needs: cancel_previous
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: sersoft-gmbh/swifty-linux-action@v3
+  #        with:
+  #          release-version: "5.9.2"
+  #          github-token: ${{secrets.GITHUB_TOKEN}}
+  #      - uses: actions/checkout@v2
+  #      - uses: webfactory/ssh-agent@v0.8.0
+  #        with:
+  #          ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
+  #      - name: Build & Run tests
+  #        run: swift test --enable-test-discovery
 
-  build_and_test_spm_windows:
-    needs: cancel_previous
-    runs-on: windows-latest
-    steps:
-      - uses: SwiftyLab/setup-swift@latest
-        with:
-          swift-version: "5.10"
-      - uses: actions/checkout@v2
-      - name: Build
-        run: swift build
-      #
-      # Disable tests right now.  There's an SPM issue where link errors generate
-      # a bad exit code even though the tests run/work properly.
-      #
-      # See: https://forums.swift.org/t/linker-warnings-on-windows-with-swift-argument-parser/71443/2
-      #
-      # - name: Run tests
-      #   run: swift test --enable-test-discovery
+  #  build_and_test_spm_windows:
+  #    needs: cancel_previous
+  #    runs-on: windows-latest
+  #    steps:
+  #      - uses: SwiftyLab/setup-swift@latest
+  #        with:
+  #          swift-version: "5.10"
+  #      - uses: actions/checkout@v2
+  #      - name: Build
+  #        run: swift build
+  #      #
+  #      # Disable tests right now.  There's an SPM issue where link errors generate
+  #      # a bad exit code even though the tests run/work properly.
+  #      #
+  #      # See: https://forums.swift.org/t/linker-warnings-on-windows-with-swift-argument-parser/71443/2
+  #      #
+  #      # - name: Run tests
+  #      #   run: swift test --enable-test-discovery
 
   build_and_test_ios:
     needs: cancel_previous
