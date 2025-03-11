@@ -44,7 +44,9 @@ class InjectTraits: Plugin {
         var workingEvent = event
         
         if var context = event?.context?.dictionaryValue {
-            context[keyPath: "traits"] = analytics?.traits()
+            if let traits = analytics?.traits() {
+                context[keyPath: "traits"] = analytics?.traits()
+            }
             
             workingEvent?.context = try? JSON(context)
         }

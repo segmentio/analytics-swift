@@ -360,6 +360,33 @@ final class Analytics_Tests: XCTestCase {
         let traits = identifyEvent?.traits?.dictionaryValue
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
     }
+    
+    func testTraitsNull() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let outputReader = OutputReaderPlugin()
+        analytics.add(plugin: outputReader)
+        
+        waitUntilStarted(analytics: analytics)
+        
+        analytics.identify(userId: "brandon", traits: nil)
+        
+        let identifyEvent: IdentifyEvent? = outputReader.lastEvent as? IdentifyEvent
+        
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted  // Makes the JSON nice and readable
+
+        let jsonNoTraits = try! encoder.encode(identifyEvent)
+        let jsonNoTraitsString = String(data: jsonNoTraits, encoding: .utf8)!
+        
+        XCTAssertFalse(jsonNoTraitsString.contains("\"traits\""))
+        
+        analytics.identify(userId: "brandon", traits: ["some": "value"])
+        let identifyEventTraits: IdentifyEvent? = outputReader.lastEvent as? IdentifyEvent
+        let jsonWithTraits = try! encoder.encode(identifyEventTraits)
+        let jsonWithTraitsString = String(data: jsonWithTraits, encoding: .utf8)!
+        
+        XCTAssertTrue(jsonWithTraitsString.contains("\"traits\""))
+    }
 
     func testUserIdAndTraitsPersistCorrectly() {
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))

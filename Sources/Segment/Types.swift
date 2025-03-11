@@ -70,7 +70,7 @@ public struct IdentifyEvent: RawEvent {
     public var metrics: [JSON]? = nil
     public var _metadata: DestinationMetadata? = nil
     
-    public var traits: JSON?
+    @OmitIfNull public var traits: JSON?
     
     
     public init(userId: String? = nil, traits: JSON? = nil) {
