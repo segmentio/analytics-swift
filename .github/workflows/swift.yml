@@ -78,7 +78,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
+      - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV 4K'
 
   build_and_test_watchos:
     needs: cancel_previous
