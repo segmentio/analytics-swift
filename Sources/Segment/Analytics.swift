@@ -241,7 +241,7 @@ extension Analytics {
     /// Returns the traits that were specified in the last identify call.
     public func traits<T: Codable>() -> T? {
         if let userInfo: UserInfo = store.currentState() {
-            return userInfo.traits?.codableValue()
+            return userInfo.traits.codableValue()
         }
         return nil
     }
@@ -249,7 +249,7 @@ extension Analytics {
     /// Returns the traits that were specified in the last identify call, as a dictionary.
     public func traits() -> [String: Any]? {
         if let userInfo: UserInfo = store.currentState() {
-            return userInfo.traits?.dictionaryValue
+            return userInfo.traits.dictionaryValue
         }
         return nil
     }

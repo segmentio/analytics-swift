@@ -347,11 +347,17 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testIdentify() {
+        Storage.hardSettingsReset(writeKey: "test")
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
         waitUntilStarted(analytics: analytics)
+        
+        // traits should be an empty object.
+        let currentTraits = analytics.traits()
+        XCTAssertNotNil(currentTraits)
+        XCTAssertTrue(currentTraits!.isEmpty == true)
 
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
 
@@ -359,9 +365,16 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertTrue(identifyEvent?.userId == "brandon")
         let traits = identifyEvent?.traits?.dictionaryValue
         XCTAssertTrue(traits?["email"] as? String == "blah@blah.com")
+        
+        analytics.reset()
+        
+        let emptyTraits = analytics.traits()
+        XCTAssertNotNil(emptyTraits)
+        XCTAssertTrue(emptyTraits!.isEmpty == true)
     }
 
     func testUserIdAndTraitsPersistCorrectly() {
+        Storage.hardSettingsReset(writeKey: "test")
         let analytics = Analytics(configuration: Configuration(writeKey: "test"))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
@@ -693,7 +706,7 @@ final class Analytics_Tests: XCTestCase {
             return request
         }.errorHandler { error in
             switch error {
-            case AnalyticsError.networkServerRejected(_):
+            case AnalyticsError.networkServerRejected(_, _):
                 // we expect this one; it's a bogus writekey
                 break;
             default:
