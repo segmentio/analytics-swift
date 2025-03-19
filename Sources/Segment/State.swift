@@ -108,7 +108,7 @@ struct System: State {
 struct UserInfo: Codable, State {
     let anonymousId: String
     let userId: String?
-    let traits: JSON?
+    let traits: JSON
     let referrer: URL?
     
     @Noncodable var anonIdGenerator: AnonymousIdGenerator?
@@ -121,7 +121,7 @@ struct UserInfo: Codable, State {
             } else {
                 anonId = UUID().uuidString
             }
-            return UserInfo(anonymousId: anonId, userId: nil, traits: nil, referrer: nil, anonIdGenerator: state.anonIdGenerator)
+            return UserInfo(anonymousId: anonId, userId: nil, traits: .object([:]), referrer: nil, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -137,7 +137,7 @@ struct UserInfo: Codable, State {
         let traits: JSON?
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: traits, referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
+            return UserInfo(anonymousId: state.anonymousId, userId: state.userId, traits: traits ?? .object([:]), referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -146,7 +146,7 @@ struct UserInfo: Codable, State {
         let traits: JSON?
         
         func reduce(state: UserInfo) -> UserInfo {
-            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits, referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
+            return UserInfo(anonymousId: state.anonymousId, userId: userId, traits: traits ?? .object([:]), referrer: state.referrer, anonIdGenerator: state.anonIdGenerator)
         }
     }
     
@@ -178,7 +178,7 @@ extension System {
 extension UserInfo {
     static func defaultState(from storage: Storage, anonIdGenerator: AnonymousIdGenerator) -> UserInfo {
         let userId: String? = storage.read(.userId)
-        let traits: JSON? = storage.read(.traits)
+        let traits: JSON = storage.read(.traits) ?? .object([:])
         var anonymousId: String
         if let existingId: String = storage.read(.anonymousId) {
             anonymousId = existingId

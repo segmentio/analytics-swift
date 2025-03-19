@@ -38,7 +38,7 @@ class JSONTests: XCTestCase {
     }
 
     func testJSONBasic() throws {
-        let traits = try? JSON(["email": "blah@blah.com"])
+        let traits = try! JSON(["email": "blah@blah.com"])
         let userInfo = UserInfo(anonymousId: "1234", userId: "brandon", traits: traits, referrer: nil)
         
         let encoder = JSONSafeEncoder.default
