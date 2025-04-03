@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         let configuration = Configuration(writeKey: "WRITE KEY")
-            .trackApplicationLifecycleEvents(true)
+            .setTrackedApplicationLifecycleEvents(.all)
             .flushInterval(10)
             .flushAt(2)
         

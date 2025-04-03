@@ -29,12 +29,12 @@ public class ObjCConfiguration: NSObject {
 
     /// Opt-in/out of tracking lifecycle events.  The default value is `false`.
     @objc
-    public var trackApplicationLifecycleEvents: Bool {
+    public var trackApplicationLifecycleEvents: TrackedLifecycleEvent {
         get {
-            return configuration.values.trackApplicationLifecycleEvents
+            return configuration.values.trackedApplicationLifecycleEvents
         }
         set(value) {
-            configuration.trackApplicationLifecycleEvents(value)
+            configuration.setTrackedApplicationLifecycleEvents(value)
         }
     }
 

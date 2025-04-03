@@ -48,7 +48,7 @@ extension Analytics: Subscriber {
         plugins += VendorSystem.current.requiredPlugins
 
         // setup lifecycle if desired
-        if configuration.values.trackApplicationLifecycleEvents, operatingMode != .synchronous {
+        if configuration.values.trackedApplicationLifecycleEvents != .none, operatingMode != .synchronous {
             #if os(iOS) || os(tvOS) || os(visionOS) || os(visionOS)
             plugins.append(iOSLifecycleEvents())
             #endif
