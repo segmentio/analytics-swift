@@ -14,7 +14,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate {
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
         let configuration = Configuration(writeKey: "WRITE KEY")
-            .trackApplicationLifecycleEvents(true)
+            .setTrackedApplicationLifecycleEvents(.all)
             .flushInterval(10)
         
         analytics = Analytics(configuration: configuration)
