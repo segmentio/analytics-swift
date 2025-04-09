@@ -239,7 +239,7 @@ extension Analytics {
     }
 
     /// Returns the traits that were specified in the last identify call.
-    public func traits<T: Codable>() -> T? {
+    public func traits<T: Decodable>() -> T? {
         if let userInfo: UserInfo = store.currentState() {
             return userInfo.traits.codableValue()
         }
@@ -385,7 +385,7 @@ extension Analytics {
      }
      ```
      */
-    public func openURL<T: Codable>(_ url: URL, options: T? = nil) {
+    public func openURL<T: Encodable>(_ url: URL, options: T? = nil) {
         guard let jsonProperties = try? JSON(with: options) else { return }
         guard let dict = jsonProperties.dictionaryValue else { return }
         openURL(url, options: dict)

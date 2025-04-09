@@ -42,7 +42,7 @@ class NotificationTracking: Plugin {
     var type: PluginType = .utility
     weak var analytics: Analytics?
 
-    func trackNotification(_ properties: [String: Codable], fromLaunch launch: Bool) {
+    func trackNotification(_ properties: [String: Encodable], fromLaunch launch: Bool) {
         if launch {
             analytics?.track(name: "Push Notification Tapped", properties: properties)
         } else {
@@ -55,7 +55,7 @@ class NotificationTracking: Plugin {
 // determination if a push notification caused the app to open.
 extension NotificationTracking: RemoteNotifications {
     func receivedRemoteNotification(userInfo: [AnyHashable: Any]) {
-        if let notification = userInfo as? [String: Codable] {
+        if let notification = userInfo as? [String: Encodable] {
             trackNotification(notification, fromLaunch: false)
         }
     }
@@ -88,7 +88,7 @@ import UIKit
 
 extension NotificationTracking: iOSLifecycle {
     func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-        if let notification = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: Codable] {
+        if let notification = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: Encodable] {
             trackNotification(notification, fromLaunch: true)
         }
     }

@@ -76,7 +76,7 @@ public struct Settings: Codable {
         return result
     }
     
-    public func integrationSettings<T: Codable>(forKey key: String) -> T? {
+    public func integrationSettings<T: Decodable>(forKey key: String) -> T? {
         var result: T? = nil
         guard let settings = integrations?.dictionaryValue else { return nil }
         if let dict = settings[key], let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
@@ -85,7 +85,7 @@ public struct Settings: Codable {
         return result
     }
     
-    public func integrationSettings<T: Codable>(forPlugin plugin: DestinationPlugin) -> T? {
+    public func integrationSettings<T: Decodable>(forPlugin plugin: DestinationPlugin) -> T? {
         return integrationSettings(forKey: plugin.key)
     }
     
