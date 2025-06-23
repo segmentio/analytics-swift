@@ -163,26 +163,28 @@ extension Analytics {
                 }
                 self.store.dispatch(action: System.ToggleRunningAction(running: true))
             }
-            
+
             return
         }
         #endif
-        
+
         let writeKey = self.configuration.values.writeKey
         let httpClient = HTTPClient(analytics: self)
-        
+
         // stop things; queue in case our settings have changed.
         store.dispatch(action: System.ToggleRunningAction(running: false))
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
-            if success {
-                if let s = settings {
-                    // put the new settings in the state store.
-                    // this will cause them to be cached.
-                    self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
-                    // let plugins know we just received some settings..
-                    self.update(settings: s)
-                }
+            if success, let s = settings {
+                // put the new settings in the state store.
+                // this will cause them to be cached.
+                self.store.dispatch(action: System.UpdateSettingsAction(settings: s))
             }
+
+            // let plugins know our current settings..
+            if let state: System = self.store.currentState(), let s = state.settings {
+                self.update(settings: s)
+            }
+
             // we're good to go back to a running state.
             self.store.dispatch(action: System.ToggleRunningAction(running: true))
         }
