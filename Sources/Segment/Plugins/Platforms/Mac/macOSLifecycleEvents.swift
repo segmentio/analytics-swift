@@ -28,10 +28,6 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
         // Make sure we aren't double calling application:didFinishLaunchingWithOptions
         // by resetting the check at the start
         _didFinishLaunching.set(true)
-        
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
-            return
-        }
 
         let previousVersion = UserDefaults.standard.string(forKey: Self.versionKey)
         let previousBuild = UserDefaults.standard.string(forKey: Self.buildKey)
@@ -40,64 +36,63 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
         let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         
         if previousBuild == nil {
-            analytics?.track(name: "Application Installed", properties: [
-                "version": currentVersion ?? "",
-                "build": currentBuild ?? ""
-            ])
+            if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationInstalled) == true {
+                analytics?.track(name: "Application Installed", properties: [
+                    "version": currentVersion ?? "",
+                    "build": currentBuild ?? ""
+                ])
+            }
         } else if currentBuild != previousBuild {
-            analytics?.track(name: "Application Updated", properties: [
-                "previous_version": previousVersion ?? "",
-                "previous_build": previousBuild ?? "",
+            if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationUpdated) == true {
+                analytics?.track(name: "Application Updated", properties: [
+                    "previous_version": previousVersion ?? "",
+                    "previous_build": previousBuild ?? "",
+                    "version": currentVersion ?? "",
+                    "build": currentBuild ?? ""
+                ])
+            }
+        }
+
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationOpened) == true {
+            analytics?.track(name: "Application Opened", properties: [
+                "from_background": false,
                 "version": currentVersion ?? "",
                 "build": currentBuild ?? ""
             ])
         }
-        
-        analytics?.track(name: "Application Opened", properties: [
-            "from_background": false,
-            "version": currentVersion ?? "",
-            "build": currentBuild ?? ""
-        ])
-        
+
         UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)
         UserDefaults.standard.setValue(currentBuild, forKey: Self.buildKey)
     }
     
     func applicationDidUnhide() {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
-            return
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationUnhidden) == true {
+            let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+            let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+
+            analytics?.track(name: "Application Unhidden", properties: [
+                "from_background": true,
+                "version": currentVersion ?? "",
+                "build": currentBuild ?? ""
+            ])
         }
-        
-        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-        let currentBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-        
-        analytics?.track(name: "Application Unhidden", properties: [
-            "from_background": true,
-            "version": currentVersion ?? "",
-            "build": currentBuild ?? ""
-        ])
     }
     
     func applicationDidHide() {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
-            return
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationHidden) == true {
+            analytics?.track(name: "Application Hidden")
         }
-        
-        analytics?.track(name: "Application Hidden")
     }
     func applicationDidResignActive() {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
-            return
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationBackgrounded) == true {
+            analytics?.track(name: "Application Backgrounded")
         }
-        
-        analytics?.track(name: "Application Backgrounded")
     }
     
     func applicationDidBecomeActive() {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationForegrounded) == false {
             return
         }
-        
         analytics?.track(name: "Application Foregrounded")
         
         // Lets check if we skipped application:didFinishLaunchingWithOptions,
@@ -109,11 +104,9 @@ class macOSLifecycleEvents: PlatformPlugin, macOSLifecycle {
     }
     
     func applicationWillTerminate() {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
-            return
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationTerminated) == true {
+            analytics?.track(name: "Application Terminated")
         }
-        
-        analytics?.track(name: "Application Terminated")
     }
 }
 

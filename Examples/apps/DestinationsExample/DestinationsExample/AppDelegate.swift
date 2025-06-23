@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         let configuration = Configuration(writeKey: "EioRQCqLHUECnoSseEguI8GnxOlZTOyX")
-            .trackApplicationLifecycleEvents(true)
+            .setTrackedApplicationLifecycleEvents(.all)
             .flushInterval(1)
         
         analytics = Analytics(configuration: configuration)

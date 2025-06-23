@@ -38,9 +38,9 @@ import Segment
 extension Analytics {
     static var main = Analytics(configuration: Configuration(writeKey: "1234")
                                     .flushAt(3)
-                                    .trackApplicationLifecycleEvents(true))
-    
+                                    .setTrackedApplicationLifecycleEvents(.all))
+
     static var support = Analytics(configuration: Configuration(writeKey: "5678")
                                     .flushAt(10)
-                                    .trackApplicationLifecycleEvents(false))
+                                    .setTrackedApplicationLifecycleEvents(.none))
 }

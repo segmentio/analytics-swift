@@ -47,11 +47,61 @@ public enum StorageMode {
 
 // MARK: - Internal Configuration
 
+@objc(SEGTrackedLifecycleEvent)
+public final class TrackedLifecycleEvent: NSObject, OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        (object as? Self)?.rawValue == rawValue
+    }
+
+    public override var hash: Int {
+        rawValue.hashValue
+    }
+
+    @objc public static let none: TrackedLifecycleEvent = []
+    @objc public static let applicationInstalled = TrackedLifecycleEvent(rawValue: 1 << 0)
+    @objc public static let applicationUpdated = TrackedLifecycleEvent(rawValue: 1 << 1)
+    @objc public static let applicationOpened = TrackedLifecycleEvent(rawValue: 1 << 2)
+    @objc public static let applicationBackgrounded = TrackedLifecycleEvent(rawValue: 1 << 3)
+    @objc public static let applicationForegrounded = TrackedLifecycleEvent(rawValue: 1 << 4)
+    #if os(macOS)
+    @objc public static let applicationUnhidden = TrackedLifecycleEvent(rawValue: 1 << 5)
+    @objc public static let applicationHidden = TrackedLifecycleEvent(rawValue: 1 << 6)
+    @objc public static let applicationTerminated = TrackedLifecycleEvent(rawValue: 1 << 7)
+
+    @objc public static let all: TrackedLifecycleEvent = [
+        .applicationInstalled,
+        .applicationUpdated,
+        .applicationOpened,
+        .applicationBackgrounded,
+        .applicationForegrounded,
+        .applicationUnhidden,
+        .applicationHidden,
+        .applicationTerminated,
+    ]
+    #elseif os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
+    @objc public static let all: TrackedLifecycleEvent = [
+        .applicationInstalled,
+        .applicationUpdated,
+        .applicationOpened,
+        .applicationBackgrounded,
+        .applicationForegrounded,
+    ]
+    #else
+    @objc public static let all = TrackedLifecycleEvent.none
+    #endif
+}
+
 public class Configuration {
     internal struct Values {
         var writeKey: String
         var application: Any? = nil
-        var trackApplicationLifecycleEvents: Bool = true
+        var trackedApplicationLifecycleEvents = TrackedLifecycleEvent.all
         var flushAt: Int = 20
         var flushInterval: TimeInterval = 30
         var defaultSettings: Settings? = nil
@@ -110,8 +160,19 @@ public extension Configuration {
     /// - Parameter enabled: A bool value
     /// - Returns: The current Configuration.
     @discardableResult
+    @available(*, deprecated, message: "Use `setTrackedApplicationLifecycleEvents(_:)` for more granular control")
     func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
-        values.trackApplicationLifecycleEvents = enabled
+        values.trackedApplicationLifecycleEvents = enabled ? .all : .none
+        return self
+    }
+
+    /// Opt-in/out of tracking lifecycle events.  The default value is `.none`.
+    ///
+    /// - Parameter events: An option set of the events to track.
+    /// - Returns: The current Configuration.
+    @discardableResult
+    func setTrackedApplicationLifecycleEvents(_ events: TrackedLifecycleEvent) -> Configuration {
+        values.trackedApplicationLifecycleEvents = events
         return self
     }
 
