@@ -73,7 +73,7 @@ public enum JSON: Equatable {
     }
     
     // For Value types
-    public init<T: Codable>(with value: T) throws {
+    public init<T: Encodable>(with value: T) throws {
         let encoder = JSONSafeEncoder.default
         let json = try encoder.encode(value)
         let output = try JSONSerialization.jsonObject(with: json, options: .fragmentsAllowed)
@@ -222,7 +222,7 @@ extension JSON {
         return result as Any
     }
     
-    public func codableValue<T: Codable>() -> T? {
+    public func codableValue<T: Decodable>() -> T? {
         var result: T? = nil
         if let dict = dictionaryValue, let jsonData = try? JSONSerialization.data(withJSONObject: dict) {
             do {
