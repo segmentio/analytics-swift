@@ -77,6 +77,8 @@ class iOSLifecycleMonitor: PlatformPlugin {
             self.significantTimeChange(notification: notification)
         case UIApplication.backgroundRefreshStatusDidChangeNotification:
             self.backgroundRefreshDidChange(notification: notification)
+        case UIApplication.willTerminateNotification:
+            self.willTerminate(notification: notification)
         default:
             
             break
