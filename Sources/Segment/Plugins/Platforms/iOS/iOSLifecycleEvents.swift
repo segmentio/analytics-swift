@@ -55,7 +55,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
 
         if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationOpened) == true {
             let sourceApp: String = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
-            let url: String = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String ?? ""
+            let url = urlFrom(launchOptions)
 
             analytics?.track(name: "Application Opened", properties: [
                 "from_background": false,
@@ -65,17 +65,6 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
                 "url": url
             ])
         }
-
-        let sourceApp: String = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
-        let url = urlFrom(launchOptions)
-        
-        analytics?.track(name: "Application Opened", properties: [
-            "from_background": false,
-            "version": currentVersion,
-            "build": currentBuild,
-            "referring_application": sourceApp,
-            "url": url
-        ])
         
         UserDefaults.standard.setValue(currentVersion, forKey: Self.versionKey)
         UserDefaults.standard.setValue(currentBuild, forKey: Self.buildKey)
