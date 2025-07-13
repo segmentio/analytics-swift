@@ -16,6 +16,7 @@ struct System: State {
     let running: Bool
     let enabled: Bool
     let initializedPlugins: [Plugin]
+    let waitingPlugins: [Plugin]
     
     struct UpdateSettingsAction: Action {
         let settings: Settings
@@ -25,7 +26,8 @@ struct System: State {
                                 settings: settings,
                                 running: state.running,
                                 enabled: state.enabled,
-                                initializedPlugins: state.initializedPlugins)
+                                initializedPlugins: state.initializedPlugins,
+                                waitingPlugins: state.waitingPlugins)
             return result
         }
     }
@@ -34,11 +36,29 @@ struct System: State {
         let running: Bool
         
         func reduce(state: System) -> System {
+            var desiredRunning = running
+            
+            if desiredRunning == true && state.waitingPlugins.count > 0 {
+                desiredRunning = false
+            }
+            
             return System(configuration: state.configuration,
                           settings: state.settings,
-                          running: running,
+                          running: desiredRunning,
                           enabled: state.enabled,
-                          initializedPlugins: state.initializedPlugins)
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
+        }
+    }
+    
+    struct ForceRunningAction: Action {
+        func reduce(state: System) -> System {
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: true,
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
         }
     }
     
@@ -50,7 +70,8 @@ struct System: State {
                           settings: state.settings,
                           running: state.running,
                           enabled: enabled,
-                          initializedPlugins: state.initializedPlugins)
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
         }
     }
     
@@ -62,7 +83,8 @@ struct System: State {
                           settings: state.settings,
                           running: state.running,
                           enabled: state.enabled,
-                          initializedPlugins: state.initializedPlugins)
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
         }
     }
     
@@ -79,7 +101,8 @@ struct System: State {
                           settings: settings,
                           running: state.running,
                           enabled: state.enabled,
-                          initializedPlugins: state.initializedPlugins)
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
         }
     }
     
@@ -97,7 +120,64 @@ struct System: State {
                           settings: state.settings,
                           running: state.running,
                           enabled: state.enabled,
-                          initializedPlugins: initializedPlugins)
+                          initializedPlugins: initializedPlugins,
+                          waitingPlugins: state.waitingPlugins)
+        }
+    }
+    
+    struct AddWaitingPlugin: Action {
+        let plugin: Plugin
+        
+        func reduce(state: System) -> System {
+            var waitingPlugins = state.waitingPlugins
+            if !waitingPlugins.contains(where: { p in
+                return plugin === p
+            }) {
+                waitingPlugins.append(plugin)
+            }
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: waitingPlugins)
+        }
+    }
+    
+    /*struct RemoveWaitingPlugin: Action {
+        let plugin: Plugin
+        
+        func reduce(state: System) -> System {
+            var waitingPlugins = state.waitingPlugins
+            waitingPlugins.removeAll { p in
+                return plugin === p
+            }
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: waitingPlugins)
+        }
+    }*/
+    struct RemoveWaitingPlugin: Action {
+        let plugin: Plugin
+        
+        func reduce(state: System) -> System {
+            var waitingPlugins = state.waitingPlugins
+            let countBefore = waitingPlugins.count
+            waitingPlugins.removeAll { p in
+                return plugin === p
+            }
+            let countAfter = waitingPlugins.count
+            print("RemoveWaitingPlugin: \(countBefore) -> \(countAfter)")
+            
+            return System(configuration: state.configuration,
+                          settings: state.settings,
+                          running: state.running,
+                          enabled: state.enabled,
+                          initializedPlugins: state.initializedPlugins,
+                          waitingPlugins: waitingPlugins)
         }
     }
 }
@@ -171,7 +251,14 @@ extension System {
                 settings = Settings(writeKey: configuration.values.writeKey, apiHost: HTTPClient.getDefaultAPIHost())
             }
         }
-        return System(configuration: configuration, settings: settings, running: false, enabled: true, initializedPlugins: [Plugin]())
+        return System(
+            configuration: configuration,
+            settings: settings,
+            running: false,
+            enabled: true,
+            initializedPlugins: [Plugin](),
+            waitingPlugins: [WaitingPlugin]()
+        )
     }
 }
 

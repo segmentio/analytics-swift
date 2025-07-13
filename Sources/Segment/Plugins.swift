@@ -124,6 +124,9 @@ extension DestinationPlugin {
     public func add(plugin: Plugin) -> Plugin {
         if let analytics = self.analytics {
             plugin.configure(analytics: analytics)
+            if let waiting = plugin as? WaitingPlugin {
+                analytics.pauseEventProcessing(plugin: waiting)
+            }
         }
         timeline.add(plugin: plugin)
         analytics?.updateIfNecessary(plugin: plugin)
@@ -188,6 +191,9 @@ extension Analytics {
     @discardableResult
     public func add(plugin: Plugin) -> Plugin {
         plugin.configure(analytics: self)
+        if let waiting = plugin as? WaitingPlugin {
+            pauseEventProcessing(plugin: waiting)
+        }
         timeline.add(plugin: plugin)
         updateIfNecessary(plugin: plugin)
         return plugin
