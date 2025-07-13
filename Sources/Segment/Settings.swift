@@ -109,12 +109,11 @@ extension Settings: Equatable {
 
 extension Analytics {     
     internal func update(settings: Settings) {
-        guard let system: System = store.currentState() else { return }
         apply { plugin in
-            plugin.update(settings: settings, type: updateType(for: plugin, in: system))
+            plugin.update(settings: settings, type: updateType(for: plugin))
             if let destPlugin = plugin as? DestinationPlugin {
                 destPlugin.apply { subPlugin in
-                    subPlugin.update(settings: settings, type: updateType(for: subPlugin, in: system))
+                    subPlugin.update(settings: settings, type: updateType(for: subPlugin))
                 }
             }
         }
@@ -125,19 +124,12 @@ extension Analytics {
         // if we're already running, update has already been called for existing plugins,
         // so we just wanna call it on this one if it hasn't been done already.
         if system.running, let settings = system.settings {
-            let alreadyInitialized = system.initializedPlugins.contains { p in
-                return plugin === p
-            }
-            if !alreadyInitialized {
-                store.dispatch(action: System.AddPluginToInitialized(plugin: plugin))
-                plugin.update(settings: settings, type: .initial)
-            } else {
-                plugin.update(settings: settings, type: .refresh)
-            }
+            plugin.update(settings: settings, type: updateType(for: plugin))
         }
     }
     
-    internal func updateType(for plugin: Plugin, in system: System) -> UpdateType {
+    internal func updateType(for plugin: Plugin) -> UpdateType {
+        guard let system: System = store.currentState() else { return .initial }
         let alreadyInitialized = system.initializedPlugins.contains { p in
             return plugin === p
         }
@@ -154,14 +146,14 @@ extension Analytics {
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...
             // but we should make it work similarly.
-            store.dispatch(action: System.ToggleRunningAction(running: false))
+            pauseEventProcessing()
             
             operatingMode.run(queue: DispatchQueue.main) {
                 if let state: System = self.store.currentState(), let settings = state.settings {
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
                     self.update(settings: settings)
                 }
-                self.store.dispatch(action: System.ToggleRunningAction(running: true))
+                self.resumeEventProcessing()
             }
 
             return
@@ -172,7 +164,7 @@ extension Analytics {
         let httpClient = HTTPClient(analytics: self)
 
         // stop things; queue in case our settings have changed.
-        store.dispatch(action: System.ToggleRunningAction(running: false))
+        pauseEventProcessing()
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
             if success, let s = settings {
                 // put the new settings in the state store.
@@ -186,7 +178,7 @@ extension Analytics {
             }
 
             // we're good to go back to a running state.
-            self.store.dispatch(action: System.ToggleRunningAction(running: true))
+            self.resumeEventProcessing()
         }
     }
 }

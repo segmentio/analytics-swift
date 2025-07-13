@@ -30,6 +30,9 @@ public class Analytics {
     static internal weak var firstInstance: Analytics? = nil
 
     @Atomic static internal var activeWriteKeys = [String]()
+    
+    // Used for WaitingPlugin's, see waiting.swift
+    internal var processingTimer: DispatchWorkItem? = nil
 
     /**
      This method isn't a traditional singleton implementation.  It's provided here
