@@ -18,7 +18,7 @@ class watchOSLifecycleEvents: PlatformPlugin, watchOSLifecycle {
     weak var analytics: Analytics?
     
     func applicationDidFinishLaunching(watchExtension: WKExtension) {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents == TrackedLifecycleEvent.none {
             return
         }
         
@@ -53,7 +53,7 @@ class watchOSLifecycleEvents: PlatformPlugin, watchOSLifecycle {
     }
     
     func applicationWillEnterForeground(watchExtension: WKExtension) {
-        if analytics?.configuration.values.trackApplicationLifecycleEvents == false {
+        if analytics?.configuration.values.trackedApplicationLifecycleEvents == TrackedLifecycleEvent.none {
             return
         }
         
