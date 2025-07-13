@@ -56,7 +56,7 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
         }
 
         let sourceApp: String = launchOptions?[UIApplication.LaunchOptionsKey.sourceApplication] as? String ?? ""
-        let url: String = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String ?? ""
+        let url = urlFrom(launchOptions)
         
         analytics?.track(name: "Application Opened", properties: [
             "from_background": false,
@@ -100,6 +100,16 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
             return
         }
         analytics?.track(name: "Application Foregrounded")
+    }
+    
+    private func urlFrom(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> String {
+        if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? String {
+            return url
+        }
+        if let url = launchOptions?[UIApplication.LaunchOptionsKey.url] as? NSURL, let rawUrl =  url.absoluteString  {
+            return rawUrl
+        }
+        return ""
     }
 }
 
