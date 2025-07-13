@@ -92,6 +92,13 @@ public final class TrackedLifecycleEvent: NSObject, OptionSet {
         .applicationBackgrounded,
         .applicationForegrounded,
     ]
+    #elseif os(watchOS)
+    @objc public static let all: TrackedLifecycleEvent = [
+        .applicationInstalled,
+        .applicationUpdated,
+        .applicationOpened,
+        .applicationBackgrounded,
+    ]
     #else
     @objc public static let all = TrackedLifecycleEvent.none
     #endif
