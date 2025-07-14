@@ -28,11 +28,12 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
         let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
-            /*.errorHandler({ error in
+            .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
-            })*/
+            })
             .httpSession(RestrictedHTTPSession())
         )
+        analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         DirectoryStore.fileValidator = { url in
@@ -102,11 +103,12 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
         let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
-            /*.errorHandler({ error in
+            .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
-            })*/
+            })
             .httpSession(RestrictedHTTPSession())
         )
+        analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         DirectoryStore.fileValidator = { url in
