@@ -101,5 +101,5 @@ extension Analytics {
     static var main = Analytics(configuration:
                                     Configuration(writeKey: "ABCD")
                                     .flushAt(3)
-                                    .trackApplicationLifecycleEvents(true))
+                                    .setTrackedApplicationLifecycleEvents(.all))
 }

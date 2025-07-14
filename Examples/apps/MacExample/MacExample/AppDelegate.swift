@@ -18,7 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         
         let configuration = Configuration(writeKey: "<WRITE KEY>")
-            .trackApplicationLifecycleEvents(true)
+            .setTrackedApplicationLifecycleEvents(.all)
             .flushInterval(10)
             .flushAt(1)
             .errorHandler { error in

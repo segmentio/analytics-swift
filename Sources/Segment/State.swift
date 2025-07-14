@@ -144,22 +144,6 @@ struct System: State {
         }
     }
     
-    /*struct RemoveWaitingPlugin: Action {
-        let plugin: Plugin
-        
-        func reduce(state: System) -> System {
-            var waitingPlugins = state.waitingPlugins
-            waitingPlugins.removeAll { p in
-                return plugin === p
-            }
-            return System(configuration: state.configuration,
-                          settings: state.settings,
-                          running: state.running,
-                          enabled: state.enabled,
-                          initializedPlugins: state.initializedPlugins,
-                          waitingPlugins: waitingPlugins)
-        }
-    }*/
     struct RemoveWaitingPlugin: Action {
         let plugin: Plugin
         
@@ -169,8 +153,6 @@ struct System: State {
             waitingPlugins.removeAll { p in
                 return plugin === p
             }
-            let countAfter = waitingPlugins.count
-            print("RemoveWaitingPlugin: \(countBefore) -> \(countAfter)")
             
             return System(configuration: state.configuration,
                           settings: state.settings,
