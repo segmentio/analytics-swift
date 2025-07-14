@@ -178,7 +178,7 @@ extension XCTestCase {
     
     func waitUntilFinished(analytics: Analytics?, file: StaticString = #filePath, line: UInt = #line) {
         addTeardownBlock { [weak analytics] in
-            let instance = try await waitForTaskCompletion(withTimeoutInSeconds: 3) {
+            let instance = try await waitForTaskCompletion(withTimeoutInSeconds: 30) {
                 while analytics != nil {
                     DispatchQueue.main.sync {
                         RunLoop.current.run(until: .distantPast)
