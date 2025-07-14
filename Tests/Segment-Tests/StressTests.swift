@@ -33,8 +33,6 @@ class StressTests: XCTestCase {
             })
             .httpSession(RestrictedHTTPSession())
         )
-                                  
-        analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         DirectoryStore.fileValidator = { url in
@@ -211,6 +209,8 @@ class StressTests: XCTestCase {
         while (ready) {
             RunLoop.main.run(until: Date.distantPast)
         }
+        
+        analytics.purgeStorage()
     }
     
     func testMemoryStorageStress() throws {
