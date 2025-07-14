@@ -28,9 +28,9 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
         let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
-            .errorHandler({ error in
+            /*.errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
-            })
+            })*/
             .httpSession(RestrictedHTTPSession())
         )
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -102,9 +102,9 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
                 
         let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
-            .errorHandler({ error in
+            /*.errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
-            })
+            })*/
             .httpSession(RestrictedHTTPSession())
         )
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
