@@ -19,7 +19,7 @@ extension Analytics {
     ///   - name: Name of the action, e.g., 'Purchased a T-Shirt'
     ///   - properties: Properties specific to the named event. For example, an event with
     ///     the name 'Purchased a Shirt' might have properties like revenue or size.
-    public func track<P: Codable>(name: String, properties: P?) {
+    public func track<P: Encodable>(name: String, properties: P?) {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(with: properties)
@@ -50,7 +50,7 @@ extension Analytics {
     ///     generate the UUID and Apple's policies on IDs, see
     ///      https://segment.io/libraries/ios#ids
     /// - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func identify<T: Codable>(userId: String, traits: T?) {
+    public func identify<T: Encodable>(userId: String, traits: T?) {
         do {
             if let traits = traits {
                 let jsonTraits = try JSON(with: traits)
@@ -70,7 +70,7 @@ extension Analytics {
     /// Associate a user with their unique ID and record traits about them.
     /// - Parameters:
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func identify<T: Codable>(traits: T) {
+    public func identify<T: Encodable>(traits: T) {
         do {
             let jsonTraits = try JSON(with: traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
@@ -93,7 +93,7 @@ extension Analytics {
         process(incomingEvent: event)
     }
     
-    public func screen<P: Codable>(title: String, category: String? = nil, properties: P?) {
+    public func screen<P: Encodable>(title: String, category: String? = nil, properties: P?) {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(with: properties)
@@ -112,7 +112,7 @@ extension Analytics {
         screen(title: title, category: category, properties: nil as ScreenEvent?)
     }
 
-    public func group<T: Codable>(groupId: String, traits: T?) {
+    public func group<T: Encodable>(groupId: String, traits: T?) {
         do {
             if let traits = traits {
                 let jsonTraits = try JSON(with: traits)
@@ -234,7 +234,7 @@ extension Analytics {
     ///   - properties: Properties specific to the named event. For example, an event with
     ///     the name 'Purchased a Shirt' might have properties like revenue or size.
     ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
-    public func track<P: Codable>(name: String, properties: P?, enrichments: [EnrichmentClosure]?) {
+    public func track<P: Encodable>(name: String, properties: P?, enrichments: [EnrichmentClosure]?) {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(with: properties)
@@ -287,7 +287,7 @@ extension Analytics {
     ///      https://segment.io/libraries/ios#ids
     ///  - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     ///  - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
-    public func identify<T: Codable>(userId: String, traits: T?, enrichments: [EnrichmentClosure]?) {
+    public func identify<T: Encodable>(userId: String, traits: T?, enrichments: [EnrichmentClosure]?) {
         do {
             if let traits = traits {
                 let jsonTraits = try JSON(with: traits)
@@ -308,7 +308,7 @@ extension Analytics {
     /// - Parameters:
     ///   - traits: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
     ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
-    public func identify<T: Codable>(traits: T, enrichments: [EnrichmentClosure]?) {
+    public func identify<T: Encodable>(traits: T, enrichments: [EnrichmentClosure]?) {
         do {
             let jsonTraits = try JSON(with: traits)
             store.dispatch(action: UserInfo.SetTraitsAction(traits: jsonTraits))
@@ -366,7 +366,7 @@ extension Analytics {
     ///   - category: A category to the type of screen if it applies.
     ///   - properties: Any extra metadata associated with the screen. e.g. method of access, size, etc.
     ///   - enrichments: Enrichments to be applied to this specific event only, or `nil` for none.
-    public func screen<P: Codable>(title: String, category: String? = nil, properties: P?, enrichments: [EnrichmentClosure]?) {
+    public func screen<P: Encodable>(title: String, category: String? = nil, properties: P?, enrichments: [EnrichmentClosure]?) {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(with: properties)
@@ -411,7 +411,7 @@ extension Analytics {
         process(incomingEvent: event, enrichments: enrichments)
     }
     
-    public func group<T: Codable>(groupId: String, traits: T?, enrichments: [EnrichmentClosure]?) {
+    public func group<T: Encodable>(groupId: String, traits: T?, enrichments: [EnrichmentClosure]?) {
         do {
             if let traits = traits {
                 let jsonTraits = try JSON(with: traits)

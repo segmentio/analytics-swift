@@ -57,7 +57,7 @@ internal class Storage: Subscriber {
         }
     }
     
-    func write<T: Codable>(_ key: Storage.Constants, value: T?) {
+    func write<T: Encodable>(_ key: Storage.Constants, value: T?) {
         switch key {
         case .events:
             if let event = value as? RawEvent {
@@ -98,7 +98,7 @@ internal class Storage: Subscriber {
         return nil
     }
     
-    func read<T: Codable>(_ key: Storage.Constants) -> T? {
+    func read<T: Decodable>(_ key: Storage.Constants) -> T? {
         var result: T? = nil
         switch key {
         case .events:
@@ -134,7 +134,7 @@ internal class Storage: Subscriber {
         }
     }
     
-    func isBasicType<T: Codable>(value: T?) -> Bool {
+    func isBasicType<T: Encodable>(value: T?) -> Bool {
         var result = false
         if value == nil {
             result = true
