@@ -61,23 +61,16 @@ public class Context: PlatformPlugin {
             "version": __segment_version,
         ]
         
-        // app info
-        let info = Bundle.main.infoDictionary
-        let localizedInfo = Bundle.main.localizedInfoDictionary
-        var app = [String: Any]()
-        if let info = info {
-            app.merge(info) { (_, new) in new }
-        }
-        if let localizedInfo = localizedInfo {
-            app.merge(localizedInfo) { (_, new) in new }
-        }
-        if app.count != 0 {
-            var name: String = ""
-            if let displayName = app["CFBundleDisplayName"] as? String {
-                name = displayName
-            } else if let displayName = app["CFBundleName"] as? String {
-                name = displayName
-            }
+        // app information
+        let info = Bundle.main.infoDictionary ?? [:]
+        let localizedInfo = Bundle.main.localizedInfoDictionary ?? [:]
+        let app = info.merging(localizedInfo) { _, localized in localized }
+        
+        if !app.isEmpty {
+            let name = app["CFBundleDisplayName"] as? String
+                    ?? app["CFBundleName"] as? String
+                    ?? ""
+            
             staticContext["app"] = [
                 "name": name,
                 "version": app["CFBundleShortVersionString"] ?? "",
@@ -87,7 +80,6 @@ public class Context: PlatformPlugin {
         }
         
         insertStaticPlatformContextData(context: &staticContext)
-        
         return staticContext
     }
     
