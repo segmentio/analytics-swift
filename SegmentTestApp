@@ -1,0 +1,14 @@
+import Segment
+
+@main
+struct SegmentTestApp: App {
+    init() {
+        let configuration = Configuration(writeKey: "k0LpdISY8eBc6ZaPjsAxrJA0hv5CZMjb")
+        Analytics.setup(with: configuration)
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
