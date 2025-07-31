@@ -1,0 +1,100 @@
+{
+    "type": "object",
+    "properties": {
+      "writeKey": {
+        "type": "string",
+        "description": "Your Segment write key value"
+      },
+      "application": {
+        "type": ["object", "null"],
+        "description": "A reference to your application"
+      },
+      "collectDeviceId": {
+        "type": "boolean",
+        "description": "Collect deviceId, defaults to false"
+      },
+      "trackApplicationLifecycleEvents": {
+        "type": "boolean",
+        "description": "Automatically send track for Lifecycle events, defaults to false"
+      },
+      "useLifecycleObserver": {
+        "type": "boolean",
+        "description": "Enables the use of LifecycleObserver to track Application lifecycle events, defaults to false"
+      },
+      "trackDeepLinks": {
+        "type": "boolean",
+        "description": "Automatically track deep links opened based on intents, defaults to false"
+      },
+      "flushAt": {
+        "type": "integer",
+        "description": "Count of events at which we flush events, defaults to 20"
+      },
+      "flushInterval": {
+        "type": "number",
+        "description": "Interval in seconds at which we flush events, defaults to 30 seconds"
+      },
+      "defaultSettings": {
+        "type": ["object", "null"],
+        "description": "Settings object that will be used as fallback in case of network failure, defaults to empty"
+      },
+      "autoAddSegmentDestination": {
+        "type": "boolean",
+        "description": "Automatically add SegmentDestination plugin, defaults to true"
+      },
+      "apiHost": {
+        "type": "string",
+        "description": "Set a default apiHost to which Segment sends events, defaults to api.segment.io/v1"
+      },
+      "cdnHost": {
+        "type": "string",
+        "description": "Set a default cdnHost for settings retrieval, defaults to cdn-settings.segment.com/v1"
+      },
+      "requestFactory": {
+        "type": ["object", "null"],
+        "description": "A block to call when requests are made"
+      },
+      "errorHandler": {
+        "type": ["object", "null"],
+        "description": "A block to be called when an error occurs"
+      },
+      "flushPolicies": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        },
+        "description": "List of flush policies"
+      },
+      "operatingMode": {
+        "type": "string",
+        "enum": ["synchronous", "asynchronous"],
+        "description": "Specifies the operating mode/context"
+      },
+      "flushQueue": {
+        "type": "object",
+        "description": "Specify a custom queue to use when performing a flush operation"
+      },
+      "userAgent": {
+        "type": ["string", "null"],
+        "description": "Specify a custom UserAgent string"
+      },
+      "jsonNonConformingNumberStrategy": {
+        "type": "string",
+        "enum": ["zero", "string"],
+        "description": "Specifies how NaN/Infinity are handled when encoding JSON"
+      },
+      "storageMode": {
+        "type": "string",
+        "enum": ["disk", "diskAtURL", "memory", "custom"],
+        "description": "Specifies the storage mode to be used for events"
+      },
+      "anonymousIdGenerator": {
+        "type": "object",
+        "description": "Specify a custom anonymousId generator"
+      },
+      "httpSession": {
+        "type": "object",
+        "description": "Use a custom HTTP session"
+      }
+    },
+    "required": ["writeKey"]
+  }
