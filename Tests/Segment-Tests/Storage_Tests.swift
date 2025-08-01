@@ -137,7 +137,10 @@ class StorageTests: XCTestCase {
     }
     
     func testFilePrepAndFinish() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let config = Configuration(writeKey: "test")
+            .storageMode(.diskAtURL(URL(fileURLWithPath: NSTemporaryDirectory())))
+        let analytics = Analytics(configuration: config)
+        
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.waitUntilStarted()
@@ -301,5 +304,46 @@ class StorageTests: XCTestCase {
         // we flushed them all, not just the first batch
         let remaining = analytics.storage.read(.events)
         XCTAssertNil(remaining)
+    }
+    
+    func testMigrationFromOldLocation() {
+        let writeKey = "test-migration"
+        let fm = FileManager.default
+        
+        // Clean slate
+        let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let newSegmentDir = appSupportURL.appendingPathComponent("segment")
+        try? fm.removeItem(at: newSegmentDir)
+        
+        // Create fake old data in the platform-specific old location
+        #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
+        let oldSearchPath = FileManager.SearchPathDirectory.documentDirectory
+        #else
+        let oldSearchPath = FileManager.SearchPathDirectory.cachesDirectory
+        #endif
+        
+        let oldBaseURL = fm.urls(for: oldSearchPath, in: .userDomainMask)[0]
+        let oldSegmentDir = oldBaseURL.appendingPathComponent("segment/\(writeKey)")
+        try! fm.createDirectory(at: oldSegmentDir, withIntermediateDirectories: true, attributes: nil)
+        
+        // Write some fake event files
+        let testFile1 = oldSegmentDir.appendingPathComponent("0-segment-events.temp")
+        let testFile2 = oldSegmentDir.appendingPathComponent("1-segment-events.temp")
+        try! "fake event data 1".write(to: testFile1, atomically: true, encoding: .utf8)
+        try! "fake event data 2".write(to: testFile2, atomically: true, encoding: .utf8)
+        
+        // Trigger migration
+        let resultURL = eventStorageDirectory(writeKey: writeKey)
+        
+        // Verify migration worked
+        XCTAssertTrue(fm.fileExists(atPath: resultURL.path))
+        XCTAssertTrue(fm.fileExists(atPath: resultURL.appendingPathComponent("0-segment-events.temp").path))
+        XCTAssertTrue(fm.fileExists(atPath: resultURL.appendingPathComponent("1-segment-events.temp").path))
+        
+        // Verify old directory is gone
+        XCTAssertFalse(fm.fileExists(atPath: oldSegmentDir.path))
+        
+        // Clean up
+        try? fm.removeItem(at: newSegmentDir)
     }
 }

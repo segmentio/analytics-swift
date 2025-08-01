@@ -75,17 +75,44 @@ extension Optional: Flattenable {
 }
 
 internal func eventStorageDirectory(writeKey: String) -> URL {
-    #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
-    let searchPathDirectory = FileManager.SearchPathDirectory.documentDirectory
-    #else
-    let searchPathDirectory = FileManager.SearchPathDirectory.cachesDirectory
-    #endif
+    let urls = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+    let appSupportURL = urls[0]
+    let segmentURL = appSupportURL.appendingPathComponent("segment/\(writeKey)/")
     
-    let urls = FileManager.default.urls(for: searchPathDirectory, in: .userDomainMask)
-    let docURL = urls[0]
-    let segmentURL = docURL.appendingPathComponent("segment/\(writeKey)/")
+    // Handle one-time migration from old locations
+    migrateFromOldLocations(writeKey: writeKey, to: segmentURL)
+    
     // try to create it, will fail if already exists, nbd.
     // tvOS, watchOS regularly clear out data.
     try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
     return segmentURL
+}
+
+private func migrateFromOldLocations(writeKey: String, to newLocation: URL) {
+    let fm = FileManager.default
+    
+    // Get the parent of where our new segment directory should live
+    let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+    let newSegmentDir = appSupportURL.appendingPathComponent("segment")
+    
+    // If segment dir already exists in app support, we're done
+    guard !fm.fileExists(atPath: newSegmentDir.path) else { return }
+    
+    // Look for old segment directories to move
+    let oldLocations = [
+        fm.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("segment"),
+        fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent("segment")
+    ].compactMap { $0 }
+    
+    for oldSegmentDir in oldLocations {
+        guard fm.fileExists(atPath: oldSegmentDir.path) else { continue }
+        
+        do {
+            try fm.moveItem(at: oldSegmentDir, to: newSegmentDir)
+            Analytics.segmentLog(message: "Migrated analytics data from \(oldSegmentDir.path)", kind: .debug)
+            return // Success!
+        } catch {
+            Analytics.segmentLog(message: "Failed to migrate from \(oldSegmentDir.path): \(error)", kind: .error)
+        }
+    }
 }
