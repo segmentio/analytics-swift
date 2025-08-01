@@ -149,7 +149,6 @@ struct System: State {
         
         func reduce(state: System) -> System {
             var waitingPlugins = state.waitingPlugins
-            let countBefore = waitingPlugins.count
             waitingPlugins.removeAll { p in
                 return plugin === p
             }
