@@ -98,21 +98,22 @@ private func migrateFromOldLocations(writeKey: String, to newLocation: URL) {
     // If segment dir already exists in app support, we're done
     guard !fm.fileExists(atPath: newSegmentDir.path) else { return }
     
-    // Look for old segment directories to move
-    let oldLocations = [
-        fm.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("segment"),
-        fm.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent("segment")
-    ].compactMap { $0 }
+    // Only check the old location that was actually used on this platform
+    #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
+    let oldSearchPath = FileManager.SearchPathDirectory.documentDirectory
+    #else
+    let oldSearchPath = FileManager.SearchPathDirectory.cachesDirectory
+    #endif
     
-    for oldSegmentDir in oldLocations {
-        guard fm.fileExists(atPath: oldSegmentDir.path) else { continue }
-        
-        do {
-            try fm.moveItem(at: oldSegmentDir, to: newSegmentDir)
-            Analytics.segmentLog(message: "Migrated analytics data from \(oldSegmentDir.path)", kind: .debug)
-            return // Success!
-        } catch {
-            Analytics.segmentLog(message: "Failed to migrate from \(oldSegmentDir.path): \(error)", kind: .error)
-        }
+    guard let oldBaseURL = fm.urls(for: oldSearchPath, in: .userDomainMask).first else { return }
+    let oldSegmentDir = oldBaseURL.appendingPathComponent("segment")
+    
+    guard fm.fileExists(atPath: oldSegmentDir.path) else { return }
+    
+    do {
+        try fm.moveItem(at: oldSegmentDir, to: newSegmentDir)
+        Analytics.segmentLog(message: "Migrated analytics data from \(oldSegmentDir.path)", kind: .debug)
+    } catch {
+        Analytics.segmentLog(message: "Failed to migrate from \(oldSegmentDir.path): \(error)", kind: .error)
     }
 }
