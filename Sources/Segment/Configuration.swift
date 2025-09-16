@@ -7,8 +7,9 @@
 
 import Foundation
 import JSONSafeEncoding
+
 #if os(Linux) || os(Windows)
-import FoundationNetworking
+    import FoundationNetworking
 #endif
 
 // MARK: - Custom AnonymousId generator
@@ -29,7 +30,8 @@ public enum OperatingMode {
     /// The operation of the Analytics client are asynchronous.
     case asynchronous
 
-    static internal let defaultQueue = DispatchQueue(label: "com.segment.operatingModeQueue", qos: .utility)
+    static internal let defaultQueue = DispatchQueue(
+        label: "com.segment.operatingModeQueue", qos: .utility)
 }
 
 // MARK: - Storage Mode
@@ -47,7 +49,6 @@ public enum StorageMode {
 
 // MARK: - Internal Configuration
 
-@objc(SEGTrackedLifecycleEvent)
 public final class TrackedLifecycleEvent: NSObject, OptionSet {
     public let rawValue: Int
 
@@ -63,44 +64,44 @@ public final class TrackedLifecycleEvent: NSObject, OptionSet {
         rawValue.hashValue
     }
 
-    @objc public static let none: TrackedLifecycleEvent = []
-    @objc public static let applicationInstalled = TrackedLifecycleEvent(rawValue: 1 << 0)
-    @objc public static let applicationUpdated = TrackedLifecycleEvent(rawValue: 1 << 1)
-    @objc public static let applicationOpened = TrackedLifecycleEvent(rawValue: 1 << 2)
-    @objc public static let applicationBackgrounded = TrackedLifecycleEvent(rawValue: 1 << 3)
-    @objc public static let applicationForegrounded = TrackedLifecycleEvent(rawValue: 1 << 4)
+    public static let none: TrackedLifecycleEvent = []
+    public static let applicationInstalled = TrackedLifecycleEvent(rawValue: 1 << 0)
+    public static let applicationUpdated = TrackedLifecycleEvent(rawValue: 1 << 1)
+    public static let applicationOpened = TrackedLifecycleEvent(rawValue: 1 << 2)
+    public static let applicationBackgrounded = TrackedLifecycleEvent(rawValue: 1 << 3)
+    public static let applicationForegrounded = TrackedLifecycleEvent(rawValue: 1 << 4)
     #if os(macOS)
-    @objc public static let applicationUnhidden = TrackedLifecycleEvent(rawValue: 1 << 5)
-    @objc public static let applicationHidden = TrackedLifecycleEvent(rawValue: 1 << 6)
-    @objc public static let applicationTerminated = TrackedLifecycleEvent(rawValue: 1 << 7)
+        public static let applicationUnhidden = TrackedLifecycleEvent(rawValue: 1 << 5)
+        public static let applicationHidden = TrackedLifecycleEvent(rawValue: 1 << 6)
+        public static let applicationTerminated = TrackedLifecycleEvent(rawValue: 1 << 7)
 
-    @objc public static let all: TrackedLifecycleEvent = [
-        .applicationInstalled,
-        .applicationUpdated,
-        .applicationOpened,
-        .applicationBackgrounded,
-        .applicationForegrounded,
-        .applicationUnhidden,
-        .applicationHidden,
-        .applicationTerminated,
-    ]
+        public static let all: TrackedLifecycleEvent = [
+            .applicationInstalled,
+            .applicationUpdated,
+            .applicationOpened,
+            .applicationBackgrounded,
+            .applicationForegrounded,
+            .applicationUnhidden,
+            .applicationHidden,
+            .applicationTerminated,
+        ]
     #elseif os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
-    @objc public static let all: TrackedLifecycleEvent = [
-        .applicationInstalled,
-        .applicationUpdated,
-        .applicationOpened,
-        .applicationBackgrounded,
-        .applicationForegrounded,
-    ]
+        public static let all: TrackedLifecycleEvent = [
+            .applicationInstalled,
+            .applicationUpdated,
+            .applicationOpened,
+            .applicationBackgrounded,
+            .applicationForegrounded,
+        ]
     #elseif os(watchOS)
-    @objc public static let all: TrackedLifecycleEvent = [
-        .applicationInstalled,
-        .applicationUpdated,
-        .applicationOpened,
-        .applicationBackgrounded,
-    ]
+        public static let all: TrackedLifecycleEvent = [
+            .applicationInstalled,
+            .applicationUpdated,
+            .applicationOpened,
+            .applicationBackgrounded,
+        ]
     #else
-    @objc public static let all = TrackedLifecycleEvent.none
+        public static let all = TrackedLifecycleEvent.none
     #endif
 }
 
@@ -121,7 +122,8 @@ public class Configuration {
         var operatingMode: OperatingMode = .asynchronous
         var flushQueue: DispatchQueue = OperatingMode.defaultQueue
         var userAgent: String? = nil
-        var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy = .zero
+        var jsonNonConformingNumberStrategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy =
+            .zero
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
         var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
@@ -145,10 +147,9 @@ public class Configuration {
     }
 }
 
-
 // MARK: - Analytics Configuration
 
-public extension Configuration {
+extension Configuration {
 
     /// Sets a reference to your application.  This can be useful in instances
     /// where referring back to your application is necessary, such as within plugins
@@ -157,7 +158,7 @@ public extension Configuration {
     /// - Parameter value: A reference to your application.
     /// - Returns: The current Configuration.
     @discardableResult
-    func application(_ value: Any?) -> Configuration {
+    public func application(_ value: Any?) -> Configuration {
         values.application = value
         return self
     }
@@ -167,8 +168,11 @@ public extension Configuration {
     /// - Parameter enabled: A bool value
     /// - Returns: The current Configuration.
     @discardableResult
-    @available(*, deprecated, message: "Use `setTrackedApplicationLifecycleEvents(_:)` for more granular control")
-    func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
+    @available(
+        *, deprecated,
+        message: "Use `setTrackedApplicationLifecycleEvents(_:)` for more granular control"
+    )
+    public func trackApplicationLifecycleEvents(_ enabled: Bool) -> Configuration {
         values.trackedApplicationLifecycleEvents = enabled ? .all : .none
         return self
     }
@@ -178,7 +182,9 @@ public extension Configuration {
     /// - Parameter events: An option set of the events to track.
     /// - Returns: The current Configuration.
     @discardableResult
-    func setTrackedApplicationLifecycleEvents(_ events: TrackedLifecycleEvent) -> Configuration {
+    public func setTrackedApplicationLifecycleEvents(_ events: TrackedLifecycleEvent)
+        -> Configuration
+    {
         values.trackedApplicationLifecycleEvents = events
         return self
     }
@@ -189,7 +195,7 @@ public extension Configuration {
     /// - Parameter count: Event count to trigger a flush.
     /// - Returns: The current Configuration.
     @discardableResult
-    func flushAt(_ count: Int) -> Configuration {
+    public func flushAt(_ count: Int) -> Configuration {
         values.flushAt = count
         return self
     }
@@ -200,7 +206,7 @@ public extension Configuration {
     /// - Parameter interval: A time interval
     /// - Returns: The current Configuration.
     @discardableResult
-    func flushInterval(_ interval: TimeInterval) -> Configuration {
+    public func flushInterval(_ interval: TimeInterval) -> Configuration {
         values.flushInterval = interval
         return self
     }
@@ -224,7 +230,7 @@ public extension Configuration {
     /// - Parameter settings:
     /// - Returns: The current Configuration.
     @discardableResult
-    func defaultSettings(_ settings: Settings?) -> Configuration {
+    public func defaultSettings(_ settings: Settings?) -> Configuration {
         values.defaultSettings = settings
         return self
     }
@@ -236,7 +242,7 @@ public extension Configuration {
     /// - Parameter value: true/false
     /// - Returns: The current Configuration.
     @discardableResult
-    func autoAddSegmentDestination(_ value: Bool) -> Configuration {
+    public func autoAddSegmentDestination(_ value: Bool) -> Configuration {
         values.autoAddSegmentDestination = value
         return self
     }
@@ -248,7 +254,7 @@ public extension Configuration {
     /// - Parameter value: A string representing the desired API host.
     /// - Returns: The current Configuration.
     @discardableResult
-    func apiHost(_ value: String) -> Configuration {
+    public func apiHost(_ value: String) -> Configuration {
         values.apiHost = value
         return self
     }
@@ -260,7 +266,7 @@ public extension Configuration {
     /// - Parameter value: A string representing the desired CDN host.
     /// - Returns: The current Configuration.
     @discardableResult
-    func cdnHost(_ value: String) -> Configuration {
+    public func cdnHost(_ value: String) -> Configuration {
         values.cdnHost = value
         return self
     }
@@ -271,7 +277,7 @@ public extension Configuration {
     /// - Parameter value: A block to call when requests are made.
     /// - Returns: The current Configuration.
     @discardableResult
-    func requestFactory(_ value: @escaping (URLRequest) -> URLRequest) -> Configuration {
+    public func requestFactory(_ value: @escaping (URLRequest) -> URLRequest) -> Configuration {
         values.requestFactory = value
         return self
     }
@@ -283,13 +289,13 @@ public extension Configuration {
     /// - Parameter value: A block to be called when an error occurs.
     /// - Returns: The current Configuration.
     @discardableResult
-    func errorHandler(_ value: @escaping (Error) -> Void) -> Configuration {
+    public func errorHandler(_ value: @escaping (Error) -> Void) -> Configuration {
         values.errorHandler = value
         return self
     }
 
     @discardableResult
-    func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
+    public func flushPolicies(_ policies: [FlushPolicy]) -> Configuration {
         values.flushPolicies = policies
         return self
     }
@@ -299,7 +305,7 @@ public extension Configuration {
     /// is desired.  Use `.client` when operating in a long lived process,
     /// desktop/mobile application.
     @discardableResult
-    func operatingMode(_ mode: OperatingMode) -> Configuration {
+    public func operatingMode(_ mode: OperatingMode) -> Configuration {
         values.operatingMode = mode
         return self
     }
@@ -307,14 +313,14 @@ public extension Configuration {
     /// Specify a custom queue to use when performing a flush operation.  The default
     /// value is a Segment owned background queue.
     @discardableResult
-    func flushQueue(_ queue: DispatchQueue) -> Configuration {
+    public func flushQueue(_ queue: DispatchQueue) -> Configuration {
         values.flushQueue = queue
         return self
     }
 
     /// Specify a custom UserAgent string.  This bypasses the OS dependent check entirely.
     @discardableResult
-    func userAgent(_ userAgent: String) -> Configuration {
+    public func userAgent(_ userAgent: String) -> Configuration {
         values.userAgent = userAgent
         return self
     }
@@ -322,32 +328,36 @@ public extension Configuration {
     /// This option specifies how NaN/Infinity are handled when encoding JSON.
     /// The default is .zero.  See JSONSafeEncoder.NonConformingFloatEncodingStrategy for more informatino.
     @discardableResult
-    func jsonNonConformingNumberStrategy(_ strategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy) -> Configuration {
+    public func jsonNonConformingNumberStrategy(
+        _ strategy: JSONSafeEncoder.NonConformingFloatEncodingStrategy
+    ) -> Configuration {
         values.jsonNonConformingNumberStrategy = strategy
         JSON.jsonNonConformingNumberStrategy = values.jsonNonConformingNumberStrategy
         return self
     }
-    
+
     /// Specify the storage mode to use.  The default is `.disk`.
     @discardableResult
-    func storageMode(_ mode: StorageMode) -> Configuration {
+    public func storageMode(_ mode: StorageMode) -> Configuration {
         values.storageMode = mode
         return self
     }
-    
+
     /// Specify a custom anonymousId generator.  The default is and instance of `SegmentAnonymousId`.
     @discardableResult
-    func anonymousIdGenerator(_ generator: AnonymousIdGenerator) -> Configuration {
+    public func anonymousIdGenerator(_ generator: AnonymousIdGenerator) -> Configuration {
         values.anonymousIdGenerator = generator
         return self
     }
-    
+
     /// Use a custom HTTP session; Useful for non-apple platforms where Swift networking isn't as mature
     /// or has issues to work around.
     /// - Parameter httpSession: A class conforming to the HTTPSession protocol
     /// - Returns: The current configuration
     @discardableResult
-    func httpSession(_ httpSession: @escaping @autoclosure () -> any HTTPSession) -> Configuration {
+    public func httpSession(_ httpSession: @escaping @autoclosure () -> any HTTPSession)
+        -> Configuration
+    {
         values.httpSession = httpSession
         return self
     }
