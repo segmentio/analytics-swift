@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/segmentio/sovran-swift.git",
       "state" : {
-        "revision" : "a342b905f6baa64499cabdf61ccc185ec476b7b2",
-        "version" : "1.1.1"
+        "revision" : "24867f3e4ac62027db9827112135e6531b6f4051",
+        "version" : "1.1.2"
       }
     }
   ],
