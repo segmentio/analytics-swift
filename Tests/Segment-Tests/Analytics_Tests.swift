@@ -1052,4 +1052,246 @@ final class Analytics_Tests: XCTestCase {
         let trackEvent2: TrackEvent? = outputReader.lastEvent as? TrackEvent
         XCTAssertEqual(trackEvent2?.context?.value(forKeyPath: "__eventOrigin.type"), "mobile")
     }
+    
+    func testUserInfoSubscription() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        var callCount = 0
+        var capturedUserInfo: UserInfo?
+        
+        let initialExpectation = XCTestExpectation(description: "Initial state received")
+        let identifyExpectation = XCTestExpectation(description: "Identify update received")
+        
+        // Subscribe and verify we get initial state immediately
+        let subscriptionId = analytics.subscribeToUserInfo { userInfo in
+            callCount += 1
+            capturedUserInfo = userInfo
+            
+            if callCount == 1 {
+                initialExpectation.fulfill()
+            } else if callCount == 2 {
+                identifyExpectation.fulfill()
+            }
+        }
+        
+        // Wait for initial callback
+        wait(for: [initialExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(1, callCount)
+        XCTAssertNotNil(capturedUserInfo)
+        XCTAssertNotNil(capturedUserInfo?.anonymousId)
+        XCTAssertNil(capturedUserInfo?.userId)
+        
+        let initialAnonId = analytics.anonymousId
+        XCTAssertEqual(initialAnonId, capturedUserInfo?.anonymousId)
+        
+        // Update user info and verify handler is called again
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+        
+        wait(for: [identifyExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(2, callCount)
+        XCTAssertEqual("brandon", capturedUserInfo?.userId)
+        XCTAssertEqual("brandon", analytics.userId)
+        
+        let traits: MyTraits? = analytics.traits()
+        XCTAssertEqual("blah@blah.com", traits?.email)
+        
+        // Unsubscribe and verify handler stops firing
+        analytics.unsubscribe(subscriptionId)
+        
+        let oldCallCount = callCount
+        analytics.identify(userId: "different_user")
+        
+        // Give it a moment to potentially fire (it shouldn't)
+        let noCallExpectation = XCTestExpectation(description: "Should not be called")
+        noCallExpectation.isInverted = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if callCount > oldCallCount {
+                noCallExpectation.fulfill()
+            }
+        }
+        
+        wait(for: [noCallExpectation], timeout: 1.0)
+        XCTAssertEqual(oldCallCount, callCount)
+        XCTAssertEqual("brandon", capturedUserInfo?.userId) // Still has old value
+    }
+    
+    func testUserInfoSubscriptionWithReset() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        var callCount = 0
+        var capturedUserInfo: UserInfo?
+        
+        let initialExpectation = XCTestExpectation(description: "Initial")
+        let identifyExpectation = XCTestExpectation(description: "Identify")
+        let resetExpectation = XCTestExpectation(description: "Reset")
+        
+        analytics.subscribeToUserInfo { userInfo in
+            callCount += 1
+            capturedUserInfo = userInfo
+            
+            if callCount == 1 {
+                initialExpectation.fulfill()
+            } else if callCount == 2 {
+                identifyExpectation.fulfill()
+            } else if callCount == 3 {
+                resetExpectation.fulfill()
+            }
+        }
+        
+        wait(for: [initialExpectation], timeout: 2.0)
+        
+        let originalAnonId = capturedUserInfo?.anonymousId
+        XCTAssertEqual(1, callCount)
+        
+        // Set some user data
+        analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
+        wait(for: [identifyExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(2, callCount)
+        XCTAssertEqual("brandon", capturedUserInfo?.userId)
+        
+        // Reset and verify handler is called with cleared data
+        analytics.reset()
+        wait(for: [resetExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(3, callCount)
+        XCTAssertNil(capturedUserInfo?.userId)
+        XCTAssertNil(capturedUserInfo?.referrer)
+        XCTAssertNotEqual(originalAnonId, capturedUserInfo?.anonymousId)
+        
+        // Check analytics state AFTER waiting for callback
+        let traitsDict: [String: Any]? = analytics.traits()
+        XCTAssertEqual(traitsDict?.count, 0)
+    }
+    
+    func testUserInfoSubscriptionWithReferrer() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        var callCount = 0
+        var capturedUserInfo: UserInfo?
+        
+        let initialExpectation = XCTestExpectation(description: "Initial")
+        let referrerExpectation = XCTestExpectation(description: "Referrer")
+        
+        analytics.subscribeToUserInfo { userInfo in
+            callCount += 1
+            capturedUserInfo = userInfo
+            
+            if callCount == 1 {
+                initialExpectation.fulfill()
+            } else if callCount == 2 {
+                referrerExpectation.fulfill()
+            }
+        }
+        
+        wait(for: [initialExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(1, callCount)
+        XCTAssertNil(capturedUserInfo?.referrer)
+        
+        // Set a referrer
+        analytics.openURL(URL(string: "https://google.com")!)
+        wait(for: [referrerExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(2, callCount)
+        XCTAssertEqual("https://google.com", capturedUserInfo?.referrer?.absoluteString)
+    }
+
+    func testMultipleUserInfoSubscriptions() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        var firstCallCount = 0
+        var secondCallCount = 0
+        
+        let initialExpectation = XCTestExpectation(description: "Initial callbacks")
+        initialExpectation.expectedFulfillmentCount = 2 // Both subscriptions
+        
+        let identifyExpectation = XCTestExpectation(description: "Identify callbacks")
+        identifyExpectation.expectedFulfillmentCount = 2 // Both subscriptions
+        
+        // Create two subscriptions
+        analytics.subscribeToUserInfo { _ in
+            firstCallCount += 1
+            if firstCallCount == 1 {
+                initialExpectation.fulfill()
+            } else if firstCallCount == 2 {
+                identifyExpectation.fulfill()
+            }
+        }
+        
+        analytics.subscribeToUserInfo { _ in
+            secondCallCount += 1
+            if secondCallCount == 1 {
+                initialExpectation.fulfill()
+            } else if secondCallCount == 2 {
+                identifyExpectation.fulfill()
+            }
+        }
+        
+        // Both should be called for initial state
+        wait(for: [initialExpectation], timeout: 2.0)
+        XCTAssertEqual(1, firstCallCount)
+        XCTAssertEqual(1, secondCallCount)
+        
+        // Both should fire when state changes
+        analytics.identify(userId: "brandon")
+        wait(for: [identifyExpectation], timeout: 2.0)
+        
+        XCTAssertEqual(2, firstCallCount)
+        XCTAssertEqual(2, secondCallCount)
+    }
+
+    func testUserInfoSubscriptionCalledOnMainQueue() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        let expectation = XCTestExpectation(description: "Handler called on main queue")
+        expectation.expectedFulfillmentCount = 2 // Initial + identify
+        
+        analytics.subscribeToUserInfo { userInfo in
+            XCTAssertTrue(Thread.isMainThread, "Handler should be called on main thread")
+            expectation.fulfill()
+        }
+        
+        analytics.identify(userId: "brandon")
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+
+    func testUnsubscribeWithInvalidId() {
+        Storage.hardSettingsReset(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        
+        waitUntilStarted(analytics: analytics)
+        
+        // Should not crash with invalid ID
+        analytics.unsubscribe(999999)
+        analytics.unsubscribe(-1)
+        
+        // Should work fine after bogus unsubscribe calls
+        let expectation = XCTestExpectation(description: "Subscription works after invalid unsubscribe")
+        
+        analytics.subscribeToUserInfo { _ in
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
 }
