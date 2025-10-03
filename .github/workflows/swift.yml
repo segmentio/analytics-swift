@@ -16,11 +16,11 @@ jobs:
 
   generate_code_coverage:
     needs: cancel_previous
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -37,11 +37,11 @@ jobs:
 
   build_and_test_spm_mac:
     needs: cancel_previous
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -64,11 +64,11 @@ jobs:
 
   build_and_test_tvos:
     needs: cancel_previous
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -77,11 +77,11 @@ jobs:
 
   build_and_test_watchos:
     needs: cancel_previous
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -90,11 +90,11 @@ jobs:
 
   build_and_test_visionos:
     needs: cancel_previous
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
       - uses: actions/checkout@v2
       - uses: webfactory/ssh-agent@v0.8.0
         with:
