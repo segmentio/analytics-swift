@@ -86,7 +86,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Series 10 (42mm)'
+      - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)'
 
   build_and_test_visionos:
     needs: cancel_previous
@@ -99,7 +99,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - run: xcodebuild -scheme Segment test -sdk xrsimulator -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
+      - run: xcodebuild -scheme Segment test -sdk xrsimulator -destination 'platform=visionOS Simulator,os=26,name=Apple Vision Pro'
 
   build_and_test_examples:
     needs: cancel_previous
