@@ -166,14 +166,16 @@ struct System: State {
 
 // MARK: - User information
 
-struct UserInfo: Codable, State {
+public struct UserInfo: Codable, State {
     let anonymousId: String
     let userId: String?
     let traits: JSON
     let referrer: URL?
     
     @Noncodable var anonIdGenerator: AnonymousIdGenerator?
-    
+}
+
+extension UserInfo {
     struct ResetAction: Action {
         func reduce(state: UserInfo) -> UserInfo {
             var anonId: String

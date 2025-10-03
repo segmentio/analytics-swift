@@ -292,7 +292,66 @@ extension Analytics {
             }
         }
     }
+    
+    /// Subscribes to UserInfo state changes.
+    ///
+    /// The handler is called immediately with the current UserInfo, then again whenever
+    /// the user's identity, traits, or referrer changes. The subscription remains active
+    /// for the lifetime of the Analytics instance unless explicitly unsubscribed.
+    ///
+    /// - Parameter handler: A closure called on the main queue with updated UserInfo.
+    ///
+    /// - Returns: A subscription ID that can be passed to `unsubscribe(_:)` to stop
+    ///   receiving updates. If you don't need to unsubscribe, you can ignore the return value.
+    ///
+    /// - Note: Multiple calls create multiple independent subscriptions.
+    ///
+    /// ## Example
+    /// ```swift
+    /// // Subscribe for the lifetime of Analytics
+    /// analytics.subscribeToUserInfo { userInfo in
+    ///     print("User: \(userInfo.userId ?? userInfo.anonymousId)")
+    ///     if let referrer = userInfo.referrer {
+    ///         print("Referred from: \(referrer)")
+    ///     }
+    /// }
+    ///
+    /// // Subscribe with manual cleanup
+    /// let subscriptionId = analytics.subscribeToUserInfo { userInfo in
+    ///     // ... handle update
+    /// }
+    /// // Later, when you're done...
+    /// analytics.unsubscribe(subscriptionId)
+    /// ```
+    @discardableResult
+    public func subscribeToUserInfo(handler: @escaping (UserInfo) -> ()) -> Int {
+        return store.subscribe(self, initialState: true, queue: .main) { (state: UserInfo) in
+            handler(state)
+        }
+    }
 
+    /// Unsubscribes from state updates.
+    ///
+    /// Stops receiving updates for the subscription associated with the given ID.
+    /// After calling this, the handler will no longer be invoked for state changes.
+    ///
+    /// - Parameter id: The subscription ID returned from a previous subscribe call.
+    ///
+    /// - Note: Unsubscribing an already-unsubscribed or invalid ID is a no-op.
+    ///
+    /// ## Example
+    /// ```swift
+    /// let id = analytics.subscribeToUserInfo { userInfo in
+    ///     print("User changed: \(userInfo.userId ?? "anonymous")")
+    /// }
+    ///
+    /// // Later, stop listening
+    /// analytics.unsubscribe(id)
+    /// ```
+    public func unsubscribe(_ id: Int) {
+        store.unsubscribe(identifier: id)
+    }
+    
     /// Retrieve the version of this library in use.
     /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
     public func version() -> String {

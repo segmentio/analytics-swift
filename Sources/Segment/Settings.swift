@@ -12,6 +12,7 @@ public struct Settings: Codable {
     public var plan: JSON? = nil
     public var edgeFunction: JSON? = nil
     public var middlewareSettings: JSON? = nil
+    public var autoInstrumentation: JSON? = nil
     public var metrics: JSON? = nil
     public var consentSettings: JSON? = nil
 
@@ -39,6 +40,7 @@ public struct Settings: Codable {
         self.plan = try? values.decode(JSON.self, forKey: CodingKeys.plan)
         self.edgeFunction = try? values.decode(JSON.self, forKey: CodingKeys.edgeFunction)
         self.middlewareSettings = try? values.decode(JSON.self, forKey: CodingKeys.middlewareSettings)
+        self.autoInstrumentation = try? values.decode(JSON.self, forKey: CodingKeys.autoInstrumentation)
         self.metrics = try? values.decode(JSON.self, forKey: CodingKeys.metrics)
         self.consentSettings = try? values.decode(JSON.self, forKey: CodingKeys.consentSettings)
     }
@@ -60,6 +62,7 @@ public struct Settings: Codable {
         case plan
         case edgeFunction
         case middlewareSettings
+        case autoInstrumentation
         case metrics
         case consentSettings
     }
