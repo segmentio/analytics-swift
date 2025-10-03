@@ -1025,10 +1025,10 @@ final class Analytics_Tests: XCTestCase {
 
         // get rid of this instance, leave it time to go away ...
         // ... also let any state updates happen as handlers get called async
-        /*RunLoop.main.run(until: .distantPast)
+        RunLoop.main.run(until: .distantPast)
         analytics = nil
         // ... give it some time to release all it's stuff.
-        RunLoop.main.run(until: .distantPast)*/
+        RunLoop.main.run(until: .distantPast)
 
         // make sure it makes it to the next instance
         analytics = Analytics(
