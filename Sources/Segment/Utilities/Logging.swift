@@ -8,14 +8,14 @@
 import Foundation
 
 extension Analytics {
-    internal enum LogKind: CustomStringConvertible, CustomDebugStringConvertible {
+    public enum LogKind: CustomStringConvertible, CustomDebugStringConvertible {
         case error
         case warning
         case debug
         case none
         
-        var description: String { return string }
-        var debugDescription: String { return string }
+        public var description: String { return string }
+        public var debugDescription: String { return string }
 
         var string: String {
             switch self {
@@ -35,7 +35,7 @@ extension Analytics {
         Self.segmentLog(message: message, kind: .none)
     }
     
-    static internal func segmentLog(message: String, kind: LogKind) {
+    static public func segmentLog(message: String, kind: LogKind) {
         #if DEBUG
         if Self.debugLogsEnabled {
             print("\(kind)\(message)")
