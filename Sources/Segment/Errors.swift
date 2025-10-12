@@ -21,6 +21,7 @@ public indirect enum AnalyticsError: Error {
     case networkServerRejected(URL?, Int)
     case networkUnknown(URL?, Error)
     case networkInvalidData
+    case networkBatchFileError(String, Int)
 
     case jsonUnableToSerialize(Error)
     case jsonUnableToDeserialize(Error)

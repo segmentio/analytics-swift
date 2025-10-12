@@ -58,6 +58,25 @@ public class HTTPClient {
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
+        
+        guard let attrs = try? FileManager.default.attributesOfItem(atPath: batch.path),
+            let size = attrs[.size] as? UInt64, size > 0 else {
+            analytics?.reportInternalError(AnalyticsError.networkBatchFileError("empty file: \(batch)", 900))
+            completion(.failure(HTTPClientErrors.statusCode(code: 400)))
+            return DummyDataTask()
+        }
+
+        guard let data = try? Data(contentsOf: batch, options: .mappedIfSafe), let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+            analytics?.reportInternalError(AnalyticsError.networkBatchFileError("Invalid or unreadable JSON in file: \(batch)", 901))
+            completion(.failure(HTTPClientErrors.statusCode(code: 400)))
+            return DummyDataTask()
+        }
+        
+        guard let batchArray = jsonObject["batch"] as? [[String: Any]], batchArray.isEmpty == false else {
+            analytics?.reportInternalError(AnalyticsError.networkBatchFileError("Missing or empty batch in file: \(batch)", 902))
+            completion(.failure(HTTPClientErrors.statusCode(code: 400)))
+            return DummyDataTask()
+        }
 
         let urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
@@ -198,5 +217,22 @@ extension HTTPClient {
         }
 
         return request
+    }
+}
+final class DummyDataTask: DataTask {
+    private let lock = NSLock()
+    private var _state: URLSessionTask.State = .completed
+    
+    var state: URLSessionTask.State {
+        lock.lock(); defer { lock.unlock() }
+        return _state
+    }
+    
+    func resume() {
+        lock.lock()
+        _state = .running
+        // no actual network work — mark completed immediately
+        _state = .completed
+        lock.unlock()
     }
 }
