@@ -84,6 +84,7 @@ internal struct UserAgent {
         #endif
         
         #else
+        // tvos has no user agent.
         return "unknown"
         #endif
     }

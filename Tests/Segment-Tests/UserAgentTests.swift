@@ -55,10 +55,19 @@ final class UserAgentTests: XCTestCase {
         print("Generated UserAgent: \(userAgent)")
     }
 
+    #if !os(tvOS) && !os(watchOS)
     func testUserAgentWithCustomAppName() throws {
+        /*#if canImport(WebKit)
+        let wkUserAgent = WKWebView().value(forKey: "userAgent") as! String
+        #else
+        let wkUserAgent = "unknown"
+        #endif
+        print(wkUserAgent)*/
+
         let customUA = UserAgent.value(applicationName: "MyApp/1.0")
         XCTAssertTrue(customUA.contains("MyApp/1.0"), "Should contain custom app name")
     }
+    #endif
 
     func testUserAgentCaching() throws {
         let ua1 = UserAgent.value

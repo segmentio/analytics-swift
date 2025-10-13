@@ -5,7 +5,7 @@
 //  Created by Brandon Sneed on 11/4/21.
 //
 
-#if !os(Linux) && !os(tvOS) && !os(watchOS) && !os(Windows)
+#if !os(Linux) && !os(tvOS) && !os(watchOS) && !os(visionOS) && !os(Windows)
 
 import XCTest
 @testable import Segment
@@ -38,6 +38,10 @@ class StressTests: XCTestCase {
         
         DirectoryStore.fileValidator = { url in
             do {
+                if FileManager.default.fileExists(atPath: url.path) == false {
+                    XCTFail("File doesn't exist when it should! \(url)")
+                    return
+                }
                 let eventBundle = try JSONSerialization.jsonObject(with: Data(contentsOf: url))
                 XCTAssertNotNil(eventBundle, "The event bundle parsed out to null.  \(url)")
             } catch {
@@ -117,6 +121,10 @@ class StressTests: XCTestCase {
         
         DirectoryStore.fileValidator = { url in
             do {
+                if FileManager.default.fileExists(atPath: url.path) == false {
+                    XCTFail("File doesn't exist when it should! \(url)")
+                    return
+                }
                 let eventBundle = try JSONSerialization.jsonObject(with: Data(contentsOf: url))
                 XCTAssertNotNil(eventBundle, "The event bundle parsed out to null.  \(url)")
             } catch {
