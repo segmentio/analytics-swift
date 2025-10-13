@@ -140,15 +140,16 @@ gh release create $newVersion -F $tempFile -t "Version $newVersion"
 # remove the tempfile.
 rm $tempFile
 
-# build up the xcframework to upload to github
-./build.sh
-
-# upload the release
-gh release upload $newVersion ${PRODUCT_NAME}.zip
-gh release upload $newVersion ${PRODUCT_NAME}.sha256
-
-# SPECIAL CASE: We need to upload Sovran and JSONSafeEncoding to save them time.
-gh release upload $newVersion Sovran.zip
-gh release upload $newVersion Sovran.sha256
-gh release upload $newVersion JSONSafeEncoding.zip
-gh release upload $newVersion JSONSafeEncoding.sha256
+# Not needed anymore.
+## build up the xcframework to upload to github
+#./build.sh
+#
+## upload the release
+#gh release upload $newVersion ${PRODUCT_NAME}.zip
+#gh release upload $newVersion ${PRODUCT_NAME}.sha256
+#
+## SPECIAL CASE: We need to upload Sovran and JSONSafeEncoding to save them time.
+#gh release upload $newVersion Sovran.zip
+#gh release upload $newVersion Sovran.sha256
+#gh release upload $newVersion JSONSafeEncoding.zip
+#gh release upload $newVersion JSONSafeEncoding.sha256
