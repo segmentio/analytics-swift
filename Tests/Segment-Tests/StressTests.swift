@@ -224,6 +224,15 @@ class StressTests: XCTestCase {
             RunLoop.main.run(until: Date.distantPast)
         }
         
+        @Atomic var reallyDone = false
+        analytics.flush {
+            _reallyDone.set(true)
+        }
+        
+        while (!reallyDone) {
+            RunLoop.main.run(until: Date.distantPast)
+        }
+        
         analytics.purgeStorage()
     }
     
