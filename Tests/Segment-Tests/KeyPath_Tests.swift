@@ -133,7 +133,7 @@ class KeyPath_Tests: XCTestCase {
             "anonymousId": "123456"
         ]
         for key in keys {
-            dict[key] = mapping[keyPath: KeyPath(key), reference: event1]
+            dict[key] = mapping[keyPath: JSONKeyPath(key), reference: event1]
         }
         XCTAssertTrue(dict["device_id"] as? String == "ABCDEF")
         
@@ -148,7 +148,7 @@ class KeyPath_Tests: XCTestCase {
         ]
         dict = [String: Any]()
         for key in keys {
-            dict[key] = mapping[keyPath: KeyPath(key), reference: event2]
+            dict[key] = mapping[keyPath: JSONKeyPath(key), reference: event2]
         }
         XCTAssertTrue(dict["device_id"] as? String == "123456")
     }
@@ -167,7 +167,7 @@ class KeyPath_Tests: XCTestCase {
             "anonymousId": "123456"
         ]
         for key in keys {
-            dict[key] = mapping[keyPath: KeyPath(key), reference: event1]
+            dict[key] = mapping[keyPath: JSONKeyPath(key), reference: event1]
         }
         XCTAssertTrue(dict["blank_no"] as? String == "ABCDEF")
         
@@ -177,7 +177,7 @@ class KeyPath_Tests: XCTestCase {
         ]
         dict = [String: Any]()
         for key in keys {
-            dict[key] = mapping[keyPath: KeyPath(key), reference: event2]
+            dict[key] = mapping[keyPath: JSONKeyPath(key), reference: event2]
         }
         XCTAssertTrue(dict["blank_yes"] as? String == "yep")
     }
@@ -195,7 +195,7 @@ class KeyPath_Tests: XCTestCase {
             ]
         ]
         for key in keys {
-            dict[key] = mapping[keyPath: KeyPath(key), reference: event1]
+            dict[key] = mapping[keyPath: JSONKeyPath(key), reference: event1]
         }
         let traits = dict["user_properties"] as? [String: Any]
         XCTAssertTrue(traits?["hoot"] as? String == "nanny")

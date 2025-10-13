@@ -8,19 +8,19 @@
 import Foundation
 
 protocol KeyPathHandler {
-    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool
-    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any?
+    func isHandled(_ keyPath: JSONKeyPath, forInput: Any?) -> Bool
+    func value(keyPath: JSONKeyPath, input: Any?, reference: Any?) -> Any?
 }
 
 public struct BasicHandler: KeyPathHandler {
-    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+    func value(keyPath: JSONKeyPath, input: Any?, reference: Any?) -> Any? {
         guard let input = input as? [String: Any] else { return nil }
         var result: Any? = nil
         if keyPath.remaining.isEmpty {
             result = input[keyPath.current]
         } else {
             if let nestedDict = input[keyPath.current] as? [String: Any] {
-                result = nestedDict[keyPath: KeyPath(keyPath.remainingPath)]
+                result = nestedDict[keyPath: JSONKeyPath(keyPath.remainingPath)]
             } else {
                 result = nil
             }
@@ -28,12 +28,12 @@ public struct BasicHandler: KeyPathHandler {
         return result
     }
     
-    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
+    func isHandled(_ keyPath: JSONKeyPath, forInput: Any?) -> Bool {
         return true
     }
 }
 
-public struct KeyPath {
+public struct JSONKeyPath {
     var current: String
     var remaining: [String]
     
@@ -47,7 +47,7 @@ public struct KeyPath {
     
     internal static var handlers: [KeyPathHandler] = [PathHandler(), IfHandler(), BasicHandler()]
     static func register(_ handler: KeyPathHandler) { handlers.insert(handler, at: 0) }
-    static func handlerFor(keyPath: KeyPath, input: Any?) -> KeyPathHandler? {
+    static func handlerFor(keyPath: JSONKeyPath, input: Any?) -> KeyPathHandler? {
         guard let input = input as? [String: Any] else { return nil }
         for item in handlers {
             if item.isHandled(keyPath, forInput: input[keyPath.current]) {
@@ -59,7 +59,7 @@ public struct KeyPath {
 }
 
 
-extension KeyPath: ExpressibleByStringLiteral {
+extension JSONKeyPath: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init(value)
     }
@@ -72,13 +72,13 @@ extension KeyPath: ExpressibleByStringLiteral {
 }
 
 extension Dictionary where Key: StringProtocol, Value: Any {
-    internal func value(keyPath: KeyPath, reference: Any?) -> Any? {
-        let handler = KeyPath.handlerFor(keyPath: keyPath, input: self)
+    internal func value(keyPath: JSONKeyPath, reference: Any?) -> Any? {
+        let handler = JSONKeyPath.handlerFor(keyPath: keyPath, input: self)
         let result = handler?.value(keyPath: keyPath, input: self, reference: reference)
         return result
     }
     
-    internal mutating func setValue(_ value: Any?, keyPath: KeyPath) {
+    internal mutating func setValue(_ value: Any?, keyPath: JSONKeyPath) {
         guard let key = keyPath.current as? Key else { return }
         
         if keyPath.remaining.isEmpty {
@@ -89,28 +89,28 @@ extension Dictionary where Key: StringProtocol, Value: Any {
             }
         } else {
             if var nestedDict = self[key] as? [String: Any] {
-                nestedDict[keyPath: KeyPath(keyPath.remainingPath)] = value
+                nestedDict[keyPath: JSONKeyPath(keyPath.remainingPath)] = value
                 self[key] = (nestedDict as! Value)
             } else {
                 // this nested key doesn't exist but we're not at the end of the chain, need to create it
                 var nestedDict = [String: Any]()
-                nestedDict[keyPath: KeyPath(keyPath.remainingPath)] = value
+                nestedDict[keyPath: JSONKeyPath(keyPath.remainingPath)] = value
                 self[key] = (nestedDict as! Value)
             }
         }
     }
     
-    public subscript(keyPath keyPath: KeyPath) -> Any? {
+    public subscript(keyPath keyPath: JSONKeyPath) -> Any? {
         get { return value(keyPath: keyPath, reference: nil) }
         set { setValue(newValue as Any, keyPath: keyPath) }
     }
 
-    public subscript(keyPath keyPath: KeyPath, reference reference: Any?) -> Any? {
+    public subscript(keyPath keyPath: JSONKeyPath, reference reference: Any?) -> Any? {
         get { return value(keyPath: keyPath, reference: reference) }
         set { setValue(newValue as Any, keyPath: keyPath) }
     }
     
-    public func exists(keyPath: KeyPath, reference: Any? = nil) -> Bool {
+    public func exists(keyPath: JSONKeyPath, reference: Any? = nil) -> Bool {
         return (value(keyPath: keyPath, reference: reference) != nil)
     }
 }
@@ -125,13 +125,13 @@ extension String {
 
 
 struct IfHandler: KeyPathHandler {
-    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
+    func isHandled(_ keyPath: JSONKeyPath, forInput: Any?) -> Bool {
         guard let input = forInput as? [String: Any] else { return false }
         if input["@if"] != nil { return true }
         return false
     }
     
-    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+    func value(keyPath: JSONKeyPath, input: Any?, reference: Any?) -> Any? {
         guard let input = input as? [String: Any] else { return nil }
         let current = input[keyPath.current] as? [String: Any]
         let conditional = current?["@if"] as? [String: Any]
@@ -166,7 +166,7 @@ struct IfHandler: KeyPathHandler {
 }
 
 struct PathHandler: KeyPathHandler {
-    func isHandled(_ keyPath: KeyPath, forInput: Any?) -> Bool {
+    func isHandled(_ keyPath: JSONKeyPath, forInput: Any?) -> Bool {
         guard let input = forInput as? [String: Any] else { return false }
         if input["@path"] != nil {
             return true
@@ -174,14 +174,14 @@ struct PathHandler: KeyPathHandler {
         return false
     }
     
-    func value(keyPath: KeyPath, input: Any?, reference: Any?) -> Any? {
+    func value(keyPath: JSONKeyPath, input: Any?, reference: Any?) -> Any? {
         guard let input = input as? [String: Any] else { return nil }
         let current = input[keyPath.current] as? [String: Any]
         let path = (current?["@path"] as? String)?.strippedReference
         
         var result: Any? = nil
         if let path = path, let reference = reference as? [String: Any] {
-            result = reference[keyPath: KeyPath(path)]
+            result = reference[keyPath: JSONKeyPath(path)]
         }
         return result
     }
