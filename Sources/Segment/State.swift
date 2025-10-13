@@ -167,10 +167,10 @@ struct System: State {
 // MARK: - User information
 
 public struct UserInfo: Codable, State {
-    let anonymousId: String
-    let userId: String?
-    let traits: JSON
-    let referrer: URL?
+    public let anonymousId: String
+    public let userId: String?
+    public let traits: JSON
+    public let referrer: URL?
     
     @Noncodable var anonIdGenerator: AnonymousIdGenerator?
 }
