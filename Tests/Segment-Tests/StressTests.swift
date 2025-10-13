@@ -91,6 +91,10 @@ class StressTests: XCTestCase {
         }
         
         // wait for everything to settle down flush-wise...
+        for queue in queues {
+            queue.sync(flags: .barrier) { }
+        }
+        
         while (analytics.hasUnsentEvents) {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: .seconds(5)))
         }
