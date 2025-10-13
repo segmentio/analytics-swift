@@ -96,7 +96,7 @@ class StressTests: XCTestCase {
         }
         
         while (analytics.hasUnsentEvents) {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: .seconds(5)))
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: .seconds(15)))
         }
         
         analytics.purgeStorage()
