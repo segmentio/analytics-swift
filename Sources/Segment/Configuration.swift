@@ -163,7 +163,7 @@ extension Configuration {
         return self
     }
 
-    /// Opt-in/out of tracking lifecycle events.  The default value is `false`.
+    /// Opt-in/out of tracking lifecycle events.  The default value is `true`.
     ///
     /// - Parameter enabled: A bool value
     /// - Returns: The current Configuration.
