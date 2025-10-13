@@ -24,6 +24,9 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     @Atomic
     private var didFinishLaunching = false
     
+    @Atomic
+    private var wasBackgrounded = false
+    
     func application(_ application: UIApplication?, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         // Make sure we aren't double calling application:didFinishLaunchingWithOptions
         // by resetting the check at the start
@@ -83,19 +86,26 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
                 ])
             }
         }
+        
+        // Only fire if we were actually backgrounded
+        if wasBackgrounded {
+            if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationForegrounded) == true {
+                analytics?.track(name: "Application Foregrounded")
+            }
+            _wasBackgrounded.set(false)
+        }
     }
     
     func applicationDidEnterBackground(application: UIApplication?) {
         _didFinishLaunching.set(false)
+        _wasBackgrounded.set(true)
         if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationBackgrounded) == true {
             analytics?.track(name: "Application Backgrounded")
         }
     }
     
     func applicationDidBecomeActive(application: UIApplication?) {
-        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationForegrounded) == true {
-            analytics?.track(name: "Application Foregrounded")
-        }
+        // DO NOT USE THIS.
     }
     
     private func urlFrom(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> String {
