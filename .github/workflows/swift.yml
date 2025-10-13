@@ -99,7 +99,7 @@ jobs:
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SOVRAN_SSH_KEY }}
-      - run: xcodebuild -scheme Segment test -sdk xrsimulator -destination 'platform=visionOS Simulator,os=26,name=Apple Vision Pro'
+      - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,OS=26.0,name=Apple Vision Pro'
 
   build_and_test_examples:
     needs: cancel_previous
