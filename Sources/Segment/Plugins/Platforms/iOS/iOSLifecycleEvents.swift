@@ -58,10 +58,12 @@ class iOSLifecycleEvents: PlatformPlugin, iOSLifecycle {
     
     func applicationDidEnterBackground(application: UIApplication?) {
         _didFinishLaunching.set(false)
-        _wasBackgrounded.set(true)
-        
-        if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationBackgrounded) == true {
-            analytics?.trackApplicationBackgrounded()
+        if !wasBackgrounded {
+            _wasBackgrounded.set(true)
+            
+            if analytics?.configuration.values.trackedApplicationLifecycleEvents.contains(.applicationBackgrounded) == true {
+                analytics?.trackApplicationBackgrounded()
+            }
         }
     }
     
