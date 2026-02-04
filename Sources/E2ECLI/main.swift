@@ -114,11 +114,11 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     case "track":
         analytics.track(name: eventName ?? "Unknown Event", properties: properties)
     case "page":
-        analytics.page(title: name ?? "Unknown Page", properties: properties)
+        analytics.screen(title: name ?? "Unknown Page", properties: properties)  // Swift SDK uses screen for page too
     case "screen":
         analytics.screen(title: name ?? "Unknown Screen", properties: properties)
     case "alias":
-        analytics.alias(newId: userId, previousId: previousId)
+        analytics.alias(newId: userId)
     case "group":
         analytics.group(groupId: groupId ?? "", traits: traits)
     default:
