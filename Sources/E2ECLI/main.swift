@@ -141,15 +141,19 @@ func main() {
         let decoder = JSONDecoder()
         let input = try decoder.decode(CLIInput.self, from: inputData)
 
-        // Create configuration
+        // Create configuration - use apiHost for both API and CDN
         let config = Configuration(writeKey: input.writeKey)
             .apiHost(input.apiHost)
+            .cdnHost(input.apiHost)
             .flushAt(input.config?.flushAt ?? 20)
             .flushInterval(input.config?.flushInterval ?? 30)
             .operatingMode(.synchronous)
             .storageMode(.memory(1000))
 
         let analytics = Analytics(configuration: config)
+
+        // Wait for startup to complete (settings fetch, system becomes running)
+        analytics.waitUntilStarted()
 
         // Process event sequences
         for seq in input.sequences {
@@ -162,11 +166,11 @@ func main() {
             }
         }
 
-        // Flush
+        // Flush and wait
         analytics.flush()
 
-        // Give some time for the flush to complete
-        Thread.sleep(forTimeInterval: 2.0)
+        // Wait longer for async operations
+        Thread.sleep(forTimeInterval: 5.0)
 
         output.success = true
         output.sentBatches = 1
