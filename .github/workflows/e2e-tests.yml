@@ -60,6 +60,8 @@ jobs:
         env:
           CLI_COMMAND: ${{ github.workspace }}/sdk/.build/debug/e2e-cli
           AUTO_SETTINGS: 'true'
+          E2E_TEST_SUITES: basic,retry
+          # E2E_TEST_SKIP: exponential-backoff  # skip specific test files if needed
         run: npm test
 
       - name: Upload test results
