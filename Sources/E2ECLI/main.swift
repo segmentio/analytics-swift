@@ -23,7 +23,8 @@ struct EventSequence: Codable {
 
 struct CLIInput: Codable {
     var writeKey: String
-    var apiHost: String
+    var apiHost: String?
+    var cdnHost: String?
     var sequences: [EventSequence]
     var config: CLIConfig?
 }
@@ -141,14 +142,17 @@ func main() {
         let decoder = JSONDecoder()
         let input = try decoder.decode(CLIInput.self, from: inputData)
 
-        // Create configuration - use apiHost for both API and CDN
-        let config = Configuration(writeKey: input.writeKey)
-            .apiHost(input.apiHost)
-            .cdnHost(input.apiHost)
+        var config = Configuration(writeKey: input.writeKey)
             .flushAt(input.config?.flushAt ?? 20)
             .flushInterval(input.config?.flushInterval ?? 30)
             .operatingMode(.synchronous)
             .storageMode(.memory(1000))
+        if let apiHost = input.apiHost {
+            config = config.apiHost(apiHost)
+        }
+        if let cdnHost = input.cdnHost {
+            config = config.cdnHost(cdnHost)
+        }
 
         let analytics = Analytics(configuration: config)
 
