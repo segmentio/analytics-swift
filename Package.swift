@@ -17,9 +17,6 @@ let package = Package(
         .library(
             name: "Segment",
             targets: ["Segment"]),
-        .executable(
-            name: "e2e-cli",
-            targets: ["E2ECLI"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -40,10 +37,6 @@ let package = Package(
         ),
         .testTarget(
             name: "Segment-Tests",
-            dependencies: ["Segment"]
-        ),
-        .executableTarget(
-            name: "E2ECLI",
             dependencies: ["Segment"]
         ),
     ]

@@ -14,7 +14,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SDK_ROOT="$SCRIPT_DIR"
+SDK_ROOT="$SCRIPT_DIR/.."
 E2E_DIR="${E2E_TESTS_DIR:-$SDK_ROOT/../sdk-e2e-tests}"
 
 echo "=== Building analytics-swift e2e-cli ==="
@@ -28,18 +28,19 @@ else
     echo "HTTP patch already applied or not applicable (skipping)"
 fi
 
-# Build SDK and e2e-cli
+# Build e2e-cli (separate package that depends on parent SDK)
+cd "$SCRIPT_DIR"
 swift build
 
-CLI_PATH="$SDK_ROOT/.build/debug/e2e-cli"
+CLI_PATH="$SCRIPT_DIR/.build/debug/E2ECLI"
 echo "Built: $CLI_PATH"
 
 echo ""
 
-# Run tests — swift's e2e-config.json is at repo root (not in a subdir)
+# Run tests
 cd "$E2E_DIR"
 ./scripts/run-tests.sh \
-    --sdk-dir "$SDK_ROOT" \
+    --sdk-dir "$SCRIPT_DIR" \
     --cli "$CLI_PATH" \
     --sdk-path "$SDK_ROOT" \
     "$@"

@@ -4,7 +4,7 @@
 # This workflow:
 # 1. Checks out the SDK and sdk-e2e-tests repos
 # 2. Applies the HTTP patch to allow mock server testing
-# 3. Builds the SDK and e2e-cli
+# 3. Builds the e2e-cli (separate SPM package)
 # 4. Runs the e2e test suite
 
 name: E2E Tests
@@ -44,16 +44,16 @@ jobs:
           git apply ../sdk-e2e-tests/patches/analytics-swift-http.patch
           echo "HTTP patch applied successfully"
 
-      - name: Build Swift SDK and e2e-cli
-        working-directory: sdk
+      - name: Build e2e-cli
+        working-directory: sdk/e2e-cli
         run: swift build
 
       - name: Run E2E tests
         working-directory: sdk-e2e-tests
         run: |
           ./scripts/run-tests.sh \
-            --sdk-dir "${{ github.workspace }}/sdk" \
-            --cli "${{ github.workspace }}/sdk/.build/debug/e2e-cli" \
+            --sdk-dir "${{ github.workspace }}/sdk/e2e-cli" \
+            --cli "${{ github.workspace }}/sdk/e2e-cli/.build/debug/E2ECLI" \
             --sdk-path "${{ github.workspace }}/sdk"
 
       - name: Upload test results
