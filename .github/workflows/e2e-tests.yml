@@ -38,14 +38,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install sdk-e2e-tests dependencies
-        working-directory: sdk-e2e-tests
-        run: npm ci
-
-      - name: Build sdk-e2e-tests
-        working-directory: sdk-e2e-tests
-        run: npm run build
-
       - name: Apply HTTP patch for testing
         working-directory: sdk
         run: |
@@ -58,12 +50,11 @@ jobs:
 
       - name: Run E2E tests
         working-directory: sdk-e2e-tests
-        env:
-          CLI_COMMAND: ${{ github.workspace }}/sdk/.build/debug/e2e-cli
-          AUTO_SETTINGS: 'true'
-          E2E_TEST_SUITES: basic,retry
-          # E2E_TEST_SKIP: exponential-backoff  # skip specific test files if needed
-        run: npm test
+        run: |
+          ./scripts/run-tests.sh \
+            --sdk-dir "${{ github.workspace }}/sdk" \
+            --cli "${{ github.workspace }}/sdk/.build/debug/e2e-cli" \
+            --sdk-path "${{ github.workspace }}/sdk"
 
       - name: Upload test results
         if: always()
