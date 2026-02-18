@@ -8,13 +8,13 @@ let package = Package(
         .macOS("10.15")
     ],
     dependencies: [
-        .package(path: ".."),
+        .package(name: "Segment", path: ".."),
     ],
     targets: [
         .executableTarget(
             name: "E2ECLI",
             dependencies: [
-                .product(name: "Segment", package: "analytics-swift"),
+                "Segment",
             ]
         ),
     ]
