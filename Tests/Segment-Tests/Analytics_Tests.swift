@@ -706,6 +706,57 @@ final class Analytics_Tests: XCTestCase {
         XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io", "dest1"])
     }
 
+    // A plugin that has .destination type but does NOT conform to DestinationPlugin.
+    // This simulates the scenario where a non-DestinationPlugin ends up in the
+    // destination mediator, which previously caused the entire metadata enrichment to fail.
+    class NonConformingDestinationPlugin: Plugin {
+        let type: PluginType = .destination
+        weak var analytics: Analytics?
+    }
+
+    // Test that DestinationMetadataPlugin still works when a non-DestinationPlugin
+    // plugin with .destination type is present in the destination mediator.
+    func testDestinationMetadataWithNonDestinationPluginType() {
+        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let mixpanel = AnyDestination(key: "Mixpanel")
+        let nonConforming = NonConformingDestinationPlugin()
+        let outputReader = OutputReaderPlugin()
+
+        // we want the output reader on the segment plugin
+        // cuz that's the only place the metadata is getting added.
+        let segmentDest = analytics.find(pluginType: SegmentDestination.self)
+        segmentDest?.add(plugin: outputReader)
+
+        analytics.add(plugin: mixpanel)
+        analytics.add(plugin: nonConforming)
+
+        var settings = Settings(writeKey: "123")
+        let integrations = try? JSON([
+            "Segment.io": JSON([
+                "unbundledIntegrations":
+                    [
+                        "Customer.io",
+                        "Mixpanel",
+                        "Amplitude",
+                    ]
+            ]),
+            "Mixpanel": JSON(["someKey": "someVal"]),
+        ])
+        settings.integrations = integrations
+        analytics.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
+
+        waitUntilStarted(analytics: analytics)
+
+        analytics.track(name: "sampleEvent")
+
+        let trackEvent: TrackEvent? = outputReader.lastEvent as? TrackEvent
+        let metadata = trackEvent?._metadata
+
+        XCTAssertNotNil(metadata, "Metadata should not be nil even with a non-DestinationPlugin in the destination slot")
+        XCTAssertEqual(metadata?.bundled, ["Mixpanel"])
+        XCTAssertEqual(metadata?.unbundled.sorted(), ["Amplitude", "Customer.io"])
+    }
+
     func testRequestFactory() {
         let config = Configuration(writeKey: "testSequential").requestFactory { request in
             XCTAssertEqual(request.value(forHTTPHeaderField: "Accept-Encoding"), "gzip")
