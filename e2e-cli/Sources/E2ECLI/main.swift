@@ -102,12 +102,18 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     }
 
     let userId = event["userId"]?.stringValue ?? ""
+    let anonymousId = event["anonymousId"]?.stringValue
+    let messageId = event["messageId"]?.stringValue
+    let timestamp = event["timestamp"]?.stringValue
     let traits = event["traits"]?.dictValue ?? [:]
     let properties = event["properties"]?.dictValue ?? [:]
     let eventName = event["event"]?.stringValue
     let name = event["name"]?.stringValue
+    let category = event["category"]?.stringValue
     let groupId = event["groupId"]?.stringValue
     let previousId = event["previousId"]?.stringValue
+    let context = event["context"]?.dictValue
+    let integrations = event["integrations"]?.dictValue
 
     switch type {
     case "identify":
