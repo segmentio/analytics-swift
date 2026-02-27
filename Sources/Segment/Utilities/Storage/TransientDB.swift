@@ -16,6 +16,8 @@ public class TransientDB {
     private let pendingAppends = DispatchGroup()
 
     public var hasData: Bool {
+        // Wait for all pending async dispatches before checking
+        pendingAppends.wait()
         var result: Bool = false
         syncQueue.sync {
             result = store.hasData
@@ -24,6 +26,8 @@ public class TransientDB {
     }
 
     public var count: Int {
+        // Wait for all pending async dispatches before counting
+        pendingAppends.wait()
         var result: Int = 0
         syncQueue.sync {
             result = store.count
