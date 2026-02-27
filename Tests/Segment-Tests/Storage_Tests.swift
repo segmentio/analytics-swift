@@ -99,13 +99,16 @@ class StorageTests: XCTestCase {
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
         event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
         event = IdentifyEvent(userId: "brandon3", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
+        // Allow async appends to complete (global queue dispatch)
+        Thread.sleep(forTimeInterval: 0.1)
+
         let results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
