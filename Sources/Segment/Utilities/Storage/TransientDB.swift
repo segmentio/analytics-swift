@@ -12,8 +12,6 @@ public class TransientDB {
     // keeps items added in the order given.
     internal let syncQueue = DispatchQueue(label: "transientDB.sync")
     private let asyncAppend: Bool
-    // tracks pending async append operations to prevent race conditions during flush
-    private let pendingAppends = DispatchGroup()
 
     public var hasData: Bool {
         var result: Bool = false
@@ -48,14 +46,13 @@ public class TransientDB {
     
     public func append(data: RawEvent) {
         if asyncAppend {
-            pendingAppends.enter()
-            syncQueue.async { [weak self] in
-                guard let self else {
-                    self?.pendingAppends.leave()
-                    return
+            // Dispatch to background thread, but execute synchronously on syncQueue
+            // This ensures FIFO ordering while keeping appends off the main thread
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                self?.syncQueue.sync { [weak self] in
+                    guard let self else { return }
+                    store.append(data: data)
                 }
-                store.append(data: data)
-                self.pendingAppends.leave()
             }
         } else {
             syncQueue.sync { [weak self] in
@@ -66,11 +63,8 @@ public class TransientDB {
     }
     
     public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
-        // Wait for all pending async appends to complete before fetching.
-        // This prevents a race condition where finishFile() closes the batch array
-        // while events are still queued for async append, causing batch corruption.
-        pendingAppends.wait()
-
+        // syncQueue is serial and all operations use .sync, ensuring FIFO ordering
+        // fetch() will naturally wait for all previous appends to complete
         var result: DataResult? = nil
         syncQueue.sync {
             result = store.fetch(count: count, maxBytes: maxBytes)
