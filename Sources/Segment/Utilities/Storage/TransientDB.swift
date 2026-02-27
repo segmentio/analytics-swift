@@ -56,11 +56,13 @@ public class TransientDB {
             pendingAppends.enter()
             // Dispatch to background thread, but execute synchronously on syncQueue
             // This ensures FIFO ordering while keeping appends off the main thread
+            // Capture pendingAppends separately to ensure leave() is always called
+            let group = pendingAppends
             DispatchQueue.global(qos: .utility).async { [weak self] in
-                defer { self?.pendingAppends.leave() }
-                self?.syncQueue.sync { [weak self] in
-                    guard let self else { return }
-                    store.append(data: data)
+                defer { group.leave() }
+                guard let self else { return }
+                self.syncQueue.sync {
+                    self.store.append(data: data)
                 }
             }
         } else {
