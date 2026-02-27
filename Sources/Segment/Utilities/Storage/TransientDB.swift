@@ -12,7 +12,9 @@ public class TransientDB {
     // keeps items added in the order given.
     internal let syncQueue = DispatchQueue(label: "transientDB.sync")
     private let asyncAppend: Bool
-    
+    // tracks pending async append operations to prevent race conditions during flush
+    private let pendingAppends = DispatchGroup()
+
     public var hasData: Bool {
         var result: Bool = false
         syncQueue.sync {
@@ -20,7 +22,7 @@ public class TransientDB {
         }
         return result
     }
-    
+
     public var count: Int {
         var result: Int = 0
         syncQueue.sync {
@@ -28,11 +30,11 @@ public class TransientDB {
         }
         return result
     }
-    
+
     public var transactionType: DataTransactionType {
         return store.transactionType
     }
-    
+
     public init(store: any DataStore, asyncAppend: Bool = true) {
         self.store = store
         self.asyncAppend = asyncAppend
@@ -46,9 +48,14 @@ public class TransientDB {
     
     public func append(data: RawEvent) {
         if asyncAppend {
+            pendingAppends.enter()
             syncQueue.async { [weak self] in
-                guard let self else { return }
+                guard let self else {
+                    self?.pendingAppends.leave()
+                    return
+                }
                 store.append(data: data)
+                self.pendingAppends.leave()
             }
         } else {
             syncQueue.sync { [weak self] in
@@ -59,6 +66,11 @@ public class TransientDB {
     }
     
     public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
+        // Wait for all pending async appends to complete before fetching.
+        // This prevents a race condition where finishFile() closes the batch array
+        // while events are still queued for async append, causing batch corruption.
+        pendingAppends.wait()
+
         var result: DataResult? = nil
         syncQueue.sync {
             result = store.fetch(count: count, maxBytes: maxBytes)
