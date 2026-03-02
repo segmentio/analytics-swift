@@ -89,7 +89,8 @@ class StorageTests: XCTestCase {
     }
     
     func testEventWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .operatingMode(.synchronous))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.waitUntilStarted()
@@ -105,9 +106,6 @@ class StorageTests: XCTestCase {
 
         event = IdentifyEvent(userId: "brandon3", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-
-        // Allow async appends to complete (global queue dispatch)
-        Thread.sleep(forTimeInterval: 0.1)
 
         let results = analytics.storage.read(.events)
 
@@ -180,21 +178,26 @@ class StorageTests: XCTestCase {
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
         )
-        
+
         analytics.waitUntilStarted()
-        
+
         XCTAssertEqual(analytics.storage.dataStore.count, 0)
-        
+
         for i in 0..<9 {
             analytics.track(name: "Event \(i)")
         }
-        
+
+        // Allow async operations to complete
+        Thread.sleep(forTimeInterval: 0.1)
+
         let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
-        
+
         XCTAssertEqual(analytics.storage.dataStore.count, 9)
         analytics.track(name: "Event 10")
+        Thread.sleep(forTimeInterval: 0.05)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         analytics.track(name: "Event 11")
+        Thread.sleep(forTimeInterval: 0.05)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         
         let events = analytics.storage.read(.events)!
