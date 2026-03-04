@@ -148,19 +148,25 @@ class StorageTests: XCTestCase {
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
+        // Wait for async append to complete
+        Thread.sleep(forTimeInterval: 0.5)
+
         var results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
-        
+
         var fileURL = results!.dataFiles![0]
-        
+
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-        
+
         event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
+
+        // Wait for async append to complete
+        Thread.sleep(forTimeInterval: 0.5)
         
         results = analytics.storage.read(.events)
         
