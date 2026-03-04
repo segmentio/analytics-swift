@@ -232,8 +232,11 @@ class StressTests: XCTestCase {
         while (!reallyDone) {
             RunLoop.main.run(until: Date.distantPast)
         }
-        
+
         analytics.purgeStorage()
+
+        // Clear the static fileValidator to prevent it from affecting subsequent tests
+        DirectoryStore.fileValidator = nil
     }
     
     func testMemoryStorageStress() throws {
