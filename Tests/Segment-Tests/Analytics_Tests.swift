@@ -478,8 +478,7 @@ final class Analytics_Tests: XCTestCase {
         // Use a specific writekey to this test so we do not collide with other cached items.
         let analytics = Analytics(
             configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey")
-                .flushInterval(9999).flushAt(9999)
-                .operatingMode(.synchronous))
+                .flushInterval(9999).flushAt(9999))
 
         waitUntilStarted(analytics: analytics)
 
@@ -487,17 +486,30 @@ final class Analytics_Tests: XCTestCase {
 
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
 
-        let currentBatchCount = analytics.storage.read(.events)!.dataFiles!.count
+        // Wait for async append to complete before reading
+        Thread.sleep(forTimeInterval: 0.1)
 
-        analytics.flush()
+        let currentBatch = analytics.storage.read(.events)!
+        let currentBatchCount = currentBatch.dataFiles!.count
+
+        let expectation = XCTestExpectation(description: "flush completes")
+        analytics.flush {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
+
         analytics.track(name: "test")
+
+        // Wait for async append to complete before reading
+        Thread.sleep(forTimeInterval: 0.1)
 
         let batches = analytics.storage.read(.events)!.dataFiles
         let newBatchCount = batches!.count
-        // 1 new temp file
+        // After flush, the first file is removed (uploaded or 400 error).
+        // So we should have exactly 1 file (from the track call), not currentBatchCount + 1
         XCTAssertTrue(
-            newBatchCount == currentBatchCount + 1,
-            "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
+            newBatchCount == 1,
+            "New Count (\(newBatchCount)) should be 1 (file from track after flush removed previous file)")
     }
 
     func testEnabled() {
@@ -933,7 +945,8 @@ final class Analytics_Tests: XCTestCase {
                 return
             }
 
-            let analytics = Analytics(configuration: Configuration(writeKey: "networkTest"))
+            let analytics = Analytics(configuration: Configuration(writeKey: "networkTest")
+                .operatingMode(.synchronous))
 
             waitUntilStarted(analytics: analytics)
 
