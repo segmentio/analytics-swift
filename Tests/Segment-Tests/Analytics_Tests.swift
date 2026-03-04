@@ -487,7 +487,8 @@ final class Analytics_Tests: XCTestCase {
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
 
         // Wait for async append to complete before reading
-        Thread.sleep(forTimeInterval: 0.1)
+        // CI environments (especially simulators) need more time
+        Thread.sleep(forTimeInterval: 0.5)
 
         let currentBatch = analytics.storage.read(.events)!
         let currentBatchCount = currentBatch.dataFiles!.count
@@ -501,7 +502,8 @@ final class Analytics_Tests: XCTestCase {
         analytics.track(name: "test")
 
         // Wait for async append to complete before reading
-        Thread.sleep(forTimeInterval: 0.1)
+        // CI environments (especially simulators) need more time
+        Thread.sleep(forTimeInterval: 0.5)
 
         let batches = analytics.storage.read(.events)!.dataFiles
         let newBatchCount = batches!.count
