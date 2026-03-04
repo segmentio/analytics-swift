@@ -183,6 +183,7 @@ class StorageTests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test")
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
+            .operatingMode(.synchronous)
         )
 
         analytics.waitUntilStarted()
@@ -193,18 +194,12 @@ class StorageTests: XCTestCase {
             analytics.track(name: "Event \(i)")
         }
 
-        // Allow async operations to complete (global queue + syncQueue)
-        // CI environments need substantial time for all async operations to finish
-        Thread.sleep(forTimeInterval: 2.0)
-
         let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
 
         XCTAssertEqual(analytics.storage.dataStore.count, 9)
         analytics.track(name: "Event 10")
-        Thread.sleep(forTimeInterval: 1.0)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         analytics.track(name: "Event 11")
-        Thread.sleep(forTimeInterval: 1.0)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         
         let events = analytics.storage.read(.events)!
