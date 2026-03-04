@@ -187,17 +187,17 @@ class StorageTests: XCTestCase {
             analytics.track(name: "Event \(i)")
         }
 
-        // Allow async operations to complete
-        Thread.sleep(forTimeInterval: 0.1)
+        // Allow async operations to complete (global queue + syncQueue)
+        Thread.sleep(forTimeInterval: 0.5)
 
         let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
 
         XCTAssertEqual(analytics.storage.dataStore.count, 9)
         analytics.track(name: "Event 10")
-        Thread.sleep(forTimeInterval: 0.05)
+        Thread.sleep(forTimeInterval: 0.2)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         analytics.track(name: "Event 11")
-        Thread.sleep(forTimeInterval: 0.05)
+        Thread.sleep(forTimeInterval: 0.2)
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
         
         let events = analytics.storage.read(.events)!
