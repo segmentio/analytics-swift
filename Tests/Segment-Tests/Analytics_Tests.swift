@@ -478,7 +478,8 @@ final class Analytics_Tests: XCTestCase {
         // Use a specific writekey to this test so we do not collide with other cached items.
         let analytics = Analytics(
             configuration: Configuration(writeKey: "testFlush_do_not_reuse_this_writekey")
-                .flushInterval(9999).flushAt(9999))
+                .flushInterval(9999).flushAt(9999)
+                .operatingMode(.synchronous))
 
         waitUntilStarted(analytics: analytics)
 
