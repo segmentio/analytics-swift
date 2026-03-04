@@ -183,7 +183,6 @@ class StorageTests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: "test")
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
-            .operatingMode(.synchronous)
         )
 
         analytics.waitUntilStarted()
