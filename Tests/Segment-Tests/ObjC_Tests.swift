@@ -103,14 +103,14 @@ class ObjC_Tests: XCTestCase {
         analytics.analytics.add(plugin: outputReader)
 
         let sourcePlugin = ObjCBlockPlugin { event in
-            print("source enrichment applied")
+            //print("source enrichment applied")
             sourceHit = true
             return event
         }
         analytics.add(plugin: sourcePlugin)
 
         let destPlugin = ObjCBlockPlugin { event in
-            print("destination enrichment applied")
+            //print("destination enrichment applied")
             destHit = true
             return event
         }

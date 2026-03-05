@@ -127,7 +127,7 @@ class OutputReaderPlugin: Plugin {
         lastEvent = event
         if let t = lastEvent as? TrackEvent {
             events.append(t)
-            print("EVENT: \(t.event)")
+            //print("EVENT: \(t.event)")
         }
         return event
     }
@@ -170,7 +170,7 @@ extension XCTestCase {
     func checkIfLeaked(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
         addTeardownBlock { [weak instance] in
             if instance != nil {
-                print("Instance \(String(describing: instance)) is not nil")
+                //print("Instance \(String(describing: instance)) is not nil")
             }
             XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak!", file: file, line: line)
         }

@@ -82,8 +82,8 @@ class StressTests: XCTestCase {
                 
         group.notify(queue: DispatchQueue.main) {
             _ready.set(false)
-            print("\(eventsWritten) events written, across 30 queues.")
-            print("all queues finished.")
+            //print("\(eventsWritten) events written, across 30 queues.")
+            //print("all queues finished.")
         }
         
         _ready.set(true)
@@ -156,7 +156,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 1 wrote \(eventsWritten) events.")
+            //print("queue 1 wrote \(eventsWritten) events.")
             _queue1Done.set(true)
         }
         
@@ -170,7 +170,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 2 wrote \(eventsWritten) events.")
+            //print("queue 2 wrote \(eventsWritten) events.")
             _queue2Done.set(true)
         }
         
@@ -184,7 +184,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 3 wrote \(eventsWritten) events.")
+            //print("queue 3 wrote \(eventsWritten) events.")
             _queue3Done.set(true)
         }
         
@@ -198,7 +198,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 4 wrote \(eventsWritten) events.")
+            //print("queue 4 wrote \(eventsWritten) events.")
             _queue4Done.set(true)
         }
         
@@ -214,7 +214,7 @@ class StressTests: XCTestCase {
                 analytics.flush()
                 counter += 1
             }
-            print("flushed \(counter) times.")
+            //print("flushed \(counter) times.")
             _ready.set(false)
         }
         
@@ -285,7 +285,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 1 wrote \(eventsWritten) events.")
+            //print("queue 1 wrote \(eventsWritten) events.")
             _queue1Done.set(true)
         }
 
@@ -299,7 +299,7 @@ class StressTests: XCTestCase {
                 //usleep(0001)
                 RunLoop.main.run(until: Date.distantPast)
             }
-            print("queue 2 wrote \(eventsWritten) events.")
+            //print("queue 2 wrote \(eventsWritten) events.")
             _queue2Done.set(true)
         }
 
@@ -315,7 +315,7 @@ class StressTests: XCTestCase {
                 analytics.flush()
                 counter += 1
             }
-            print("flushed \(counter) times.")
+            //print("flushed \(counter) times.")
             _ready.set(false)
         }
         

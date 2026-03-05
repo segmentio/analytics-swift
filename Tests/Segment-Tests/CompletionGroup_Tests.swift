@@ -31,38 +31,38 @@ final class CompletionGroup_Tests: XCTestCase {
         
         group.add { group in
             group.enter()
-            print("item1 - sleeping 10")
+            //print("item1 - sleeping 10")
             sleep(10)
-            print("item1 - done sleeping")
+            //print("item1 - done sleeping")
             group.leave()
         }
         
         group.add { group in
             group.enter()
-            print("item2 - launching an async task")
+            //print("item2 - launching an async task")
             DispatchQueue.global(qos: .background).async {
-                print("item2 - background, sleeping 5")
+                //print("item2 - background, sleeping 5")
                 sleep(5)
-                print("item2 - background, done sleeping")
+                //print("item2 - background, done sleeping")
                 group.leave()
             }
         }
         
         group.add { group in
             group.enter()
-            print("item3 - returning real quick")
+            //print("item3 - returning real quick")
             group.leave()
         }
         
         group.add { group in
-            print("item4 - not entering group")
+            //print("item4 - not entering group")
         }
         
         group.run(mode: .asynchronous) {
-            print("all items completed.")
+            //print("all items completed.")
         }
         
-        print("test exited.")
+        //print("test exited.")
     }*/
 
 }

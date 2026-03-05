@@ -236,8 +236,8 @@ class StorageTests: XCTestCase {
         let dataCount = analytics.storage.read(.events)!.removable!.count
         let totalCount = analytics.storage.dataStore.count
         
-        print(dataCount)
-        print(totalCount)
+        //print(dataCount)
+        //print(totalCount)
         
         let events = analytics.storage.read(.events)!
         XCTAssertTrue(events.data!.count < 500_000)
@@ -253,7 +253,7 @@ class StorageTests: XCTestCase {
         
         // should be sync cuz that's our operating mode
         analytics.flush {
-            print("flush completed")
+            //print("flush completed")
         }
         
         // we flushed them all
@@ -284,8 +284,8 @@ class StorageTests: XCTestCase {
         let dataCount = analytics.storage.read(.events)!.removable!.count
         let totalCount = analytics.storage.dataStore.count
         
-        print(dataCount)
-        print(totalCount)
+        //print(dataCount)
+        //print(totalCount)
         
         let events = analytics.storage.read(.events)!
         XCTAssertTrue(events.data!.count < 500_000)
@@ -300,7 +300,7 @@ class StorageTests: XCTestCase {
         // should be sync cuz that's our operating mode
         @Atomic var done = false
         analytics.flush {
-            print("flush completed")
+            //print("flush completed")
             _done.set(true)
         }
         

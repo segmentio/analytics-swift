@@ -145,7 +145,7 @@ final class Analytics_Tests: XCTestCase {
             let expectation = XCTestExpectation(description: "MyDestination Expectation")
             let myDestination = MyDestination(disabled: true) {
                 expectation.fulfill()
-                print("called")
+                //print("called")
                 return true
             }
 
@@ -756,14 +756,14 @@ final class Analytics_Tests: XCTestCase {
     func testEnrichment() {
         var sourceHit: Bool = false
         let sourceEnrichment: EnrichmentClosure = { event in
-            print("source enrichment applied")
+            //print("source enrichment applied")
             sourceHit = true
             return event
         }
 
         var destHit: Bool = true
         let destEnrichment: EnrichmentClosure = { event in
-            print("destination enrichment applied")
+            //print("destination enrichment applied")
             destHit = true
             return event
         }

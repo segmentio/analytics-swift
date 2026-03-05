@@ -41,7 +41,7 @@ final class TransientDB_RaceCondition_Tests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.5)
 
         // Success: no crash means DispatchGroup prevented race condition
-        print("✅ Async append test passed - no race condition detected")
+        //print("✅ Async append test passed - no race condition detected")
 
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
     }
@@ -68,7 +68,7 @@ final class TransientDB_RaceCondition_Tests: XCTestCase {
 
         // Success: synchronous mode completed without crashing
         // The fix (DispatchGroup) only applies to async mode
-        print("✅ Synchronous mode test passed - no race condition possible")
+        //print("✅ Synchronous mode test passed - no race condition possible")
 
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
     }
@@ -100,7 +100,7 @@ final class TransientDB_RaceCondition_Tests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.5)
 
         // Success: no crash means DispatchGroup prevented race condition
-        print("✅ High volume test passed - no race condition detected")
+        //print("✅ High volume test passed - no race condition detected")
 
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
     }
