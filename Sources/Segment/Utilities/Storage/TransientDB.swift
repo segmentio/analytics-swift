@@ -65,6 +65,13 @@ public class TransientDB {
         }
     }
     
+    #if DEBUG
+    // For tests (or anyone who needs to drain):
+    public func waitForPendingAppends() {
+        asyncQueue.sync {}  // blocks until all enqueued work finishes
+    }
+    #endif
+    
     public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
         // syncQueue is serial and all operations use .sync, ensuring FIFO ordering
         // Appends still in-flight on global queue will execute after this fetch,

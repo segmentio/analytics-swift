@@ -192,6 +192,8 @@ class StorageTests: XCTestCase {
         for i in 0..<9 {
             analytics.track(name: "Event \(i)")
         }
+        // wait for our events to get into storage since it's async.
+        analytics.storage.dataStore.waitForPendingAppends()
 
         let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
 
