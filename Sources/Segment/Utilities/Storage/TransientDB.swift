@@ -38,7 +38,11 @@ public class TransientDB {
 
     public init(store: any DataStore, asyncAppend: Bool = true) {
         self.store = store
-        self.asyncAppend = asyncAppend
+        if (store is MemoryStore) {
+            self.asyncAppend = false
+        } else {
+            self.asyncAppend = asyncAppend
+        }
     }
     
     public func reset() {
@@ -64,13 +68,6 @@ public class TransientDB {
             }
         }
     }
-    
-    #if DEBUG
-    // For tests (or anyone who needs to drain):
-    public func waitForPendingAppends() {
-        asyncQueue.sync {}  // blocks until all enqueued work finishes
-    }
-    #endif
     
     public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
         // syncQueue is serial and all operations use .sync, ensuring FIFO ordering
