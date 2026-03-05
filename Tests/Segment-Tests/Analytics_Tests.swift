@@ -145,7 +145,7 @@ final class Analytics_Tests: XCTestCase {
             let expectation = XCTestExpectation(description: "MyDestination Expectation")
             let myDestination = MyDestination(disabled: true) {
                 expectation.fulfill()
-                print("called")
+                //print("called")
                 return true
             }
 
@@ -486,17 +486,32 @@ final class Analytics_Tests: XCTestCase {
 
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
 
-        let currentBatchCount = analytics.storage.read(.events)!.dataFiles!.count
+        // Wait for async append to complete before reading
+        // CI environments (especially simulators) need more time
+        Thread.sleep(forTimeInterval: 0.5)
 
-        analytics.flush()
+        let currentBatch = analytics.storage.read(.events)!
+        let currentBatchCount = currentBatch.dataFiles!.count
+
+        let expectation = XCTestExpectation(description: "flush completes")
+        analytics.flush {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
+
         analytics.track(name: "test")
+
+        // Wait for async append to complete before reading
+        // CI environments (especially simulators) need more time
+        Thread.sleep(forTimeInterval: 0.5)
 
         let batches = analytics.storage.read(.events)!.dataFiles
         let newBatchCount = batches!.count
-        // 1 new temp file
+        // After flush, the first file is removed (uploaded or 400 error).
+        // So we should have exactly 1 file (from the track call), not currentBatchCount + 1
         XCTAssertTrue(
-            newBatchCount == currentBatchCount + 1,
-            "New Count (\(newBatchCount)) should be \(currentBatchCount) + 1")
+            newBatchCount == 1,
+            "New Count (\(newBatchCount)) should be 1 (file from track after flush removed previous file)")
     }
 
     func testEnabled() {
@@ -741,14 +756,14 @@ final class Analytics_Tests: XCTestCase {
     func testEnrichment() {
         var sourceHit: Bool = false
         let sourceEnrichment: EnrichmentClosure = { event in
-            print("source enrichment applied")
+            //print("source enrichment applied")
             sourceHit = true
             return event
         }
 
         var destHit: Bool = true
         let destEnrichment: EnrichmentClosure = { event in
-            print("destination enrichment applied")
+            //print("destination enrichment applied")
             destHit = true
             return event
         }
@@ -932,7 +947,8 @@ final class Analytics_Tests: XCTestCase {
                 return
             }
 
-            let analytics = Analytics(configuration: Configuration(writeKey: "networkTest"))
+            let analytics = Analytics(configuration: Configuration(writeKey: "networkTest")
+                .operatingMode(.synchronous))
 
             waitUntilStarted(analytics: analytics)
 

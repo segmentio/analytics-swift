@@ -52,7 +52,7 @@ final class UserAgentTests: XCTestCase {
         
         #endif
         
-        print("Generated UserAgent: \(userAgent)")
+        //print("Generated UserAgent: \(userAgent)")
     }
 
     #if !os(tvOS) && !os(watchOS)
@@ -62,7 +62,7 @@ final class UserAgentTests: XCTestCase {
         #else
         let wkUserAgent = "unknown"
         #endif
-        print(wkUserAgent)*/
+        //print(wkUserAgent)*/
 
         let customUA = UserAgent.value(applicationName: "MyApp/1.0")
         XCTAssertTrue(customUA.contains("MyApp/1.0"), "Should contain custom app name")

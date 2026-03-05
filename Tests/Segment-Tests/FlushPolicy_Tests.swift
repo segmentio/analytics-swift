@@ -135,7 +135,10 @@ class FlushPolicyTests: XCTestCase {
         
         waitUntilStarted(analytics: analytics)
         analytics.track(name: "blah", properties: nil)
-        
+
+        // Wait for async append to complete
+        Thread.sleep(forTimeInterval: 0.5)
+
         XCTAssertTrue(analytics.hasUnsentEvents)
         
         @Atomic var flushSent = false

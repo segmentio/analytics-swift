@@ -89,7 +89,8 @@ class StorageTests: XCTestCase {
     }
     
     func testEventWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            .operatingMode(.synchronous))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.waitUntilStarted()
@@ -99,13 +100,13 @@ class StorageTests: XCTestCase {
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
         event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
         event = IdentifyEvent(userId: "brandon3", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
         let results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
@@ -147,19 +148,25 @@ class StorageTests: XCTestCase {
         
         var event = IdentifyEvent(userId: "brandon1", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
-        
+
+        // Wait for async append to complete
+        Thread.sleep(forTimeInterval: 0.5)
+
         var results = analytics.storage.read(.events)
 
         XCTAssertNotNil(results)
-        
+
         var fileURL = results!.dataFiles![0]
-        
+
         XCTAssertTrue(fileURL.isFileURL)
         XCTAssertTrue(fileURL.lastPathComponent == "0-segment-events.temp")
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-        
+
         event = IdentifyEvent(userId: "brandon2", traits: try! JSON(with: MyTraits(email: "blah@blah.com")))
         analytics.storage.write(.events, value: event)
+
+        // Wait for async append to complete
+        Thread.sleep(forTimeInterval: 0.5)
         
         results = analytics.storage.read(.events)
         
@@ -177,17 +184,17 @@ class StorageTests: XCTestCase {
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
         )
-        
+
         analytics.waitUntilStarted()
-        
+
         XCTAssertEqual(analytics.storage.dataStore.count, 0)
-        
+
         for i in 0..<9 {
             analytics.track(name: "Event \(i)")
         }
-        
+
         let second = analytics.storage.dataStore.fetch(count: 2)!.removable![1] as! UUID
-        
+
         XCTAssertEqual(analytics.storage.dataStore.count, 9)
         analytics.track(name: "Event 10")
         XCTAssertEqual(analytics.storage.dataStore.count, 10)
@@ -229,8 +236,8 @@ class StorageTests: XCTestCase {
         let dataCount = analytics.storage.read(.events)!.removable!.count
         let totalCount = analytics.storage.dataStore.count
         
-        print(dataCount)
-        print(totalCount)
+        //print(dataCount)
+        //print(totalCount)
         
         let events = analytics.storage.read(.events)!
         XCTAssertTrue(events.data!.count < 500_000)
@@ -246,7 +253,7 @@ class StorageTests: XCTestCase {
         
         // should be sync cuz that's our operating mode
         analytics.flush {
-            print("flush completed")
+            //print("flush completed")
         }
         
         // we flushed them all
@@ -277,8 +284,8 @@ class StorageTests: XCTestCase {
         let dataCount = analytics.storage.read(.events)!.removable!.count
         let totalCount = analytics.storage.dataStore.count
         
-        print(dataCount)
-        print(totalCount)
+        //print(dataCount)
+        //print(totalCount)
         
         let events = analytics.storage.read(.events)!
         XCTAssertTrue(events.data!.count < 500_000)
@@ -293,7 +300,7 @@ class StorageTests: XCTestCase {
         // should be sync cuz that's our operating mode
         @Atomic var done = false
         analytics.flush {
-            print("flush completed")
+            //print("flush completed")
             _done.set(true)
         }
         

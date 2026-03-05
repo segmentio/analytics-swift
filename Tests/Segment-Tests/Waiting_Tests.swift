@@ -52,7 +52,7 @@ class SlowWaitingPlugin: EventPlugin, WaitingPlugin {
     }
     
     func update(settings: Settings, type: UpdateType) {
-        print("SlowWaitingPlugin.update() called with type: \(type)")
+        //print("SlowWaitingPlugin.update() called with type: \(type)")
         if type == .initial {
             analytics?.pauseEventProcessing(plugin: self)
             /// don't resume
@@ -237,9 +237,9 @@ final class Waiting_Tests: XCTestCase, Subscriber {
         waitForWaitingPluginCount(analytics: analytics, expectedCount: 0)
         
         analytics.add(plugin: plugin1)
-        print("Added plugin1")
+        //print("Added plugin1")
         analytics.add(plugin: plugin2)
-        print("Added plugin2")
+        //print("Added plugin2")
         waitForWaitingPluginCount(analytics: analytics, expectedCount: 2)
         
         // Resume one plugin and wait for state update
@@ -266,7 +266,7 @@ final class Waiting_Tests: XCTestCase, Subscriber {
         let waitingPlugin = ExampleWaitingPlugin()
         
         analytics.store.subscribe(self) { (state: System) in
-            print("State updated running: \(state.running)")
+            //print("State updated running: \(state.running)")
         }
         
         analytics.add(plugin: destination)
@@ -286,7 +286,7 @@ final class Waiting_Tests: XCTestCase, Subscriber {
         let waitingPlugin = SlowWaitingPlugin()
         
         analytics.store.subscribe(self) { (state: System) in
-            print("State updated running: \(state.running)")
+            //print("State updated running: \(state.running)")
         }
         
         analytics.add(plugin: destination)

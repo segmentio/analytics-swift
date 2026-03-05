@@ -48,7 +48,7 @@ class JSONTests: XCTestCase {
             let json = try encoder.encode(userInfo)
             XCTAssertNotNil(json)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
     }
@@ -72,7 +72,7 @@ class JSONTests: XCTestCase {
             let newTest = try! JSONDecoder.default.decode(TestStruct.self, from: json)
             XCTAssertEqual(newTest.myDate.toString(), "\"\(expectedDateString)\"")
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
 
@@ -132,7 +132,7 @@ class JSONTests: XCTestCase {
             let json = try encoder.encode(object)
             XCTAssertNotNil(json)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
     }
@@ -262,7 +262,7 @@ class JSONTests: XCTestCase {
                     newValue = 11
                 }
             }
-            print("value = \(value.self)")
+            //print("value = \(value.self)")
             return newValue
         }).dictionaryValue
         
@@ -353,7 +353,7 @@ class JSONTests: XCTestCase {
             let o = try JSON(nan)
             XCTAssertNotNil(o)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
         
@@ -371,7 +371,7 @@ class JSONTests: XCTestCase {
             XCTAssertNotNil(t)
             XCTAssertTrue(t!.nando == 0)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
     }
@@ -390,7 +390,7 @@ class JSONTests: XCTestCase {
             let o = try JSON(nan)
             XCTAssertNotNil(o)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
         
@@ -408,7 +408,7 @@ class JSONTests: XCTestCase {
             XCTAssertNotNil(t)
             XCTAssertNil(t!.nando)
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
     }
@@ -445,7 +445,7 @@ class JSONTests: XCTestCase {
         
         do {
             let json = try JSON(dict)
-            print(json.prettyPrint())
+            //print(json.prettyPrint())
             
             let strEnum: String? = json[keyPath: "strEnum"]
             XCTAssertEqual(strEnum, "test2")
@@ -463,7 +463,7 @@ class JSONTests: XCTestCase {
             XCTAssertEqual(uuid!.count, 36)
             
         } catch {
-            print(error)
+            //print(error)
             XCTFail()
         }
     }
