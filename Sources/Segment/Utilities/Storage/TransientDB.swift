@@ -12,6 +12,9 @@ public class TransientDB {
     // keeps items added in the order given.
     internal let syncQueue = DispatchQueue(label: "transientDB.sync")
     private let asyncAppend: Bool
+    // create a serial queue we can hit async so events still arrive in an expected order.
+    private let asyncQueue = DispatchQueue(label: "com.segment.transientdb.async", qos: .utility)
+
 
     public var hasData: Bool {
         var result: Bool = false
@@ -48,7 +51,7 @@ public class TransientDB {
         if asyncAppend {
             // Dispatch to background thread, but execute synchronously on syncQueue
             // This ensures FIFO ordering while keeping appends off the main thread
-            DispatchQueue.global(qos: .utility).async { [weak self] in
+            asyncQueue.async { [weak self] in
                 guard let self else { return }
                 self.syncQueue.sync {
                     self.store.append(data: data)
