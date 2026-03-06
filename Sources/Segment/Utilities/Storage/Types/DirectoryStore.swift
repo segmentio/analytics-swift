@@ -100,37 +100,12 @@ public class DirectoryStore: DataStore {
             data = Array(data[0..<count])
         }
         
-        // Validate files before handing them to the uploader. Corrupt files are
-        // quarantined with a .corrupt extension rather than deleted, so they can
-        // be inspected if needed.
-        data = data.filter { isValidFile($0) }
-        
         if data.count > 0 {
             return DataResult(dataFiles: data, removable: data)
         }
         return nil
     }
 
-    func isValidFile(_ url: URL) -> Bool {
-        guard let reader = LineStreamReader(url: url) else { return false }
-        var firstLine: String? = nil
-        var lastLine: String? = nil
-        while let line = reader.readLine() {
-            if !line.isEmpty {
-                if firstLine == nil { firstLine = line }
-                lastLine = line
-            }
-        }
-        // A valid finished file starts with the batch header and ends with sentAt.
-        guard let first = firstLine, let last = lastLine else { return false }
-        let valid = first.contains("\"batch\"") && last.contains("\"sentAt\"")
-        if !valid {
-            let quarantineURL = url.deletingPathExtension().appendingPathExtension("corrupt")
-            try? FileManager.default.moveItem(at: url, to: quarantineURL)
-        }
-        return valid
-    }
-    
     public func remove(data: [DataStore.ItemID]) {
         guard let urls = data as? [URL] else { return }
         for file in urls {
