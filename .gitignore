@@ -102,3 +102,6 @@ XCFrameworkOutput
 .idea
 .vscode
 .editorconfig
+
+# AI semantic search index
+.ai-index/

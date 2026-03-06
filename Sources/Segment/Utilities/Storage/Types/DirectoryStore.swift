@@ -105,7 +105,7 @@ public class DirectoryStore: DataStore {
         }
         return nil
     }
-    
+
     public func remove(data: [DataStore.ItemID]) {
         guard let urls = data as? [URL] else { return }
         for file in urls {
@@ -154,13 +154,30 @@ extension DirectoryStore {
         let index = getIndex()
         let fileURL = config.storageLocation.appendingPathComponent("\(index)-\(config.baseFilename)")
         writer = LineStreamWriter(url: fileURL)
-        // we might be reopening this file .. so only do this if it's empty.
         if let writer, writer.bytesWritten == 0 {
+            // Brand new file, write the batch header.
             let contents = "{ \"batch\": ["
             try? writer.writeLine(contents)
             return true
         }
+        // File exists with content. Check if it was already finalized — this can happen
+        // if the app was killed after finishFile() wrote the closing bracket but before
+        // the rename to .temp succeeded. Appending to a finalized file corrupts the batch.
+        if isFinalized(url: fileURL) {
+            self.writer = nil
+            incrementIndex()
+            return startFileIfNeeded()
+        }
         return false
+    }
+
+    func isFinalized(url: URL) -> Bool {
+        guard let reader = LineStreamReader(url: url) else { return false }
+        var lastLine: String? = nil
+        while let line = reader.readLine() {
+            if !line.isEmpty { lastLine = line }
+        }
+        return lastLine?.contains("\"sentAt\"") == true
     }
     
     func finishFile() {
