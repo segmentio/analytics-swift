@@ -111,16 +111,6 @@ public class Analytics {
 
         _ = timeline.process(incomingEvent: event)
 
-        /*let flushPolicies = configuration.values.flushPolicies
-        for policy in flushPolicies {
-            policy.updateState(event: event)
-
-            if (policy.shouldFlush() == true) {
-                flush()
-                policy.reset()
-            }
-        }*/
-        
         let flushPolicies = configuration.values.flushPolicies
         
         var shouldFlush = false
