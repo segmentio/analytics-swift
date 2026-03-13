@@ -310,10 +310,14 @@ class StorageTests: XCTestCase {
         let writeKey = "test-migration"
         let fm = FileManager.default
         
-        // Clean slate
+        // Clean slate — remove segment dir from both possible locations
         let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         let newSegmentDir = appSupportURL.appendingPathComponent("segment")
         try? fm.removeItem(at: newSegmentDir)
+        
+        let cachesURL = fm.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let cachesSegmentDir = cachesURL.appendingPathComponent("segment")
+        try? fm.removeItem(at: cachesSegmentDir)
         
         // Create fake old data in the platform-specific old location
         #if (os(iOS) || os(watchOS)) && !targetEnvironment(macCatalyst)
@@ -335,15 +339,20 @@ class StorageTests: XCTestCase {
         // Trigger migration
         let resultURL = eventStorageDirectory(writeKey: writeKey)
         
-        // Verify migration worked
+        // Verify data is accessible at the result location
         XCTAssertTrue(fm.fileExists(atPath: resultURL.path))
         XCTAssertTrue(fm.fileExists(atPath: resultURL.appendingPathComponent("0-segment-events.temp").path))
         XCTAssertTrue(fm.fileExists(atPath: resultURL.appendingPathComponent("1-segment-events.temp").path))
         
-        // Verify old directory is gone
+        // On tvOS, old and new locations are both .cachesDirectory, so
+        // migration is correctly a no-op — data is already in place.
+        // On other platforms, verify old directory was moved.
+        #if !os(tvOS)
         XCTAssertFalse(fm.fileExists(atPath: oldSegmentDir.path))
+        #endif
         
         // Clean up
         try? fm.removeItem(at: newSegmentDir)
+        try? fm.removeItem(at: cachesSegmentDir)
     }
 }
