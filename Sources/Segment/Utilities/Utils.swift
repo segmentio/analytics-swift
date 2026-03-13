@@ -75,25 +75,36 @@ extension Optional: Flattenable {
 }
 
 internal func eventStorageDirectory(writeKey: String) -> URL {
-    let urls = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-    let appSupportURL = urls[0]
-    let segmentURL = appSupportURL.appendingPathComponent("segment/\(writeKey)/")
+    #if os(tvOS)
+    // tvOS does not allow creation of Application Support on physical devices (EPERM).
+    // Caches is the only reliably writable location; it may be purged under storage
+    // pressure, but events only need to survive long enough to flush.
+    let baseURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    #else
+    let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+    #endif
+    let segmentURL = baseURL.appendingPathComponent("segment/\(writeKey)/")
     
     // Handle one-time migration from old locations
     migrateFromOldLocations(writeKey: writeKey, to: segmentURL)
     
     // try to create it, will fail if already exists, nbd.
     // tvOS, watchOS regularly clear out data.
-    try? FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
+    do {
+        try FileManager.default.createDirectory(at: segmentURL, withIntermediateDirectories: true, attributes: nil)
+    } catch {
+        Analytics.segmentLog(message: "Failed to create storage directory \(segmentURL): \(error)", kind: .error)
+    }
     return segmentURL
 }
 
 private func migrateFromOldLocations(writeKey: String, to newLocation: URL) {
     let fm = FileManager.default
     
-    // Get the parent of where our new segment directory should live
-    let appSupportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-    let newSegmentDir = appSupportURL.appendingPathComponent("segment")
+    // Derive the new segment dir from the URL we were given, so it stays
+    // consistent with whatever directory eventStorageDirectory() chose.
+    // newLocation is …/segment/<writeKey>/, so dropping the writeKey gives us …/segment/.
+    let newSegmentDir = newLocation.deletingLastPathComponent()
     
     // If segment dir already exists in app support, we're done
     guard !fm.fileExists(atPath: newSegmentDir.path) else { return }
