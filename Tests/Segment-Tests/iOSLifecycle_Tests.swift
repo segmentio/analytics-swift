@@ -8,7 +8,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
 
     func testInstallEventCreation() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -30,7 +30,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
 
     func testInstallEventUpdated() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -52,7 +52,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
     
     func testInstallEventOpened() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
         
@@ -69,7 +69,7 @@ final class iOSLifecycle_Tests: XCTestCase {
     }
     
     func testApplicationForegroundedOnlyFiresAfterBackground() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -86,7 +86,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testTransientInterruptionDoesNotFireForegrounded() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -108,7 +108,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testForegroundedNotFiredWithoutPriorBackground() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -124,7 +124,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testMultipleBackgroundForegroundCycles() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -149,7 +149,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testBackgroundAlwaysFires() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -165,7 +165,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testComplexLifecycleSequence() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
@@ -199,7 +199,7 @@ final class iOSLifecycle_Tests: XCTestCase {
         }
         
         func testDidBecomeActiveDoesNotFireForegrounded() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test")
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
                 .setTrackedApplicationLifecycleEvents(.all))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)

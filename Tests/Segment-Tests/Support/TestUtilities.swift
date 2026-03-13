@@ -133,6 +133,10 @@ class OutputReaderPlugin: Plugin {
     }
 }
 
+func uniqueWriteKey(_ name: String = #function) -> String {
+    return "test-\(name)-\(UUID().uuidString)"
+}
+
 func waitUntilStarted(analytics: Analytics?) {
     guard let analytics = analytics else { return }
     // wait until the startup queue has emptied it's events.

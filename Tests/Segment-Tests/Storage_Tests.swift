@@ -55,7 +55,7 @@ class StorageTests: XCTestCase {
         let jsonData = dummySettings.data(using: .utf8)!
         let jsonSettings = try! JSONSerialization.jsonObject(with: jsonData)
         
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         analytics.waitUntilStarted()
         // this will crash if it fails.
@@ -70,7 +70,7 @@ class StorageTests: XCTestCase {
     }
 
     func testBasicWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         analytics.waitUntilStarted()
         analytics.identify(userId: "brandon", traits: MyTraits(email: "blah@blah.com"))
         
@@ -89,7 +89,7 @@ class StorageTests: XCTestCase {
     }
     
     func testEventWriting() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
         
         analytics.waitUntilStarted()
@@ -137,7 +137,7 @@ class StorageTests: XCTestCase {
     }
     
     func testFilePrepAndFinish() {
-        let config = Configuration(writeKey: "test")
+        let config = Configuration(writeKey: uniqueWriteKey())
             .storageMode(.diskAtURL(URL(fileURLWithPath: NSTemporaryDirectory())))
         let analytics = Analytics(configuration: config)
         
@@ -173,7 +173,7 @@ class StorageTests: XCTestCase {
     }
     
     func testMemoryStorageRolloff() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test")
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
         )

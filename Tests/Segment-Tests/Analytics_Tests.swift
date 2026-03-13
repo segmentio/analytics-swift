@@ -8,7 +8,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testBaseEventCreation() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let myDestination = MyDestination()
         myDestination.add(plugin: GooberPlugin())
 
@@ -23,7 +23,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testPluginConfigure() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let ziggy = ZiggyPlugin()
         let myDestination = MyDestination()
         let goober = GooberPlugin()
@@ -40,7 +40,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testPluginRemove() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let myDestination = MyDestination()
         myDestination.add(plugin: GooberPlugin())
 
@@ -60,8 +60,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testDestinationInitialUpdateOnlyOnce() {
+        let writeKey = uniqueWriteKey()
         // need to clear settings for this one.
-        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.\(writeKey)")
 
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
@@ -69,13 +70,13 @@ final class Analytics_Tests: XCTestCase {
             return true
         }
 
-        var settings = Settings(writeKey: "test")
+        var settings = Settings(writeKey: writeKey)
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[myDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: writeKey)
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
@@ -104,8 +105,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testDestinationEnabled() {
+        let writeKey = uniqueWriteKey()
         // need to clear settings for this one.
-        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.test")
+        UserDefaults.standard.removePersistentDomain(forName: "com.segment.storage.\(writeKey)")
 
         let expectation = XCTestExpectation(description: "MyDestination Expectation")
         let myDestination = MyDestination {
@@ -113,13 +115,13 @@ final class Analytics_Tests: XCTestCase {
             return true
         }
 
-        var settings = Settings(writeKey: "test")
+        var settings = Settings(writeKey: writeKey)
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[myDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: writeKey)
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
@@ -170,7 +172,7 @@ final class Analytics_Tests: XCTestCase {
     #endif*/
 
     func testAnonymousId() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let anonId = analytics.anonymousId
 
         XCTAssertTrue(anonId != "")
@@ -179,7 +181,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testContext() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -213,7 +215,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testContextWithUserAgent() {
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: uniqueWriteKey())
         configuration.userAgent("testing user agent")
         let analytics = Analytics(configuration: configuration)
         let outputReader = OutputReaderPlugin()
@@ -249,7 +251,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testDeviceToken() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -266,7 +268,7 @@ final class Analytics_Tests: XCTestCase {
 
     #if os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
         func testDeviceTokenData() {
-            let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+            let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
             let outputReader = OutputReaderPlugin()
             analytics.add(plugin: outputReader)
 
@@ -284,7 +286,7 @@ final class Analytics_Tests: XCTestCase {
     #endif
 
     func testOpenURL() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -338,7 +340,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testTrack() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -352,8 +354,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testIdentify() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -379,8 +382,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUserIdAndTraitsPersistCorrectly() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -405,7 +409,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testScreen() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -428,7 +432,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testGroup() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -448,7 +452,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testReset() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -500,7 +504,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testEnabled() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -526,7 +530,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testSetFlushIntervalAfter() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let intervalPolicy = IntervalBasedFlushPolicy(interval: 35)
         analytics.add(flushPolicy: intervalPolicy)
 
@@ -542,7 +546,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testSetFlushAtAfter() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "1234"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let countPolicy = CountBasedFlushPolicy(count: 23)
         analytics.add(flushPolicy: countPolicy)
 
@@ -601,7 +605,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testVersion() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -632,7 +636,8 @@ final class Analytics_Tests: XCTestCase {
 
     // Test to ensure bundled and unbundled integrations are populated correctly
     func testDestinationMetadata() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
         let mixpanel = AnyDestination(key: "Mixpanel")
         let outputReader = OutputReaderPlugin()
 
@@ -642,7 +647,7 @@ final class Analytics_Tests: XCTestCase {
         segmentDest?.add(plugin: outputReader)
 
         analytics.add(plugin: mixpanel)
-        var settings = Settings(writeKey: "123")
+        var settings = Settings(writeKey: writeKey)
         let integrations = try? JSON([
             "Segment.io": JSON([
                 "unbundledIntegrations":
@@ -670,7 +675,8 @@ final class Analytics_Tests: XCTestCase {
 
     // Test to ensure bundled and active integrations are populated correctly
     func testDestinationMetadataUnbundled() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
         let mixpanel = AnyDestination(key: "Mixpanel")
         let outputReader = OutputReaderPlugin()
 
@@ -680,7 +686,7 @@ final class Analytics_Tests: XCTestCase {
         segmentDest?.add(plugin: outputReader)
 
         analytics.add(plugin: mixpanel)
-        var settings = Settings(writeKey: "123")
+        var settings = Settings(writeKey: writeKey)
         let integrations = try? JSON([
             "Segment.io": JSON([
                 "unbundledIntegrations":
@@ -783,7 +789,7 @@ final class Analytics_Tests: XCTestCase {
         let dead = Analytics.shared()
         XCTAssertTrue(dead.isDead)
 
-        let alive = Analytics(configuration: Configuration(writeKey: "1234"))
+        let alive = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         XCTAssertFalse(alive.isDead)
 
         let shared = Analytics.shared()
@@ -791,7 +797,7 @@ final class Analytics_Tests: XCTestCase {
 
         XCTAssertTrue(alive === shared)
 
-        let alive2 = Analytics(configuration: Configuration(writeKey: "ABCD"))
+        let alive2 = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let shared2 = Analytics.shared()
         XCTAssertFalse(alive2 === shared2)
         XCTAssertTrue(shared2 === shared)
@@ -889,7 +895,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testJSONNaNDefaultHandlingZero() throws {
         // notice we didn't set the nan handling option.  zero is the default.
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -906,7 +912,7 @@ final class Analytics_Tests: XCTestCase {
 
     func testJSONNaNHandlingNull() throws {
         let analytics = Analytics(
-            configuration: Configuration(writeKey: "test")
+            configuration: Configuration(writeKey: uniqueWriteKey())
                 .jsonNonConformingNumberStrategy(.null)
         )
         let outputReader = OutputReaderPlugin()
@@ -1051,7 +1057,7 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testSingularEnrichment() throws {
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let outputReader = OutputReaderPlugin()
         analytics.add(plugin: outputReader)
 
@@ -1077,8 +1083,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUserInfoSubscription() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 
@@ -1145,8 +1152,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUserInfoSubscriptionWithReset() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 
@@ -1197,8 +1205,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUserInfoSubscriptionWithReferrer() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 
@@ -1233,8 +1242,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testMultipleUserInfoSubscriptions() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 
@@ -1280,8 +1290,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUserInfoSubscriptionCalledOnMainQueue() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 
@@ -1299,8 +1310,9 @@ final class Analytics_Tests: XCTestCase {
     }
 
     func testUnsubscribeWithInvalidId() {
-        Storage.hardSettingsReset(writeKey: "test")
-        let analytics = Analytics(configuration: Configuration(writeKey: "test"))
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let analytics = Analytics(configuration: Configuration(writeKey: writeKey))
 
         waitUntilStarted(analytics: analytics)
 

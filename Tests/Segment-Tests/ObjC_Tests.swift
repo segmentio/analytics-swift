@@ -29,14 +29,14 @@ class ObjC_Tests: XCTestCase {
      */
 
     func testWrapping() {
-        let a = Analytics(configuration: Configuration(writeKey: "WRITE_KEY"))
+        let a = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         let objc = ObjCAnalytics(wrapping: a)
 
         XCTAssertTrue(objc.analytics === a)
     }
 
     func testNonTrivialConfiguration() {
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: uniqueWriteKey())
         config.defaultSettings = ["integrations": ["Amplitude": true]]
 
         let defaults = config.defaultSettings
@@ -47,8 +47,9 @@ class ObjC_Tests: XCTestCase {
     }
 
     func testNonTrivialAnalytics() {
-        Storage.hardSettingsReset(writeKey: "WRITE_KEY")
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
+        let config = ObjCConfiguration(writeKey: writeKey)
         config.defaultSettings = ["integrations": ["Amplitude": true]]
 
         let analytics = ObjCAnalytics(configuration: config)
@@ -73,7 +74,7 @@ class ObjC_Tests: XCTestCase {
     }
 
     func testTraitsAndUserIdOptionality() {
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: uniqueWriteKey())
         let analytics = ObjCAnalytics(configuration: config)
         analytics.reset()
 
@@ -91,9 +92,10 @@ class ObjC_Tests: XCTestCase {
         var sourceHit: Bool = false
         var destHit: Bool = false
 
-        Storage.hardSettingsReset(writeKey: "WRITE_KEY")
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
 
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY")
+        let config = ObjCConfiguration(writeKey: writeKey)
         let analytics = ObjCAnalytics(configuration: config)
         analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
@@ -133,9 +135,10 @@ class ObjC_Tests: XCTestCase {
     }
 
     func testObjCDictionaryPassThru() {
-        Storage.hardSettingsReset(writeKey: "WRITE_KEY2")
+        let writeKey = uniqueWriteKey()
+        Storage.hardSettingsReset(writeKey: writeKey)
 
-        let config = ObjCConfiguration(writeKey: "WRITE_KEY2")
+        let config = ObjCConfiguration(writeKey: writeKey)
         let analytics = ObjCAnalytics(configuration: config)
         analytics.analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 

@@ -41,7 +41,7 @@ class FlushPolicyTests: XCTestCase {
     
     func testAddFlushPolicy() {
         // Use a specific writekey to this test so we do not collide with other cached items.
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         
         let dummy = DummyFlushPolicy()
         analytics.add(flushPolicy: dummy)
@@ -56,7 +56,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testRemoveFlushPolicy() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         
         let dummy = DummyFlushPolicy()
         analytics.add(flushPolicy: dummy)
@@ -73,7 +73,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testRemoveAllFlushPolicies() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         var policies = analytics.configuration.values.flushPolicies
         
         waitUntilStarted(analytics: analytics)
@@ -88,7 +88,7 @@ class FlushPolicyTests: XCTestCase {
     }
     
     func testFindFlushPolicy() {
-        let analytics = Analytics(configuration: Configuration(writeKey: "flushPolicyAddTest"))
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey()))
         
         waitUntilStarted(analytics: analytics)
         
