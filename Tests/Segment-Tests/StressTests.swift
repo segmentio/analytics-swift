@@ -26,8 +26,8 @@ class StressTests: XCTestCase {
     func testDirectoryStorageStress2() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
-                
-        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
+
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
             .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
             })
@@ -109,8 +109,8 @@ class StressTests: XCTestCase {
     func testDirectoryStorageStress() throws {
         // register our network blocker
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
-                
-        let analytics = Analytics(configuration: Configuration(writeKey: "stressTest2")
+
+        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
             .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
             })

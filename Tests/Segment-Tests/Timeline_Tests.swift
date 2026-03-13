@@ -21,13 +21,13 @@ class Timeline_Tests: XCTestCase {
 
     func testBaseEventCreation() {
         let expectation = XCTestExpectation(description: "First")
-        
+
         let firstDestination = MyDestination {
             expectation.fulfill()
             return true
         }
 
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: uniqueWriteKey())
         let analytics = Analytics(configuration: configuration)
 
         analytics.add(plugin: firstDestination)
@@ -54,14 +54,15 @@ class Timeline_Tests: XCTestCase {
 
         
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test")
+        let writeKey1 = uniqueWriteKey()
+        var settings = Settings(writeKey: writeKey1)
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: writeKey1)
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 
@@ -74,7 +75,7 @@ class Timeline_Tests: XCTestCase {
 
         wait(for: [expectation, expectationTrack2], timeout: 1.0)
     }
-    
+
     func testTwoBaseEventCreationFirstFail() {
         let expectation = XCTestExpectation(description: "First")
         let expectationTrack2 = XCTestExpectation(description: "Second")
@@ -88,16 +89,17 @@ class Timeline_Tests: XCTestCase {
             return true
         }
 
-        
+
         // Do this to force enable the destination
-        var settings = Settings(writeKey: "test")
+        let writeKey2 = uniqueWriteKey()
+        var settings = Settings(writeKey: writeKey2)
         if let existing = settings.integrations?.dictionaryValue {
             var newIntegrations = existing
             newIntegrations[firstDestination.key] = true
             newIntegrations[secondDestination.key] = true
             settings.integrations = try! JSON(newIntegrations)
         }
-        let configuration = Configuration(writeKey: "test")
+        let configuration = Configuration(writeKey: writeKey2)
         configuration.defaultSettings(settings)
         let analytics = Analytics(configuration: configuration)
 

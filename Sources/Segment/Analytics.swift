@@ -12,11 +12,9 @@ import Sovran
 
 public class Analytics {
     internal var configuration: Configuration {
-        get {
-            // we're absolutely certain we will have a config
-            let system: System = store.currentState()!
-            return system.configuration
-        }
+        // we're absolutely certain we will have a config
+        let system: System = store.currentState()!
+        return system.configuration
     }
     internal var store: Store
     internal var storage: Storage
@@ -30,7 +28,7 @@ public class Analytics {
     static internal weak var firstInstance: Analytics? = nil
 
     @Atomic static internal var activeWriteKeys = [String]()
-    
+
     // Used for WaitingPlugin's, see waiting.swift
     internal var processingTimer: DispatchWorkItem? = nil
 
@@ -39,7 +37,7 @@ public class Analytics {
      to ease migration from analytics-ios to analytics-swift.  Rather than return a
      singleton, it returns the first instance of Analytics created, OR an instance
      who's writekey is "DEADINSTANCE".
-
+    
      In the case of a dead instance, an assert will be thrown when in DEBUG builds to
      assist developers in knowning that `shared()` is being called too soon.
      */
@@ -51,9 +49,9 @@ public class Analytics {
         }
 
         #if DEBUG
-        if isUnitTesting == false {
-            assert(true == false, "An instance of Analytice does not exist!")
-        }
+            if isUnitTesting == false {
+                assert(true == false, "An instance of Analytice does not exist!")
+            }
         #endif
 
         return Analytics(configuration: Configuration(writeKey: deadInstance))
@@ -63,14 +61,14 @@ public class Analytics {
     /// - Parameters:
     ///    - configuration: The configuration to use
     public init(configuration: Configuration) {
-        /*if Self.isActiveWriteKey(configuration.values.writeKey) {
+        if Self.isActiveWriteKey(configuration.values.writeKey) {
             // If you're hitting this in testing, it could be a memory leak, or something async is still running
             // and holding a reference.  You can use XCTest.waitUntilFinished(...) to wait for things to complete.
             fatalError("Cannot initialize multiple instances of Analytics with the same write key")
         } else {
             Self.addActiveWriteKey(configuration.values.writeKey)
-        }*/
-        
+        }
+
         store = Store()
         storage = Storage(
             store: self.store,
@@ -82,8 +80,10 @@ public class Analytics {
 
         // provide our default state
         store.provide(state: System.defaultState(configuration: configuration, from: storage))
-        store.provide(state: UserInfo.defaultState(from: storage, anonIdGenerator: configuration.values.anonymousIdGenerator))
-        
+        store.provide(
+            state: UserInfo.defaultState(
+                from: storage, anonIdGenerator: configuration.values.anonymousIdGenerator))
+
         storage.analytics = self
 
         checkSharedInstance()
@@ -91,16 +91,17 @@ public class Analytics {
         // Get everything running
         platformStartup()
 
-        Telemetry.shared.increment(metric: Telemetry.INVOKE_METRIC) {it in 
+        Telemetry.shared.increment(metric: Telemetry.INVOKE_METRIC) { it in
             it["message"] = "configured"
             it["apihost"] = configuration.values.apiHost
             it["cdnhost"] = configuration.values.cdnHost
             it["flush"] =
                 "at:\(configuration.values.flushAt) int:\(configuration.values.flushInterval) pol:\(configuration.values.flushPolicies.count)"
-            it["config"] = "seg:\(configuration.values.autoAddSegmentDestination) ua:\(configuration.values.userAgent ?? "N/A")"
+            it["config"] =
+                "seg:\(configuration.values.autoAddSegmentDestination) ua:\(configuration.values.userAgent ?? "N/A")"
         }
     }
-    
+
     deinit {
         Self.removeActiveWriteKey(configuration.values.writeKey)
     }
@@ -114,15 +115,15 @@ public class Analytics {
         /*let flushPolicies = configuration.values.flushPolicies
         for policy in flushPolicies {
             policy.updateState(event: event)
-
+        
             if (policy.shouldFlush() == true) {
                 flush()
                 policy.reset()
             }
         }*/
-        
+
         let flushPolicies = configuration.values.flushPolicies
-        
+
         var shouldFlush = false
         // if any policy says to flush, make note of that
         for policy in flushPolicies {
@@ -181,12 +182,12 @@ extension Analytics {
             store.dispatch(action: System.ToggleEnabledAction(enabled: value))
         }
     }
-    
+
     /// Returns the writekey in use for this instance.
     public var writeKey: String {
         return configuration.values.writeKey
     }
-    
+
     /// Returns the anonymousId currently in use.
     public var anonymousId: String {
         if let userInfo: UserInfo = store.currentState() {
@@ -236,9 +237,7 @@ extension Analytics {
 
     /// Returns a list of currently active flush policies.
     public var flushPolicies: [FlushPolicy] {
-        get {
-            configuration.values.flushPolicies
-        }
+        configuration.values.flushPolicies
     }
 
     /// Returns the traits that were specified in the last identify call.
@@ -262,8 +261,11 @@ extension Analytics {
     /// called when flush has completed.
     public func flush(completion: (() -> Void)? = nil) {
         // only flush if we're enabled.
-        guard enabled == true else { completion?(); return }
-        
+        guard enabled == true else {
+            completion?()
+            return
+        }
+
         let completionGroup = CompletionGroup(queue: configuration.values.flushQueue)
         apply { plugin in
             completionGroup.add { group in
@@ -276,7 +278,7 @@ extension Analytics {
                 }
             }
         }
-        
+
         completionGroup.run(mode: operatingMode) {
             completion?()
         }
@@ -292,7 +294,7 @@ extension Analytics {
             }
         }
     }
-    
+
     /// Subscribes to UserInfo state changes.
     ///
     /// The handler is called immediately with the current UserInfo, then again whenever
@@ -324,7 +326,7 @@ extension Analytics {
     /// analytics.unsubscribe(subscriptionId)
     /// ```
     @discardableResult
-    public func subscribeToUserInfo(handler: @escaping (UserInfo) -> ()) -> Int {
+    public func subscribeToUserInfo(handler: @escaping (UserInfo) -> Void) -> Int {
         return store.subscribe(self, initialState: true, queue: .main) { (state: UserInfo) in
             handler(state)
         }
@@ -351,7 +353,7 @@ extension Analytics {
     public func unsubscribe(_ id: Int) {
         store.unsubscribe(identifier: id)
     }
-    
+
     /// Retrieve the version of this library in use.
     /// - Returns: A string representing the version in "BREAKING.FEATURE.FIX" format.
     public func version() -> String {
@@ -437,7 +439,7 @@ extension Analytics {
      Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
      This is necessary to track URL referrers across events.  This method will also iterate
      any plugins that are watching for openURL events.
-
+    
      Example:
      ```
      func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -457,7 +459,7 @@ extension Analytics {
      Call openURL as needed or when instructed to by either UIApplicationDelegate or UISceneDelegate.
      This is necessary to track URL referrers across events.  This method will also iterate
      any plugins that are watching for openURL events.
-
+    
      Example:
      ```
      func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -512,18 +514,18 @@ extension Analytics {
     internal var isDead: Bool {
         return configuration.values.writeKey == Self.deadInstance
     }
-    
+
     /// Manage active writekeys.  It's wrapped in @atomic
     internal static func isActiveWriteKey(_ writeKey: String) -> Bool {
         Self.activeWriteKeys.contains(writeKey)
     }
-    
+
     internal static func addActiveWriteKey(_ writeKey: String) {
         Self._activeWriteKeys.mutate { keys in
             keys.append(writeKey)
         }
     }
-    
+
     internal static func removeActiveWriteKey(_ writeKey: String) {
         Self._activeWriteKeys.mutate { keys in
             keys.removeAll { key in
