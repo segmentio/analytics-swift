@@ -1,6 +1,6 @@
 {
   "sdk": "swift",
-  "test_suites": "basic",
+  "test_suites": "basic,settings",
   "auto_settings": true,
   "patch": "analytics-swift-http.patch",
   "env": {}
