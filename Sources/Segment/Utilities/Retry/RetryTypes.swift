@@ -34,8 +34,15 @@ public enum UploadDecision {
 // MARK: - Response Info
 
 public struct ResponseInfo {
-    let statusCode: Int
-    let retryAfterSeconds: Int?
-    let batchFile: String
-    let currentTime: TimeInterval
+    public let statusCode: Int
+    public let retryAfterSeconds: Int?
+    public let batchFile: String
+    public let currentTime: TimeInterval
+
+    public init(statusCode: Int, retryAfterSeconds: Int?, batchFile: String, currentTime: TimeInterval) {
+        self.statusCode = statusCode
+        self.retryAfterSeconds = retryAfterSeconds
+        self.batchFile = batchFile
+        self.currentTime = currentTime
+    }
 }
