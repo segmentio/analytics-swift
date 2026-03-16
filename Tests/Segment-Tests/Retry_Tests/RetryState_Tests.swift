@@ -28,4 +28,12 @@ class RetryState_Tests: XCTestCase {
         )
         XCTAssertTrue(metadata.shouldRetry(currentTime: Date().timeIntervalSince1970))
     }
+
+    func testFakeTimeProvider() {
+        let fake = FakeTimeProvider(currentTime: 1000)
+        XCTAssertEqual(fake.now(), 1000)
+
+        fake.setTime(2000)
+        XCTAssertEqual(fake.now(), 2000)
+    }
 }
