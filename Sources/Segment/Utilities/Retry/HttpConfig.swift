@@ -98,26 +98,4 @@ public struct HttpConfig: Codable {
         self.rateLimitConfig = rateLimitConfig.validated()
         self.backoffConfig = backoffConfig.validated()
     }
-
-    // Custom Codable implementation for defensive deserialization
-    public init(from decoder: Decoder) throws {
-        do {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            let rateLimitConfig = try container.decodeIfPresent(RateLimitConfig.self, forKey: .rateLimitConfig) ?? RateLimitConfig()
-            let backoffConfig = try container.decodeIfPresent(BackoffConfig.self, forKey: .backoffConfig) ?? BackoffConfig()
-
-            // Validate during deserialization
-            self.rateLimitConfig = rateLimitConfig.validated()
-            self.backoffConfig = backoffConfig.validated()
-        } catch {
-            // Any error -> return safe defaults
-            self.rateLimitConfig = RateLimitConfig()
-            self.backoffConfig = BackoffConfig()
-        }
-    }
-
-    enum CodingKeys: String, CodingKey {
-        case rateLimitConfig
-        case backoffConfig
-    }
 }

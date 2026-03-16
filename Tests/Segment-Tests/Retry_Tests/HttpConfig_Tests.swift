@@ -28,18 +28,4 @@ class HttpConfig_Tests: XCTestCase {
         XCTAssertNil(validated.statusCodeOverrides[600]) // filtered
         XCTAssertEqual(validated.statusCodeOverrides[408], .retry) // kept
     }
-
-    func testHttpConfigHandlesMalformedJSON() {
-        let malformedJSON = """
-        {"rateLimitConfig": "not an object", "backoffConfig": 123}
-        """.data(using: .utf8)!
-
-        let decoder = JSONDecoder()
-        let config = try? decoder.decode(HttpConfig.self, from: malformedJSON)
-
-        // Should return defaults, not crash
-        XCTAssertNotNil(config)
-        XCTAssertFalse(config!.rateLimitConfig.enabled)
-        XCTAssertFalse(config!.backoffConfig.enabled)
-    }
 }
