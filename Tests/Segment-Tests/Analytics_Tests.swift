@@ -1330,4 +1330,18 @@ final class Analytics_Tests: XCTestCase {
 
         wait(for: [expectation], timeout: 2.0)
     }
+
+    func testHttpConfigBuilder() {
+        let httpConfig = HttpConfig(
+            rateLimitConfig: RateLimitConfig(enabled: true),
+            backoffConfig: BackoffConfig(enabled: true)
+        )
+
+        let config = Configuration(writeKey: "test")
+            .httpConfig(httpConfig)
+
+        XCTAssertNotNil(config.values.httpConfig)
+        XCTAssertTrue(config.values.httpConfig!.rateLimitConfig.enabled)
+        XCTAssertTrue(config.values.httpConfig!.backoffConfig.enabled)
+    }
 }
