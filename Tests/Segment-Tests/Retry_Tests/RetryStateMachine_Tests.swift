@@ -32,4 +32,21 @@ class RetryStateMachine_Tests: XCTestCase {
         XCTAssertTrue(state.batchMetadata.isEmpty)
         XCTAssertEqual(state.globalRetryCount, 0)
     }
+
+    func test429SetsRateLimitedState() {
+        var state = RetryState()
+
+        let response = ResponseInfo(
+            statusCode: 429,
+            retryAfterSeconds: 60,
+            batchFile: "batch1",
+            currentTime: timeProvider.now()
+        )
+
+        state = stateMachine.handleResponse(state: state, response: response)
+
+        XCTAssertEqual(state.pipelineState, .rateLimited)
+        XCTAssertEqual(state.waitUntilTime, 1000 + 60) // currentTime + 60 seconds
+        XCTAssertEqual(state.globalRetryCount, 1)
+    }
 }
