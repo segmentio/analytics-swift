@@ -15,6 +15,8 @@ public enum HTTPClientErrors: Error {
     case failedToOpenBatch
     case statusCode(code: Int)
     case unknown(error: Error)
+    case rateLimited
+    case badRequest
 }
 
 public class HTTPClient {
@@ -28,14 +30,28 @@ public class HTTPClient {
 
     private weak var analytics: Analytics?
 
-    init(analytics: Analytics) {
+    private var retryStateMachine: RetryStateMachine?
+    private var retryState: RetryState
+    private let timeProvider: TimeProvider
+
+    init(analytics: Analytics, timeProvider: TimeProvider = SystemTimeProvider()) {
         self.analytics = analytics
 
         self.apiKey = analytics.configuration.values.writeKey
         self.apiHost = analytics.configuration.values.apiHost
         self.cdnHost = analytics.configuration.values.cdnHost
-        
+
         self.session = analytics.configuration.values.httpSession()
+        self.timeProvider = timeProvider
+
+        // Initialize retry system if httpConfig provided
+        if let httpConfig = analytics.configuration.values.httpConfig {
+            self.retryStateMachine = RetryStateMachine(config: httpConfig, timeProvider: timeProvider)
+            self.retryState = analytics.storage.loadRetryState()
+        } else {
+            self.retryStateMachine = nil
+            self.retryState = RetryState() // Legacy mode
+        }
     }
 
     func segmentURL(for host: String, path: String) -> URL? {
@@ -59,11 +75,30 @@ public class HTTPClient {
             return nil
         }
 
+        // Check if we should upload this batch
+        if let stateMachine = retryStateMachine {
+            let (decision, updatedState) = stateMachine.shouldUploadBatch(state: retryState, batchFile: batch.lastPathComponent)
+            retryState = updatedState
+            analytics?.storage.saveRetryState(retryState)
+
+            switch decision {
+            case .skipAllBatches, .skipThisBatch:
+                completion(.failure(HTTPClientErrors.rateLimited))
+                return nil
+            case .dropBatch:
+                completion(.failure(HTTPClientErrors.badRequest))
+                return nil
+            case .proceed:
+                break // Continue with upload
+            }
+        }
+
         let urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
+        let batchFileName = batch.lastPathComponent
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, url: uploadURL, completion: completion)
+            handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: batchFileName, completion: completion)
         }
 
         dataTask.resume()
@@ -88,19 +123,36 @@ public class HTTPClient {
 
         let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
             guard let self else { return }
-            handleResponse(data: data, response: response, error: error, url: uploadURL, completion: completion)
+            // Data-based upload doesn't have a batch file, so pass empty string
+            handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: "", completion: completion)
         }
         
         dataTask.resume()
         return dataTask
     }
     
-    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, url: URL?, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
+    private func extractRetryAfter(from response: HTTPURLResponse) -> Int? {
+        return response.value(forHTTPHeaderField: "Retry-After").flatMap { Int($0) }
+    }
+
+    private func handleResponse(data: Data?, response: URLResponse?, error: Error?, url: URL?, batchFile: String, completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
         if let error = error {
             analytics?.log(message: "Error uploading request \(error.localizedDescription).")
             analytics?.reportInternalError(AnalyticsError.networkUnknown(url, error))
             completion(.failure(HTTPClientErrors.unknown(error: error)))
         } else if let httpResponse = response as? HTTPURLResponse {
+            // Update retry state after response
+            if let stateMachine = retryStateMachine {
+                let responseInfo = ResponseInfo(
+                    statusCode: httpResponse.statusCode,
+                    retryAfterSeconds: extractRetryAfter(from: httpResponse),
+                    batchFile: batchFile,
+                    currentTime: timeProvider.now()
+                )
+                retryState = stateMachine.handleResponse(state: retryState, response: responseInfo)
+                analytics?.storage.saveRetryState(retryState)
+            }
+
             switch (httpResponse.statusCode) {
             case 1..<300:
                 completion(.success(true))
