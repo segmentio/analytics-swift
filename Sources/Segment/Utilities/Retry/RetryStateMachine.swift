@@ -43,6 +43,65 @@ public class RetryStateMachine {
         return newState
     }
 
+    public func shouldUploadBatch(
+        state: RetryState,
+        batchFile: String
+    ) -> (UploadDecision, RetryState) {
+        // Legacy mode: skip all smart retry logic
+        if isLegacyMode {
+            return (.proceed, state)
+        }
+
+        let currentTime = timeProvider.now()
+
+        // Check 1: Global rate limiting
+        if state.isRateLimited(currentTime: currentTime) {
+            return (.skipAllBatches, state)
+        }
+
+        // Clear stale rate limit state if it has expired
+        var clearedState = state
+        if state.pipelineState == .rateLimited,
+           let waitTime = state.waitUntilTime,
+           currentTime >= waitTime {
+            clearedState.pipelineState = .ready
+            clearedState.waitUntilTime = nil
+        }
+
+        // Check 2: Per-batch metadata
+        guard let metadata = clearedState.batchMetadata[batchFile] else {
+            return (.proceed, clearedState)
+        }
+
+        // Check retry count limit
+        if config.backoffConfig.enabled &&
+           metadata.failureCount >= config.backoffConfig.maxRetryCount {
+            var dropState = clearedState
+            dropState.batchMetadata.removeValue(forKey: batchFile)
+            return (.dropBatch(reason: .maxRetriesExceeded), dropState)
+        }
+
+        // Check duration limit
+        if config.backoffConfig.enabled &&
+           metadata.exceedsMaxDuration(currentTime: currentTime, maxDuration: TimeInterval(config.backoffConfig.maxTotalBackoffDuration)) {
+            var dropState = clearedState
+            dropState.batchMetadata.removeValue(forKey: batchFile)
+            return (.dropBatch(reason: .maxDurationExceeded), dropState)
+        }
+
+        // Check if backoff time has passed
+        if config.backoffConfig.enabled && !metadata.shouldRetry(currentTime: currentTime) {
+            return (.skipThisBatch, clearedState)
+        }
+
+        return (.proceed, clearedState)
+    }
+
+    public func getRetryCount(state: RetryState, batchFile: String) -> Int {
+        let batchRetryCount = state.batchMetadata[batchFile]?.failureCount ?? 0
+        return max(batchRetryCount, state.globalRetryCount)
+    }
+
     private func handleRetryableError(
         state: RetryState,
         response: ResponseInfo,

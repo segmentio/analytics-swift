@@ -69,4 +69,36 @@ class RetryStateMachine_Tests: XCTestCase {
         XCTAssertNotNil(metadata?.nextRetryTime)
         XCTAssertEqual(metadata?.firstFailureTime, 1000)
     }
+
+    func testShouldUploadBatch_RateLimitedBlocksAll() {
+        let state = RetryState(
+            pipelineState: .rateLimited,
+            waitUntilTime: timeProvider.now() + 60
+        )
+
+        let (decision, _) = stateMachine.shouldUploadBatch(state: state, batchFile: "batch1")
+
+        if case .skipAllBatches = decision {
+            XCTAssert(true)
+        } else {
+            XCTFail("Expected skipAllBatches, got \(decision)")
+        }
+    }
+
+    func testShouldUploadBatch_BackoffNotReadySkipsBatch() {
+        let futureRetryTime = timeProvider.now() + 30
+        let metadata = BatchMetadata(
+            failureCount: 1,
+            nextRetryTime: futureRetryTime
+        )
+        let state = RetryState(batchMetadata: ["batch1": metadata])
+
+        let (decision, _) = stateMachine.shouldUploadBatch(state: state, batchFile: "batch1")
+
+        if case .skipThisBatch = decision {
+            XCTAssert(true)
+        } else {
+            XCTFail("Expected skipThisBatch, got \(decision)")
+        }
+    }
 }
