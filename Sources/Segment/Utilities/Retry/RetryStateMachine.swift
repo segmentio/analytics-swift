@@ -30,7 +30,66 @@ public class RetryStateMachine {
             return handleRateLimitResponse(state: state, response: response, currentTime: currentTime)
         }
 
-        return state
+        // 5xx exponential backoff
+        let behavior = resolveStatusCodeBehavior(code: response.statusCode)
+        if behavior == .retry && config.backoffConfig.enabled {
+            let currentTime = response.currentTime
+            return handleRetryableError(state: state, response: response, currentTime: currentTime)
+        }
+
+        // Drop non-retryable errors (4xx, etc.)
+        var newState = state
+        newState.batchMetadata.removeValue(forKey: response.batchFile)
+        return newState
+    }
+
+    private func handleRetryableError(
+        state: RetryState,
+        response: ResponseInfo,
+        currentTime: TimeInterval
+    ) -> RetryState {
+        let existingMetadata = state.batchMetadata[response.batchFile]
+        let newFailureCount = (existingMetadata?.failureCount ?? 0) + 1
+        let firstFailureTime = existingMetadata?.firstFailureTime ?? currentTime
+        let nextRetryTime = currentTime + calculateBackoffInterval(failureCount: newFailureCount)
+
+        let newMetadata = BatchMetadata(
+            failureCount: newFailureCount,
+            nextRetryTime: nextRetryTime,
+            firstFailureTime: firstFailureTime
+        )
+
+        var newState = state
+        newState.batchMetadata[response.batchFile] = newMetadata
+        return newState
+    }
+
+    private func calculateBackoffInterval(failureCount: Int) -> TimeInterval {
+        let base = config.backoffConfig.baseBackoffInterval
+        let max = TimeInterval(config.backoffConfig.maxBackoffInterval)
+
+        let exponentialBackoff = base * pow(2.0, Double(failureCount - 1))
+        let cappedBackoff = min(exponentialBackoff, max)
+
+        let jitterAmount = cappedBackoff * (Double(config.backoffConfig.jitterPercent) / 100.0)
+        let jitter = Double.random(in: 0..<jitterAmount)
+
+        return min(cappedBackoff + jitter, max)
+    }
+
+    private func resolveStatusCodeBehavior(code: Int) -> RetryBehavior {
+        if let override = config.backoffConfig.statusCodeOverrides[code] {
+            return override
+        }
+
+        switch code {
+        case 400..<500:
+            return config.backoffConfig.default4xxBehavior
+        case 500..<600:
+            return config.backoffConfig.default5xxBehavior
+        default:
+            return config.backoffConfig.unknownCodeBehavior
+        }
     }
 
     private func handleRateLimitResponse(

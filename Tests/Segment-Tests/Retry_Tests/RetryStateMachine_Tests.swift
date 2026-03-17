@@ -49,4 +49,24 @@ class RetryStateMachine_Tests: XCTestCase {
         XCTAssertEqual(state.waitUntilTime, 1000 + 60) // currentTime + 60 seconds
         XCTAssertEqual(state.globalRetryCount, 1)
     }
+
+    func test500CreatesBackoffMetadata() {
+        var state = RetryState()
+
+        let response = ResponseInfo(
+            statusCode: 500,
+            retryAfterSeconds: nil,
+            batchFile: "batch1",
+            currentTime: timeProvider.now()
+        )
+
+        state = stateMachine.handleResponse(state: state, response: response)
+
+        XCTAssertEqual(state.batchMetadata.count, 1)
+        let metadata = state.batchMetadata["batch1"]
+        XCTAssertNotNil(metadata)
+        XCTAssertEqual(metadata?.failureCount, 1)
+        XCTAssertNotNil(metadata?.nextRetryTime)
+        XCTAssertEqual(metadata?.firstFailureTime, 1000)
+    }
 }
