@@ -13,10 +13,10 @@ public class SystemTimeProvider: TimeProvider {
 }
 
 public class FakeTimeProvider: TimeProvider {
-    private var currentTime: TimeInterval
+    @Atomic private var currentTime: TimeInterval
 
     public init(currentTime: TimeInterval = 0) {
-        self.currentTime = currentTime
+        _currentTime = Atomic(wrappedValue: currentTime)
     }
 
     public func now() -> TimeInterval {
@@ -24,10 +24,10 @@ public class FakeTimeProvider: TimeProvider {
     }
 
     public func setTime(_ time: TimeInterval) {
-        self.currentTime = time
+        _currentTime.set(time)
     }
 
     public func advance(by seconds: TimeInterval) {
-        currentTime += seconds
+        _currentTime.mutate { $0 += seconds }
     }
 }

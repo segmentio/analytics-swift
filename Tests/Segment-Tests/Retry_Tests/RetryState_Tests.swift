@@ -35,5 +35,8 @@ class RetryState_Tests: XCTestCase {
 
         fake.setTime(2000)
         XCTAssertEqual(fake.now(), 2000)
+
+        fake.advance(by: 500)
+        XCTAssertEqual(fake.now(), 2500)
     }
 }
