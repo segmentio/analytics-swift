@@ -21,7 +21,7 @@ public class DestinationMetadataPlugin: Plugin {
         }
         
         guard let integrationSettings = analytics?.settings() else { return event }
-        guard let destinations = analytics?.timeline.plugins[.destination]?.plugins as? [DestinationPlugin] else { return event }
+        guard let destinations = analytics?.timeline.plugins[.destination]?.plugins.compactMap({ $0 as? DestinationPlugin }), !destinations.isEmpty else { return event }
         
         // Mark all loaded and enabled destinations as bundled
         var bundled: Set<String> = []
