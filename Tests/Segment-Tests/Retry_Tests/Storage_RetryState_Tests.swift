@@ -126,4 +126,48 @@ class Storage_RetryState_Tests: XCTestCase {
         XCTAssertNil(batch?.nextRetryTime)
         XCTAssertNil(batch?.firstFailureTime)
     }
+
+    func testLoadRetryState_ReturnsDefaultsForCorruptData() {
+        // Write corrupt data directly to storage
+        let corruptData = Data([0xFF, 0xFE, 0xFD, 0xFC]) // Invalid plist data
+        storage.write(.retryState, value: corruptData)
+
+        // Should return default state instead of crashing
+        let loaded = storage.loadRetryState()
+
+        XCTAssertEqual(loaded.pipelineState, .ready)
+        XCTAssertNil(loaded.waitUntilTime)
+        XCTAssertEqual(loaded.globalRetryCount, 0)
+        XCTAssertTrue(loaded.batchMetadata.isEmpty)
+    }
+
+    func testLoadRetryState_HandlesUnreasonablePersistedValues() {
+        // Save state with unreasonable values
+        let impossiblyFarFuture = Date().timeIntervalSince1970 + TimeInterval(Int.max / 2)
+        let state = RetryState(
+            pipelineState: .rateLimited,
+            waitUntilTime: impossiblyFarFuture,
+            globalRetryCount: Int.max,
+            batchMetadata: [
+                "batch1": BatchMetadata(
+                    failureCount: Int.max,
+                    nextRetryTime: impossiblyFarFuture,
+                    firstFailureTime: Date().timeIntervalSince1970 + 10000
+                )
+            ]
+        )
+
+        storage.saveRetryState(state)
+        let loaded = storage.loadRetryState()
+
+        // PropertyListEncoder/Decoder should handle these values
+        // This test documents that extreme values are persisted/loaded without error
+        XCTAssertEqual(loaded.pipelineState, .rateLimited)
+        XCTAssertEqual(loaded.waitUntilTime, impossiblyFarFuture)
+        XCTAssertEqual(loaded.globalRetryCount, Int.max)
+        XCTAssertEqual(loaded.batchMetadata["batch1"]?.failureCount, Int.max)
+
+        // Note: The validation of whether these values are "reasonable"
+        // happens at usage time (in RetryStateMachine), not at load time
+    }
 }
