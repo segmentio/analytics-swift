@@ -55,8 +55,7 @@ public class HTTPClient {
     }
 
     func segmentURL(for host: String, path: String) -> URL? {
-        let scheme = (host.hasPrefix("http://") || host.hasPrefix("https://")) ? "" : "https://" // E2E PATCH — DO NOT COMMIT
-        let s = "\(scheme)\(host)\(path)"
+        let s = "https://\(host)\(path)"
         let result = URL(string: s)
         return result
     }
