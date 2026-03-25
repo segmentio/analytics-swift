@@ -102,6 +102,13 @@ public class RetryStateMachine {
         return max(batchRetryCount, state.globalRetryCount)
     }
 
+    /// Returns true if the given status code should result in the batch being dropped (not retried).
+    public func shouldDropBatch(statusCode: Int) -> Bool {
+        if isLegacyMode { return false }
+        let behavior = resolveStatusCodeBehavior(code: statusCode)
+        return behavior == .drop
+    }
+
     private func handleRetryableError(
         state: RetryState,
         response: ResponseInfo,

@@ -102,18 +102,11 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     }
 
     let userId = event["userId"]?.stringValue ?? ""
-    let anonymousId = event["anonymousId"]?.stringValue
-    let messageId = event["messageId"]?.stringValue
-    let timestamp = event["timestamp"]?.stringValue
     let traits = event["traits"]?.dictValue ?? [:]
     let properties = event["properties"]?.dictValue ?? [:]
     let eventName = event["event"]?.stringValue
     let name = event["name"]?.stringValue
-    let category = event["category"]?.stringValue
     let groupId = event["groupId"]?.stringValue
-    let previousId = event["previousId"]?.stringValue
-    let context = event["context"]?.dictValue
-    let integrations = event["integrations"]?.dictValue
 
     switch type {
     case "identify":
@@ -121,7 +114,7 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     case "track":
         analytics.track(name: eventName ?? "Unknown Event", properties: properties)
     case "page":
-        analytics.screen(title: name ?? "Unknown Page", properties: properties)  // Swift SDK uses screen for page too
+        analytics.screen(title: name ?? "Unknown Page", properties: properties)
     case "screen":
         analytics.screen(title: name ?? "Unknown Screen", properties: properties)
     case "alias":
@@ -148,11 +141,22 @@ func main() {
         let decoder = JSONDecoder()
         let input = try decoder.decode(CLIInput.self, from: inputData)
 
+        let maxRetries = input.config?.maxRetries ?? 100
+
         var config = Configuration(writeKey: input.writeKey)
             .flushAt(input.config?.flushAt ?? 20)
             .flushInterval(input.config?.flushInterval ?? 30)
             .operatingMode(.synchronous)
             .storageMode(.memory(1000))
+            .httpConfig(HttpConfig(
+                rateLimitConfig: RateLimitConfig(enabled: true),
+                backoffConfig: BackoffConfig(
+                    enabled: true,
+                    maxRetryCount: maxRetries,
+                    baseBackoffInterval: 0.5
+                )
+            ))
+
         if let apiHost = input.apiHost {
             config = config.apiHost(apiHost)
         }
@@ -176,14 +180,31 @@ func main() {
             }
         }
 
-        // Flush and wait
+        // Flush and poll until delivery completes or times out.
+        // RunLoop.main.run processes async network callbacks in synchronous mode.
+        let timeoutSec = input.config?.timeout ?? 30
+        let deadline = Date().addingTimeInterval(Double(timeoutSec))
+
         analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
 
-        // Wait longer for async operations
-        Thread.sleep(forTimeInterval: 5.0)
+        while Date() < deadline {
+            if !analytics.hasUnsentEvents {
+                break
+            }
+            analytics.flush()
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+        }
 
-        output.success = true
-        output.sentBatches = 1
+        if analytics.hasUnsentEvents {
+            output.error = "Delivery incomplete: events still pending"
+        } else if analytics.droppedBatchCount > 0 {
+            // Events were dropped (non-retryable error or max retries exhausted)
+            output.error = "Delivery failed: \(analytics.droppedBatchCount) batch(es) dropped"
+        } else {
+            output.success = true
+            output.sentBatches = 1
+        }
     } catch {
         output.error = error.localizedDescription
     }

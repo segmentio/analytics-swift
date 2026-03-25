@@ -53,6 +53,7 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     private var storage: Storage?
 
     @Atomic internal var eventCount: Int = 0
+    @Atomic internal var droppedBatchCount: Int = 0
 
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
@@ -181,11 +182,17 @@ extension SegmentDestination {
                         case .success(_):
                             storage.remove(data: [url])
                             cleanupUploads()
-                            
-                            // we don't want to retry events in a given batch when a 400
-                            // response for malformed JSON is returned
-                        case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+
+                        // Batch was dropped by the retry state machine (e.g. max retries exceeded)
+                        case .failure(Segment.HTTPClientErrors.badRequest):
                             storage.remove(data: [url])
+                            cleanupUploads()
+
+                        // Non-retryable status codes should also drop the batch
+                        case .failure(Segment.HTTPClientErrors.statusCode(let code)):
+                            if httpClient.shouldDropBatch(forStatusCode: code) {
+                                storage.remove(data: [url])
+                            }
                             cleanupUploads()
                         default:
                             break
@@ -216,59 +223,76 @@ extension SegmentDestination {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
-        
+
         let totalCount = storage.dataStore.count
         var currentCount = 0
-        
+
         guard totalCount > 0 else { return }
-        
+
         while currentCount < totalCount {
             // can't imagine why we wouldn't get data at this point, but if we don't, then split.
             guard let eventData = storage.dataStore.fetch() else { return }
             guard let data = eventData.data else { return }
             guard let removable = eventData.removable else { return }
             guard let dataCount = eventData.removable?.count else { return }
-            
+
             currentCount += dataCount
-            
+
+            // Generate a stable batch identifier from the data content
+            let batchId = "mem-\(data.hashValue)"
+
+            // Check retry state machine before uploading
+            let decision = httpClient.checkBatchUpload(batchId: batchId)
+            switch decision {
+            case .skipAllBatches, .skipThisBatch:
+                // Backoff or rate limit in effect — skip this flush cycle
+                continue
+            case .dropBatch:
+                // Max retries or duration exceeded — drop the data
+                storage.remove(data: removable)
+                _droppedBatchCount.mutate { $0 += 1 }
+                continue
+            case .proceed:
+                break
+            }
+
             // enter for this data we're going to kick off
             group.enter()
             analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
-            
+
             // we're already on a separate thread.
             // lets let this task complete so we can get all the values out.
             let semaphore = DispatchSemaphore(value: 0)
-            
+
             // set up the task
-            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { [weak self] result in
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data, batchId: batchId) { [weak self] result in
                 defer {
                     // leave for the url we kicked off.
                     group.leave()
                     semaphore.signal()
                 }
-                
+
                 guard let self else { return }
                 switch result {
                 case .success(_):
                     storage.remove(data: removable)
                     cleanupUploads()
-                    
-                    // we don't want to retry events in a given batch when a 400
-                    // response for malformed JSON is returned
-                case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
-                    storage.remove(data: removable)
+
+                // Non-retryable status codes should drop the batch
+                case .failure(Segment.HTTPClientErrors.statusCode(let code)):
+                    if httpClient.shouldDropBatch(forStatusCode: code) {
+                        storage.remove(data: removable)
+                        self._droppedBatchCount.mutate { $0 += 1 }
+                    }
                     cleanupUploads()
                 default:
                     break
                 }
-                
+
                 analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
-                // the upload we have here has just finished.
-                // make sure it gets removed and it's cleanup() called rather
-                // than waiting on the next flush to come around.
                 cleanupUploads()
             }
-            
+
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
@@ -277,7 +301,7 @@ extension SegmentDestination {
                 group.leave()
                 semaphore.signal()
             }
-            
+
             _ = semaphore.wait(timeout: .distantFuture)
         }
     }

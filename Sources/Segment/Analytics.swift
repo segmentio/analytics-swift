@@ -388,6 +388,14 @@ extension Analytics {
 }
 
 extension Analytics {
+    /// Returns the number of batches that were dropped (non-retryable errors or max retries exhausted).
+    public var droppedBatchCount: Int {
+        if let segmentDest = self.find(pluginType: SegmentDestination.self) {
+            return segmentDest.droppedBatchCount
+        }
+        return 0
+    }
+
     /// Determine if there are any events that have yet to be sent to Segment
     public var hasUnsentEvents: Bool {
         if let segmentDest = self.find(pluginType: SegmentDestination.self) {
