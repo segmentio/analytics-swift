@@ -53,7 +53,6 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     private var storage: Storage?
 
     @Atomic internal var eventCount: Int = 0
-    @Atomic internal var droppedBatchCount: Int = 0
 
     internal func initialSetup() {
         guard let analytics = self.analytics else { return }
@@ -249,8 +248,9 @@ extension SegmentDestination {
                 continue
             case .dropBatch:
                 // Max retries or duration exceeded — drop the data
+                analytics.log(message: "Dropping batch \(batchId): retry limit exceeded")
+                analytics.reportInternalError(AnalyticsError.batchUploadFail(AnalyticsError.networkServerRejected(nil, 0)))
                 storage.remove(data: removable)
-                _droppedBatchCount.mutate { $0 += 1 }
                 continue
             case .proceed:
                 break
@@ -282,7 +282,6 @@ extension SegmentDestination {
                 case .failure(Segment.HTTPClientErrors.statusCode(let code)):
                     if httpClient.shouldDropBatch(forStatusCode: code) {
                         storage.remove(data: removable)
-                        self._droppedBatchCount.mutate { $0 += 1 }
                     }
                     cleanupUploads()
                 default:

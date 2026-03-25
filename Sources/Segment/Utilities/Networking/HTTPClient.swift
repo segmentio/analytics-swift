@@ -87,6 +87,7 @@ public class HTTPClient {
                 completion(.failure(HTTPClientErrors.rateLimited))
                 return nil
             case .dropBatch:
+                analytics?.reportInternalError(AnalyticsError.batchUploadFail(AnalyticsError.networkServerRejected(nil, 0)))
                 completion(.failure(HTTPClientErrors.badRequest))
                 return nil
             case .proceed:

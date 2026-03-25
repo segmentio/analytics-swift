@@ -85,6 +85,72 @@ struct AnyCodable: Codable {
     var dictValue: [String: Any]? { value as? [String: Any] }
 }
 
+// MARK: - Delivery error tracker (file-backed for cross-thread visibility)
+//
+// The Analytics errorHandler runs on a URLSession callback thread in synchronous
+// operating mode. In-memory state (even with locks) is not reliably visible from
+// the main thread. Using a temp file provides the necessary memory barrier.
+//
+// Two channels:
+//   "transient" — last error from any flush cycle (cleared between retries)
+//   "dropped"   — set when a batch is terminally dropped (never cleared)
+
+class DeliveryErrorTracker {
+    private let basePath: String
+    let transientPath: String
+    let droppedPath: String
+
+    init() {
+        basePath = NSTemporaryDirectory() + "e2ecli-errors-\(ProcessInfo.processInfo.processIdentifier)"
+        transientPath = basePath + "-transient.log"
+        droppedPath = basePath + "-dropped.log"
+        clearTransient()
+        try? "".write(toFile: droppedPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Record a transient error (may be retried)
+    func recordError(_ msg: String) {
+        try? msg.write(toFile: transientPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Record that a batch was permanently dropped
+    func recordDrop(_ msg: String) {
+        try? msg.write(toFile: droppedPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Clear transient errors (between retry cycles)
+    func clearTransient() {
+        try? "".write(toFile: transientPath, atomically: false, encoding: .utf8)
+    }
+
+    /// True if any batch was dropped OR if the last flush had errors
+    var hasErrors: Bool {
+        return wasDropped || hasTransientErrors
+    }
+
+    var wasDropped: Bool {
+        guard let content = try? String(contentsOfFile: droppedPath, encoding: .utf8) else { return false }
+        return !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var hasTransientErrors: Bool {
+        guard let content = try? String(contentsOfFile: transientPath, encoding: .utf8) else { return false }
+        return !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var summary: String {
+        if wasDropped {
+            return (try? String(contentsOfFile: droppedPath, encoding: .utf8))?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        }
+        return (try? String(contentsOfFile: transientPath, encoding: .utf8))?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    deinit {
+        try? FileManager.default.removeItem(atPath: transientPath)
+        try? FileManager.default.removeItem(atPath: droppedPath)
+    }
+}
+
 // MARK: - Main
 
 func parseArguments() -> String? {
@@ -142,6 +208,7 @@ func main() {
         let input = try decoder.decode(CLIInput.self, from: inputData)
 
         let maxRetries = input.config?.maxRetries ?? 100
+        let tracker = DeliveryErrorTracker()
 
         var config = Configuration(writeKey: input.writeKey)
             .flushAt(input.config?.flushAt ?? 20)
@@ -156,6 +223,30 @@ func main() {
                     baseBackoffInterval: 0.5
                 )
             ))
+            .errorHandler { error in
+                let msg = "\(error)"
+                var isDrop = false
+                if let analyticsError = error as? AnalyticsError {
+                    switch analyticsError {
+                    case .batchUploadFail:
+                        isDrop = true
+                    case .networkServerRejected(_, let code):
+                        // Non-retryable 4xx codes: 400-407, 411-427, 431+
+                        // Retryable exceptions: 408, 410, 429, 460
+                        let retryable4xx: Set<Int> = [408, 410, 429, 460]
+                        if code >= 400 && code < 500 && !retryable4xx.contains(code) {
+                            isDrop = true
+                        }
+                    default:
+                        break
+                    }
+                }
+                if isDrop {
+                    tracker.recordDrop(msg)
+                } else {
+                    tracker.recordError(msg)
+                }
+            }
 
         if let apiHost = input.apiHost {
             config = config.apiHost(apiHost)
@@ -181,26 +272,36 @@ func main() {
         }
 
         // Flush and poll until delivery completes or times out.
-        // RunLoop.main.run processes async network callbacks in synchronous mode.
+        // In synchronous mode, flush() blocks until upload + callback complete,
+        // so errorHandler fires inside flush(). With flushAt:1, auto-flushes
+        // also happen during sendEvent above.
         let timeoutSec = input.config?.timeout ?? 30
         let deadline = Date().addingTimeInterval(Double(timeoutSec))
 
-        analytics.flush()
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+        // In synchronous mode with flushAt:1, auto-flushes happen during
+        // sendEvent. Those may have already delivered (or dropped) events.
+        // If events remain unsent, we enter the explicit flush/retry loop.
+        //
+        // Clear transient errors from auto-flushes. The "dropped" flag
+        // persists — if any batch was dropped during auto-flush, we'll
+        // detect it after the loop.
+        tracker.clearTransient()
 
-        while Date() < deadline {
-            if !analytics.hasUnsentEvents {
-                break
-            }
+        if analytics.hasUnsentEvents {
             analytics.flush()
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+
+            while analytics.hasUnsentEvents && Date() < deadline {
+                tracker.clearTransient()
+                analytics.flush()
+                RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+            }
         }
 
         if analytics.hasUnsentEvents {
             output.error = "Delivery incomplete: events still pending"
-        } else if analytics.droppedBatchCount > 0 {
-            // Events were dropped (non-retryable error or max retries exhausted)
-            output.error = "Delivery failed: \(analytics.droppedBatchCount) batch(es) dropped"
+        } else if tracker.hasErrors {
+            output.error = "Delivery failed: \(tracker.summary)"
         } else {
             output.success = true
             output.sentBatches = 1
