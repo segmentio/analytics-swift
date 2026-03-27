@@ -86,6 +86,7 @@ public class HTTPClient {
                 completion(.failure(HTTPClientErrors.rateLimited))
                 return nil
             case .dropBatch:
+                analytics?.reportInternalError(AnalyticsError.batchUploadFail(AnalyticsError.networkServerRejected(nil, 0)))
                 completion(.failure(HTTPClientErrors.badRequest))
                 return nil
             case .proceed:
@@ -93,9 +94,18 @@ public class HTTPClient {
             }
         }
 
-        let urlRequest = configuredRequest(for: uploadURL, method: "POST")
+        var urlRequest = configuredRequest(for: uploadURL, method: "POST")
 
         let batchFileName = batch.lastPathComponent
+
+        // Add X-Retry-Count header
+        if let stateMachine = retryStateMachine {
+            let retryCount = stateMachine.getRetryCount(state: retryState, batchFile: batchFileName)
+            if retryCount > 0 {
+                urlRequest.addValue("\(retryCount)", forHTTPHeaderField: "X-Retry-Count")
+            }
+        }
+
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
             guard let self else { return }
             handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: batchFileName, completion: completion)
@@ -112,21 +122,28 @@ public class HTTPClient {
     ///   - batch: The array of the events, considered a batch of events.
     ///   - completion: The closure executed when done. Passes if the task should be retried or not if failed.
     @discardableResult
-    func startBatchUpload(writeKey: String, data: Data, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> (any UploadTask)? {
+    func startBatchUpload(writeKey: String, data: Data, batchId: String, completion: @escaping (_ result: Result<Bool, Error>) -> Void) -> (any UploadTask)? {
         guard let uploadURL = segmentURL(for: apiHost, path: "/b") else {
             self.analytics?.reportInternalError(HTTPClientErrors.failedToOpenBatch)
             completion(.failure(HTTPClientErrors.failedToOpenBatch))
             return nil
         }
-          
-        let urlRequest = configuredRequest(for: uploadURL, method: "POST")
+
+        var urlRequest = configuredRequest(for: uploadURL, method: "POST")
+
+        // Add X-Retry-Count header
+        if let stateMachine = retryStateMachine {
+            let retryCount = stateMachine.getRetryCount(state: retryState, batchFile: batchId)
+            if retryCount > 0 {
+                urlRequest.addValue("\(retryCount)", forHTTPHeaderField: "X-Retry-Count")
+            }
+        }
 
         let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
             guard let self else { return }
-            // Data-based upload doesn't have a batch file, so pass empty string
-            handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: "", completion: completion)
+            handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: batchId, completion: completion)
         }
-        
+
         dataTask.resume()
         return dataTask
     }
@@ -211,6 +228,20 @@ public class HTTPClient {
         }
 
         dataTask.resume()
+    }
+
+    /// Returns true if the given status code should cause the batch to be dropped (not retried).
+    func shouldDropBatch(forStatusCode code: Int) -> Bool {
+        return retryStateMachine?.shouldDropBatch(statusCode: code) ?? (code == 400)
+    }
+
+    /// Check if a batch should be uploaded, and update retry state accordingly.
+    func checkBatchUpload(batchId: String) -> UploadDecision {
+        guard let stateMachine = retryStateMachine else { return .proceed }
+        let (decision, updatedState) = stateMachine.shouldUploadBatch(state: retryState, batchFile: batchId)
+        retryState = updatedState
+        analytics?.storage.saveRetryState(retryState)
+        return decision
     }
 
     deinit {
