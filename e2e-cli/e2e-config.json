@@ -1,7 +1,9 @@
 {
   "sdk": "swift",
-  "test_suites": "basic,retry,settings",
+  "test_suites": "basic,retry,settings,retry-settings",
   "auto_settings": true,
   "patch": "analytics-swift-http.patch",
-  "env": {}
+  "env": {
+    "HTTP_CONFIG_SETTINGS": "true"
+  }
 }
