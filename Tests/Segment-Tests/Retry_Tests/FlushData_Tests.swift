@@ -19,8 +19,6 @@ private class ConfigurableHTTPSession: HTTPSession {
     var shouldError: Bool = false
     /// Tracks upload requests (data uploads)
     var dataUploadCount: Int = 0
-    /// Tracks captured X-Retry-Count header values
-    var capturedRetryCountHeaders: [String?] = []
 
     func uploadTask(with request: URLRequest, fromFile file: URL,
                     completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> MockTask {
@@ -28,7 +26,6 @@ private class ConfigurableHTTPSession: HTTPSession {
         let statusCode = uploadStatusCode
         let headers = uploadHeaders
         let error = shouldError
-        capturedRetryCountHeaders.append(request.value(forHTTPHeaderField: "X-Retry-Count"))
         DispatchQueue.global().async {
             if error {
                 completionHandler(nil, nil, NSError(domain: "test", code: -1))
@@ -47,7 +44,6 @@ private class ConfigurableHTTPSession: HTTPSession {
         let statusCode = uploadStatusCode
         let headers = uploadHeaders
         let error = shouldError
-        capturedRetryCountHeaders.append(request.value(forHTTPHeaderField: "X-Retry-Count"))
         DispatchQueue.global().async {
             if error {
                 completionHandler(nil, nil, NSError(domain: "test", code: -1))
@@ -159,15 +155,12 @@ class FlushData_Tests: XCTestCase {
         analytics.track(name: "drop-test-event")
 
         // First flush: 500 → retry state records failure (count=1)
-        let flush1 = XCTestExpectation(description: "flush 1")
-        analytics.flush { flush1.fulfill() }
-        wait(for: [flush1], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // Second flush: checkBatchUpload sees failureCount >= maxRetryCount → dropBatch
-        // The batch should be dropped (removed from storage)
-        let flush2 = XCTestExpectation(description: "flush 2")
-        analytics.flush { flush2.fulfill() }
-        wait(for: [flush2], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // After drop, storage should be empty
         XCTAssertFalse(analytics.storage.dataStore.hasData)
@@ -190,16 +183,14 @@ class FlushData_Tests: XCTestCase {
         analytics.track(name: "skip-test-event")
 
         // First flush: 500 → sets nextRetryTime = now + 60s
-        let flush1 = XCTestExpectation(description: "flush 1")
-        analytics.flush { flush1.fulfill() }
-        wait(for: [flush1], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         let uploadsBefore = session.dataUploadCount
 
         // Second flush: within backoff window → skipThisBatch, no upload attempted
-        let flush2 = XCTestExpectation(description: "flush 2")
-        analytics.flush { flush2.fulfill() }
-        wait(for: [flush2], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // No new upload should have been attempted (skip)
         XCTAssertEqual(session.dataUploadCount, uploadsBefore)
@@ -207,7 +198,7 @@ class FlushData_Tests: XCTestCase {
         XCTAssertTrue(analytics.storage.dataStore.hasData)
     }
 
-    // MARK: flushData nil upload task fallback (SegmentDestination lines 313-314)
+    // MARK: flushData network error handling
 
     func testFlushDataHandlesNetworkError() {
         let session = ConfigurableHTTPSession()
@@ -222,9 +213,8 @@ class FlushData_Tests: XCTestCase {
         analytics.track(name: "error-test-event")
 
         // Flush with network error — should not crash/hang
-        let flush1 = XCTestExpectation(description: "flush 1")
-        analytics.flush { flush1.fulfill() }
-        wait(for: [flush1], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // Data stays in storage after network error
         XCTAssertTrue(analytics.storage.dataStore.hasData)
@@ -246,9 +236,8 @@ class FlushData_Tests: XCTestCase {
         let analytics = makeMemoryAnalytics(session: session, httpConfig: httpConfig, flushAt: 9999)
         analytics.track(name: "rate-limit-event")
 
-        let flush1 = XCTestExpectation(description: "flush 1")
-        analytics.flush { flush1.fulfill() }
-        wait(for: [flush1], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // Data should still be in storage (429 is retryable)
         XCTAssertTrue(analytics.storage.dataStore.hasData)
@@ -294,9 +283,6 @@ class FlushData_Tests: XCTestCase {
 
     func testMemoryModeBatchIsolation() {
         let session = ConfigurableHTTPSession()
-        // First upload fails, all subsequent succeed
-        var callCount = 0
-        // We'll track via the session's upload count
         session.uploadStatusCode = 500
 
         let httpConfig = HttpConfig(
@@ -323,9 +309,8 @@ class FlushData_Tests: XCTestCase {
 
         // Explicit flush to retry event-1
         Thread.sleep(forTimeInterval: 0.1) // past backoff
-        let flush = XCTestExpectation(description: "final flush")
-        analytics.flush { flush.fulfill() }
-        wait(for: [flush], timeout: 5)
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
 
         // Both events should be delivered (storage empty)
         XCTAssertFalse(analytics.storage.dataStore.hasData)
