@@ -25,19 +25,25 @@ public class RetryStateMachine {
         }
 
         // 429 rate limiting
-        if response.statusCode == 429 && config.rateLimitConfig.enabled {
-            let currentTime = response.currentTime
-            return handleRateLimitResponse(state: state, response: response, currentTime: currentTime)
+        if response.statusCode == 429 {
+            if config.rateLimitConfig.enabled {
+                let currentTime = response.currentTime
+                return handleRateLimitResponse(state: state, response: response, currentTime: currentTime)
+            }
+            // Rate limit handling disabled: drop the batch (don't fall through to backoff)
+            var newState = state
+            newState.batchMetadata.removeValue(forKey: response.batchFile)
+            return newState
         }
 
-        // 5xx exponential backoff
+        // Exponential backoff for retryable errors
         let behavior = resolveStatusCodeBehavior(code: response.statusCode)
         if behavior == .retry && config.backoffConfig.enabled {
             let currentTime = response.currentTime
             return handleRetryableError(state: state, response: response, currentTime: currentTime)
         }
 
-        // Drop non-retryable errors (4xx, etc.)
+        // Drop non-retryable errors, or retryable errors when backoff is disabled
         var newState = state
         newState.batchMetadata.removeValue(forKey: response.batchFile)
         return newState
@@ -68,7 +74,16 @@ public class RetryStateMachine {
             clearedState.waitUntilTime = nil
         }
 
-        // Check 2: Per-batch metadata
+        // Check 2: Global rate limit retry count
+        if config.rateLimitConfig.enabled &&
+           clearedState.globalRetryCount >= config.rateLimitConfig.maxRetryCount {
+            var dropState = clearedState
+            dropState.globalRetryCount = 0
+            dropState.batchMetadata.removeValue(forKey: batchFile)
+            return (.dropBatch(reason: .maxRetriesExceeded), dropState)
+        }
+
+        // Check 3: Per-batch metadata
         guard let metadata = clearedState.batchMetadata[batchFile] else {
             return (.proceed, clearedState)
         }
@@ -100,6 +115,20 @@ public class RetryStateMachine {
     public func getRetryCount(state: RetryState, batchFile: String) -> Int {
         let batchRetryCount = state.batchMetadata[batchFile]?.failureCount ?? 0
         return max(batchRetryCount, state.globalRetryCount)
+    }
+
+    /// Returns true if the given status code should result in the batch being dropped (not retried).
+    public func shouldDropBatch(statusCode: Int) -> Bool {
+        if isLegacyMode { return false }
+
+        // 429 with rate limit handling disabled: drop
+        if statusCode == 429 && !config.rateLimitConfig.enabled { return true }
+
+        let behavior = resolveStatusCodeBehavior(code: statusCode)
+        // Retryable error with backoff disabled: drop
+        if behavior == .retry && !config.backoffConfig.enabled { return true }
+
+        return behavior == .drop
     }
 
     private func handleRetryableError(

@@ -85,6 +85,72 @@ struct AnyCodable: Codable {
     var dictValue: [String: Any]? { value as? [String: Any] }
 }
 
+// MARK: - Delivery error tracker (file-backed for cross-thread visibility)
+//
+// The Analytics errorHandler runs on a URLSession callback thread in synchronous
+// operating mode. In-memory state (even with locks) is not reliably visible from
+// the main thread. Using a temp file provides the necessary memory barrier.
+//
+// Two channels:
+//   "transient" — last error from any flush cycle (cleared between retries)
+//   "dropped"   — set when a batch is terminally dropped (never cleared)
+
+class DeliveryErrorTracker {
+    private let basePath: String
+    let transientPath: String
+    let droppedPath: String
+
+    init() {
+        basePath = NSTemporaryDirectory() + "e2ecli-errors-\(ProcessInfo.processInfo.processIdentifier)"
+        transientPath = basePath + "-transient.log"
+        droppedPath = basePath + "-dropped.log"
+        clearTransient()
+        try? "".write(toFile: droppedPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Record a transient error (may be retried)
+    func recordError(_ msg: String) {
+        try? msg.write(toFile: transientPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Record that a batch was permanently dropped
+    func recordDrop(_ msg: String) {
+        try? msg.write(toFile: droppedPath, atomically: false, encoding: .utf8)
+    }
+
+    /// Clear transient errors (between retry cycles)
+    func clearTransient() {
+        try? "".write(toFile: transientPath, atomically: false, encoding: .utf8)
+    }
+
+    /// True if any batch was dropped OR if the last flush had errors
+    var hasErrors: Bool {
+        return wasDropped || hasTransientErrors
+    }
+
+    var wasDropped: Bool {
+        guard let content = try? String(contentsOfFile: droppedPath, encoding: .utf8) else { return false }
+        return !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var hasTransientErrors: Bool {
+        guard let content = try? String(contentsOfFile: transientPath, encoding: .utf8) else { return false }
+        return !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var summary: String {
+        if wasDropped {
+            return (try? String(contentsOfFile: droppedPath, encoding: .utf8))?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        }
+        return (try? String(contentsOfFile: transientPath, encoding: .utf8))?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    deinit {
+        try? FileManager.default.removeItem(atPath: transientPath)
+        try? FileManager.default.removeItem(atPath: droppedPath)
+    }
+}
+
 // MARK: - Main
 
 func parseArguments() -> String? {
@@ -102,18 +168,11 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     }
 
     let userId = event["userId"]?.stringValue ?? ""
-    let anonymousId = event["anonymousId"]?.stringValue
-    let messageId = event["messageId"]?.stringValue
-    let timestamp = event["timestamp"]?.stringValue
     let traits = event["traits"]?.dictValue ?? [:]
     let properties = event["properties"]?.dictValue ?? [:]
     let eventName = event["event"]?.stringValue
     let name = event["name"]?.stringValue
-    let category = event["category"]?.stringValue
     let groupId = event["groupId"]?.stringValue
-    let previousId = event["previousId"]?.stringValue
-    let context = event["context"]?.dictValue
-    let integrations = event["integrations"]?.dictValue
 
     switch type {
     case "identify":
@@ -121,7 +180,7 @@ func sendEvent(analytics: Analytics, event: [String: AnyCodable]) throws {
     case "track":
         analytics.track(name: eventName ?? "Unknown Event", properties: properties)
     case "page":
-        analytics.screen(title: name ?? "Unknown Page", properties: properties)  // Swift SDK uses screen for page too
+        analytics.screen(title: name ?? "Unknown Page", properties: properties)
     case "screen":
         analytics.screen(title: name ?? "Unknown Screen", properties: properties)
     case "alias":
@@ -148,11 +207,47 @@ func main() {
         let decoder = JSONDecoder()
         let input = try decoder.decode(CLIInput.self, from: inputData)
 
+        let maxRetries = input.config?.maxRetries ?? 100
+        let tracker = DeliveryErrorTracker()
+
         var config = Configuration(writeKey: input.writeKey)
             .flushAt(input.config?.flushAt ?? 20)
             .flushInterval(input.config?.flushInterval ?? 30)
             .operatingMode(.synchronous)
             .storageMode(.memory(1000))
+            .httpConfig(HttpConfig(
+                rateLimitConfig: RateLimitConfig(enabled: true),
+                backoffConfig: BackoffConfig(
+                    enabled: true,
+                    maxRetryCount: maxRetries,
+                    baseBackoffInterval: 0.5
+                )
+            ))
+            .errorHandler { error in
+                let msg = "\(error)"
+                var isDrop = false
+                if let analyticsError = error as? AnalyticsError {
+                    switch analyticsError {
+                    case .batchUploadFail:
+                        isDrop = true
+                    case .networkServerRejected(_, let code):
+                        // Non-retryable 4xx codes: 400-407, 411-427, 431+
+                        // Retryable exceptions: 408, 410, 429, 460
+                        let retryable4xx: Set<Int> = [408, 410, 429, 460]
+                        if code >= 400 && code < 500 && !retryable4xx.contains(code) {
+                            isDrop = true
+                        }
+                    default:
+                        break
+                    }
+                }
+                if isDrop {
+                    tracker.recordDrop(msg)
+                } else {
+                    tracker.recordError(msg)
+                }
+            }
+
         if let apiHost = input.apiHost {
             config = config.apiHost(apiHost)
         }
@@ -176,14 +271,41 @@ func main() {
             }
         }
 
-        // Flush and wait
-        analytics.flush()
+        // Flush and poll until delivery completes or times out.
+        // In synchronous mode, flush() blocks until upload + callback complete,
+        // so errorHandler fires inside flush(). With flushAt:1, auto-flushes
+        // also happen during sendEvent above.
+        let timeoutSec = input.config?.timeout ?? 30
+        let deadline = Date().addingTimeInterval(Double(timeoutSec))
 
-        // Wait longer for async operations
-        Thread.sleep(forTimeInterval: 5.0)
+        // In synchronous mode with flushAt:1, auto-flushes happen during
+        // sendEvent. Those may have already delivered (or dropped) events.
+        // If events remain unsent, we enter the explicit flush/retry loop.
+        //
+        // Clear transient errors from auto-flushes. The "dropped" flag
+        // persists — if any batch was dropped during auto-flush, we'll
+        // detect it after the loop.
+        tracker.clearTransient()
 
-        output.success = true
-        output.sentBatches = 1
+        if analytics.hasUnsentEvents {
+            analytics.flush()
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+
+            while analytics.hasUnsentEvents && Date() < deadline {
+                tracker.clearTransient()
+                analytics.flush()
+                RunLoop.main.run(until: Date(timeIntervalSinceNow: 1.0))
+            }
+        }
+
+        if analytics.hasUnsentEvents {
+            output.error = "Delivery incomplete: events still pending"
+        } else if tracker.hasErrors {
+            output.error = "Delivery failed: \(tracker.summary)"
+        } else {
+            output.success = true
+            output.sentBatches = 1
+        }
     } catch {
         output.error = error.localizedDescription
     }
