@@ -85,7 +85,7 @@ public class DirectoryStore: DataStore {
         }
     }
     
-    public func fetch(count: Int?, maxBytes: Int?) -> DataResult? {
+    public func fetch(count: Int?, maxBytes: Int?, offset: Int = 0) -> DataResult? {
         if writer != nil {
             finishFile()
         }

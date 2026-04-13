@@ -64,14 +64,19 @@ public class MemoryStore: DataStore {
         }
     }
     
-    public func fetch(count: Int?, maxBytes: Int?) -> DataResult? {
+    public func fetch(count: Int?, maxBytes: Int?, offset: Int = 0) -> DataResult? {
+        var skipped = 0
         var accumulatedCount = 0
         var accumulatedSize: Int = 0
         var results = [ItemData]()
-        
+
         let maxBytes = maxBytes ?? config.maxFetchSize
-        
+
         for item in items {
+            if skipped < offset {
+                skipped += 1
+                continue
+            }
             if accumulatedSize + item.data.count > maxBytes {
                 break
             }
