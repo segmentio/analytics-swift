@@ -106,6 +106,107 @@ class HttpConfig_Tests: XCTestCase {
         XCTAssertEqual(validated.jitterPercent, 0) // clamped to 0
     }
 
+    // MARK: - Codable tests
+
+    func testRateLimitConfigDecodesFromPartialJSON() throws {
+        let json = """
+        { "enabled": true, "maxRetryCount": 5 }
+        """.data(using: .utf8)!
+
+        let config = try JSONDecoder().decode(RateLimitConfig.self, from: json)
+        XCTAssertTrue(config.enabled)
+        XCTAssertEqual(config.maxRetryCount, 5)
+        XCTAssertEqual(config.maxRetryInterval, 300) // default
+    }
+
+    func testRateLimitConfigDecodesFromEmptyJSON() throws {
+        let json = "{}".data(using: .utf8)!
+        let config = try JSONDecoder().decode(RateLimitConfig.self, from: json)
+        XCTAssertFalse(config.enabled)
+        XCTAssertEqual(config.maxRetryCount, 100)
+        XCTAssertEqual(config.maxRetryInterval, 300)
+    }
+
+    func testBackoffConfigDecodesFromPartialJSON() throws {
+        let json = """
+        {
+            "enabled": true,
+            "maxRetryCount": 3,
+            "baseBackoffInterval": 1.0,
+            "statusCodeOverrides": { "408": "retry", "501": "drop" }
+        }
+        """.data(using: .utf8)!
+
+        let config = try JSONDecoder().decode(BackoffConfig.self, from: json)
+        XCTAssertTrue(config.enabled)
+        XCTAssertEqual(config.maxRetryCount, 3)
+        XCTAssertEqual(config.baseBackoffInterval, 1.0)
+        XCTAssertEqual(config.maxBackoffInterval, 300) // default
+        XCTAssertEqual(config.statusCodeOverrides[408], .retry)
+        XCTAssertEqual(config.statusCodeOverrides[501], .drop)
+    }
+
+    func testBackoffConfigDecodesFromEmptyJSON() throws {
+        let json = "{}".data(using: .utf8)!
+        let config = try JSONDecoder().decode(BackoffConfig.self, from: json)
+        XCTAssertFalse(config.enabled)
+        XCTAssertEqual(config.maxRetryCount, 100)
+        XCTAssertEqual(config.default4xxBehavior, .drop)
+        XCTAssertEqual(config.default5xxBehavior, .retry)
+        // default overrides when key missing from JSON
+        XCTAssertEqual(config.statusCodeOverrides[408], .retry)
+        XCTAssertEqual(config.statusCodeOverrides[505], .drop)
+    }
+
+    func testBackoffConfigEncodeDecodeRoundTrip() throws {
+        let original = BackoffConfig(
+            enabled: true,
+            maxRetryCount: 10,
+            baseBackoffInterval: 2.0,
+            maxBackoffInterval: 60,
+            maxTotalBackoffDuration: 3600,
+            jitterPercent: 20,
+            default4xxBehavior: .drop,
+            default5xxBehavior: .retry,
+            unknownCodeBehavior: .drop,
+            statusCodeOverrides: [408: .retry, 501: .drop]
+        )
+
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(BackoffConfig.self, from: data)
+
+        XCTAssertEqual(decoded.enabled, original.enabled)
+        XCTAssertEqual(decoded.maxRetryCount, original.maxRetryCount)
+        XCTAssertEqual(decoded.baseBackoffInterval, original.baseBackoffInterval)
+        XCTAssertEqual(decoded.maxBackoffInterval, original.maxBackoffInterval)
+        XCTAssertEqual(decoded.jitterPercent, original.jitterPercent)
+        XCTAssertEqual(decoded.statusCodeOverrides[408], .retry)
+        XCTAssertEqual(decoded.statusCodeOverrides[501], .drop)
+    }
+
+    func testHttpConfigDecodesFromPartialJSON() throws {
+        let json = """
+        {
+            "rateLimitConfig": { "enabled": true },
+            "backoffConfig": { "enabled": true, "maxRetryCount": 5 }
+        }
+        """.data(using: .utf8)!
+
+        let config = try JSONDecoder().decode(HttpConfig.self, from: json)
+        XCTAssertTrue(config.rateLimitConfig.enabled)
+        XCTAssertTrue(config.backoffConfig.enabled)
+        XCTAssertEqual(config.backoffConfig.maxRetryCount, 5)
+    }
+
+    func testHttpConfigDecodesFromEmptyJSON() throws {
+        let json = "{}".data(using: .utf8)!
+        let config = try JSONDecoder().decode(HttpConfig.self, from: json)
+        XCTAssertFalse(config.rateLimitConfig.enabled)
+        XCTAssertFalse(config.backoffConfig.enabled)
+    }
+
+    // MARK: - Validation tests (existing)
+
     func testHttpConfigAutomaticValidation() {
         let config = HttpConfig(
             rateLimitConfig: RateLimitConfig(
