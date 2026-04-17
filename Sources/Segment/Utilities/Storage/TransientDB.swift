@@ -58,10 +58,10 @@ public class TransientDB {
         }
     }
     
-    public func fetch(count: Int? = nil, maxBytes: Int? = nil) -> DataResult? {
+    public func fetch(count: Int? = nil, maxBytes: Int? = nil, offset: Int = 0) -> DataResult? {
         var result: DataResult? = nil
         syncQueue.sync {
-            result = store.fetch(count: count, maxBytes: maxBytes)
+            result = store.fetch(count: count, maxBytes: maxBytes, offset: offset)
         }
         return result
     }

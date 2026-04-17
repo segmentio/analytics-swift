@@ -66,31 +66,34 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
     public func update(settings: Settings, type: UpdateType) {
         guard let analytics = analytics else { return }
         let segmentInfo = settings.integrationSettings(forKey: self.key)
-        // if customer cycles out a writekey at app.segment.com, this is necessary.
-        /*
-         This actually works differently than anticipated.  It was thought that when a writeKey was
-         revoked, it's old writekey would redirect to the new, but it doesn't work this way.  As a result
-         it doesn't appear writekey can be changed remotely.  Leaving this here in case that changes in the
-         near future (written on 10/29/2022).
-         */
-        /*
-        if let key = segmentInfo?[Self.Constants.apiKey.rawValue] as? String, key.isEmpty == false {
-            if key != analytics.configuration.values.writeKey {
-                /*
-                 - would need to flush.
-                 - would need to change the writeKey across the system.
-                 - would need to re-init storage.
-                 - probably other things too ...
-                 */
-            }
-        }
-         */
+        var needsHTTPClientRebuild = false
+
         // if customer specifies a different apiHost (ie: eu1.segmentapis.com) at app.segment.com ...
         if let host = segmentInfo?[Self.Constants.apiHost.rawValue] as? String, host.isEmpty == false {
             if host != analytics.configuration.values.apiHost {
                 analytics.configuration.values.apiHost = host
-                httpClient = HTTPClient(analytics: analytics)
+                needsHTTPClientRebuild = true
             }
+        }
+
+        // Read httpConfig from CDN settings at integrations["Segment.io"].httpConfig
+        if let httpConfigDict = segmentInfo?["httpConfig"] as? [String: Any],
+           let data = try? JSONSerialization.data(withJSONObject: httpConfigDict),
+           var cdnConfig = try? JSONDecoder.default.decode(HttpConfig.self, from: data) {
+            // CDN-sourced config defaults enabled to true (presence of httpConfig implies active).
+            // Only honor explicit `enabled: false` from CDN.
+            let rlDict = httpConfigDict["rateLimitConfig"] as? [String: Any]
+            cdnConfig.rateLimitConfig.enabled = (rlDict?["enabled"] as? Bool) ?? true
+
+            let boDict = httpConfigDict["backoffConfig"] as? [String: Any]
+            cdnConfig.backoffConfig.enabled = (boDict?["enabled"] as? Bool) ?? true
+
+            analytics.configuration.values.httpConfig = cdnConfig
+            needsHTTPClientRebuild = true
+        }
+
+        if needsHTTPClientRebuild {
+            httpClient = HTTPClient(analytics: analytics)
         }
     }
 
@@ -181,11 +184,17 @@ extension SegmentDestination {
                         case .success(_):
                             storage.remove(data: [url])
                             cleanupUploads()
-                            
-                            // we don't want to retry events in a given batch when a 400
-                            // response for malformed JSON is returned
-                        case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
+
+                        // Batch was dropped by the retry state machine (e.g. max retries exceeded)
+                        case .failure(Segment.HTTPClientErrors.badRequest):
                             storage.remove(data: [url])
+                            cleanupUploads()
+
+                        // Non-retryable status codes should also drop the batch
+                        case .failure(Segment.HTTPClientErrors.statusCode(let code)):
+                            if httpClient.shouldDropBatch(forStatusCode: code) {
+                                storage.remove(data: [url])
+                            }
                             cleanupUploads()
                         default:
                             break
@@ -216,59 +225,86 @@ extension SegmentDestination {
         guard let storage = self.storage else { return }
         guard let analytics = self.analytics else { return }
         guard let httpClient = self.httpClient else { return }
-        
+
         let totalCount = storage.dataStore.count
-        var currentCount = 0
-        
         guard totalCount > 0 else { return }
-        
-        while currentCount < totalCount {
+
+        // Process events in flushAt-sized batches so each batch is independent,
+        // matching file mode behavior where each file gets its own upload.
+        // This prevents failed retry events from being merged with new events.
+        let batchSize = max(analytics.configuration.values.flushAt, 1)
+        var offset = 0
+
+        while offset < totalCount {
             // can't imagine why we wouldn't get data at this point, but if we don't, then split.
-            guard let eventData = storage.dataStore.fetch() else { return }
-            guard let data = eventData.data else { return }
-            guard let removable = eventData.removable else { return }
-            guard let dataCount = eventData.removable?.count else { return }
-            
-            currentCount += dataCount
-            
+            guard let eventData = storage.dataStore.fetch(count: batchSize, offset: offset) else { break }
+            guard let data = eventData.data else { break }
+            guard let removable = eventData.removable else { break }
+            guard let dataCount = eventData.removable?.count else { break }
+
+            // Generate a stable batch identifier from the data content
+            let batchId = "mem-\(data.hashValue)"
+
+            // Check retry state machine before uploading
+            let decision = httpClient.checkBatchUpload(batchId: batchId)
+            switch decision {
+            case .skipAllBatches:
+                // Rate limited globally — stop processing all batches
+                return
+            case .skipThisBatch:
+                // Backoff in effect for this batch — skip it, try the next
+                offset += dataCount
+                continue
+            case .dropBatch:
+                // Max retries or duration exceeded — drop the data
+                analytics.log(message: "Dropping batch \(batchId): retry limit exceeded")
+                analytics.reportInternalError(AnalyticsError.batchUploadFail(AnalyticsError.networkServerRejected(nil, 0)))
+                storage.remove(data: removable)
+                // Don't advance offset — removal shifted the array
+                continue
+            case .proceed:
+                break
+            }
+
             // enter for this data we're going to kick off
             group.enter()
             analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
-            
+
             // we're already on a separate thread.
             // lets let this task complete so we can get all the values out.
             let semaphore = DispatchSemaphore(value: 0)
-            
+            var didRemove = false
+
             // set up the task
-            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data) { [weak self] result in
+            let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data, batchId: batchId) { [weak self] result in
                 defer {
                     // leave for the url we kicked off.
                     group.leave()
                     semaphore.signal()
                 }
-                
+
                 guard let self else { return }
                 switch result {
                 case .success(_):
                     storage.remove(data: removable)
+                    didRemove = true
                     cleanupUploads()
-                    
-                    // we don't want to retry events in a given batch when a 400
-                    // response for malformed JSON is returned
-                case .failure(Segment.HTTPClientErrors.statusCode(code: 400)):
-                    storage.remove(data: removable)
+
+                // Non-retryable status codes should drop the batch
+                case .failure(Segment.HTTPClientErrors.statusCode(let code)):
+                    if httpClient.shouldDropBatch(forStatusCode: code) {
+                        storage.remove(data: removable)
+                        didRemove = true
+                    }
                     cleanupUploads()
                 default:
                     break
                 }
-                
+
                 analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
-                // the upload we have here has just finished.
-                // make sure it gets removed and it's cleanup() called rather
-                // than waiting on the next flush to come around.
                 cleanupUploads()
             }
-            
+
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
@@ -277,8 +313,14 @@ extension SegmentDestination {
                 group.leave()
                 semaphore.signal()
             }
-            
+
             _ = semaphore.wait(timeout: .distantFuture)
+
+            // If items were removed, the array shifted — offset stays.
+            // If items stayed (retryable failure), advance offset past them.
+            if !didRemove {
+                offset += dataCount
+            }
         }
     }
 }

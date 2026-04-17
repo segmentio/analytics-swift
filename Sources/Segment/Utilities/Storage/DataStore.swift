@@ -42,6 +42,6 @@ public protocol DataStore {
     init(configuration: StoreConfiguration)
     func reset()
     func append(data: RawEvent)
-    func fetch(count: Int?, maxBytes: Int?) -> DataResult?
+    func fetch(count: Int?, maxBytes: Int?, offset: Int) -> DataResult?
     func remove(data: [ItemID])
 }

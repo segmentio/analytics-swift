@@ -127,6 +127,7 @@ public class Configuration {
         var storageMode: StorageMode = .disk
         var anonymousIdGenerator: AnonymousIdGenerator = SegmentAnonymousId()
         var httpSession: (() -> any HTTPSession) = HTTPSessions.urlSession
+        var httpConfig: HttpConfig? = nil
     }
 
     internal var values: Values
@@ -359,6 +360,16 @@ extension Configuration {
         -> Configuration
     {
         values.httpSession = httpSession
+        return self
+    }
+
+    /// Sets HTTP retry configuration for rate limiting and exponential backoff.
+    /// When nil (default), retry system is disabled (legacy mode).
+    /// - Parameter config: HttpConfig with rate limit and backoff settings
+    /// - Returns: The current Configuration
+    @discardableResult
+    public func httpConfig(_ config: HttpConfig?) -> Configuration {
+        values.httpConfig = config
         return self
     }
 }

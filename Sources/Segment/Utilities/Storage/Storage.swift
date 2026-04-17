@@ -175,6 +175,7 @@ extension Storage {
         case anonymousId = "segment.anonymousId"
         case settings = "segment.settings"
         case events = "segment.events"
+        case retryState = "segment.retryState"
     }
 }
 
@@ -192,6 +193,33 @@ extension Storage {
         // write new stuff to disk
         if let s = state.settings {
             write(.settings, value: s)
+        }
+    }
+}
+
+// MARK: - Retry State Persistence
+
+extension Storage {
+    public func loadRetryState() -> RetryState {
+        // Try to read from UserDefaults
+        guard let data: Data = read(.retryState) else {
+            return RetryState() // Default if not found
+        }
+
+        // Try to decode
+        do {
+            let decoder = PropertyListDecoder()
+            return try decoder.decode(RetryState.self, from: data)
+        } catch {
+            // Corrupt data -> return defaults
+            return RetryState()
+        }
+    }
+
+    public func saveRetryState(_ state: RetryState) {
+        let encoder = PropertyListEncoder()
+        if let data = try? encoder.encode(state) {
+            write(.retryState, value: data)
         }
     }
 }
