@@ -1,0 +1,56 @@
+# Publish E2E CLI build to sdk-e2e-tests cli-builds branch
+#
+# On merge to main, builds the e2e-cli binary and pushes it
+# to the cli-builds branch of sdk-e2e-tests.
+#
+# Note: The binary is compiled for macOS (arm64). If Linux support
+# is needed, add a Linux job or cross-compile.
+
+name: Publish E2E CLI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'e2e-cli/**'
+      - 'Sources/**'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+
+      - name: Build e2e-cli (release)
+        working-directory: e2e-cli
+        run: swift build -c release
+
+      - name: Checkout sdk-e2e-tests (cli-builds branch)
+        uses: actions/checkout@v4
+        with:
+          repository: segmentio/sdk-e2e-tests
+          ref: cli-builds
+          token: ${{ secrets.E2E_TESTS_TOKEN }}
+          path: sdk-e2e-tests-builds
+          fetch-depth: 1
+
+      - name: Copy CLI artifact
+        run: |
+          rm -rf sdk-e2e-tests-builds/analytics-swift
+          mkdir -p sdk-e2e-tests-builds/analytics-swift
+          cp e2e-cli/.build/release/E2ECLI sdk-e2e-tests-builds/analytics-swift/e2e-cli
+
+      - name: Push to cli-builds branch
+        working-directory: sdk-e2e-tests-builds
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to CLI build"
+          else
+            git commit -m "update analytics-swift CLI build (${GITHUB_SHA::8})"
+            git push
+          fi
