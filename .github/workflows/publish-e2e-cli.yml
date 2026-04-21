@@ -1,0 +1,36 @@
+# Publish E2E CLI build as a GitHub Actions artifact
+#
+# On merge to main (or monthly refresh), builds the e2e-cli binary
+# and uploads it as an artifact.
+#
+# Note: Binary is compiled for macOS (arm64). Add a Linux job if needed.
+
+name: Publish E2E CLI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'e2e-cli/**'
+      - 'Sources/**'
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+
+      - name: Build e2e-cli (release)
+        working-directory: e2e-cli
+        run: swift build -c release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-cli
+          path: e2e-cli/.build/release/E2ECLI
+          retention-days: 90
