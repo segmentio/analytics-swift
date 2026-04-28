@@ -15,7 +15,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Twilio—Segment—Horizontal—Green" translatesAutoresizingMaskIntoConstraints="NO" id="YEy-4z-B87">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Twilio-Segment-Horizontal-Green" translatesAutoresizingMaskIntoConstraints="NO" id="YEy-4z-B87">
                                 <rect key="frame" x="41.666666666666657" y="135" width="306.66666666666674" height="106"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="106" id="A3l-S8-VDi"/>
@@ -125,7 +125,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Segment—Avatar—Green" translatesAutoresizingMaskIntoConstraints="NO" id="XrY-VT-iil">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Segment-Avatar-Green" translatesAutoresizingMaskIntoConstraints="NO" id="XrY-VT-iil">
                                 <rect key="frame" x="75" y="131" width="240" height="128"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User Identifier: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hNI-cM-i6N">
@@ -213,7 +213,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Segment—Avatar—Green" width="80.5" height="80"/>
-        <image name="Twilio—Segment—Horizontal—Green" width="741" height="160"/>
+        <image name="Segment-Avatar-Green" width="80.5" height="80"/>
+        <image name="Twilio-Segment-Horizontal-Green" width="741" height="160"/>
     </resources>
 </document>

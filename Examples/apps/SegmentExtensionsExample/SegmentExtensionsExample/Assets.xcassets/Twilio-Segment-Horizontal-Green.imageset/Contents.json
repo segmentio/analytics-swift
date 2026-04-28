@@ -1,11 +1,11 @@
 {
   "images" : [
     {
+      "filename" : "Twilio-Segment-Horizontal-Green.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Segment—Avatar—Green@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
