@@ -1,0 +1,103 @@
+name: Dependabot Reminder
+
+on:
+  schedule:
+    - cron: "0 12 * * *" # diario
+  workflow_dispatch:
+
+jobs:
+  reminder:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Buscar PRs abiertos
+        run: |
+          PRS=$(gh pr list \
+            --repo ${{ github.repository }} \
+            --state open \
+            --json title,url,createdAt,author)
+
+          CRITICAL=""
+          PENDING=""
+          CRITICAL_COUNT=0
+          PENDING_COUNT=0
+
+          echo "$PRS" | jq -c '.[]' | while read pr; do
+            AUTHOR=$(echo $pr | jq -r '.author.login')
+            TITLE=$(echo $pr | jq -r '.title')
+            URL=$(echo $pr | jq -r '.url')
+            CREATED=$(echo $pr | jq -r '.createdAt')
+
+            if [[ "$AUTHOR" != "dependabot[bot]" ]]; then
+              continue
+            fi
+
+            CREATED_TS=$(date -d "$CREATED" +%s)
+            NOW_TS=$(date +%s)
+            AGE=$(( (NOW_TS - CREATED_TS) / 86400 ))
+
+            if [[ "$TITLE" == *"security"* && $AGE -ge 1 ]]; then
+              CRITICAL="${CRITICAL}\n• <${URL}|${TITLE}> (${AGE}d)"
+              CRITICAL_COUNT=$((CRITICAL_COUNT+1))
+            elif [[ $AGE -ge 3 ]]; then
+              PENDING="${PENDING}\n• <${URL}|${TITLE}> (${AGE}d)"
+              PENDING_COUNT=$((PENDING_COUNT+1))
+            fi
+          done
+
+          if [[ $CRITICAL_COUNT -eq 0 && $PENDING_COUNT -eq 0 ]]; then
+            echo "✅ No hay PRs pendientes relevantes"
+            exit 0
+          fi
+
+          REPO="${{ github.repository }}"
+
+          PAYLOAD=$(jq -n \
+            --arg repo "$REPO" \
+            --arg critical "$CRITICAL" \
+            --arg pending "$PENDING" \
+            --argjson ccount $CRITICAL_COUNT \
+            --argjson pcount $PENDING_COUNT \
+            '{
+              text: "Dependabot Summary",
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "🤖 *Dependabot Summary*\n*Repo:* \($repo)"
+                  }
+                },
+                (
+                  if $ccount > 0 then
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "🔴 *Critical Security Updates (\($ccount))*\($critical)"
+                      }
+                    }
+                  else empty end
+                ),
+                (
+                  if $pcount > 0 then
+                    {
+                      type: "section",
+                      text: {
+                        type: "mrkdwn",
+                        text: "🟡 *Pending Updates (\($pcount))*\($pending)"
+                      }
+                    }
+                  else empty end
+                )
+              ]
+            }')
+
+          echo "$PAYLOAD"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$PAYLOAD" \
+            ${{ secrets.SLACK_WEBHOOK_DEP }}
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

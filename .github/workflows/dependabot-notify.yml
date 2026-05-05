@@ -1,0 +1,124 @@
+name: Notify Dependabot PR
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Modo de ejecución"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+          - prod
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    # Ejecuta si es dependabot o ejecución manual
+    if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Set mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+          else
+            echo "mode=prod" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build message context
+        id: context
+        run: |
+          TITLE="${{ github.event.pull_request.title || 'Manual test execution' }}"
+          URL="${{ github.event.pull_request.html_url || 'https://github.com' }}"
+          REPO="${{ github.repository }}"
+          BRANCH="${{ github.head_ref || 'manual-test' }}"
+
+          # Detectar tipo de PR
+          if [[ "$TITLE" == *"security"* ]]; then
+            TYPE="🔴 SECURITY UPDATE"
+          elif [[ "$TITLE" == *"bump"* ]]; then
+            TYPE="📦 Dependency Update"
+          else
+            TYPE="🟡 General Update"
+          fi
+
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "repo=$REPO" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "type=$TYPE" >> $GITHUB_OUTPUT
+
+      # =========================
+      # 🧪 MODO TEST
+      # =========================
+      - name: Send Slack (TEST)
+        if: steps.mode.outputs.mode == 'test'
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"text\": \"🧪 TEST Dependabot notification\",
+            \"blocks\": [
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \"🧪 *[TEST MODE]* Dependabot Notification\"
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:*\n${{ steps.context.outputs.repo }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:*\n${{ steps.context.outputs.branch }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Título:*\n${{ steps.context.outputs.title }}\" }
+                ]
+              }
+            ]
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_DTEST }}
+
+      # =========================
+      # 🚀 MODO PRODUCCIÓN
+      # =========================
+      - name: Send Slack (PROD)
+        if: steps.mode.outputs.mode == 'prod'
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"text\": \"Dependabot PR: ${{ steps.context.outputs.title }}\",
+            \"blocks\": [
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \"${{ steps.context.outputs.type }}\n🤖 *Dependabot PR creado*\"
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:*\n${{ steps.context.outputs.repo }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:*\n${{ steps.context.outputs.branch }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Título:*\n${{ steps.context.outputs.title }}\" }
+                ]
+              },
+              {
+                \"type\": \"actions\",
+                \"elements\": [
+                  {
+                    \"type\": \"button\",
+                    \"text\": { \"type\": \"plain_text\", \"text\": \"Ver PR\" },
+                    \"url\": \"${{ steps.context.outputs.url }}\"
+                  }
+                ]
+              }
+            ]
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_DEP }}
