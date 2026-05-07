@@ -63,8 +63,27 @@ public class Timeline {
 }
 
 internal class Mediator {
+    // Callers must not hold this lock while invoking Plugin code.
+    // The `plugins` getter returns a CoW snapshot specifically so that
+    // iteration runs without the lock held.
+    private let lock = NSLock()
+    private var _plugins = [Plugin]()
+
+    // Thread-safe snapshot of the plugin list. Callers iterate the
+    // returned array; Swift's copy-on-write semantics mean a subsequent
+    // add/remove triggers a copy for the mutator, leaving the snapshot
+    // safe to traverse concurrently.
+    internal var plugins: [Plugin] {
+        lock.lock()
+        defer { lock.unlock() }
+        return _plugins
+    }
+
     internal func add(plugin: Plugin) {
-        plugins.append(plugin)
+        lock.lock()
+        _plugins.append(plugin)
+        lock.unlock()
+
         Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
             (_ it: inout [String: String]) in
             it["message"] = "added"
@@ -75,26 +94,27 @@ internal class Mediator {
             }
         }
     }
-    
+
     internal func remove(plugin: Plugin) {
-        plugins.removeAll { (storedPlugin) -> Bool in
-            Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
-                (_ it: inout [String: String]) in
-                it["message"] = "removed"
-                if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
-                    it["plugin"] = "\(plugin.type)-\(plugin.key)"
-                } else {
-                    it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
-                }            }
-            return plugin === storedPlugin
+        lock.lock()
+        _plugins.removeAll { $0 === plugin }
+        lock.unlock()
+
+        Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+            (_ it: inout [String: String]) in
+            it["message"] = "removed"
+            if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
+                it["plugin"] = "\(plugin.type)-\(plugin.key)"
+            } else {
+                it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
+            }
         }
     }
 
-    internal var plugins = [Plugin]()
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
-        
-        plugins.forEach { (plugin) in
+
+        for plugin in plugins {
             if let r = result {
                 // Drop the event return because we don't care about the
                 // final result.
@@ -110,10 +130,11 @@ internal class Mediator {
                         it["plugin"] = "\(plugin.type)-\(plugin.key)"
                     } else {
                         it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
-                    }                }
+                    }
+                }
             }
         }
-        
+
         return result
     }
 }

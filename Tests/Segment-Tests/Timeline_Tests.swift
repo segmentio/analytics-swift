@@ -113,4 +113,46 @@ class Timeline_Tests: XCTestCase {
         wait(for: [expectation, expectationTrack2], timeout: 1.0)
     }
 
+    // Regression guard for the Mediator plugin-array thread-safety fix.
+    // Without a lock on Mediator.plugins, two writers adding plugins while
+    // a third thread iterates the array for event execution triggers a
+    // copy-on-write reallocation that releases storage the iterator still
+    // holds, producing _swift_release_dealloc / EXC_BAD_ACCESS in release
+    // builds.
+    //
+    // Exercises the Mediator directly to isolate the race from the rest of
+    // the pipeline and keep the test fast.
+    func testConcurrentPluginMutationAndExecute() {
+        let mediator = Mediator()
+        let writes = 500
+        let reads = 1_000
+        let done = expectation(description: "concurrent workers complete")
+        done.expectedFulfillmentCount = 3
+
+        let dummyEvent = TrackEvent(event: "stress", properties: nil)
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            for _ in 0..<writes {
+                mediator.add(plugin: GooberPlugin())
+            }
+            done.fulfill()
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            for _ in 0..<writes {
+                mediator.add(plugin: ZiggyPlugin())
+            }
+            done.fulfill()
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            for _ in 0..<reads {
+                _ = mediator.execute(event: dummyEvent)
+            }
+            done.fulfill()
+        }
+
+        wait(for: [done], timeout: 10.0)
+    }
+
 }
