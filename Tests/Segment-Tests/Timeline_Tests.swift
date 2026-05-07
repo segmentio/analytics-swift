@@ -155,4 +155,37 @@ class Timeline_Tests: XCTestCase {
         wait(for: [done], timeout: 10.0)
     }
 
+    // Exercises every Mediator entry point directly on a single thread to
+    // ensure the locked critical sections (including remove) and the
+    // snapshot getter are covered. Complements testConcurrentPluginMutationAndExecute
+    // which focuses on the concurrency guarantee rather than line coverage.
+    func testMediatorAddRemoveExecuteSingleThread() {
+        let mediator = Mediator()
+        let dummyEvent = TrackEvent(event: "coverage", properties: nil)
+
+        let goober = GooberPlugin()
+        let ziggy = ZiggyPlugin()
+
+        mediator.add(plugin: goober)
+        mediator.add(plugin: ziggy)
+
+        // Snapshot getter
+        XCTAssertEqual(mediator.plugins.count, 2)
+
+        // execute iterates the snapshot
+        _ = mediator.execute(event: dummyEvent)
+
+        // remove should drop exactly the matching instance
+        mediator.remove(plugin: goober)
+        XCTAssertEqual(mediator.plugins.count, 1)
+        XCTAssertTrue(mediator.plugins.first === ziggy)
+
+        // removing an instance that isn't in the mediator is a no-op
+        mediator.remove(plugin: GooberPlugin())
+        XCTAssertEqual(mediator.plugins.count, 1)
+
+        mediator.remove(plugin: ziggy)
+        XCTAssertTrue(mediator.plugins.isEmpty)
+    }
+
 }
