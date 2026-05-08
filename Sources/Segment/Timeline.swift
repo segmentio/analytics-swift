@@ -101,6 +101,9 @@ internal class Mediator {
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
 
+        // Swift evaluates the sequence expression once, so the @Atomic
+        // getter fires a single time here — one acquire, one CoW copy,
+        // release — and the loop body iterates the snapshot lock-free.
         for plugin in plugins {
             if let r = result {
                 // Drop the event return because we don't care about the
