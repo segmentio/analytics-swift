@@ -63,26 +63,15 @@ public class Timeline {
 }
 
 internal class Mediator {
-    // Callers must not hold this lock while invoking Plugin code.
-    // The `plugins` getter returns a CoW snapshot specifically so that
-    // iteration runs without the lock held.
-    private let lock = NSLock()
-    private var _plugins = [Plugin]()
-
-    // Thread-safe snapshot of the plugin list. Callers iterate the
-    // returned array; Swift's copy-on-write semantics mean a subsequent
-    // add/remove triggers a copy for the mutator, leaving the snapshot
-    // safe to traverse concurrently.
-    internal var plugins: [Plugin] {
-        lock.lock()
-        defer { lock.unlock() }
-        return _plugins
-    }
+    // @Atomic serializes reads and writes to the plugin array. The
+    // wrappedValue getter (used when iterating `plugins`) acquires the
+    // lock, returns a CoW snapshot, and releases. Mutations go through
+    // `mutate` so the check/update happens in a single critical section.
+    // Callers must not invoke Plugin code from inside a `mutate` closure.
+    @Atomic internal var plugins = [Plugin]()
 
     internal func add(plugin: Plugin) {
-        lock.lock()
-        _plugins.append(plugin)
-        lock.unlock()
+        _plugins.mutate { $0.append(plugin) }
 
         Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
             (_ it: inout [String: String]) in
@@ -96,9 +85,7 @@ internal class Mediator {
     }
 
     internal func remove(plugin: Plugin) {
-        lock.lock()
-        _plugins.removeAll { $0 === plugin }
-        lock.unlock()
+        _plugins.mutate { $0.removeAll { $0 === plugin } }
 
         Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
             (_ it: inout [String: String]) in
@@ -114,6 +101,9 @@ internal class Mediator {
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
 
+        // Swift evaluates the sequence expression once, so the @Atomic
+        // getter fires a single time here — one acquire, one CoW copy,
+        // release — and the loop body iterates the snapshot lock-free.
         for plugin in plugins {
             if let r = result {
                 // Drop the event return because we don't care about the
