@@ -63,8 +63,16 @@ public class Timeline {
 }
 
 internal class Mediator {
+    // @Atomic serializes reads and writes to the plugin array. The
+    // wrappedValue getter (used when iterating `plugins`) acquires the
+    // lock, returns a CoW snapshot, and releases. Mutations go through
+    // `mutate` so the check/update happens in a single critical section.
+    // Callers must not invoke Plugin code from inside a `mutate` closure.
+    @Atomic internal var plugins = [Plugin]()
+
     internal func add(plugin: Plugin) {
-        plugins.append(plugin)
+        _plugins.mutate { $0.append(plugin) }
+
         Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
             (_ it: inout [String: String]) in
             it["message"] = "added"
@@ -75,26 +83,28 @@ internal class Mediator {
             }
         }
     }
-    
+
     internal func remove(plugin: Plugin) {
-        plugins.removeAll { (storedPlugin) -> Bool in
-            Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
-                (_ it: inout [String: String]) in
-                it["message"] = "removed"
-                if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
-                    it["plugin"] = "\(plugin.type)-\(plugin.key)"
-                } else {
-                    it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
-                }            }
-            return plugin === storedPlugin
+        _plugins.mutate { $0.removeAll { $0 === plugin } }
+
+        Telemetry.shared.increment(metric: Telemetry.INTEGRATION_METRIC) {
+            (_ it: inout [String: String]) in
+            it["message"] = "removed"
+            if let plugin = plugin as? DestinationPlugin, !plugin.key.isEmpty {
+                it["plugin"] = "\(plugin.type)-\(plugin.key)"
+            } else {
+                it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
+            }
         }
     }
 
-    internal var plugins = [Plugin]()
     internal func execute<T: RawEvent>(event: T) -> T? {
         var result: T? = event
-        
-        plugins.forEach { (plugin) in
+
+        // Swift evaluates the sequence expression once, so the @Atomic
+        // getter fires a single time here — one acquire, one CoW copy,
+        // release — and the loop body iterates the snapshot lock-free.
+        for plugin in plugins {
             if let r = result {
                 // Drop the event return because we don't care about the
                 // final result.
@@ -110,10 +120,11 @@ internal class Mediator {
                         it["plugin"] = "\(plugin.type)-\(plugin.key)"
                     } else {
                         it["plugin"] = "\(plugin.type)-\(String(describing: type(of: plugin)))"
-                    }                }
+                    }
+                }
             }
         }
-        
+
         return result
     }
 }
