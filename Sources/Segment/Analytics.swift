@@ -29,9 +29,6 @@ public class Analytics {
 
     @Atomic static internal var activeWriteKeys = [String]()
 
-    // Timestamp of the most recent settings fetch. Used by
-    // `checkSettingsIfNeeded()` to debounce overlapping foreground/timer
-    // refreshes that would otherwise race inside `update(settings:)`.
     @Atomic internal var lastSettingsCheck: Date = .distantPast
 
     internal func recordSettingsCheckTimestamp() {
