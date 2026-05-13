@@ -31,8 +31,8 @@ public class Analytics {
 
     @Atomic internal var lastSettingsCheck: Date = .distantPast
 
-    internal func recordSettingsCheckTimestamp() {
-        _lastSettingsCheck.set(Date())
+    internal func recordSettingsCheckTimestamp(_ date: Date = Date()) {
+        _lastSettingsCheck.set(date)
     }
 
     // Used for WaitingPlugin's, see waiting.swift
