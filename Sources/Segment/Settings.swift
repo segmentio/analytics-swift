@@ -144,7 +144,25 @@ extension Analytics {
         }
     }
     
+    /// Minimum interval, in seconds, between automatic settings fetches
+    /// triggered by lifecycle hooks (foreground, macOS refresh timer, etc.).
+    /// The very first settings fetch at app launch is always allowed through.
+    /// Prevents overlapping URLSession completions from invoking
+    /// `update(settings:)` concurrently on arbitrary delegate threads.
+    internal static let checkSettingsInterval: TimeInterval = 10
+
+    /// Debounced entry point for automatic settings refreshes. Callers that
+    /// always need a fresh fetch (manual `.flush()`-style paths) should call
+    /// `checkSettings()` directly.
+    internal func checkSettingsIfNeeded() {
+        if Date().timeIntervalSince(lastSettingsCheck) < Self.checkSettingsInterval {
+            return
+        }
+        checkSettings()
+    }
+
     internal func checkSettings() {
+        recordSettingsCheckTimestamp()
         #if DEBUG
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...
