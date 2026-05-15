@@ -29,6 +29,12 @@ public class Analytics {
 
     @Atomic static internal var activeWriteKeys = [String]()
 
+    @Atomic internal var lastSettingsCheck: Date = .distantPast
+
+    internal func recordSettingsCheckTimestamp(_ date: Date = Date()) {
+        _lastSettingsCheck.set(date)
+    }
+
     // Used for WaitingPlugin's, see waiting.swift
     internal var processingTimer: DispatchWorkItem? = nil
 

@@ -85,7 +85,7 @@ extension Analytics {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { [weak self] (notification) in
             guard let app = notification.object as? UIApplication else { return }
             if app.applicationState == .background {
-                self?.checkSettings()
+                self?.checkSettingsIfNeeded()
             }
         }
     }
@@ -107,7 +107,7 @@ extension Analytics {
         // mac apps change focus a lot more than iOS apps, so this
         // seems more appropriate here.
         QueueTimer.schedule(interval: .days(1), queue: .main) { [weak self] in
-            self?.checkSettings()
+            self?.checkSettingsIfNeeded()
         }
     }
 }

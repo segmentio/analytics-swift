@@ -144,7 +144,17 @@ extension Analytics {
         }
     }
     
+    internal static let checkSettingsInterval: TimeInterval = 10
+
+    internal func checkSettingsIfNeeded() {
+        if Date().timeIntervalSince(lastSettingsCheck) < Self.checkSettingsInterval {
+            return
+        }
+        checkSettings()
+    }
+
     internal func checkSettings() {
+        recordSettingsCheckTimestamp()
         #if DEBUG
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...
