@@ -154,19 +154,22 @@ extension Analytics {
     }
 
     internal func checkSettings() {
+        guard tryBeginCheckingSettings() else { return }
         recordSettingsCheckTimestamp()
+
         #if DEBUG
         if isUnitTesting {
             // we don't really wanna wait for this network call during tests...
             // but we should make it work similarly.
             pauseEventProcessing()
-            
+
             operatingMode.run(queue: DispatchQueue.main) {
                 if let state: System = self.store.currentState(), let settings = state.settings {
                     self.store.dispatch(action: System.UpdateSettingsAction(settings: settings))
                     self.update(settings: settings)
                 }
                 self.resumeEventProcessing()
+                self.endCheckingSettings()
             }
 
             return
@@ -179,6 +182,8 @@ extension Analytics {
         // stop things; queue in case our settings have changed.
         pauseEventProcessing()
         httpClient.settingsFor(writeKey: writeKey) { (success, settings) in
+            defer { self.endCheckingSettings() }
+
             if success, let s = settings {
                 // put the new settings in the state store.
                 // this will cause them to be cached.
