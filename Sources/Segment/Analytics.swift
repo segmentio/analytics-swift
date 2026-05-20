@@ -30,9 +30,25 @@ public class Analytics {
     @Atomic static internal var activeWriteKeys = [String]()
 
     @Atomic internal var lastSettingsCheck: Date = .distantPast
+    @Atomic internal var isCheckingSettings: Bool = false
 
     internal func recordSettingsCheckTimestamp(_ date: Date = Date()) {
         _lastSettingsCheck.set(date)
+    }
+
+    internal func tryBeginCheckingSettings() -> Bool {
+        var didBegin = false
+        _isCheckingSettings.mutate { flag in
+            if !flag {
+                flag = true
+                didBegin = true
+            }
+        }
+        return didBegin
+    }
+
+    internal func endCheckingSettings() {
+        _isCheckingSettings.set(false)
     }
 
     // Used for WaitingPlugin's, see waiting.swift
