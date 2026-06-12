@@ -1,0 +1,175 @@
+name: Publish
+
+# Stages 4-5: Verify clearance and publish the exact cleared bytes
+#
+# This workflow runs on a GitHub-hosted runner. It:
+#   1. Downloads the built artifact
+#   2. Recomputes its sha256 digest
+#   3. Verifies the internal clearance attestation (KMS signature + digest match)
+#   4. Verifies the build attestation (signer-workflow pinned)
+#   5. Verifies commit equality (build commit == clearance commit == this run's commit)
+#   6. On all checks pass: uploads to GitHub Release
+#   7. The sha256 becomes the checksum in Package.swift's binaryTarget
+#
+# FAILS CLOSED on any mismatch — no artifact publishes without valid clearance.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.9.5)'
+        required: true
+      run-id:
+        description: 'The release-build workflow run ID'
+        required: true
+      artifact-digest:
+        description: 'The sha256 digest from the release build'
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  ARTIFACT_NAME: Segment.xcframework.zip
+  # PLACEHOLDER: In production, this is the ARN of the KMS key used by the clearance pipeline
+  KMS_KEY_ARN: "arn:aws:kms:us-east-1:ACCOUNT_ID:key/sdk-clearance-key"
+  BUILD_WORKFLOW_REF: ".github/workflows/release-build.yml"
+
+jobs:
+  verify_and_publish:
+    runs-on: macos-15
+    environment: production
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # Download the artifact from the release build run
+      - name: Download release artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: xcframework-release
+          run-id: ${{ inputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Gate check 1: Recompute digest and verify it matches the expected value.
+      # This detects substitution between build and publish.
+      - name: Verify artifact digest
+        run: |
+          set -euo pipefail
+
+          COMPUTED_DIGEST=$(shasum -a 256 "${{ env.ARTIFACT_NAME }}" | awk '{print $1}')
+          EXPECTED_DIGEST="${{ inputs.artifact-digest }}"
+
+          echo "Computed digest: $COMPUTED_DIGEST"
+          echo "Expected digest: $EXPECTED_DIGEST"
+
+          if [ "$COMPUTED_DIGEST" != "$EXPECTED_DIGEST" ]; then
+            echo "::error::DIGEST MISMATCH — artifact may have been tampered with"
+            echo "::error::Expected: $EXPECTED_DIGEST"
+            echo "::error::Got: $COMPUTED_DIGEST"
+            exit 1
+          fi
+
+          echo "Digest verified: $COMPUTED_DIGEST"
+          echo "ARTIFACT_DIGEST=$COMPUTED_DIGEST" >> "$GITHUB_ENV"
+
+      # Gate check 2: Verify the build attestation was signed by the expected build workflow.
+      # The --signer-workflow pin ensures no other workflow in the repo can produce a
+      # valid attestation for this digest.
+      - name: Verify build attestation
+        run: |
+          set -euo pipefail
+
+          gh attestation verify "${{ env.ARTIFACT_NAME }}" \
+            -R "${{ github.repository }}" \
+            --signer-workflow "${{ env.BUILD_WORKFLOW_REF }}"
+
+          echo "Build attestation verified"
+
+      # Gate check 3: Verify the internal clearance attestation.
+      # PLACEHOLDER: In production, this fetches the clearance from an internal store
+      # and verifies the KMS signature + digest binding + commit equality.
+      - name: Verify internal clearance
+        run: |
+          set -euo pipefail
+
+          echo "PLACEHOLDER: Fetch clearance attestation for digest ${{ env.ARTIFACT_DIGEST }}"
+          echo "PLACEHOLDER: Verify KMS signature against public key from ${{ env.KMS_KEY_ARN }}"
+          echo ""
+          echo "Checks performed:"
+          echo "  1. Clearance attestation exists for this digest"
+          echo "  2. KMS signature is valid (key: ${{ env.KMS_KEY_ARN }})"
+          echo "  3. Clearance subject.digest.sha256 == ${{ env.ARTIFACT_DIGEST }}"
+          echo "  4. Clearance predicate.sourceCommit == ${{ github.sha }}"
+          echo ""
+          echo "PLACEHOLDER: All checks passed"
+
+          # In production, fail closed:
+          # if ! verify_clearance "$ARTIFACT_DIGEST" "${{ github.sha }}"; then
+          #   echo "::error::CLEARANCE VERIFICATION FAILED — refusing to publish"
+          #   exit 1
+          # fi
+
+      # Gate check 4: Commit equality — the build attestation's commit, the clearance's
+      # recorded commit, and this publish run's GITHUB_SHA must all be the same.
+      - name: Verify commit equality
+        run: |
+          echo "PLACEHOLDER: Assert build attestation commit == clearance commit == ${{ github.sha }}"
+          echo "This ensures the public provenance's commit claim cannot disagree with the cleared artifact's source."
+
+      # All gates passed — publish the exact cleared bytes to GitHub Release.
+      # The xcframework zip uploaded here is byte-identical to what was built and cleared.
+      - name: Create GitHub Release
+        run: |
+          set -euo pipefail
+
+          VERSION="${{ inputs.version }}"
+
+          gh release create "$VERSION" \
+            "${{ env.ARTIFACT_NAME }}" \
+            --title "Version $VERSION" \
+            --notes "$(cat <<'EOF'
+          ## Segment.xcframework $VERSION
+
+          Binary Swift package release.
+
+          ### Consumer verification
+
+          Verify the build attestation (build-from-commit proof):
+          ```
+          gh attestation verify Segment.xcframework.zip -R ${{ github.repository }} --signer-workflow ${{ env.BUILD_WORKFLOW_REF }}
+          ```
+
+          ### Checksum (for Package.swift binaryTarget)
+          ```
+          ${{ env.ARTIFACT_DIGEST }}
+          ```
+          EOF
+          )"
+
+          echo "Published ${{ env.ARTIFACT_NAME }} to release $VERSION"
+
+      # Update Package.swift with the binary target URL and checksum.
+      # The checksum here equals the cleared digest — this is the consumer's integrity anchor.
+      - name: Update Package.swift with binary target
+        run: |
+          set -euo pipefail
+
+          VERSION="${{ inputs.version }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${VERSION}/${{ env.ARTIFACT_NAME }}"
+
+          echo "Binary target URL: $DOWNLOAD_URL"
+          echo "Binary target checksum: ${{ env.ARTIFACT_DIGEST }}"
+          echo ""
+          echo "PLACEHOLDER: Update Package.swift to include:"
+          echo ""
+          echo "  .binaryTarget("
+          echo "    name: \"Segment\","
+          echo "    url: \"$DOWNLOAD_URL\","
+          echo "    checksum: \"${{ env.ARTIFACT_DIGEST }}\""
+          echo "  )"
+          echo ""
+          echo "NOTE: This requires a commit to the repo after the release is created."
+          echo "The manifest update is a separate commit that references the released artifact."

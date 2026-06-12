@@ -1,0 +1,118 @@
+name: Release Build
+
+# Stage 1: Build xcframework on GitHub-hosted macOS runner
+# Produces a signed build attestation binding the artifact digest to the source commit.
+# The artifact is treated as UNTRUSTED until cleared by the internal security gate.
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build_xcframework:
+    runs-on: macos-15
+    env:
+      ARTIFACT_NAME: Segment.xcframework.zip
+    outputs:
+      artifact-digest: ${{ steps.digest.outputs.sha256 }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+        with:
+          xcode-version: "16.2"
+
+      # Resolve dependencies through Artifactory (curated, public-only virtual repo).
+      # The scoped token grants read access only to the public-only virtual repository,
+      # so a compromised dependency cannot resolve or exfiltrate an internal package.
+      - name: Configure SPM to resolve through Artifactory
+        run: |
+          # NOTE: SPM git-based dependency mirroring through Artifactory is not yet
+          # available. This is a placeholder for when SPM registry protocol or git
+          # mirroring is supported. For now, dependencies resolve from GitHub directly.
+          #
+          # Future: swift package config set-mirror \
+          #   --original-url https://github.com/segmentio/sovran-swift.git \
+          #   --mirror-url https://twilio.jfrog.io/artifactory/spm-mirror/segmentio/sovran-swift.git
+          echo "SPM Artifactory mirror not yet available — resolving from GitHub directly"
+
+      # Build xcframework for all supported platforms
+      - name: Build xcframework
+        run: |
+          set -euo pipefail
+
+          ARCHIVE_DIR="$(pwd)/.build/archives"
+          XCFRAMEWORK_DIR="$(pwd)/.build/xcframework"
+          mkdir -p "$ARCHIVE_DIR" "$XCFRAMEWORK_DIR"
+
+          # Archive for each platform
+          declare -a PLATFORMS=(
+            "iOS:generic/platform=iOS"
+            "iOS-Simulator:generic/platform=iOS Simulator"
+            "macOS:generic/platform=macOS"
+            "tvOS:generic/platform=tvOS"
+            "tvOS-Simulator:generic/platform=tvOS Simulator"
+            "watchOS:generic/platform=watchOS"
+            "watchOS-Simulator:generic/platform=watchOS Simulator"
+          )
+
+          FRAMEWORK_ARGS=()
+          for entry in "${PLATFORMS[@]}"; do
+            NAME="${entry%%:*}"
+            DEST="${entry#*:}"
+            ARCHIVE_PATH="$ARCHIVE_DIR/$NAME.xcarchive"
+
+            xcodebuild archive \
+              -scheme Segment \
+              -destination "$DEST" \
+              -archivePath "$ARCHIVE_PATH" \
+              -derivedDataPath .build/derived-data \
+              SKIP_INSTALL=NO \
+              BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+              SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO
+
+            FRAMEWORK_ARGS+=("-framework" "$ARCHIVE_PATH/Products/Library/Frameworks/Segment.framework")
+          done
+
+          # Create xcframework from all platform archives
+          xcodebuild -create-xcframework \
+            "${FRAMEWORK_ARGS[@]}" \
+            -output "$XCFRAMEWORK_DIR/Segment.xcframework"
+
+          # Zip the xcframework deterministically
+          cd "$XCFRAMEWORK_DIR"
+          ditto -c -k --sequesterRsrc --keepParent Segment.xcframework "${{ env.ARTIFACT_NAME }}"
+          mv "${{ env.ARTIFACT_NAME }}" "$GITHUB_WORKSPACE/"
+
+      # Compute and record the sha256 digest — this is the identity that flows through
+      # the entire pipeline: build attestation, clearance, and publish gate.
+      - name: Compute artifact digest
+        id: digest
+        run: |
+          SHA256=$(shasum -a 256 "${{ env.ARTIFACT_NAME }}" | awk '{print $1}')
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "Artifact digest: $SHA256"
+
+      # Emit build attestation: binds the artifact's sha256 to this commit and workflow.
+      # For a public repository this lands in the public-good Sigstore instance and is
+      # consumer-verifiable via: gh attestation verify Segment.xcframework.zip -R <repo>
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
+        with:
+          subject-path: ${{ env.ARTIFACT_NAME }}
+
+      # Upload artifact to GitHub Actions storage for the internal clearance pipeline
+      # to ingest. The artifact is immutable and run-scoped.
+      - name: Upload artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: xcframework-release
+          path: ${{ env.ARTIFACT_NAME }}
+          retention-days: 30
