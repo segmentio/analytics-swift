@@ -168,11 +168,10 @@ public class HTTPClient {
                 )
                 let newState = stateMachine.handleResponse(state: retryState, response: responseInfo)
 
-                // Log when Retry-After triggers a new pipeline pause on a non-429 code
+                // Log when Retry-After triggers a new pipeline pause
                 if let retryAfterSeconds = responseInfo.retryAfterSeconds,
                    newState.pipelineState == .rateLimited,
-                   retryState.pipelineState != .rateLimited,
-                   httpResponse.statusCode != 429 {
+                   retryState.pipelineState != .rateLimited {
                     let waitUntil = newState.waitUntilTime.map { Date(timeIntervalSince1970: $0).description } ?? "unknown"
                     Analytics.segmentLog(message: "Retry-After (\(retryAfterSeconds)s) received on HTTP \(httpResponse.statusCode) — pausing pipeline until \(waitUntil)", kind: .warning)
                     analytics?.reportInternalError(AnalyticsError.networkServerLimited(url, httpResponse.statusCode))
