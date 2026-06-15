@@ -38,12 +38,18 @@ public class RetryStateMachine {
 
         // Exponential backoff for retryable errors
         let behavior = resolveStatusCodeBehavior(code: response.statusCode)
-        if behavior == .retry && config.backoffConfig.enabled {
+        if behavior == .retry {
             let currentTime = response.currentTime
-            return handleRetryableError(state: state, response: response, currentTime: currentTime)
+            // If server provided Retry-After, treat as pipeline-level rate limit regardless of status code
+            if response.retryAfterSeconds != nil && config.rateLimitConfig.enabled {
+                return handleRateLimitResponse(state: state, response: response, currentTime: currentTime)
+            }
+            if config.backoffConfig.enabled {
+                return handleRetryableError(state: state, response: response, currentTime: currentTime)
+            }
         }
 
-        // Drop non-retryable errors, or retryable errors when backoff is disabled
+        // Drop non-retryable errors, or retryable errors when both configs are disabled
         var newState = state
         newState.batchMetadata.removeValue(forKey: response.batchFile)
         return newState
@@ -125,8 +131,13 @@ public class RetryStateMachine {
         if statusCode == 429 && !config.rateLimitConfig.enabled { return true }
 
         let behavior = resolveStatusCodeBehavior(code: statusCode)
-        // Retryable error with backoff disabled: drop
-        if behavior == .retry && !config.backoffConfig.enabled { return true }
+        if behavior == .retry {
+            // Rate limit config handles retryable codes that carry Retry-After — don't drop
+            if config.rateLimitConfig.enabled { return false }
+            // Retryable error with backoff disabled and no rate-limit handling: drop
+            if !config.backoffConfig.enabled { return true }
+            return false
+        }
 
         return behavior == .drop
     }
