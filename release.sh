@@ -73,7 +73,7 @@ then
 	exit 1
 fi
 
-versionFile="./sources/${PRODUCT_NAME}/Version.swift"
+versionFile="./Sources/${PRODUCT_NAME}/Version.swift"
 
 # get last line in version.swift
 versionLine=$(tail -n 1 $versionFile)
