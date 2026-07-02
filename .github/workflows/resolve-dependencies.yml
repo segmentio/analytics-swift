@@ -58,18 +58,24 @@ jobs:
       - name: Probe Artifactory Swift URL formats
         run: |
           set -euo pipefail
-          REPO="segmentio/sovran-swift.git"
           PATHS=(
-            "artifactory/api/swift/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
-            "artifactory/git/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
-            "artifactory/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
-            "artifactory/api/vcs/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
+            "artifactory/git/virtual-swift-thirdparty/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/virtual-swift-thirdparty/segmentio/sovran-swift/info/refs?service=git-upload-pack"
+            "artifactory/git/virtual-swift-thirdparty/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/remote-swift-github/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/remote-swift-github/segmentio/sovran-swift/info/refs?service=git-upload-pack"
+            "artifactory/remote-swift-github/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
           )
           for path in "${PATHS[@]}"; do
             URL="${ARTIFACTORY_URL}/${path}"
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            RESPONSE=$(curl -s -w "\n%{http_code}" \
               -H "Authorization: Bearer ${ART_TOKEN}" "$URL")
-            echo "$HTTP_CODE — $URL"
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | sed '$d' | head -5)
+            echo "$HTTP_CODE — $path"
+            if [ "$HTTP_CODE" != "404" ]; then
+              echo "  Body: $BODY"
+            fi
           done
 
       - name: Configure SPM to resolve through Artifactory
