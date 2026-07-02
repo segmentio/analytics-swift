@@ -1,8 +1,8 @@
 name: Release Build
 
-# Stage 1: Build xcframework on GitHub-hosted macOS runner
-# Produces a signed build attestation binding the artifact digest to the source commit.
-# The artifact is treated as UNTRUSTED until cleared by the internal security gate.
+# Build xcframework on a GitHub-hosted macOS runner, resolving Swift package
+# dependencies through the curated Artifactory pull-through cache (ADR Rule 3).
+# Produces a build attestation binding the artifact digest to the source commit.
 
 on:
   push:
@@ -16,32 +16,59 @@ permissions:
 
 jobs:
   build_xcframework:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       ARTIFACT_NAME: Segment.xcframework.zip
+      ARTIFACTORY_URL: https://twilio.jfrog.io
+      SWIFT_VIRTUAL_REPO: virtual-swift-thirdparty
     outputs:
       artifact-digest: ${{ steps.digest.outputs.sha256 }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
-          xcode-version: "16.2"
+          xcode-version: "26"
 
-      # Resolve dependencies through Artifactory (curated, public-only virtual repo).
-      # The scoped token grants read access only to the public-only virtual repository,
-      # so a compromised dependency cannot resolve or exfiltrate an internal package.
+      # Exchange GitHub OIDC token for a short-lived Artifactory read token.
+      # The segmentio org uses provider_name "github-actions-segmentio".
+      # Token lands in sdk-build-readers group (read access to virtual repos).
+      - name: Get Artifactory token via OIDC
+        run: |
+          set -euo pipefail
+          OIDC_JWT=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${ARTIFACTORY_URL}" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+          ART_TOKEN=$(curl -sS "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+            -H 'Content-Type: application/json' \
+            -d "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:token-exchange\",
+                 \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\",
+                 \"subject_token\":\"${OIDC_JWT}\",
+                 \"provider_name\":\"github-actions-segmentio\"}" | jq -r '.access_token')
+          echo "::add-mask::$ART_TOKEN"
+          echo "ART_TOKEN=$ART_TOKEN" >> "$GITHUB_ENV"
+
+      # Configure SPM to resolve dependencies through the Artifactory Swift
+      # pull-through cache instead of hitting GitHub directly.
       - name: Configure SPM to resolve through Artifactory
         run: |
-          # NOTE: SPM git-based dependency mirroring through Artifactory is not yet
-          # available. This is a placeholder for when SPM registry protocol or git
-          # mirroring is supported. For now, dependencies resolve from GitHub directly.
-          #
-          # Future: swift package config set-mirror \
-          #   --original-url https://github.com/segmentio/sovran-swift.git \
-          #   --mirror-url https://twilio.jfrog.io/artifactory/spm-mirror/segmentio/sovran-swift.git
-          echo "SPM Artifactory mirror not yet available — resolving from GitHub directly"
+          set -euo pipefail
+          MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
+
+          # Set up netrc for git authentication to Artifactory
+          echo "machine twilio.jfrog.io login token password ${ART_TOKEN}" > ~/.netrc
+          chmod 600 ~/.netrc
+
+          # Mirror each dependency through Artifactory
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/sovran-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/sovran-swift.git"
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/jsonsafeencoding-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/jsonsafeencoding-swift.git"
+
+      - name: Resolve dependencies
+        run: swift package resolve
 
       # Build xcframework for all supported platforms
       - name: Build xcframework
@@ -52,7 +79,6 @@ jobs:
           XCFRAMEWORK_DIR="$(pwd)/.build/xcframework"
           mkdir -p "$ARCHIVE_DIR" "$XCFRAMEWORK_DIR"
 
-          # Archive for each platform
           declare -a PLATFORMS=(
             "iOS:generic/platform=iOS"
             "iOS-Simulator:generic/platform=iOS Simulator"
@@ -81,18 +107,14 @@ jobs:
             FRAMEWORK_ARGS+=("-framework" "$ARCHIVE_PATH/Products/Library/Frameworks/Segment.framework")
           done
 
-          # Create xcframework from all platform archives
           xcodebuild -create-xcframework \
             "${FRAMEWORK_ARGS[@]}" \
             -output "$XCFRAMEWORK_DIR/Segment.xcframework"
 
-          # Zip the xcframework deterministically
           cd "$XCFRAMEWORK_DIR"
           ditto -c -k --sequesterRsrc --keepParent Segment.xcframework "${{ env.ARTIFACT_NAME }}"
           mv "${{ env.ARTIFACT_NAME }}" "$GITHUB_WORKSPACE/"
 
-      # Compute and record the sha256 digest — this is the identity that flows through
-      # the entire pipeline: build attestation, clearance, and publish gate.
       - name: Compute artifact digest
         id: digest
         run: |
@@ -100,18 +122,13 @@ jobs:
           echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
           echo "Artifact digest: $SHA256"
 
-      # Emit build attestation: binds the artifact's sha256 to this commit and workflow.
-      # For a public repository this lands in the public-good Sigstore instance and is
-      # consumer-verifiable via: gh attestation verify Segment.xcframework.zip -R <repo>
       - name: Attest build provenance
         uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
         with:
           subject-path: ${{ env.ARTIFACT_NAME }}
 
-      # Upload artifact to GitHub Actions storage for the internal clearance pipeline
-      # to ingest. The artifact is immutable and run-scoped.
       - name: Upload artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: xcframework-release
           path: ${{ env.ARTIFACT_NAME }}
