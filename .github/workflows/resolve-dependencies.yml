@@ -41,8 +41,10 @@ jobs:
           set -euo pipefail
           MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
 
-          echo "machine twilio.jfrog.io login token password ${ART_TOKEN}" > ~/.netrc
-          chmod 600 ~/.netrc
+          # Configure git to use the token for Artifactory URLs
+          git config --global credential.helper store
+          echo "https://token:${ART_TOKEN}@twilio.jfrog.io" >> ~/.git-credentials
+          chmod 600 ~/.git-credentials
 
           swift package config set-mirror \
             --original-url https://github.com/segmentio/sovran-swift.git \
