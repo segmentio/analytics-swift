@@ -55,6 +55,23 @@ jobs:
           swift --version
           git --version
 
+      - name: Probe Artifactory Swift URL formats
+        run: |
+          set -euo pipefail
+          REPO="segmentio/sovran-swift.git"
+          PATHS=(
+            "artifactory/api/swift/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
+            "artifactory/git/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
+            "artifactory/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
+            "artifactory/api/vcs/${SWIFT_VIRTUAL_REPO}/${REPO}/info/refs?service=git-upload-pack"
+          )
+          for path in "${PATHS[@]}"; do
+            URL="${ARTIFACTORY_URL}/${path}"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: Bearer ${ART_TOKEN}" "$URL")
+            echo "$HTTP_CODE — $URL"
+          done
+
       - name: Configure SPM to resolve through Artifactory
         run: |
           set -euo pipefail
