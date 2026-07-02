@@ -5,7 +5,7 @@ name: Resolve Dependencies (Artifactory OIDC)
 
 on:
   push:
-  pull_request:
+    branches: [poc/**]
   workflow_dispatch:
 
 permissions:
@@ -36,15 +36,33 @@ jobs:
           echo "::add-mask::$ART_TOKEN"
           echo "ART_TOKEN=$ART_TOKEN" >> "$GITHUB_ENV"
 
+      - name: Verify Artifactory token
+        run: |
+          set -euo pipefail
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${ART_TOKEN}" \
+            "${ARTIFACTORY_URL}/artifactory/api/system/ping")
+          echo "Artifactory ping: HTTP $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Artifactory token is invalid (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Debug git credential setup
+        run: |
+          echo "HOME=$HOME"
+          echo "Runner user: $(whoami)"
+          swift --version
+          git --version
+
       - name: Configure SPM to resolve through Artifactory
         run: |
           set -euo pipefail
           MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
 
-          # Configure git to use the token for Artifactory URLs
-          git config --global credential.helper store
-          echo "https://token:${ART_TOKEN}@twilio.jfrog.io" >> ~/.git-credentials
-          chmod 600 ~/.git-credentials
+          # Configure git credentials via URL-specific helper
+          git config --global "url.https://token:${ART_TOKEN}@twilio.jfrog.io/.insteadOf" \
+            "https://twilio.jfrog.io/"
 
           swift package config set-mirror \
             --original-url https://github.com/segmentio/sovran-swift.git \
