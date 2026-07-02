@@ -60,9 +60,9 @@ jobs:
           set -euo pipefail
           MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
 
-          # Configure git credentials via URL-specific helper
-          git config --global "url.https://token:${ART_TOKEN}@twilio.jfrog.io/.insteadOf" \
-            "https://twilio.jfrog.io/"
+          # Configure git to pass the token as a Bearer header for Artifactory
+          git config --global http.https://twilio.jfrog.io/.extraHeader \
+            "Authorization: Bearer ${ART_TOKEN}"
 
           swift package config set-mirror \
             --original-url https://github.com/segmentio/sovran-swift.git \
