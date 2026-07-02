@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   resolve:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     env:
       ARTIFACTORY_URL: https://twilio.jfrog.io
       SWIFT_VIRTUAL_REPO: virtual-swift-thirdparty
