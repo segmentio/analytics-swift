@@ -1,0 +1,55 @@
+name: Resolve Dependencies (Artifactory OIDC)
+
+# Validate that SPM dependencies resolve through the curated Artifactory
+# pull-through cache via OIDC token exchange (ADR Rule 3).
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACTORY_URL: https://twilio.jfrog.io
+      SWIFT_VIRTUAL_REPO: virtual-swift-thirdparty
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Get Artifactory token via OIDC
+        run: |
+          set -euo pipefail
+          OIDC_JWT=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${ARTIFACTORY_URL}" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+          ART_TOKEN=$(curl -sS "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+            -H 'Content-Type: application/json' \
+            -d "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:token-exchange\",
+                 \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\",
+                 \"subject_token\":\"${OIDC_JWT}\",
+                 \"provider_name\":\"github-actions-segmentio\"}" | jq -r '.access_token')
+          echo "::add-mask::$ART_TOKEN"
+          echo "ART_TOKEN=$ART_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Configure SPM to resolve through Artifactory
+        run: |
+          set -euo pipefail
+          MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
+
+          echo "machine twilio.jfrog.io login token password ${ART_TOKEN}" > ~/.netrc
+          chmod 600 ~/.netrc
+
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/sovran-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/sovran-swift.git"
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/jsonsafeencoding-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/jsonsafeencoding-swift.git"
+
+      - name: Resolve dependencies
+        run: swift package resolve
