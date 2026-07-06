@@ -1,0 +1,109 @@
+name: Publish
+
+# Verify clearance and publish the exact cleared bytes to GitHub Release.
+#
+# This workflow:
+#   1. Downloads the built artifact from the release-build run
+#   2. Recomputes its sha256 digest
+#   3. Verifies the build attestation (signer-workflow pinned)
+#   4. Verifies internal clearance (placeholder — not yet built by Platform)
+#   5. On all checks pass: uploads to GitHub Release
+#   6. The sha256 becomes the checksum in Package.swift's binaryTarget
+#
+# FAILS CLOSED on any mismatch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.9.5)'
+        required: true
+      run-id:
+        description: 'The release-build workflow run ID'
+        required: true
+      artifact-digest:
+        description: 'The sha256 digest from the release build'
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  ARTIFACT_NAME: Segment.xcframework.zip
+  BUILD_WORKFLOW_REF: ".github/workflows/build.yml"
+
+jobs:
+  verify_and_publish:
+    runs-on: macos-26
+    environment: production
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Download release artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: xcframework-release
+          run-id: ${{ inputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Gate 1: Digest verification — detect substitution between build and publish.
+      - name: Verify artifact digest
+        run: |
+          set -euo pipefail
+          COMPUTED_DIGEST=$(shasum -a 256 "${{ env.ARTIFACT_NAME }}" | awk '{print $1}')
+          EXPECTED_DIGEST="${{ inputs.artifact-digest }}"
+
+          if [ "$COMPUTED_DIGEST" != "$EXPECTED_DIGEST" ]; then
+            echo "::error::DIGEST MISMATCH — artifact may have been tampered with"
+            exit 1
+          fi
+
+          echo "Digest verified: $COMPUTED_DIGEST"
+          echo "ARTIFACT_DIGEST=$COMPUTED_DIGEST" >> "$GITHUB_ENV"
+
+      # Gate 2: Build attestation — verify it was signed by the expected workflow.
+      - name: Verify build attestation
+        run: |
+          set -euo pipefail
+          gh attestation verify "${{ env.ARTIFACT_NAME }}" \
+            -R "${{ github.repository }}" \
+            --signer-workflow "${{ env.BUILD_WORKFLOW_REF }}"
+
+      # Gate 3: Internal clearance — placeholder until Platform delivers the gate.
+      - name: Verify internal clearance
+        run: |
+          echo "PLACEHOLDER: Internal clearance gate not yet available (PEA-1323)"
+          echo "Once delivered, this step will:"
+          echo "  1. Fetch KMS-signed clearance attestation for digest ${{ env.ARTIFACT_DIGEST }}"
+          echo "  2. Verify signature against the clearance KMS public key"
+          echo "  3. Assert clearance subject.digest.sha256 == ${{ env.ARTIFACT_DIGEST }}"
+          echo "  4. Assert clearance predicate.sourceCommit == ${{ github.sha }}"
+          echo "  5. Fail closed on any mismatch"
+
+      # All gates passed — publish to GitHub Release.
+      - name: Create GitHub Release
+        run: |
+          set -euo pipefail
+          VERSION="${{ inputs.version }}"
+
+          gh release create "$VERSION" \
+            "${{ env.ARTIFACT_NAME }}" \
+            --title "Version $VERSION" \
+            --notes "## Segment.xcframework ${VERSION}
+
+          Binary Swift package release.
+
+          ### Consumer verification
+
+          Verify the build attestation:
+          \`\`\`
+          gh attestation verify Segment.xcframework.zip -R ${{ github.repository }} --signer-workflow ${{ env.BUILD_WORKFLOW_REF }}
+          \`\`\`
+
+          ### Checksum (for Package.swift binaryTarget)
+          \`\`\`
+          ${{ env.ARTIFACT_DIGEST }}
+          \`\`\`"

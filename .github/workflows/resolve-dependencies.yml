@@ -1,0 +1,98 @@
+name: Resolve Dependencies (Artifactory OIDC)
+
+# Validate that SPM dependencies resolve through the curated Artifactory
+# pull-through cache via OIDC token exchange (ADR Rule 3).
+
+on:
+  push:
+    branches: [poc/**]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest-large
+    env:
+      ARTIFACTORY_URL: https://twilio.jfrog.io
+      SWIFT_VIRTUAL_REPO: virtual-swift-thirdparty
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Get Artifactory token via OIDC
+        run: |
+          set -euo pipefail
+          OIDC_JWT=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${ARTIFACTORY_URL}" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+          ART_TOKEN=$(curl -sS "${ARTIFACTORY_URL}/access/api/v1/oidc/token" \
+            -H 'Content-Type: application/json' \
+            -d "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:token-exchange\",
+                 \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\",
+                 \"subject_token\":\"${OIDC_JWT}\",
+                 \"provider_name\":\"github-actions-segmentio\"}" | jq -r '.access_token')
+          echo "::add-mask::$ART_TOKEN"
+          echo "ART_TOKEN=$ART_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Verify Artifactory token
+        run: |
+          set -euo pipefail
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${ART_TOKEN}" \
+            "${ARTIFACTORY_URL}/artifactory/api/system/ping")
+          echo "Artifactory ping: HTTP $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::Artifactory token is invalid (HTTP $HTTP_CODE)"
+            exit 1
+          fi
+
+      - name: Debug git credential setup
+        run: |
+          echo "HOME=$HOME"
+          echo "Runner user: $(whoami)"
+          swift --version
+          git --version
+
+      - name: Probe Artifactory Swift URL formats
+        run: |
+          set -euo pipefail
+          PATHS=(
+            "artifactory/git/virtual-swift-thirdparty/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/virtual-swift-thirdparty/segmentio/sovran-swift/info/refs?service=git-upload-pack"
+            "artifactory/git/virtual-swift-thirdparty/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/remote-swift-github/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
+            "artifactory/git/remote-swift-github/segmentio/sovran-swift/info/refs?service=git-upload-pack"
+            "artifactory/remote-swift-github/segmentio/sovran-swift.git/info/refs?service=git-upload-pack"
+          )
+          for path in "${PATHS[@]}"; do
+            URL="${ARTIFACTORY_URL}/${path}"
+            RESPONSE=$(curl -s -w "\n%{http_code}" \
+              -H "Authorization: Bearer ${ART_TOKEN}" "$URL")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | sed '$d' | head -5)
+            echo "$HTTP_CODE — $path"
+            if [ "$HTTP_CODE" != "404" ]; then
+              echo "  Body: $BODY"
+            fi
+          done
+
+      - name: Configure SPM to resolve through Artifactory
+        run: |
+          set -euo pipefail
+          MIRROR_BASE="${ARTIFACTORY_URL}/artifactory/api/swift/${SWIFT_VIRTUAL_REPO}"
+
+          # Configure git to pass the token as a Bearer header for Artifactory
+          git config --global http.https://twilio.jfrog.io/.extraHeader \
+            "Authorization: Bearer ${ART_TOKEN}"
+
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/sovran-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/sovran-swift.git"
+          swift package config set-mirror \
+            --original-url https://github.com/segmentio/jsonsafeencoding-swift.git \
+            --mirror-url "${MIRROR_BASE}/segmentio/jsonsafeencoding-swift.git"
+
+      - name: Resolve dependencies
+        run: swift package resolve
