@@ -1,0 +1,23 @@
+steps:
+  - label: ":swift: Resolve & Build"
+    command: |
+      set -euo pipefail
+
+      # Verify Xcode is available
+      if [ -d "/Applications/Xcode.app" ]; then
+        sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      fi
+      xcodebuild -version
+      swift --version
+
+      # Resolve dependencies (uses committed Package.resolved with pinned SHAs)
+      swift package resolve
+
+      # Build the library
+      swift build
+
+      # Run tests
+      swift test
+    agents:
+      queue: macos
+    timeout_in_minutes: 30
