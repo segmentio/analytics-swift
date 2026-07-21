@@ -25,7 +25,7 @@ jobs:
   e2e-tests:
     # Skip on fork PRs where repo secrets aren't available
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: macos-latest
+    runs-on: macos-large-latest
 
     steps:
       - name: Checkout SDK
