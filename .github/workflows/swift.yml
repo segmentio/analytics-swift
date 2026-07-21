@@ -11,14 +11,18 @@ concurrency:
 
 jobs:
   build_and_test_spm_mac:
-    runs-on: macos-large-latest
+    runs-on:
+      group: github-hosted-large
+      labels: macos-large-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Build & Run tests
         run: swift test
 
   build_and_test_ios:
-    runs-on: macos-large-latest
+    runs-on:
+      group: github-hosted-large
+      labels: macos-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16'
