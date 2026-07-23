@@ -40,15 +40,11 @@ jobs:
       - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)'
 
   build_and_test_visionos:
-    runs-on: macos-large-latest
+    # visionOS's simulator is Apple-Silicon-only, so this job must run on an
+    # arm64 runner — on Intel it fails with "Could not find platform: visionOS".
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      # The runner has no visionOS simulator runtime preinstalled. runFirstLaunch
-      # initializes Xcode's component/platform machinery (without it,
-      # -downloadPlatform reports "Could not find platform: visionOS"), then we
-      # fetch the runtime.
-      - run: sudo xcodebuild -runFirstLaunch
-      - run: xcodebuild -downloadPlatform visionOS
       - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
 
   build_and_test_examples:
