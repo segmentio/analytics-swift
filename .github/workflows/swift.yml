@@ -11,44 +11,38 @@ concurrency:
 
 jobs:
   build_and_test_spm_mac:
-    runs-on:
-      group: github-hosted-large
-      labels: macos-large-latest
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Build & Run tests
         run: swift test
 
   build_and_test_ios:
-    runs-on:
-      group: github-hosted-large
-      labels: macos-large-latest
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17'
 
   build_and_test_tvos:
-    runs-on: macos-large-latest
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -sdk appletvsimulator -destination 'platform=tvOS Simulator,name=Apple TV'
 
   build_and_test_watchos:
-    runs-on: macos-large-latest
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -sdk watchsimulator -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)'
 
   build_and_test_visionos:
-    # visionOS's simulator is Apple-Silicon-only, so this job must run on an
-    # arm64 runner — on Intel it fails with "Could not find platform: visionOS".
     runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
 
   build_and_test_examples:
-    runs-on: macos-large-latest
+    runs-on: macos-arm
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: BasicExample
