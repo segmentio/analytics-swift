@@ -43,9 +43,11 @@ jobs:
     runs-on: macos-large-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      # The runner has no visionOS simulator runtime preinstalled — fetch it
-      # first. Probe: confirms whether this runner pool permits the download
-      # (i.e. has egress to Apple's platform CDN).
+      # The runner has no visionOS simulator runtime preinstalled. runFirstLaunch
+      # initializes Xcode's component/platform machinery (without it,
+      # -downloadPlatform reports "Could not find platform: visionOS"), then we
+      # fetch the runtime.
+      - run: sudo xcodebuild -runFirstLaunch
       - run: xcodebuild -downloadPlatform visionOS
       - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
 
