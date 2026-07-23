@@ -22,7 +22,7 @@ jobs:
   build_and_test_ios:
     runs-on:
       group: github-hosted-large
-      labels: macos-latest
+      labels: macos-large-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: xcodebuild -scheme Segment test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17'
