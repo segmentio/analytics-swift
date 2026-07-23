@@ -43,7 +43,11 @@ jobs:
     runs-on: macos-large-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,OS=latest,name=Apple Vision Pro'
+      # The runner has no visionOS simulator runtime preinstalled — fetch it
+      # first. Probe: confirms whether this runner pool permits the download
+      # (i.e. has egress to Apple's platform CDN).
+      - run: xcodebuild -downloadPlatform visionOS
+      - run: xcodebuild -scheme Segment test -destination 'platform=visionOS Simulator,name=Apple Vision Pro'
 
   build_and_test_examples:
     runs-on: macos-large-latest
