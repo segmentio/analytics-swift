@@ -332,20 +332,24 @@ extension SegmentDestination {
         // lets go through and get rid of any tasks that aren't running.
         // either they were suspended because a background task took too
         // long, or the os orphaned it due to device constraints (like a watch).
+        var pendingCleanups: [UploadTaskInfo.CleanupClosure] = []
+        var before = 0
+        var after = 0
         uploadsQueue.sync {
-            let before = uploads.count
-            var newPending = uploads
-            newPending.removeAll { uploadInfo in
+            before = uploads.count
+            uploads.removeAll { uploadInfo in
                 let shouldRemove = uploadInfo.task.state != .running
                 if shouldRemove, let cleanup = uploadInfo.cleanup {
-                    cleanup()
+                    pendingCleanups.append(cleanup)
                 }
                 return shouldRemove
             }
-            uploads = newPending
-            let after = uploads.count
-            analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
+            after = uploads.count
         }
+        // Invoke cleanup outside the queue to prevent re-entrant sync deadlocks
+        // if a cleanup closure calls back into any uploadsQueue accessor.
+        pendingCleanups.forEach { $0() }
+        analytics?.log(message: "Cleaned up \(before - after) non-running uploads.")
     }
 
     internal var pendingUploads: Int {
