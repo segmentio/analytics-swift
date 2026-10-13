@@ -208,11 +208,9 @@ extension SegmentDestination {
                     }
                     
                     // we have a legit upload in progress now, so add it to our list.
+                    // no task means the completion already ran (and left the group).
                     if let upload = uploadTask {
                         add(uploadTask: UploadTaskInfo(url: url, data: nil, task: upload))
-                    } else {
-                        // we couldn't get a task, so we need to leave the group or things will hang.
-                        group.leave()
                     }
                 }
             }
@@ -306,12 +304,9 @@ extension SegmentDestination {
             }
 
             // we have a legit upload in progress now, so add it to our list.
+            // no task means the completion already ran (and left the group).
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
-            } else {
-                // we couldn't get a task, so we need to leave the group or things will hang.
-                group.leave()
-                semaphore.signal()
             }
 
             _ = semaphore.wait(timeout: .distantFuture)
