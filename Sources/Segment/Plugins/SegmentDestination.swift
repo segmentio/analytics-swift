@@ -172,12 +172,14 @@ extension SegmentDestination {
                 autoreleasepool {
                     // enter for this url we're going to kick off
                     group.enter()
+                    // the completion and the no-task path below may both try to leave; only one may.
+                    let leaveGroup = RunOnce { group.leave() }
                     analytics.log(message: "Processing Batch:\n\(url.lastPathComponent)")
-                    
+
                     // set up the task
                     let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in
                         defer {
-                            group.leave()
+                            leaveGroup.run()
                         }
                         guard let self else { return }
                         switch result {
@@ -208,9 +210,11 @@ extension SegmentDestination {
                     }
                     
                     // we have a legit upload in progress now, so add it to our list.
-                    // no task means the completion already ran (and left the group).
                     if let upload = uploadTask {
                         add(uploadTask: UploadTaskInfo(url: url, data: nil, task: upload))
+                    } else {
+                        // we couldn't get a task, so make sure we've left the group or things will hang.
+                        leaveGroup.run()
                     }
                 }
             }
@@ -272,13 +276,17 @@ extension SegmentDestination {
             // lets let this task complete so we can get all the values out.
             let semaphore = DispatchSemaphore(value: 0)
             var didRemove = false
+            // the completion and the no-task path below may both try to finish; only one may.
+            let finish = RunOnce {
+                group.leave()
+                semaphore.signal()
+            }
 
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data, batchId: batchId) { [weak self] result in
                 defer {
                     // leave for the url we kicked off.
-                    group.leave()
-                    semaphore.signal()
+                    finish.run()
                 }
 
                 guard let self else { return }
@@ -304,9 +312,11 @@ extension SegmentDestination {
             }
 
             // we have a legit upload in progress now, so add it to our list.
-            // no task means the completion already ran (and left the group).
             if let upload = uploadTask {
                 add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload))
+            } else {
+                // we couldn't get a task, so make sure we've left the group or things will hang.
+                finish.run()
             }
 
             _ = semaphore.wait(timeout: .distantFuture)
