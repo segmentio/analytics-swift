@@ -183,7 +183,48 @@ extension SegmentDestination: iOSLifecycle {
     }
     
     public func applicationDidEnterBackground(application: UIApplication?) {
-        enterBackground()
+        flushInBackground(using: application.map(ApplicationBackgroundTasks.init))
+    }
+
+    // keep the app awake from the moment we decide to flush until the flush (and its uploads) completes,
+    // otherwise the OS can suspend us before an upload task even exists.
+    internal func flushInBackground(using backgroundTasks: BackgroundTaskProvider?) {
+        guard let analytics, let backgroundTasks else {
+            enterBackground()
+            return
+        }
+
+        var taskIdentifier: UIBackgroundTaskIdentifier = .invalid
+        // the flush completion and the expiration handler may both try to end it; only one may.
+        let endTask = RunOnce {
+            if taskIdentifier != .invalid {
+                backgroundTasks.end(taskIdentifier)
+            }
+        }
+        taskIdentifier = backgroundTasks.begin {
+            endTask.run()
+        }
+
+        analytics.flush {
+            endTask.run()
+        }
+    }
+}
+
+internal protocol BackgroundTaskProvider {
+    func begin(expirationHandler: @escaping () -> Void) -> UIBackgroundTaskIdentifier
+    func end(_ identifier: UIBackgroundTaskIdentifier)
+}
+
+internal struct ApplicationBackgroundTasks: BackgroundTaskProvider {
+    let application: UIApplication
+
+    func begin(expirationHandler: @escaping () -> Void) -> UIBackgroundTaskIdentifier {
+        return application.beginBackgroundTask(withName: "segment.flush", expirationHandler: expirationHandler)
+    }
+
+    func end(_ identifier: UIBackgroundTaskIdentifier) {
+        application.endBackgroundTask(identifier)
     }
 }
 
