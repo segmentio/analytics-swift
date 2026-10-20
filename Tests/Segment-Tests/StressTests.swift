@@ -31,7 +31,7 @@ class StressTests: XCTestCase {
             .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
             })
-            .httpSession(RestrictedHTTPSession())
+            .httpSession(InstantHTTPSession())
         )
         analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -114,7 +114,7 @@ class StressTests: XCTestCase {
             .errorHandler({ error in
                 XCTFail("Storage Error: \(error)")
             })
-            .httpSession(RestrictedHTTPSession())
+            .httpSession(InstantHTTPSession())
         )
         analytics.purgeStorage()
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
@@ -245,7 +245,8 @@ class StressTests: XCTestCase {
             .storageMode(.memory(30_000))
             .errorHandler({ error in
             XCTFail("Storage Error: \(error)")
-        }))
+        })
+            .httpSession(InstantHTTPSession()))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
         waitUntilStarted(analytics: analytics)

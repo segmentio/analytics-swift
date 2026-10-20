@@ -252,6 +252,70 @@ class RestrictedHTTPSession: HTTPSession {
 
 
 
+// answers every request with a 200 without going through URLSession, so there are no request
+// timers to expire on a slow runner. tasks follow URLSessionTask's lifecycle (nothing happens
+// until resume, running until the completion is called) and file uploads still read the file.
+class InstantHTTPSession: HTTPSession {
+    class Task: UploadTask, DataTask {
+        private let lock = NSLock()
+        private var _state: URLSessionTask.State = .suspended
+        private let queue: DispatchQueue
+        private let work: () -> (Data?, URLResponse?, (any Error)?)
+        private let completionHandler: @Sendable (Data?, URLResponse?, (any Error)?) -> Void
+
+        init(queue: DispatchQueue, work: @escaping () -> (Data?, URLResponse?, (any Error)?), completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) {
+            self.queue = queue
+            self.work = work
+            self.completionHandler = completionHandler
+        }
+
+        var state: URLSessionTask.State {
+            lock.lock(); defer { lock.unlock() }
+            return _state
+        }
+
+        func resume() {
+            lock.lock()
+            guard _state == .suspended else { lock.unlock(); return }
+            _state = .running
+            lock.unlock()
+            queue.async { [self] in
+                let (data, response, error) = work()
+                lock.lock(); _state = .completed; lock.unlock()
+                completionHandler(data, response, error)
+            }
+        }
+    }
+
+    // serial, like URLSession's delegate queue.
+    private let queue = DispatchQueue(label: "com.segment.test.instantHTTPSession")
+
+    func uploadTask(with request: URLRequest, fromFile file: URL, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> Task {
+        return Task(queue: queue, work: {
+            do {
+                _ = try Data(contentsOf: file)
+                return (Data(), Self.ok(request), nil)
+            } catch {
+                return (nil, nil, error)
+            }
+        }, completionHandler: completionHandler)
+    }
+
+    func uploadTask(with request: URLRequest, from bodyData: Data?, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> Task {
+        return Task(queue: queue, work: { (Data(), Self.ok(request), nil) }, completionHandler: completionHandler)
+    }
+
+    func dataTask(with request: URLRequest, completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> Task {
+        return Task(queue: queue, work: { (Data(), Self.ok(request), nil) }, completionHandler: completionHandler)
+    }
+
+    func finishTasksAndInvalidate() {}
+
+    private static func ok(_ request: URLRequest) -> HTTPURLResponse {
+        return HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+    }
+}
+
 class BlockNetworkCalls: URLProtocol {
     var initialURL: URL? = nil
     override class func canInit(with request: URLRequest) -> Bool {
