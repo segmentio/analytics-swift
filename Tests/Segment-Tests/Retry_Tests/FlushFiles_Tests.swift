@@ -72,6 +72,8 @@ class FlushFiles_Tests: XCTestCase {
             .flushInterval(9999)
             .flushAt(9999)
             .operatingMode(.synchronous)
+            // own flush queue, so instances left over from other tests can't delay our flushes.
+            .flushQueue(DispatchQueue(label: "com.segment.test.flushFiles"))
             .storageMode(.disk)
             .trackApplicationLifecycleEvents(false)
             .httpSession(session)

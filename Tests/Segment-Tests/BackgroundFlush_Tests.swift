@@ -59,23 +59,32 @@ final class BackgroundFlush_Tests: XCTestCase {
         Telemetry.shared.enable = false
     }
 
+    // own flush queue and no network, so instances left over from other tests can't delay our flushes.
+    private func makeConfiguration() -> Configuration {
+        return Configuration(writeKey: uniqueWriteKey())
+            .flushInterval(9999)
+            .flushQueue(DispatchQueue(label: "com.segment.test.backgroundFlush"))
+            .httpSession(RestrictedHTTPSession())
+    }
+
     private func makeAnalytics() -> (Analytics, SegmentDestination) {
-        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
-            .flushInterval(9999))
+        let analytics = Analytics(configuration: makeConfiguration())
         waitUntilStarted(analytics: analytics)
         let destination = analytics.find(pluginType: SegmentDestination.self)!
         return (analytics, destination)
     }
 
     func testBackgroundingFlushesOnce() {
-        let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
-            .operatingMode(.synchronous)
-            .flushInterval(9999))
+        let analytics = Analytics(configuration: makeConfiguration()
+            .operatingMode(.synchronous))
         let counter = FlushCounter()
         analytics.add(plugin: counter)
         waitUntilStarted(analytics: analytics)
 
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        // deliver the notification to this instance only; posting it globally makes every
+        // live instance in the test process flush.
+        let monitor = analytics.find(pluginType: iOSLifecycleMonitor.self)!
+        monitor.didEnterBackground(notification: NSNotification(name: UIApplication.didEnterBackgroundNotification, object: nil))
 
         XCTAssertEqual(counter.count, 1)
     }
