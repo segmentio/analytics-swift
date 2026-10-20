@@ -10,6 +10,15 @@
 import XCTest
 @testable import Segment
 
+// the network is faked, but on a busy runner an upload can still sit long enough to hit URLSession's
+// timeout. that batch stays in storage and goes out on a later flush, so it isn't a storage failure.
+private func failOnStorageError(_ error: Error) {
+    if case AnalyticsError.networkUnknown(_, let underlying) = error, (underlying as? URLError)?.code == .timedOut {
+        return
+    }
+    XCTFail("Storage Error: \(error)")
+}
+
 class StressTests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -28,9 +37,7 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
 
         let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
-            .errorHandler({ error in
-                XCTFail("Storage Error: \(error)")
-            })
+            .errorHandler(failOnStorageError)
             .httpSession(RestrictedHTTPSession())
         )
         analytics.purgeStorage()
@@ -111,9 +118,7 @@ class StressTests: XCTestCase {
         guard URLProtocol.registerClass(BlockNetworkCalls.self) else { XCTFail(); return }
 
         let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
-            .errorHandler({ error in
-                XCTFail("Storage Error: \(error)")
-            })
+            .errorHandler(failOnStorageError)
             .httpSession(RestrictedHTTPSession())
         )
         analytics.purgeStorage()
@@ -243,9 +248,8 @@ class StressTests: XCTestCase {
         let analytics = Analytics(configuration: 
                                     Configuration(writeKey: "stressTestMemory")
             .storageMode(.memory(30_000))
-            .errorHandler({ error in
-            XCTFail("Storage Error: \(error)")
-        }))
+            .errorHandler(failOnStorageError)
+            .httpSession(RestrictedHTTPSession()))
         analytics.storage.hardReset(doYouKnowHowToUseThis: true)
 
         waitUntilStarted(analytics: analytics)

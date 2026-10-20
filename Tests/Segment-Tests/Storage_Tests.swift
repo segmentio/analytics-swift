@@ -176,6 +176,8 @@ class StorageTests: XCTestCase {
         let analytics = Analytics(configuration: Configuration(writeKey: uniqueWriteKey())
             .storageMode(.memory(10))
             .trackApplicationLifecycleEvents(false)
+            // a slow real request keeps analytics alive past waitUntilFinished's timeout.
+            .httpSession(RestrictedHTTPSession())
         )
         
         analytics.waitUntilStarted()
