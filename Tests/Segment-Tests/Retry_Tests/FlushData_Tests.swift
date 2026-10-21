@@ -317,6 +317,26 @@ class FlushData_Tests: XCTestCase {
         // At least 3 uploads: event-1 fail, event-2 success, event-1 retry success
         XCTAssertGreaterThanOrEqual(session.dataUploadCount, 3)
     }
+
+    func testFlushDataDropsRetryableBatchWhenBackoffDisabled() {
+        let session = ConfigurableHTTPSession()
+        session.uploadStatusCode = 500
+
+        let httpConfig = HttpConfig(
+            rateLimitConfig: RateLimitConfig(enabled: true),
+            backoffConfig: BackoffConfig(enabled: false)
+        )
+
+        let analytics = makeMemoryAnalytics(session: session, httpConfig: httpConfig, flushAt: 9999)
+        analytics.track(name: "no-backoff-event")
+
+        // a 500 without Retry-After won't be retried by anything, so the batch is dropped.
+        analytics.flush()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.5))
+
+        XCTAssertEqual(session.dataUploadCount, 1)
+        XCTAssertFalse(analytics.storage.dataStore.hasData)
+    }
 }
 
 #endif

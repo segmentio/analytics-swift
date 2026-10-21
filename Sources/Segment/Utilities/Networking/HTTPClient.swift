@@ -158,11 +158,12 @@ public class HTTPClient {
             analytics?.reportInternalError(AnalyticsError.networkUnknown(url, error))
             completion(.failure(HTTPClientErrors.unknown(error: error)))
         } else if let httpResponse = response as? HTTPURLResponse {
+            let retryAfterSeconds = extractRetryAfter(from: httpResponse)
             // Update retry state after response
             if let stateMachine = retryStateMachine {
                 let responseInfo = ResponseInfo(
                     statusCode: httpResponse.statusCode,
-                    retryAfterSeconds: extractRetryAfter(from: httpResponse),
+                    retryAfterSeconds: retryAfterSeconds,
                     batchFile: batchFile,
                     currentTime: timeProvider.now()
                 )
@@ -187,12 +188,16 @@ public class HTTPClient {
                 return
             case 300..<400:
                 analytics?.reportInternalError(AnalyticsError.networkUnexpectedHTTPCode(url, httpResponse.statusCode))
-                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             case 429:
                 analytics?.reportInternalError(AnalyticsError.networkServerLimited(url, httpResponse.statusCode))
-                completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             default:
                 analytics?.reportInternalError(AnalyticsError.networkServerRejected(url, httpResponse.statusCode))
+            }
+
+            // the drop decision needs the response headers, so make it here rather than in the caller.
+            if shouldDropBatch(forStatusCode: httpResponse.statusCode, retryAfterSeconds: retryAfterSeconds) {
+                completion(.failure(HTTPClientErrors.badRequest))
+            } else {
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             }
         }
@@ -241,9 +246,9 @@ public class HTTPClient {
         dataTask.resume()
     }
 
-    /// Returns true if the given status code should cause the batch to be dropped (not retried).
-    func shouldDropBatch(forStatusCode code: Int) -> Bool {
-        return retryStateMachine?.shouldDropBatch(statusCode: code) ?? (code == 400)
+    /// Returns true if the given response should cause the batch to be dropped (not retried).
+    func shouldDropBatch(forStatusCode code: Int, retryAfterSeconds: Int?) -> Bool {
+        return retryStateMachine?.shouldDropBatch(statusCode: code, retryAfterSeconds: retryAfterSeconds) ?? (code == 400)
     }
 
     /// Check if a batch should be uploaded, and update retry state accordingly.
