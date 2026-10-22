@@ -159,6 +159,43 @@ class FlushFiles_Tests: XCTestCase {
         XCTAssertEqual(session.fileUploadCount, 1)
         XCTAssertEqual(pendingFiles(analytics), 0)
     }
+
+    func testFlushDropsRetryableBatchWhenBackoffDisabled() {
+        let session = ScriptedHTTPSession()
+        session.uploadStatusCode = 500
+
+        // rate limiting stays on, as it does when settings only disable backoff.
+        let analytics = makeDiskAnalytics(session: session, httpConfig: HttpConfig(
+            rateLimitConfig: RateLimitConfig(enabled: true),
+            backoffConfig: BackoffConfig(enabled: false)
+        ))
+
+        // a 500 without Retry-After won't be retried by anything, so the batch is dropped.
+        analytics.track(name: "first")
+        flushAndWait(analytics)
+        XCTAssertEqual(session.fileUploadCount, 1)
+        XCTAssertEqual(pendingFiles(analytics), 0)
+
+        flushAndWait(analytics)
+        XCTAssertEqual(session.fileUploadCount, 1)
+    }
+
+    func testFlushKeepsRetryAfterBatchWhenBackoffDisabled() {
+        let session = ScriptedHTTPSession()
+        session.uploadStatusCode = 503
+        session.uploadHeaders = ["Retry-After": "60"]
+
+        let analytics = makeDiskAnalytics(session: session, httpConfig: HttpConfig(
+            rateLimitConfig: RateLimitConfig(enabled: true),
+            backoffConfig: BackoffConfig(enabled: false)
+        ))
+
+        // Retry-After pauses the pipeline, and the batch waits for the pause to end.
+        analytics.track(name: "first")
+        flushAndWait(analytics)
+        XCTAssertEqual(session.fileUploadCount, 1)
+        XCTAssertGreaterThan(pendingFiles(analytics), 0)
+    }
 }
 
 #endif

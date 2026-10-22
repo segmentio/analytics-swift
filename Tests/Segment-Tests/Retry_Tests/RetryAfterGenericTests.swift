@@ -173,4 +173,34 @@ class RetryAfterGenericTests: XCTestCase {
             XCTFail("Expected skipAllBatches for batch2, got \(decision2)")
         }
     }
+
+    // MARK: shouldDropBatch with backoff disabled
+
+    private func backoffDisabledMachine() -> RetryStateMachine {
+        let config = HttpConfig(
+            rateLimitConfig: RateLimitConfig(enabled: true),
+            backoffConfig: BackoffConfig(enabled: false)
+        )
+        return RetryStateMachine(config: config, timeProvider: timeProvider)
+    }
+
+    // 500 + no Retry-After, backoff off → nothing will retry it, drop
+    func test_shouldDropBatch_retryableWithoutRetryAfter_backoffDisabled_drops() {
+        XCTAssertTrue(backoffDisabledMachine().shouldDropBatch(statusCode: 500, retryAfterSeconds: nil))
+    }
+
+    // 503 + Retry-After, backoff off → rate limiting pauses and retries it, keep
+    func test_shouldDropBatch_retryableWithRetryAfter_backoffDisabled_keeps() {
+        XCTAssertFalse(backoffDisabledMachine().shouldDropBatch(statusCode: 503, retryAfterSeconds: 30))
+    }
+
+    // 429 + no Retry-After, backoff off → rate limiting still handles 429, keep
+    func test_shouldDropBatch_429WithoutRetryAfter_backoffDisabled_keeps() {
+        XCTAssertFalse(backoffDisabledMachine().shouldDropBatch(statusCode: 429, retryAfterSeconds: nil))
+    }
+
+    // 500 + no Retry-After, both enabled → backoff retries it, keep
+    func test_shouldDropBatch_retryableWithoutRetryAfter_backoffEnabled_keeps() {
+        XCTAssertFalse(stateMachine.shouldDropBatch(statusCode: 500, retryAfterSeconds: nil))
+    }
 }

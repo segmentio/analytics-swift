@@ -187,16 +187,14 @@ extension SegmentDestination {
                             storage.remove(data: [url])
                             cleanupUploads()
 
-                        // Batch was dropped by the retry state machine (e.g. max retries exceeded)
+                        // Batch was dropped by the retry state machine (e.g. max retries exceeded,
+                        // or a status code that won't be retried)
                         case .failure(Segment.HTTPClientErrors.badRequest):
                             storage.remove(data: [url])
                             cleanupUploads()
 
-                        // Non-retryable status codes should also drop the batch
-                        case .failure(Segment.HTTPClientErrors.statusCode(let code)):
-                            if httpClient.shouldDropBatch(forStatusCode: code) {
-                                storage.remove(data: [url])
-                            }
+                        // Failed but will be retried; keep the batch
+                        case .failure(Segment.HTTPClientErrors.statusCode(_)):
                             cleanupUploads()
                         default:
                             break
@@ -296,12 +294,14 @@ extension SegmentDestination {
                     didRemove = true
                     cleanupUploads()
 
-                // Non-retryable status codes should drop the batch
-                case .failure(Segment.HTTPClientErrors.statusCode(let code)):
-                    if httpClient.shouldDropBatch(forStatusCode: code) {
-                        storage.remove(data: removable)
-                        didRemove = true
-                    }
+                // A status code that won't be retried drops the batch
+                case .failure(Segment.HTTPClientErrors.badRequest):
+                    storage.remove(data: removable)
+                    didRemove = true
+                    cleanupUploads()
+
+                // Failed but will be retried; keep the batch
+                case .failure(Segment.HTTPClientErrors.statusCode(_)):
                     cleanupUploads()
                 default:
                     break

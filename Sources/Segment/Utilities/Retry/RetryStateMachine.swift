@@ -123,20 +123,20 @@ public class RetryStateMachine {
         return max(batchRetryCount, state.globalRetryCount)
     }
 
-    /// Returns true if the given status code should result in the batch being dropped (not retried).
-    public func shouldDropBatch(statusCode: Int) -> Bool {
+    /// Returns true if the given response should result in the batch being dropped (not retried).
+    /// Mirrors `handleResponse`, which decides whether a retry is scheduled for it.
+    public func shouldDropBatch(statusCode: Int, retryAfterSeconds: Int? = nil) -> Bool {
         if isLegacyMode { return false }
 
-        // 429 with rate limit handling disabled: drop
-        if statusCode == 429 && !config.rateLimitConfig.enabled { return true }
+        // 429 is retried by rate limiting, or dropped when it's disabled
+        if statusCode == 429 { return !config.rateLimitConfig.enabled }
 
         let behavior = resolveStatusCodeBehavior(code: statusCode)
         if behavior == .retry {
-            // Rate limit config handles retryable codes that carry Retry-After — don't drop
-            if config.rateLimitConfig.enabled { return false }
-            // Retryable error with backoff disabled and no rate-limit handling: drop
-            if !config.backoffConfig.enabled { return true }
-            return false
+            // Retry-After pauses the pipeline when rate limiting is enabled; the batch waits for it
+            if retryAfterSeconds != nil && config.rateLimitConfig.enabled { return false }
+            // otherwise only backoff retries it
+            return !config.backoffConfig.enabled
         }
 
         return behavior == .drop
