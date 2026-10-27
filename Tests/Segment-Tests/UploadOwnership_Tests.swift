@@ -5,8 +5,8 @@ import XCTest
 
 // answers every request with a 200 and records the size of each upload body.
 private final class RecordingProtocol: URLProtocol {
-    static let lock = NSLock()
-    static var bodySizes: [Int] = []
+    @Atomic static var bodySizes: [Int] = []
+    static func reset() { _bodySizes.set([]) }
 
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
@@ -24,7 +24,7 @@ private final class RecordingProtocol: URLProtocol {
             }
             stream.close()
         }
-        Self.lock.lock(); Self.bodySizes.append(size); Self.lock.unlock()
+        Self._bodySizes.mutate { $0.append(size) }
 
         let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -45,8 +45,7 @@ private class GatedSession: HTTPSession {
     private let session: URLSession
     let firstCompletionEntered = DispatchSemaphore(value: 0)
     let releaseFirstCompletion = DispatchSemaphore(value: 0)
-    private let lock = NSLock()
-    private(set) var uploadedFiles: [URL] = []
+    @Atomic var uploadedFiles: [URL] = []
 
     init() {
         let configuration = URLSessionConfiguration.ephemeral
@@ -56,10 +55,11 @@ private class GatedSession: HTTPSession {
 
     func uploadTask(with request: URLRequest, fromFile file: URL,
                     completionHandler: @escaping @Sendable (Data?, URLResponse?, (any Error)?) -> Void) -> URLSessionUploadTask {
-        lock.lock()
-        uploadedFiles.append(file)
-        let isFirst = uploadedFiles.count == 1
-        lock.unlock()
+        var isFirst = false
+        _uploadedFiles.mutate {
+            $0.append(file)
+            isFirst = $0.count == 1
+        }
         return session.uploadTask(with: request, fromFile: file) { [self] data, response, error in
             if isFirst {
                 firstCompletionEntered.signal()
@@ -123,7 +123,7 @@ class UploadOwnership_Tests: XCTestCase {
     override func setUp() {
         super.setUp()
         Telemetry.shared.enable = false
-        RecordingProtocol.lock.lock(); RecordingProtocol.bodySizes = []; RecordingProtocol.lock.unlock()
+        RecordingProtocol.reset()
     }
 
     // URLSession marks a task .completed before running its completion handler, so a flush

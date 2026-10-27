@@ -49,10 +49,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         var completion = Completion()
 
         final class Completion {
-            private let lock = NSLock()
-            private var _finished = false
-            var finished: Bool { lock.lock(); defer { lock.unlock() }; return _finished }
-            func finish() { lock.lock(); _finished = true; lock.unlock() }
+            @Atomic var finished = false
+            func finish() { _finished.set(true) }
         }
     }
 
