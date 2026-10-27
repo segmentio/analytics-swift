@@ -107,7 +107,8 @@ public class HTTPClient {
         }
 
         let dataTask = session.uploadTask(with: urlRequest, fromFile: batch) { [weak self] (data, response, error) in
-            guard let self else { return }
+            // the client can be replaced mid-upload (settings rebuild it); the caller still needs its completion.
+            guard let self else { completion(.failure(HTTPClientErrors.badSession)); return }
             handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: batchFileName, completion: completion)
         }
 
@@ -140,7 +141,8 @@ public class HTTPClient {
         }
 
         let dataTask = session.uploadTask(with: urlRequest, from: data) { [weak self] (data, response, error) in
-            guard let self else { return }
+            // the client can be replaced mid-upload (settings rebuild it); the caller still needs its completion.
+            guard let self else { completion(.failure(HTTPClientErrors.badSession)); return }
             handleResponse(data: data, response: response, error: error, url: uploadURL, batchFile: batchId, completion: completion)
         }
 
@@ -200,6 +202,8 @@ public class HTTPClient {
             } else {
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             }
+        } else {
+            completion(.failure(HTTPClientErrors.badSession))
         }
     }
     

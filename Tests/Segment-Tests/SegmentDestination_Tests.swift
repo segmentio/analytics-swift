@@ -13,8 +13,8 @@ final class SegmentDestination_Tests: XCTestCase {
         Telemetry.shared.enable = false
     }
 
-    // Non-running tasks are removed and their cleanup closures fire.
-    func testCleanupUploadsRemovesNonRunningTasksAndInvokesCleanup() {
+    // Finished uploads are removed and their cleanup closures fire.
+    func testCleanupUploadsRemovesFinishedUploadsAndInvokesCleanup() {
         let dest = SegmentDestination()
         let cleanupFired = expectation(description: "cleanup closure ran")
 
@@ -25,11 +25,46 @@ final class SegmentDestination_Tests: XCTestCase {
             cleanup: nil
         )
         info.cleanup = { cleanupFired.fulfill() }
+        info.completion.finish()
         dest.add(uploadTask: info)
         XCTAssertEqual(dest.pendingUploads, 1)
 
         dest.cleanupUploads()
         wait(for: [cleanupFired], timeout: 2.0)
+        XCTAssertEqual(dest.pendingUploads, 0)
+    }
+
+    // URLSession marks a task .completed before its completion runs; the upload stays
+    // pending until that completion has finished with the batch.
+    func testCleanupUploadsKeepsCompletedTaskUntilItsCompletionFinishes() {
+        let dest = SegmentDestination()
+        let info = SegmentDestination.UploadTaskInfo(
+            url: nil,
+            data: nil,
+            task: FakeDataTask(state: .completed),
+            cleanup: nil
+        )
+        dest.add(uploadTask: info)
+
+        dest.cleanupUploads()
+        XCTAssertEqual(dest.pendingUploads, 1)
+
+        info.completion.finish()
+        dest.cleanupUploads()
+        XCTAssertEqual(dest.pendingUploads, 0)
+    }
+
+    // A suspended task won't complete on its own, so it's removed.
+    func testCleanupUploadsRemovesSuspendedTasks() {
+        let dest = SegmentDestination()
+        dest.add(uploadTask: SegmentDestination.UploadTaskInfo(
+            url: nil,
+            data: nil,
+            task: FakeDataTask(state: .suspended),
+            cleanup: nil
+        ))
+
+        dest.cleanupUploads()
         XCTAssertEqual(dest.pendingUploads, 0)
     }
 
@@ -75,6 +110,7 @@ final class SegmentDestination_Tests: XCTestCase {
             dest?.cleanupUploads()
             done.fulfill()
         }
+        info.completion.finish()
         dest.add(uploadTask: info)
 
         dest.cleanupUploads()
