@@ -203,6 +203,7 @@ public class HTTPClient {
                 completion(.failure(HTTPClientErrors.statusCode(code: httpResponse.statusCode)))
             }
         } else {
+            Analytics.segmentLog(message: "Upload got neither an HTTP response nor an error; a custom HTTPSession must pass one of them to its completion handler.", kind: .warning)
             completion(.failure(HTTPClientErrors.badSession))
         }
     }

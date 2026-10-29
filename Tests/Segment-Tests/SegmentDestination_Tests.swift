@@ -22,7 +22,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .completed),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         )
         info.cleanup = { cleanupFired.fulfill() }
         info.completion.finish()
@@ -42,7 +43,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .completed),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         )
         dest.add(uploadTask: info)
 
@@ -63,7 +65,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .running),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         ))
 
         XCTAssertEqual(dest.pendingUploads, 1)
@@ -77,7 +80,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .suspended),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         ))
 
         dest.cleanupUploads()
@@ -93,7 +97,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .running),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         )
         info.cleanup = { cleanupInvocations += 1 }
         dest.add(uploadTask: info)
@@ -119,7 +124,8 @@ final class SegmentDestination_Tests: XCTestCase {
             url: nil,
             data: nil,
             task: FakeDataTask(state: .completed),
-            cleanup: nil
+            cleanup: nil,
+            completion: .init()
         )
         info.cleanup = { [weak dest] in
             _ = dest?.pendingUploads
@@ -147,7 +153,8 @@ final class SegmentDestination_Tests: XCTestCase {
                     url: nil,
                     data: nil,
                     task: FakeDataTask(state: .running),
-                    cleanup: nil
+                    cleanup: nil,
+                    completion: .init()
                 )
                 dest.add(uploadTask: info)
             }

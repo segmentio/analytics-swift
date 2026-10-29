@@ -229,10 +229,11 @@ internal struct ApplicationBackgroundTasks: BackgroundTaskProvider {
 }
 
 extension SegmentDestination.UploadTaskInfo {
-    init(url: URL?, data: Data?, task: any DataTask) {
+    init(url: URL?, data: Data?, task: any DataTask, completion: Completion) {
         self.url = url
         self.data = data
         self.task = task
+        self.completion = completion
 
         if let application = UIApplication.safeShared,
            let urlTask = task as? URLSessionTask {

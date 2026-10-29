@@ -45,8 +45,8 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
         // set/used via an extension in iOSLifecycleMonitor.swift
         typealias CleanupClosure = () -> Void
         var cleanup: CleanupClosure? = nil
-        // set by the upload's completion once it has finished with the batch.
-        var completion = Completion()
+        // shared with the upload's completion, which marks it once it has finished with the batch.
+        let completion: Completion
 
         final class Completion {
             @Atomic var finished = false
@@ -192,7 +192,10 @@ extension SegmentDestination {
                     // set up the task
                     let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, batch: url) { [weak self] result in
                         defer {
+                            // the batch is settled; drop this upload (and run its cleanup)
+                            // now rather than waiting on the next flush.
                             completion.finish()
+                            self?.cleanupUploads()
                             leaveGroup.run()
                         }
                         guard let self else { return }
@@ -215,18 +218,11 @@ extension SegmentDestination {
                         }
                         
                         analytics.log(message: "Processed: \(url.lastPathComponent)")
-                        // the upload we have here has just finished.
-                        // make sure it gets removed and it's cleanup() called rather
-                        // than waiting on the next flush to come around.
-                        completion.finish()
-                        cleanupUploads()
                     }
                     
                     // we have a legit upload in progress now, so add it to our list.
                     if let upload = uploadTask {
-                        var info = UploadTaskInfo(url: url, data: nil, task: upload)
-                        info.completion = completion
-                        add(uploadTask: info)
+                        add(uploadTask: UploadTaskInfo(url: url, data: nil, task: upload, completion: completion))
                     } else {
                         // we couldn't get a task, so make sure we've left the group or things will hang.
                         leaveGroup.run()
@@ -288,7 +284,7 @@ extension SegmentDestination {
             analytics.log(message: "Processing In-Memory Batch (size: \(data.count))")
 
             // we're already on a separate thread.
-            // lets let this task complete so we can get all the values out.
+            // let this task complete so we can get all the values out.
             let semaphore = DispatchSemaphore(value: 0)
             var didRemove = false
             // the completion and the no-task path below may both try to finish; only one may.
@@ -302,7 +298,9 @@ extension SegmentDestination {
             // set up the task
             let uploadTask = httpClient.startBatchUpload(writeKey: analytics.configuration.values.writeKey, data: data, batchId: batchId) { [weak self] result in
                 defer {
+                    // the batch is settled; drop this upload (and run its cleanup) now.
                     completion.finish()
+                    self?.cleanupUploads()
                     // leave for the url we kicked off.
                     finish.run()
                 }
@@ -328,15 +326,11 @@ extension SegmentDestination {
                 }
 
                 analytics.log(message: "Processed In-Memory Batch (size: \(data.count))")
-                completion.finish()
-                cleanupUploads()
             }
 
             // we have a legit upload in progress now, so add it to our list.
             if let upload = uploadTask {
-                var info = UploadTaskInfo(url: nil, data: data, task: upload)
-                info.completion = completion
-                add(uploadTask: info)
+                add(uploadTask: UploadTaskInfo(url: nil, data: data, task: upload, completion: completion))
             } else {
                 // we couldn't get a task, so make sure we've left the group or things will hang.
                 finish.run()
@@ -357,7 +351,7 @@ extension SegmentDestination {
 
 extension SegmentDestination {
     internal func cleanupUploads() {
-        // lets go through and get rid of uploads that are done: their completion has finished
+        // let's go through and get rid of uploads that are done: their completion has finished
         // with the batch, or the task was suspended (a background task took too long, or the
         // os orphaned it due to device constraints, like a watch) and won't complete.
         // a task is already .completed while its completion is still running, and the batch
