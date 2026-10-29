@@ -48,10 +48,26 @@ final class SegmentDestination_Tests: XCTestCase {
 
         dest.cleanupUploads()
         XCTAssertEqual(dest.pendingUploads, 1)
+        XCTAssertEqual(dest.uploadsAwaitingCompletion, 1)
 
         info.completion.finish()
+        XCTAssertEqual(dest.uploadsAwaitingCompletion, 0)
         dest.cleanupUploads()
         XCTAssertEqual(dest.pendingUploads, 0)
+    }
+
+    // only tasks that are done count as waiting on their completion.
+    func testUploadsAwaitingCompletionIgnoresRunningTasks() {
+        let dest = SegmentDestination()
+        dest.add(uploadTask: SegmentDestination.UploadTaskInfo(
+            url: nil,
+            data: nil,
+            task: FakeDataTask(state: .running),
+            cleanup: nil
+        ))
+
+        XCTAssertEqual(dest.pendingUploads, 1)
+        XCTAssertEqual(dest.uploadsAwaitingCompletion, 0)
     }
 
     // A suspended task won't complete on its own, so it's removed.

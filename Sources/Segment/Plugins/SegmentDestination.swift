@@ -158,6 +158,10 @@ public class SegmentDestination: DestinationPlugin, Subscriber, FlushCompletion 
             }
         } else {
             analytics.log(message: "Skipping processing; Uploads in progress.")
+            let awaiting = uploadsAwaitingCompletion
+            if awaiting > 0 {
+                Analytics.segmentLog(message: "\(awaiting) finished upload(s) still waiting on their completion handler; a custom HTTPSession must call every completion handler it's given.", kind: .warning)
+            }
         }
     }
 }
@@ -384,6 +388,15 @@ extension SegmentDestination {
             uploadsCount = uploads.count
         }
         return uploadsCount
+    }
+
+    // a session that never calls an upload's completion leaves it here, blocking every later flush.
+    internal var uploadsAwaitingCompletion: Int {
+        var count = 0
+        uploadsQueue.sync {
+            count = uploads.filter { $0.task.state == .completed && !$0.completion.finished }.count
+        }
+        return count
     }
 
     internal func add(uploadTask: UploadTaskInfo) {
