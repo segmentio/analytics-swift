@@ -257,8 +257,7 @@ class RestrictedHTTPSession: HTTPSession {
 // until resume, running until the completion is called) and file uploads still read the file.
 class InstantHTTPSession: HTTPSession {
     class Task: UploadTask, DataTask {
-        private let lock = NSLock()
-        private var _state: URLSessionTask.State = .suspended
+        @Atomic private var taskState: URLSessionTask.State = .suspended
         private let queue: DispatchQueue
         private let work: () -> (Data?, URLResponse?, (any Error)?)
         private let completionHandler: @Sendable (Data?, URLResponse?, (any Error)?) -> Void
@@ -269,19 +268,19 @@ class InstantHTTPSession: HTTPSession {
             self.completionHandler = completionHandler
         }
 
-        var state: URLSessionTask.State {
-            lock.lock(); defer { lock.unlock() }
-            return _state
-        }
+        var state: URLSessionTask.State { taskState }
 
         func resume() {
-            lock.lock()
-            guard _state == .suspended else { lock.unlock(); return }
-            _state = .running
-            lock.unlock()
+            var started = false
+            _taskState.mutate {
+                guard $0 == .suspended else { return }
+                $0 = .running
+                started = true
+            }
+            guard started else { return }
             queue.async { [self] in
                 let (data, response, error) = work()
-                lock.lock(); _state = .completed; lock.unlock()
+                _taskState.set(.completed)
                 completionHandler(data, response, error)
             }
         }
